@@ -7,7 +7,7 @@ interface EditorProps {
   onChange: (value: string) => void;
 }
 
-const Editor: React.FC<EditorProps> = ({ value, onChange }) => {
+const Editor = ({ value, onChange }: EditorProps) => {
     const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
     useEffect(() => {

@@ -1,11 +1,11 @@
 'use client';
 
-import Editor from "../app/components/Editor";
-import Preview from "../app/components/Preview";
-import DocModeBar from "../app/components/DocModeBar";
-import Toolbar from "../app/components/ToolBar";
-import GraphView from "../app/components/GraphView"; 
-import SplitView from "../app/components/SplitView"; 
+import Editor from "../app/components/doc/Editor";
+import Preview from "../app/components/doc/Preview";
+import DocModeBar from "../app/components/doc/DocModeBar";
+import Toolbar from "../app/components/doc/ToolBar";
+import GraphView from "../app/components/doc/GraphView"; 
+import SplitView from "../app/components/doc/SplitView"; 
 
 import { useDocContentViewModel, useDocModeViewModel } from "@/app/viewModels/DocViewModel";
 import { DocMode } from "../app/models/enum/DocMode";
@@ -17,8 +17,8 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col items-center bg-gray-200 text-black">
-      <div className="w-full max-w-5xl my-20">
-        <div className='mb-6 flex justify-start'>
+      <div className={`w-full my-20 ${mode === DocMode.Split ? 'min-w-fit' : 'max-w-4xl'}`}>
+        <div className={`mb-6 flex justify-start ${mode === DocMode.Split ? 'ml-10' : ''}`}>
           <DocModeBar currentMode={mode} setDocMode={setDocMode} />
         </div>
 
@@ -31,7 +31,7 @@ export default function Home() {
 
         {mode === DocMode.Preview && <Preview content={content} />}
         {mode === DocMode.Graph && <GraphView />}
-        {mode === DocMode.Split && <SplitView />}
+        {mode === DocMode.Split && <SplitView content={content} setContent={setContent} />}
       </div>
     </div>
   );

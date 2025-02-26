@@ -7,9 +7,9 @@ interface PreviewProps {
     content: string;
 }
 
-const Preview: React.FC<PreviewProps> = ({ content }) => {
+const Preview = ({ content }: PreviewProps) => {
   return (
-    <div className="prose max-w-full min-h-screen p-16 rounded-lg bg-white shadow-xl overflow-hidden">
+    <div className="prose max-w-full min-h-screen p-16 rounded-lg bg-white shadow-xl overflow-auto">
         <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
             {content}
         </ReactMarkdown>
