@@ -6,7 +6,7 @@ import DocModeBar from "@/app/components/doc/DocModeBar";
 import Toolbar from "@/app/components/doc/ToolBar";
 import GraphView from "@/app/components/doc/GraphView";
 import SplitView from "@/app/components/doc/SplitView";
-
+import ProjectTreeView from "@/app/components/doc/ProjectTreeView";
 import {
     useDocContentViewModel,
     useDocModeViewModel,
@@ -45,7 +45,7 @@ export default function Home() {
                 )}
 
                 {mode === DocMode.Preview && <Preview content={content} />}
-                {mode === DocMode.Graph && <GraphView />}
+                {mode === DocMode.Graph && <ProjectTreeView />}
                 {mode === DocMode.Split && (
                     <SplitView content={content} setContent={setContent} />
                 )}
