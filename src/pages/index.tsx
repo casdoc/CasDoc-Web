@@ -35,12 +35,12 @@ export default function Home() {
 
                 {mode === DocMode.Edit && (
                     <>
+                        <Editor value={content} onChange={setContent} />
                         <Toolbar
                             onApplyFormat={(f) =>
                                 setContent((prev) => prev + f)
                             }
                         />
-                        <Editor value={content} onChange={setContent} />
                     </>
                 )}
 
