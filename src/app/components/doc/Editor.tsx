@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
 import { useRef, useEffect } from "react";
 
 interface EditorProps {
-  value: string;
-  onChange: (value: string) => void;
+    value: string;
+    onChange: (value: string) => void;
 }
 
 const Editor = ({ value, onChange }: EditorProps) => {
@@ -13,7 +13,8 @@ const Editor = ({ value, onChange }: EditorProps) => {
     useEffect(() => {
         if (textAreaRef.current) {
             textAreaRef.current.style.height = "auto";
-            textAreaRef.current.style.height = textAreaRef.current.scrollHeight + "px";
+            textAreaRef.current.style.height =
+                textAreaRef.current.scrollHeight + "px";
         }
     }, [value]);
 

@@ -25,11 +25,15 @@ const DocModeBar = ({ currentMode, setDocMode }: DocModeBarProps) => {
                     key={mode}
                     onClick={() => setDocMode(mode)}
                     className={`m-1 p-2 rounded-lg hover:opacity-50 
-                        ${currentMode === mode ? 
-                            'bg-[#BCCCDC]' : 'bg-[#D9D9D9]'
+                        ${
+                            currentMode === mode
+                                ? "bg-[#BCCCDC]"
+                                : "bg-[#D9D9D9]"
                         } 
-                        ${mode === DocMode.Graph ? 
-                            'cursor-not-allowed' : 'corsor-pointer'
+                        ${
+                            mode === DocMode.Graph
+                                ? "cursor-not-allowed"
+                                : "corsor-pointer"
                         }
                     `}
                 >

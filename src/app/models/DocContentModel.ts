@@ -12,5 +12,5 @@ export const DocContentModel = {
         if (typeof window !== "undefined") {
             localStorage.setItem(LOCAL_STORAGE_KEY, content);
         }
-    }
+    },
 };

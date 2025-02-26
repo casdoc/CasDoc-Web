@@ -8,13 +8,16 @@ interface PreviewProps {
 }
 
 const Preview = ({ content }: PreviewProps) => {
-  return (
-    <div className="prose max-w-full min-h-screen p-16 rounded-lg bg-white shadow-xl overflow-auto">
-        <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
-            {content}
-        </ReactMarkdown>
-    </div>
-  );
+    return (
+        <div className="prose max-w-full min-h-screen p-16 rounded-lg bg-white shadow-xl overflow-auto">
+            <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                rehypePlugins={[rehypeRaw]}
+            >
+                {content}
+            </ReactMarkdown>
+        </div>
+    );
 };
 
 export default Preview;
