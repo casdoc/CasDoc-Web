@@ -21,11 +21,17 @@ const DocModeBar = ({ currentMode, setDocMode }: DocModeBarProps) => {
         <div className="flex w-fit py-2 px-3 rounded-lg shadow-xl bg-[#9AA6B2]">
             {modes.map(({ mode, icon }) => (
                 <button
+                    disabled={mode === DocMode.Graph || mode === DocMode.Split}
                     key={mode}
                     onClick={() => setDocMode(mode)}
-                    className={`m-1 p-2 rounded-lg hover:opacity-50 ${
-                        currentMode === mode ? 'bg-[#BCCCDC]' : 'bg-[#D9D9D9]'
-                    }`}
+                    className={`m-1 p-2 rounded-lg hover:opacity-50 
+                        ${currentMode === mode ? 
+                            'bg-[#BCCCDC]' : 'bg-[#D9D9D9]'
+                        } 
+                        ${mode === DocMode.Graph || mode === DocMode.Split ? 
+                            'cursor-not-allowed' : 'corsor-pointer'
+                        }
+                    `}
                 >
                     {icon}
                 </button>

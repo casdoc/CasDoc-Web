@@ -2,33 +2,28 @@ interface ToolbarProps {
     onApplyFormat: (format: string) => void;
 }
 
-const Toolbar: React.FC<ToolbarProps> = ({ onApplyFormat }) => {
+const formatOptions = [
+    { label: "H1", format: "# " },
+    { label: <b>B</b>, format: "**bold**" },
+    { label: <i>I</i>, format: "*italic*" },
+    { label: "List", format: "- " },
+    { label: "+", format: "the template feature is under construction"},
+];
+
+const Toolbar = ({ onApplyFormat }: ToolbarProps) => {
     return (
         <div className="fixed bottom-8 left-1/2 -translate-x-1/2 w-fit px-5 bg-[#9AA6B2] p-3 shadow-xl z-50 rounded-lg flex">
-            <button
-                className="px-3 py-1 mx-1 bg-[#D9D9D9] border rounded hover:bg-[#F8FAFC]"
-                onClick={() => onApplyFormat("# ")}
-            >
-                H1
-            </button>
-            <button
-                className="px-3 py-1 mx-1 bg-[#D9D9D9] border rounded hover:bg-[#F8FAFC]"
-                onClick={() => onApplyFormat("**bold**")}
-            >
-                <b>B</b>
-            </button>
-            <button
-                className="px-3 py-1 mx-1 bg-[#D9D9D9] border rounded hover:bg-[#F8FAFC]"
-                onClick={() => onApplyFormat("*italic*")}
-            >
-                <i>I</i>
-            </button>
-            <button
-                className="px-3 py-1 mx-1 bg-[#D9D9D9] border rounded hover:bg-[#F8FAFC]"
-                onClick={() => onApplyFormat("- ")}
-            >
-                List
-            </button>
+            {formatOptions.map(({ label, format }) => (
+                <button
+                    disabled={label === '+'}
+                    key={format}
+                    className={`px-3 py-1 mx-1 bg-[#D9D9D9] border rounded hover:bg-[#F8FAFC]
+                        ${label === '+' ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'}`}
+                    onClick={() => onApplyFormat(format)}
+                >
+                    {label}
+                </button>
+            ))}
         </div>
     );
 };
