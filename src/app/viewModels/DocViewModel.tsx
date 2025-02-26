@@ -1,8 +1,14 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
+import { DocMode } from "../models/enum/DocMode";
 
-export const useDocModeViewModel = () => {
-  const [isPreview, setIsPreview] = useState<boolean>(false);
-  return { isPreview, setIsPreview };
+export function useDocModeViewModel() {
+    const [mode, setMode] = useState<DocMode>(DocMode.Edit);
+
+    const setDocMode = useCallback((newMode: DocMode) => {
+        setMode(newMode);
+    }, []);
+
+    return { mode, setDocMode };
 }
 
 export const useDocContentViewModel = () => {
