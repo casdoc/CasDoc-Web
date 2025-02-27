@@ -1,4 +1,4 @@
-import Editor from "./Editor";
+import { Editor } from "./Editor";
 import Preview from "./Preview";
 
 interface SplitViewProps {
@@ -10,7 +10,8 @@ const SplitView = ({ content, setContent }: SplitViewProps) => {
     return (
         <div className="flex w-full h-full">
             <div className="w-1/2 p-4 border-r">
-                <Editor value={content} onChange={setContent} />
+                {/* <Editor value={content} onChange={setContent} /> */}
+                <Editor />
             </div>
             <div className="w-1/2 p-4">
                 <Preview content={content} />

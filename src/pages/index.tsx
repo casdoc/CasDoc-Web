@@ -1,6 +1,6 @@
 "use client";
 
-import Editor from "@/app/components/doc/Editor";
+import { Editor } from "@/app/components/doc/Editor";
 import Preview from "@/app/components/doc/Preview";
 import DocModeBar from "@/app/components/doc/DocModeBar";
 import Toolbar from "@/app/components/doc/ToolBar";
@@ -35,7 +35,8 @@ export default function Home() {
 
                 {mode === DocMode.Edit && (
                     <>
-                        <Editor value={content} onChange={setContent} />
+                        {/* <Editor value={content} onChange={setContent} /> */}
+                        <Editor />
                         <Toolbar
                             onApplyFormat={(f) =>
                                 setContent((prev) => prev + f)

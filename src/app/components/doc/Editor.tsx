@@ -33,90 +33,41 @@
 // };
 
 // export default Editor;
+import React, { useCallback, useEffect, useRef } from "react";
+import { useEditorStore } from "../../store/editorStore";
+import { Block } from "./Block";
 
-import { useState, useEffect } from "react";
-import { v4 as uuidv4 } from "uuid";
-import BlockComponent from "./Block";
-import { Block, MarkdownBlockType } from "../../types";
+export const Editor: React.FC = () => {
+    const blocks = useEditorStore((state) => state.blocks);
+    const lastBlockRef = useRef<HTMLDivElement>(null);
 
-export default function Editor() {
-    const [blocks, setBlocks] = useState<Block[]>([]);
-    const [editingBlockId, setEditingBlockId] = useState<string | null>(null);
-
-    const addBlock = (
-        type: BlockType,
-        content?: string,
-        componentName?: string,
-        props?: Record<string, any>
-    ) => {
-        const newBlock: Block = { id: uuidv4(), type };
-        if (type === "component") {
-            newBlock.componentName = componentName!;
-            newBlock.props = props || {};
-        } else {
-            newBlock.content = content || "";
-        }
-        setBlocks([...blocks, newBlock]);
-    };
-
-    const addNewBlockAfterCurrent = (
-        type: BlockType,
-        content?: string,
-        componentName?: string,
-        props?: Record<string, any>
-    ) => {
-        const currentIndex = blocks.findIndex((b) => b.id === editingBlockId);
-        if (currentIndex !== -1) {
-            const newBlock = {
-                id: uuidv4(),
-                type,
-                content,
-                componentName,
-                props,
-            };
-            setBlocks([
-                ...blocks.slice(0, currentIndex + 1),
-                newBlock,
-                ...blocks.slice(currentIndex + 1),
-            ]);
-            setEditingBlockId(newBlock.id);
-        }
-    };
-
-    const switchToComponent = (
-        blockId: string,
-        componentName: string,
-        props: Record<string, any>
-    ) => {
-        setBlocks(
-            blocks.map((block) =>
-                block.id === blockId
-                    ? { ...block, type: "component", componentName, props }
-                    : block
-            )
-        );
-    };
-
-    const startEditing = (blockId: string) => setEditingBlockId(blockId);
-    const stopEditing = () => setEditingBlockId(null);
-
+    // 當blocks數組變化時，如果只有一個空塊，則讓它獲得焦點
     useEffect(() => {
-        if (blocks.length === 0) addBlock("paragraph");
+        if (
+            blocks.length === 1 &&
+            blocks[0].content === "" &&
+            lastBlockRef.current
+        ) {
+            const blockElement = lastBlockRef.current.querySelector(
+                "[contenteditable=true]"
+            );
+            if (blockElement) {
+                (blockElement as HTMLElement).focus();
+            }
+        }
     }, [blocks]);
 
     return (
-        <div className="p-4">
-            {blocks.map((block) => (
-                <BlockComponent
-                    key={block.id}
-                    block={block}
-                    isEditing={block.id === editingBlockId}
-                    onStartEditing={startEditing}
-                    onStopEditing={stopEditing}
-                    addNewBlockAfterCurrent={addNewBlockAfterCurrent}
-                    switchToComponent={switchToComponent}
-                />
-            ))}
+        <div className="max-w-4xl mx-auto py-8 px-4">
+            <div ref={lastBlockRef} className="space-y-1">
+                {blocks.map((block, index) => (
+                    <Block
+                        key={block.id}
+                        block={block}
+                        isLast={index === blocks.length - 1}
+                    />
+                ))}
+            </div>
         </div>
     );
-}
+};
