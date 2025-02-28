@@ -34,16 +34,14 @@
 
 // export default Editor;
 
-import React, { useCallback, useEffect, useRef } from "react";
-import { useEditorStore } from "../../store/editorStore";
-import { Block } from "./Block";
+import React, { useEffect, useRef } from "react";
 import { BlockView } from "@/app/components/editorPanel/BlockView";
 import { useEditorViewModel } from "@/app/viewModels/editor/EditorViewModel";
 export const Editor: React.FC = () => {
     const {
         blocks,
         addBlock,
-        setIsEditing,
+        setIsOnFocus,
         updateBlockContent,
         toggleBlockSelection,
     } = useEditorViewModel();
@@ -65,10 +63,10 @@ export const Editor: React.FC = () => {
         //     (blockElement as HTMLElement).focus();
         // }
         // }
-    }, [blocks, addBlock, setIsEditing]);
+    }, [blocks, addBlock, setIsOnFocus]);
 
     return (
-        <div className="max-w-4xl mx-auto py-8 px-4">
+        <div className="max-w-4xl">
             <div ref={lastBlockRef}>
                 {blocks.map((block, _index) => (
                     <BlockView
@@ -76,7 +74,7 @@ export const Editor: React.FC = () => {
                         block={block}
                         updateBlockContent={updateBlockContent}
                         toggleBlockSelection={toggleBlockSelection}
-                        setIsEditing={setIsEditing}
+                        setIsOnFocus={setIsOnFocus}
                         addBlock={addBlock}
                     />
                 ))}

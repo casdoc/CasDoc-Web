@@ -24,5 +24,5 @@ export interface Block {
     isSelected: boolean;
 
     /** Indicates whether the block is being edited. */
-    isEditing: boolean;
+    isOnFocus: boolean;
 }

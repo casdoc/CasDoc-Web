@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback } from "react";
 import { Block } from "@/app/types/Block";
 import { BlockPayload } from "@/app/types/BlockPayload";
 import { EditorModel } from "@/app/models/editor/EditorModel";
-import { set } from "lodash";
 
 export function useEditorViewModel() {
     const [blocks, setBlocks] = useState<Block[]>([]);
@@ -24,7 +23,7 @@ export function useEditorViewModel() {
                 topic,
                 content: "",
                 isSelected: false,
-                isEditing: false,
+                isOnFocus: false,
             };
             const newBlocks = [...blocks];
             newBlocks.splice(index + 1, 0, newBlock);
@@ -59,10 +58,10 @@ export function useEditorViewModel() {
         [blocks, updateBlocks]
     );
 
-    const setIsEditing = useCallback((id: number, state: boolean) => {
+    const setIsOnFocus = useCallback((id: number, state: boolean) => {
         setBlocks((prevBlocks) => {
             const updatedBlocks = prevBlocks.map((block) =>
-                block.id === id ? { ...block, isEditing: state } : block
+                block.id === id ? { ...block, isOnFocus: state } : block
             );
             EditorModel.setBlocks(updatedBlocks);
             return [...updatedBlocks];
@@ -81,7 +80,7 @@ export function useEditorViewModel() {
         addBlock,
         updateBlockContent,
         toggleBlockSelection,
-        setIsEditing,
+        setIsOnFocus,
         deleteBlock,
     };
 }
