@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Block } from "@/app/types/Block";
 import { BlockPayload } from "@/app/types/BlockPayload";
 import { EditorModel } from "@/app/models/editor/EditorModel";
+import { set } from "lodash";
 
 export function useEditorViewModel() {
     const [blocks, setBlocks] = useState<Block[]>([]);
@@ -39,7 +40,7 @@ export function useEditorViewModel() {
                     block.id === id ? { ...block, content } : block
                 );
                 EditorModel.setBlocks(updatedBlocks);
-                return [...updatedBlocks]; // 传入新的数组引用
+                return [...updatedBlocks];
             });
         },
         []
@@ -58,18 +59,15 @@ export function useEditorViewModel() {
         [blocks, updateBlocks]
     );
 
-    const toggleBlockEditing = useCallback(
-        (id: number) => {
-            updateBlocks(
-                blocks.map((block) =>
-                    block.id === id
-                        ? { ...block, isEditing: !block.isEditing }
-                        : block
-                )
+    const setIsEditing = useCallback((id: number, state: boolean) => {
+        setBlocks((prevBlocks) => {
+            const updatedBlocks = prevBlocks.map((block) =>
+                block.id === id ? { ...block, isEditing: state } : block
             );
-        },
-        [blocks, updateBlocks]
-    );
+            EditorModel.setBlocks(updatedBlocks);
+            return [...updatedBlocks];
+        });
+    }, []);
 
     const deleteBlock = useCallback(
         (id: number) => {
@@ -83,7 +81,7 @@ export function useEditorViewModel() {
         addBlock,
         updateBlockContent,
         toggleBlockSelection,
-        toggleBlockEditing,
+        setIsEditing,
         deleteBlock,
     };
 }

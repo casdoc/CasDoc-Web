@@ -43,12 +43,12 @@ export const Editor: React.FC = () => {
     const {
         blocks,
         addBlock,
-        toggleBlockEditing,
+        setIsEditing,
         updateBlockContent,
         toggleBlockSelection,
     } = useEditorViewModel();
     const lastBlockRef = useRef<HTMLDivElement>(null);
-
+    console.debug("Editor 刷新", blocks);
     useEffect(() => {
         // console.debug("blocks", blocks);
         // console.debug("blocks.length", blocks.length);
@@ -65,7 +65,7 @@ export const Editor: React.FC = () => {
         //     (blockElement as HTMLElement).focus();
         // }
         // }
-    }, [blocks, addBlock, toggleBlockEditing]);
+    }, [blocks, addBlock, setIsEditing]);
 
     return (
         <div className="max-w-4xl mx-auto py-8 px-4">
@@ -76,7 +76,7 @@ export const Editor: React.FC = () => {
                         block={block}
                         updateBlockContent={updateBlockContent}
                         toggleBlockSelection={toggleBlockSelection}
-                        toggleBlockEditing={toggleBlockEditing}
+                        setIsEditing={setIsEditing}
                         addBlock={addBlock}
                     />
                 ))}

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import { Block } from "@/app/types/Block";
 import remarkGfm from "remark-gfm";
@@ -10,7 +10,7 @@ interface BlockViewProps {
     block: Block;
     updateBlockContent: (id: number, content: string | BlockPayload) => void;
     toggleBlockSelection: (id: number) => void;
-    toggleBlockEditing: (id: number) => void;
+    setIsEditing: (id: number, state: boolean) => void;
     addBlock: (index: number, type: "md" | "jsx", topic: string) => void;
 }
 
@@ -18,12 +18,12 @@ export const BlockView: React.FC<BlockViewProps> = ({
     block,
     updateBlockContent,
     toggleBlockSelection,
-    toggleBlockEditing,
+    setIsEditing,
     addBlock,
 }) => {
     const { id, type, topic, content, isSelected, isEditing } = block;
     const textareaRef = useRef<HTMLTextAreaElement>(null);
-
+    console.debug("刷新BlockView", block);
     //auto adjust textarea height
     useEffect(() => {
         if (isEditing && textareaRef.current) {
@@ -35,11 +35,18 @@ export const BlockView: React.FC<BlockViewProps> = ({
     }, [isEditing, content]);
 
     const handleClick = () => {
+        console.debug("block 被點擊");
         toggleBlockSelection(id);
     };
 
-    const handleClickTextarea = () => {
-        toggleBlockEditing(id);
+    const handleClickTextarea = (
+        e: React.MouseEvent<HTMLDivElement, MouseEvent>
+    ) => {
+        e.stopPropagation();
+        console.debug("textarea 被點擊");
+        console.debug("更新前isEditing", isEditing);
+        setIsEditing(id, true);
+        console.debug("更新後isEditing", isEditing);
     };
 
     const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -49,44 +56,46 @@ export const BlockView: React.FC<BlockViewProps> = ({
     const handleKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === "Enter" && !e.shiftKey) {
             e.preventDefault();
-            toggleBlockEditing(id);
+            setIsEditing(id, !isEditing);
             addBlock(id, "md", "");
-            toggleBlockEditing(id + 1);
+            setIsEditing(id + 1, !isEditing);
         } else if (e.key === "Escape") {
-            toggleBlockEditing(id);
+            setIsEditing(id, !isEditing);
         }
     };
     const handleFocus = () => {
-        toggleBlockEditing(id);
+        console.debug("handleFocus isEditing", isEditing);
         console.debug("textarea 獲得焦點");
     };
 
     const handleBlur = () => {
-        toggleBlockEditing(id);
+        setIsEditing(id, !isEditing);
         console.debug("textarea 失去焦點");
     };
     return (
         <div
-            className={`group flex items-start rounded-md h-10 ${
-                isSelected ? "bg-blue-300" : "bg-gray-100"
+            className={`group flex  rounded-md  ${
+                isSelected ? "bg-blue-300" : "bg-yellow-400"
             }`}
             onClick={handleClick}
         >
-            <div className="flex-grow px-4">
-                {type === "md" ? (
+            <div className="flex-grow px-4 ">
+                {isEditing && type === "md" ? (
                     <textarea
                         ref={textareaRef}
-                        className="w-full resize-none border-none focus:outline-none bg-transparent bg-green-400 "
+                        className="w-full resize-none border-none focus:outline-none bg-transparent bg-green-400 h-full"
                         value={typeof content === "string" ? content : ""}
                         onChange={handleContentChange}
                         onKeyDown={handleKeyDown}
                         onFocus={handleFocus}
                         onBlur={handleBlur}
-                        onClick={handleClickTextarea}
                         rows={1}
                     />
                 ) : (
-                    <div className="prose prose-sm max-w-none">
+                    <div
+                        className="w-full bg-red-400 h-full prose  rounded-lg  overflow-auto"
+                        onClick={handleClickTextarea}
+                    >
                         {type === "md" ? (
                             <ReactMarkdown
                                 remarkPlugins={[remarkGfm, remarkBreaks]}
