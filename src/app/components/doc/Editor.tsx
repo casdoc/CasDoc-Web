@@ -33,24 +33,29 @@
 // };
 
 // export default Editor;
+
 import React, { useCallback, useEffect, useRef } from "react";
 import { useEditorStore } from "../../store/editorStore";
 import { Block } from "./Block";
 import { BlockView } from "@/app/components/editorPanel/BlockView";
 import { useEditorViewModel } from "@/app/viewModels/editor/EditorViewModel";
 export const Editor: React.FC = () => {
-    // const blocks = useEditorStore((state) => state.blocks);
-    const { blocks, addBlock, toggleBlockEditing } = useEditorViewModel();
+    const {
+        blocks,
+        addBlock,
+        toggleBlockEditing,
+        updateBlockContent,
+        toggleBlockSelection,
+    } = useEditorViewModel();
     const lastBlockRef = useRef<HTMLDivElement>(null);
 
-    // 當blocks數組變化時，如果只有一個空塊，則讓它獲得焦點
     useEffect(() => {
         // console.debug("blocks", blocks);
         // console.debug("blocks.length", blocks.length);
-        // if (!blocks.length) {
-        //     addBlock(-1, "md", "");
-        // toggleBlockEditing(0);
-        // }
+        if (!blocks.length) {
+            addBlock(-1, "md", "");
+            // toggleBlockEditing(0);
+        }
         //  else if (blocks.length === 1 && blocks[0].content === "") {
         //     toggleBlockEditing(0);
         // const blockElement = lastBlockRef.current.querySelector(
@@ -66,7 +71,14 @@ export const Editor: React.FC = () => {
         <div className="max-w-4xl mx-auto py-8 px-4">
             <div ref={lastBlockRef}>
                 {blocks.map((block, _index) => (
-                    <BlockView key={_index} block={block} />
+                    <BlockView
+                        key={_index}
+                        block={block}
+                        updateBlockContent={updateBlockContent}
+                        toggleBlockSelection={toggleBlockSelection}
+                        toggleBlockEditing={toggleBlockEditing}
+                        addBlock={addBlock}
+                    />
                 ))}
             </div>
         </div>

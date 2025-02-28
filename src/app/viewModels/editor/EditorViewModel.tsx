@@ -5,11 +5,10 @@ import { EditorModel } from "@/app/models/editor/EditorModel";
 
 export function useEditorViewModel() {
     const [blocks, setBlocks] = useState<Block[]>([]);
-    // console.debug("從EditorModel取得blocks", EditorModel.getBlocks());
+
     useEffect(() => {
         setBlocks(EditorModel.getBlocks());
     }, []);
-    console.debug("get blocks", blocks);
 
     const updateBlocks = useCallback((newBlocks: Block[]) => {
         setBlocks(newBlocks);
@@ -35,14 +34,15 @@ export function useEditorViewModel() {
 
     const updateBlockContent = useCallback(
         (id: number, content: string | BlockPayload) => {
-            console.debug("更新block內容", content);
-            updateBlocks(
-                blocks.map((block) =>
+            setBlocks((prevBlocks) => {
+                const updatedBlocks = prevBlocks.map((block) =>
                     block.id === id ? { ...block, content } : block
-                )
-            );
+                );
+                EditorModel.setBlocks(updatedBlocks);
+                return [...updatedBlocks]; // 传入新的数组引用
+            });
         },
-        [blocks, updateBlocks]
+        []
     );
 
     const toggleBlockSelection = useCallback(

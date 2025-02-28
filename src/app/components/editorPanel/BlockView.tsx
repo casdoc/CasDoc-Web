@@ -1,22 +1,27 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
-import { useEditorViewModel } from "@/app/viewModels/editor/EditorViewModel";
 import { Block } from "@/app/types/Block";
 import remarkGfm from "remark-gfm";
 import remarkBreaks from "remark-breaks";
 import rehypeRaw from "rehype-raw";
+import { BlockPayload } from "@/app/types/BlockPayload";
+
 interface BlockViewProps {
     block: Block;
+    updateBlockContent: (id: number, content: string | BlockPayload) => void;
+    toggleBlockSelection: (id: number) => void;
+    toggleBlockEditing: (id: number) => void;
+    addBlock: (index: number, type: "md" | "jsx", topic: string) => void;
 }
 
-export const BlockView: React.FC<BlockViewProps> = ({ block }) => {
+export const BlockView: React.FC<BlockViewProps> = ({
+    block,
+    updateBlockContent,
+    toggleBlockSelection,
+    toggleBlockEditing,
+    addBlock,
+}) => {
     const { id, type, topic, content, isSelected, isEditing } = block;
-    const {
-        updateBlockContent,
-        toggleBlockSelection,
-        toggleBlockEditing,
-        addBlock,
-    } = useEditorViewModel();
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
     //auto adjust textarea height
@@ -33,14 +38,11 @@ export const BlockView: React.FC<BlockViewProps> = ({ block }) => {
         toggleBlockSelection(id);
     };
 
-    const handleDoubleClick = () => {
-        console.debug("handleDoubleClick");
+    const handleClickTextarea = () => {
         toggleBlockEditing(id);
-        console.debug("isEditing", isEditing);
     };
 
     const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        console.debug("更新block內容", e.target.value);
         updateBlockContent(id, e.target.value);
     };
 
@@ -54,23 +56,33 @@ export const BlockView: React.FC<BlockViewProps> = ({ block }) => {
             toggleBlockEditing(id);
         }
     };
+    const handleFocus = () => {
+        toggleBlockEditing(id);
+        console.debug("textarea 獲得焦點");
+    };
 
+    const handleBlur = () => {
+        toggleBlockEditing(id);
+        console.debug("textarea 失去焦點");
+    };
     return (
         <div
             className={`group flex items-start rounded-md h-10 ${
                 isSelected ? "bg-blue-300" : "bg-gray-100"
             }`}
             onClick={handleClick}
-            onDoubleClick={handleDoubleClick}
         >
-            <div className="flex-grow">
-                {isEditing && type === "md" ? (
+            <div className="flex-grow px-4">
+                {type === "md" ? (
                     <textarea
                         ref={textareaRef}
-                        className="w-full resize-none border-none focus:outline-none bg-transparent"
+                        className="w-full resize-none border-none focus:outline-none bg-transparent bg-green-400 "
                         value={typeof content === "string" ? content : ""}
                         onChange={handleContentChange}
                         onKeyDown={handleKeyDown}
+                        onFocus={handleFocus}
+                        onBlur={handleBlur}
+                        onClick={handleClickTextarea}
                         rows={1}
                     />
                 ) : (
