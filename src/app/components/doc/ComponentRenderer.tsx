@@ -1,3 +1,5 @@
+// components/ComponentRenderer.tsx
+import Image from "next/image";
 import React from "react";
 import ReactMarkdown from "react-markdown";
 import SyntaxHighlighter from "react-syntax-highlighter";
@@ -12,16 +14,8 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
     type,
     content,
 }) => {
+    // 處理JSX元件類型
     switch (type) {
-        case "h1":
-            return <h1 className="text-3xl font-bold">{content}</h1>;
-
-        case "h2":
-            return <h2 className="text-2xl font-bold">{content}</h2>;
-
-        case "h3":
-            return <h3 className="text-xl font-bold">{content}</h3>;
-
         case "callout":
             return (
                 <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
@@ -56,7 +50,7 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
                 const { src, alt, caption } = JSON.parse(content);
                 return (
                     <figure className="my-4">
-                        <img
+                        <Image
                             src={src}
                             alt={alt || "Image"}
                             className="max-w-full rounded"
@@ -72,7 +66,12 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
                 return <div className="text-red-500">Invalid image data</div>;
             }
 
+        // 其他JSX元件類型都使用ReactMarkdown處理
         default:
-            return <p>{content}</p>;
+            return (
+                <div className="prose prose-sm max-w-none">
+                    <ReactMarkdown>{content}</ReactMarkdown>
+                </div>
+            );
     }
 };
