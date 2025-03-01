@@ -4,7 +4,6 @@ export const EditorModel = {
     getBlocks(): Block[] {
         if (typeof window === "undefined") return [];
         const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
-        // console.debug("從localStorage取得blocks", stored);
         return stored ? JSON.parse(stored) : [];
     },
 

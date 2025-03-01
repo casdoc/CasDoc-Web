@@ -5,35 +5,20 @@ import { BlockView } from "@/app/components/editorPanel/BlockView";
 import { EditorViewModel } from "@/app/viewModels/editor/EditorViewModel";
 import Toolbar from "./ToolBar";
 
-interface EditorViewProps {
+export interface EditorViewProps {
     editorViewModel: EditorViewModel;
 }
 
 const Editor = ({ editorViewModel }: EditorViewProps) => {
-    const {
-        blocks,
-        addBlock,
-        setIsOnFocus,
-        updateBlockContent,
-        toggleBlockSelection,
-    } = editorViewModel;
+    const { blocks, addBlock } = editorViewModel;
     const lastBlockRef = useRef<HTMLDivElement>(null);
     console.debug("Editor 刷新", blocks);
+
     useEffect(() => {
         if (!blocks.length) {
             addBlock(-1, "md", "");
-            // toggleBlockEditing(0);
         }
-        //  else if (blocks.length === 1 && blocks[0].content === "") {
-        //     toggleBlockEditing(0);
-        // const blockElement = lastBlockRef.current.querySelector(
-        //     "[contenteditable=true]"
-        // );
-        // if (blockElement) {
-        //     (blockElement as HTMLElement).focus();
-        // }
-        // }
-    }, [blocks, addBlock, setIsOnFocus]);
+    }, []);
 
     const lastContent =
         blocks.length > 0 ? blocks[blocks.length - 1].content : "";
@@ -44,14 +29,11 @@ const Editor = ({ editorViewModel }: EditorViewProps) => {
     return (
         <div className="max-w-4xl">
             <div ref={lastBlockRef}>
-                {blocks.map((block, _index) => (
+                {blocks.map((_, _index) => (
                     <BlockView
                         key={_index}
-                        block={block}
-                        updateBlockContent={updateBlockContent}
-                        toggleBlockSelection={toggleBlockSelection}
-                        setIsOnFocus={setIsOnFocus}
-                        addBlock={addBlock}
+                        index={_index}
+                        editorViewModel={editorViewModel}
                     />
                 ))}
             </div>

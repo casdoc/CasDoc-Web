@@ -26,8 +26,12 @@ export function useEditorViewModel(): EditorViewModel {
 
     const addBlock = useCallback(
         (index: number, type: "md" | "jsx" = "md", topic: string = "") => {
+            const id = blocks.reduce(
+                (acc, block) => Math.max(acc, block.id),
+                0
+            );
             const newBlock: Block = {
-                id: index + 1,
+                id: id + 1,
                 type,
                 topic,
                 content: "",

@@ -1,30 +1,21 @@
 import React, { useEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";
-import { Block } from "@/app/types/Block";
 import remarkGfm from "remark-gfm";
 import remarkBreaks from "remark-breaks";
 import rehypeRaw from "rehype-raw";
-import { BlockPayload } from "@/app/types/BlockPayload";
+import { EditorViewModel } from "@/app/viewModels/editor/EditorViewModel";
 
 interface BlockViewProps {
-    block: Block;
-    updateBlockContent: (id: number, content: string | BlockPayload) => void;
-    toggleBlockSelection: (id: number) => void;
-    setIsOnFocus: (id: number, state: boolean) => void;
-    addBlock: (index: number, type: "md" | "jsx", topic: string) => void;
+    index: number;
+    editorViewModel: EditorViewModel;
 }
 
-export const BlockView: React.FC<BlockViewProps> = ({
-    block,
-    updateBlockContent,
-    toggleBlockSelection,
-    setIsOnFocus,
-    addBlock,
-}) => {
-    const { id, type, topic, content, isSelected, isOnFocus } = block;
+export const BlockView = ({ index, editorViewModel }: BlockViewProps) => {
+    const { blocks, addBlock, setIsOnFocus, updateBlockContent } =
+        editorViewModel;
+    const { id, type, content, isSelected, isOnFocus } = blocks[index];
     const textareaRef = useRef<HTMLTextAreaElement>(null);
-    console.debug("刷新BlockView", block);
-    //auto adjust textarea height
+
     useEffect(() => {
         if (isOnFocus && textareaRef.current) {
             textareaRef.current.style.height = "auto";
@@ -33,11 +24,6 @@ export const BlockView: React.FC<BlockViewProps> = ({
             textareaRef.current.focus();
         }
     }, [isOnFocus, content]);
-
-    const handleClick = () => {
-        console.debug("block 被點擊");
-        toggleBlockSelection(id);
-    };
 
     const handleClickTextarea = (
         e: React.MouseEvent<HTMLDivElement, MouseEvent>
@@ -57,10 +43,23 @@ export const BlockView: React.FC<BlockViewProps> = ({
         if (e.key === "Enter" && !e.shiftKey) {
             e.preventDefault();
             setIsOnFocus(id, false);
-            addBlock(id, "md", "");
+            addBlock(id + 1, "md", "");
+            console.log(id + 1);
             setIsOnFocus(id + 1, true);
         } else if (e.key === "Escape") {
             setIsOnFocus(id, false);
+        } else if (e.key === "ArrowUp") {
+            e.preventDefault();
+            if (index > 0) {
+                setIsOnFocus(id, false);
+                setIsOnFocus(blocks[index - 1].id, true);
+            }
+        } else if (e.key === "ArrowDown") {
+            e.preventDefault();
+            if (index < blocks.length - 1) {
+                setIsOnFocus(id, false);
+                setIsOnFocus(blocks[index + 1].id, true);
+            }
         }
     };
 
@@ -78,12 +77,6 @@ export const BlockView: React.FC<BlockViewProps> = ({
         console.debug("textarea 失去焦點");
     };
     return (
-        // <div
-        //     className={`group flex  rounded-md min-h-6   ${
-        //         isSelected ? "bg-blue-300" : "bg-yellow-400"
-        //     }`}
-        //     onClick={handleClick}
-        // >
         <div
             className={`group flex flex-row  min-h-6 px-6 items-stretch justify-stretch ${
                 isSelected ? "bg-blue-300" : "bg-yellow-400"
@@ -118,6 +111,5 @@ export const BlockView: React.FC<BlockViewProps> = ({
                 </div>
             )}
         </div>
-        // </div>
     );
 };
