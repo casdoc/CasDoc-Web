@@ -2,16 +2,16 @@ import { useDocModeViewModel } from "@/app/viewModels/DocViewModel";
 import SingleDoc from "./SingleDoc";
 import { DocMode } from "@/app/models/enum/DocMode";
 import { CgArrowsMergeAltH } from "react-icons/cg";
+import { EditorViewModel } from "@/app/viewModels/editor/EditorViewModel";
 // import { Editor } from "./Editor";
 // import Preview from "./Preview";
 
 interface SplitViewProps {
-    content: string;
-    setContent: (content: string | ((prev: string) => string)) => void;
     setDocMode: (mode: DocMode) => void;
+    editorViewModel: EditorViewModel;
 }
 
-const SplitView = ({ content, setContent, setDocMode }: SplitViewProps) => {
+const SplitView = ({ setDocMode, editorViewModel }: SplitViewProps) => {
     const { mode: leftMode, setDocMode: setLeftMode } = useDocModeViewModel(
         DocMode.Edit
     );
@@ -23,11 +23,10 @@ const SplitView = ({ content, setContent, setDocMode }: SplitViewProps) => {
         <div className="flex w-full h-full ml-8">
             <div className="w-1/2 pl-4">
                 <SingleDoc
-                    content={content}
-                    setContent={setContent}
                     mode={leftMode}
                     setDocMode={setLeftMode}
                     oppositeMode={rightMode}
+                    editorViewModel={editorViewModel}
                 />
             </div>
             <button
@@ -39,11 +38,10 @@ const SplitView = ({ content, setContent, setDocMode }: SplitViewProps) => {
             </button>
             <div className="w-1/2 pr-4">
                 <SingleDoc
-                    content={content}
-                    setContent={setContent}
                     mode={rightMode}
                     setDocMode={setRightMode}
                     oppositeMode={leftMode}
+                    editorViewModel={editorViewModel}
                 />
             </div>
         </div>

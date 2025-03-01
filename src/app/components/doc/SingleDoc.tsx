@@ -4,21 +4,20 @@ import Editor from "./Editor";
 import Toolbar from "./ToolBar";
 import Preview from "./Preview";
 import GraphView from "./GraphView";
+import { EditorViewModel } from "@/app/viewModels/editor/EditorViewModel";
 
 interface SingleDocProps {
-    content: string;
-    setContent: (content: string | ((prev: string) => string)) => void;
     mode: DocMode;
     setDocMode: (mode: DocMode) => void;
     oppositeMode: DocMode;
+    editorViewModel: EditorViewModel;
 }
 
 const SingleDoc = ({
-    content,
-    setContent,
     mode,
     setDocMode,
     oppositeMode,
+    editorViewModel,
 }: SingleDocProps) => {
     return (
         <div className={`w-full max-w-3xl`}>
@@ -32,15 +31,17 @@ const SingleDoc = ({
 
             {mode === DocMode.Edit && (
                 <>
-                    <Editor value={content} onChange={setContent} />
-                    <Toolbar
+                    <Editor editorViewModel={editorViewModel} />
+                    {/* <Toolbar
                         onApplyFormat={(f) => setContent((prev) => prev + f)}
-                    />
+                    /> */}
                 </>
             )}
 
-            {mode === DocMode.Preview && <Preview content={content} />}
-            {mode === DocMode.Graph && <GraphView />}
+            {/* {mode === DocMode.Preview && <Preview content={content} />} */}
+            {mode === DocMode.Graph && (
+                <GraphView blocks={editorViewModel.blocks} />
+            )}
         </div>
     );
 };

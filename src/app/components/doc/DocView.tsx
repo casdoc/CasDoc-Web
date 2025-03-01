@@ -9,10 +9,12 @@ import Toolbar from "./ToolBar";
 // import Preview from "./Preview";
 import GraphView from "./GraphView";
 import SplitView from "./SplitView";
+import { useEditorViewModel } from "@/app/viewModels/editor/EditorViewModel";
 
 const DocView = () => {
     const { content, setContent } = useDocContentViewModel();
     const { mode, setDocMode } = useDocModeViewModel(DocMode.Edit);
+    const editorViewModel = useEditorViewModel();
 
     return (
         <div
@@ -28,7 +30,7 @@ const DocView = () => {
 
             {mode === DocMode.Edit && (
                 <>
-                    <Editor />
+                    <Editor editorViewModel={editorViewModel} />
                     <Toolbar
                         onApplyFormat={(f) => setContent((prev) => prev + f)}
                     />
@@ -36,12 +38,13 @@ const DocView = () => {
             )}
 
             {/* {mode === DocMode.Preview && <Preview content={content} />} */}
-            {mode === DocMode.Graph && <GraphView />}
+            {mode === DocMode.Graph && (
+                <GraphView blocks={editorViewModel.blocks} />
+            )}
             {mode === DocMode.Split && (
                 <SplitView
-                    content={content}
-                    setContent={setContent}
                     setDocMode={setDocMode}
+                    editorViewModel={editorViewModel}
                 />
             )}
         </div>

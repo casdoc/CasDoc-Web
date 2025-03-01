@@ -2,16 +2,20 @@
 
 import React, { useEffect, useRef } from "react";
 import { BlockView } from "@/app/components/editorPanel/BlockView";
-import { useEditorViewModel } from "@/app/viewModels/editor/EditorViewModel";
+import { EditorViewModel } from "@/app/viewModels/editor/EditorViewModel";
 
-const Editor = () => {
+interface EditorViewProps {
+    editorViewModel: EditorViewModel;
+}
+
+const Editor = ({ editorViewModel }: EditorViewProps) => {
     const {
         blocks,
         addBlock,
         setIsOnFocus,
         updateBlockContent,
         toggleBlockSelection,
-    } = useEditorViewModel();
+    } = editorViewModel;
     const lastBlockRef = useRef<HTMLDivElement>(null);
     console.debug("Editor 刷新", blocks);
     useEffect(() => {

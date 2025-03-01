@@ -3,7 +3,16 @@ import { Block } from "@/app/types/Block";
 import { BlockPayload } from "@/app/types/BlockPayload";
 import { EditorModel } from "@/app/models/editor/EditorModel";
 
-export function useEditorViewModel() {
+export interface EditorViewModel {
+    blocks: Block[];
+    addBlock: (index: number, type?: "md" | "jsx", topic?: string) => void;
+    updateBlockContent: (id: number, content: string | BlockPayload) => void;
+    toggleBlockSelection: (id: number) => void;
+    setIsOnFocus: (id: number, state: boolean) => void;
+    deleteBlock: (id: number) => void;
+}
+
+export function useEditorViewModel(): EditorViewModel {
     const [blocks, setBlocks] = useState<Block[]>([]);
 
     useEffect(() => {
