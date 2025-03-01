@@ -6,13 +6,13 @@ import {
 import DocModeBar from "./DocModeBar";
 import Editor from "./Editor";
 import Toolbar from "./ToolBar";
-import Preview from "./Preview";
+// import Preview from "./Preview";
 import GraphView from "./GraphView";
 import SplitView from "./SplitView";
 
 const DocView = () => {
     const { content, setContent } = useDocContentViewModel();
-    const { mode, setDocMode } = useDocModeViewModel();
+    const { mode, setDocMode } = useDocModeViewModel(DocMode.Edit);
 
     return (
         <div
@@ -28,14 +28,14 @@ const DocView = () => {
 
             {mode === DocMode.Edit && (
                 <>
-                    <Editor value={content} onChange={setContent} />
+                    <Editor />
                     <Toolbar
                         onApplyFormat={(f) => setContent((prev) => prev + f)}
                     />
                 </>
             )}
 
-            {mode === DocMode.Preview && <Preview content={content} />}
+            {/* {mode === DocMode.Preview && <Preview content={content} />} */}
             {mode === DocMode.Graph && <GraphView />}
             {mode === DocMode.Split && (
                 <SplitView

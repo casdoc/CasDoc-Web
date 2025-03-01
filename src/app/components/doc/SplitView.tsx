@@ -1,10 +1,9 @@
 import { useDocModeViewModel } from "@/app/viewModels/DocViewModel";
 import SingleDoc from "./SingleDoc";
 import { DocMode } from "@/app/models/enum/DocMode";
-import { useEffect } from "react";
 import { CgArrowsMergeAltH } from "react-icons/cg";
-import { Editor } from "./Editor";
-import Preview from "./Preview";
+// import { Editor } from "./Editor";
+// import Preview from "./Preview";
 
 interface SplitViewProps {
     content: string;
@@ -13,12 +12,12 @@ interface SplitViewProps {
 }
 
 const SplitView = ({ content, setContent, setDocMode }: SplitViewProps) => {
-    const { mode: leftMode, setDocMode: setLeftMode } = useDocModeViewModel();
-    const { mode: rightMode, setDocMode: setRightMode } = useDocModeViewModel();
-
-    useEffect(() => {
-        setLeftMode(DocMode.Edit);
-    }, []);
+    const { mode: leftMode, setDocMode: setLeftMode } = useDocModeViewModel(
+        DocMode.Edit
+    );
+    const { mode: rightMode, setDocMode: setRightMode } = useDocModeViewModel(
+        DocMode.Graph
+    );
 
     return (
         <div className="flex w-full h-full ml-8">
@@ -32,7 +31,7 @@ const SplitView = ({ content, setContent, setDocMode }: SplitViewProps) => {
                 />
             </div>
             <button
-                onClick={() => setDocMode(DocMode.Preview)}
+                onClick={() => setDocMode(DocMode.Edit)}
                 className="fixed inset-1/2 -translate-x-1/2 -translate-y-1/2 h-fit w-fit px-3 py-1 
                             bg-[#D9D9D9] border border-white rounded hover:bg-[#F8FAFC]"
             >

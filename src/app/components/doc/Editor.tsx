@@ -1,43 +1,10 @@
 "use client";
 
-// import { useRef, useEffect } from "react";
-
-// interface EditorProps {
-//     value: string;
-//     onChange: (value: string) => void;
-// }
-
-// const Editor = ({ value, onChange }: EditorProps) => {
-//     const textAreaRef = useRef<HTMLTextAreaElement>(null);
-
-//     useEffect(() => {
-//         if (textAreaRef.current) {
-//             textAreaRef.current.style.height = "auto";
-//             textAreaRef.current.style.height =
-//                 textAreaRef.current.scrollHeight + "px";
-//         }
-//     }, [value]);
-
-//     return (
-//         <div className="max-w-full min-h-screen bg-white shadow-xl rounded-lg p-16">
-//             <textarea
-//                 ref={textAreaRef}
-//                 className="w-full min-h-screen outline-none text-lg leading-relaxed bg-transparent resize-none overflow-hidden"
-//                 style={{ whiteSpace: "pre-wrap" }}
-//                 placeholder="週休七日..."
-//                 value={value}
-//                 onChange={(e) => onChange(e.target.value)}
-//             />
-//         </div>
-//     );
-// };
-
-// export default Editor;
-
 import React, { useEffect, useRef } from "react";
 import { BlockView } from "@/app/components/editorPanel/BlockView";
 import { useEditorViewModel } from "@/app/viewModels/editor/EditorViewModel";
-export const Editor: React.FC = () => {
+
+const Editor = () => {
     const {
         blocks,
         addBlock,
@@ -48,8 +15,6 @@ export const Editor: React.FC = () => {
     const lastBlockRef = useRef<HTMLDivElement>(null);
     console.debug("Editor 刷新", blocks);
     useEffect(() => {
-        // console.debug("blocks", blocks);
-        // console.debug("blocks.length", blocks.length);
         if (!blocks.length) {
             addBlock(-1, "md", "");
             // toggleBlockEditing(0);
@@ -96,3 +61,5 @@ export const Editor: React.FC = () => {
         </div>
     );
 };
+
+export default Editor;
