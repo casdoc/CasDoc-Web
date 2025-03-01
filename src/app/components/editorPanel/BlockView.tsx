@@ -60,9 +60,14 @@ export const BlockView: React.FC<BlockViewProps> = ({
             addBlock(id, "md", "");
             setIsOnFocus(id + 1, true);
         } else if (e.key === "Escape") {
-            setIsOnFocus(id, !isOnFocus);
+            setIsOnFocus(id, false);
         }
     };
+
+    useEffect(() => {
+        setIsOnFocus(id, true);
+    }, []);
+
     const handleFocus = () => {
         console.debug("handleFocus isEditing", isOnFocus);
         console.debug("textarea 獲得焦點");

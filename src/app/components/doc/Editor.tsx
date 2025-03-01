@@ -65,6 +65,12 @@ export const Editor: React.FC = () => {
         // }
     }, [blocks, addBlock, setIsOnFocus]);
 
+    const lastContent =
+        blocks.length > 0 ? blocks[blocks.length - 1].content : "";
+    const shouldShowPlaceholder =
+        blocks.length === 0 ||
+        (typeof lastContent === "string" && lastContent.trim() !== "");
+
     return (
         <div className="max-w-4xl">
             <div ref={lastBlockRef}>
@@ -79,6 +85,14 @@ export const Editor: React.FC = () => {
                     />
                 ))}
             </div>
+            {shouldShowPlaceholder && (
+                <div
+                    className="opacity-50 cursor-pointer mt-4"
+                    onClick={() => addBlock(blocks.length, "md", "")}
+                >
+                    click me (or press Enter)
+                </div>
+            )}
         </div>
     );
 };
