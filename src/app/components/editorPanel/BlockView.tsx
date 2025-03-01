@@ -69,6 +69,25 @@ export const BlockView = ({ index, editorViewModel }: BlockViewProps) => {
                 setIsOnFocus(id, false);
                 setIsOnFocus(blocks[index + 1].id, true);
             }
+        } else if (
+            textareaRef.current &&
+            textareaRef.current.selectionStart === 0 &&
+            e.key === "ArrowLeft"
+        ) {
+            if (index > 0) {
+                setIsOnFocus(id, false);
+                setIsOnFocus(blocks[index - 1].id, true);
+            }
+        } else if (
+            textareaRef.current &&
+            textareaRef.current.selectionStart ===
+                textareaRef.current.value.length &&
+            e.key === "ArrowRight"
+        ) {
+            if (index < blocks.length - 1) {
+                setIsOnFocus(id, false);
+                setIsOnFocus(blocks[index + 1].id, true);
+            }
         }
     };
 
