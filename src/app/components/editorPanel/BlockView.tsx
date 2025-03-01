@@ -56,9 +56,9 @@ export const BlockView: React.FC<BlockViewProps> = ({
     const handleKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === "Enter" && !e.shiftKey) {
             e.preventDefault();
-            setIsOnFocus(id, !isOnFocus);
+            setIsOnFocus(id, false);
             addBlock(id, "md", "");
-            setIsOnFocus(id + 1, !isOnFocus);
+            setIsOnFocus(id + 1, true);
         } else if (e.key === "Escape") {
             setIsOnFocus(id, !isOnFocus);
         }
