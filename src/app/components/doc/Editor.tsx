@@ -27,7 +27,7 @@ const Editor = ({ editorViewModel }: EditorViewProps) => {
         (typeof lastContent === "string" && lastContent.trim() !== "");
 
     return (
-        <div className="max-w-4xl">
+        <div className="max-w-4xl min-h-screen bg-white rounded-lg shadow-xl py-10 px-6">
             <div ref={lastBlockRef}>
                 {blocks.map((_, _index) => (
                     <BlockView

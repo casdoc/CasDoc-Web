@@ -11,7 +11,7 @@ interface BlockViewProps {
 }
 
 export const BlockView = ({ index, editorViewModel }: BlockViewProps) => {
-    const { blocks, addBlock, setIsOnFocus, updateBlockContent } =
+    const { blocks, addBlock, setIsOnFocus, updateBlockContent, deleteBlock } =
         editorViewModel;
     const { id, type, content, isSelected, isOnFocus } = blocks[index];
     const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -40,11 +40,20 @@ export const BlockView = ({ index, editorViewModel }: BlockViewProps) => {
     };
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
+        if (
+            index > 0 &&
+            (e.key === "Delete" || e.key === "Backspace") &&
+            textareaRef.current &&
+            textareaRef.current.selectionStart === 0
+        ) {
+            e.preventDefault();
+            handleDeleteBlock();
+            return;
+        }
         if (e.key === "Enter" && !e.shiftKey) {
             e.preventDefault();
             setIsOnFocus(id, false);
             addBlock(id + 1, "md", "");
-            console.log(id + 1);
             setIsOnFocus(id + 1, true);
         } else if (e.key === "Escape") {
             setIsOnFocus(id, false);
@@ -63,6 +72,19 @@ export const BlockView = ({ index, editorViewModel }: BlockViewProps) => {
         }
     };
 
+    const handleDeleteBlock = () => {
+        const previousBlockId = blocks[index - 1].id;
+        const str =
+            blocks[index - 1].content +
+            (typeof content === "string" ? content : "");
+        setIsOnFocus(id, false);
+        deleteBlock(id);
+        setTimeout(() => {
+            setIsOnFocus(previousBlockId, true);
+            updateBlockContent(previousBlockId, str);
+        }, 0);
+    };
+
     useEffect(() => {
         setIsOnFocus(id, true);
     }, []);
@@ -76,16 +98,17 @@ export const BlockView = ({ index, editorViewModel }: BlockViewProps) => {
         setIsOnFocus(id, !isOnFocus);
         console.debug("textarea 失去焦點");
     };
+
     return (
         <div
-            className={`group flex flex-row  min-h-6 px-6 items-stretch justify-stretch ${
-                isSelected ? "bg-blue-300" : "bg-yellow-400"
+            className={`group flex flex-row min-h-6 items-stretch justify-stretch ${
+                isSelected ? "bg-blue-300" : "bg-white-400"
             } `}
         >
             {isOnFocus && type === "md" ? (
                 <textarea
                     ref={textareaRef}
-                    className="w-full resize-none border-none  focus:outline-none  min-h-6  leading-7 bg-green-400 "
+                    className="w-full resize-none border-none focus:outline-none  min-h-6 leading-7 bg-blue-100"
                     value={typeof content === "string" ? content : ""}
                     onChange={handleContentChange}
                     onKeyDown={handleKeyDown}
@@ -95,7 +118,7 @@ export const BlockView = ({ index, editorViewModel }: BlockViewProps) => {
                 />
             ) : (
                 <div
-                    className="w-full bg-red-50 h-full prose  min-h-6 min-w-full overflow-wrap-normal break-words whitespace-normal overflow-x-hidden"
+                    className="w-full bg-white h-full prose min-h-6 min-w-full overflow-wrap-normal break-words whitespace-normal overflow-x-hidden"
                     onClick={handleClickTextarea}
                 >
                     {type === "md" ? (
