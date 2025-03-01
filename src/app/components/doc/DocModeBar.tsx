@@ -7,6 +7,7 @@ import { DocMode } from "../../models/enum/DocMode";
 interface DocModeBarProps {
     currentMode: DocMode;
     setDocMode: (mode: DocMode) => void;
+    forbiddenMode?: DocMode;
 }
 
 const modes = [
@@ -16,12 +17,20 @@ const modes = [
     { mode: DocMode.Split, icon: <RxViewVertical size={20} color="black" /> },
 ];
 
-const DocModeBar = ({ currentMode, setDocMode }: DocModeBarProps) => {
+const DocModeBar = ({
+    currentMode,
+    setDocMode,
+    forbiddenMode,
+}: DocModeBarProps) => {
     return (
         <div className="flex w-fit py-2 px-3 rounded-lg shadow-xl bg-[#9AA6B2]">
             {modes.map(({ mode, icon }) => (
                 <button
-                    // disabled={mode === DocMode.Graph}
+                    disabled={
+                        mode === DocMode.Graph ||
+                        (forbiddenMode &&
+                            (mode === forbiddenMode || mode === DocMode.Split))
+                    }
                     key={mode}
                     onClick={() => setDocMode(mode)}
                     className={`m-1 p-2 rounded-lg hover:opacity-50 
@@ -30,7 +39,14 @@ const DocModeBar = ({ currentMode, setDocMode }: DocModeBarProps) => {
                                 ? "bg-[#BCCCDC]"
                                 : "bg-[#D9D9D9]"
                         } 
-                        
+                        ${
+                            mode === DocMode.Graph ||
+                            (forbiddenMode &&
+                                (mode === forbiddenMode ||
+                                    mode === DocMode.Split))
+                                ? "cursor-not-allowed"
+                                : "corsor-pointer"
+                        }
                     `}
                 >
                     {icon}
