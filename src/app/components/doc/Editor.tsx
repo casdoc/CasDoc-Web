@@ -63,7 +63,9 @@ const Editor = ({ editorViewModel }: EditorViewProps) => {
                     click me (or press Enter)
                 </div>
             )}
-            <Toolbar onApplyFormat={(tmp) => tmp} />
+            <div className="fixed bottom-8">
+                <Toolbar onApplyFormat={(tmp) => tmp} />
+            </div>
         </div>
     );
 };
