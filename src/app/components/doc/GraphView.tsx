@@ -1,9 +1,7 @@
+import ProjectTreeView from "./ProjectTreeView";
+
 const GraphView = () => {
-    return (
-        <h1 className="flex justify-center items-center h-screen">
-            GraphView is under construction
-        </h1>
-    );
+    return <ProjectTreeView />;
 };
 
 export default GraphView;
