@@ -3,6 +3,7 @@
 import React, { useEffect, useRef } from "react";
 import { BlockView } from "@/app/components/editorPanel/BlockView";
 import { EditorViewModel } from "@/app/viewModels/editor/EditorViewModel";
+import Toolbar from "./ToolBar";
 
 interface EditorViewProps {
     editorViewModel: EditorViewModel;
@@ -62,6 +63,7 @@ const Editor = ({ editorViewModel }: EditorViewProps) => {
                     click me (or press Enter)
                 </div>
             )}
+            <Toolbar onApplyFormat={(tmp) => tmp} />
         </div>
     );
 };
