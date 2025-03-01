@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import {
     ReactFlow,
     useNodesState,
@@ -9,22 +9,56 @@ import {
     Background,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-interface ProjectTreeViewProps {}
-const initialNodes = [
-    { id: "1", position: { x: 0, y: 0 }, data: { label: "1" } },
-    { id: "2", position: { x: 0, y: 100 }, data: { label: "2" } },
-];
+import { Block } from "@/app/types/Block";
 
-const initialEdges = [{ id: "e1-2", source: "1", target: "2" }];
+interface ProjectTreeViewProps {
+    blocks: Block[];
+}
 
-const ProjectTreeView = ({}: ProjectTreeViewProps) => {
+const ProjectTreeView = ({ blocks }: ProjectTreeViewProps) => {
+    const convertBlocksToNodes = (blocks: Block[]) => {
+        return blocks
+            .filter((block) => {
+                if (typeof block.content === "string") {
+                    return block.content.trim() !== "";
+                }
+                return true;
+            })
+            .map((block, index) => ({
+                id: block.id.toString(),
+                position: { x: 100 * index, y: 100 },
+                data: { label: block.topic || `${block.content}` },
+            }));
+    };
+
+    const convertBlocksToEdges = (blocks: Block[]) => {
+        const edges = [];
+        for (let i = 0; i < blocks.length - 1; i++) {
+            edges.push({
+                id: `e-${blocks[i].id}-${blocks[i + 1].id}`,
+                source: blocks[i].id.toString(),
+                target: blocks[i + 1].id.toString(),
+            });
+        }
+        return edges;
+    };
+
+    const initialNodes = convertBlocksToNodes(blocks);
+    const initialEdges = convertBlocksToEdges(blocks);
+
     const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
     const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
+    useEffect(() => {
+        setNodes(convertBlocksToNodes(blocks));
+        setEdges(convertBlocksToEdges(blocks));
+    }, [blocks, setNodes, setEdges]);
+
     const onConnect = useCallback(
-        (params) => setEdges((eds) => addEdge(params, eds)),
+        (params: any) => setEdges((eds) => addEdge(params, eds)),
         [setEdges]
     );
+
     return (
         <div
             style={{ width: "100%", height: "100vh" }}
@@ -37,7 +71,7 @@ const ProjectTreeView = ({}: ProjectTreeViewProps) => {
                 onEdgesChange={onEdgesChange}
                 onConnect={onConnect}
             >
-                <Background variant="dots" gap={12} size={1} />
+                <Background variant={"dots" as any} gap={12} size={1} />
             </ReactFlow>
         </div>
     );
