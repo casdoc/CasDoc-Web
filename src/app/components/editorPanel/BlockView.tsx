@@ -106,13 +106,18 @@ export const BlockView = ({ index, blockViewModel }: BlockViewProps) => {
         }, 0);
     };
 
-    // useEffect(() => {
-    //     setIsOnFocus(id, true);
-    // }, []);
-
-    const handleFocus = () => {
+    const handleFocus = (e: React.FocusEvent<HTMLTextAreaElement>) => {
         console.debug("handleFocus isEditing", isOnFocus);
         console.debug("textarea 獲得焦點");
+        const target = e.target;
+        const len = target.value.length;
+        setCursorPosition(len);
+    };
+
+    const setCursorPosition = (pos: number) => {
+        if (textareaRef.current) {
+            textareaRef.current.setSelectionRange(pos, pos);
+        }
     };
 
     const handleBlur = () => {

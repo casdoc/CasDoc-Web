@@ -9,7 +9,7 @@ export interface EditorViewProps {
     blockViewModel: BlockViewModel;
 }
 
-const Editor = ({ blockViewModel }: EditorViewProps) => {
+const EditorView = ({ blockViewModel }: EditorViewProps) => {
     const { blocks, addBlock } = blockViewModel;
     const lastBlockRef = useRef<HTMLDivElement>(null);
     console.debug("Editor 刷新", blocks);
@@ -52,4 +52,4 @@ const Editor = ({ blockViewModel }: EditorViewProps) => {
     );
 };
 
-export default Editor;
+export default EditorView;

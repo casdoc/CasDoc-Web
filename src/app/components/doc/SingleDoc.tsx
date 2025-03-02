@@ -1,5 +1,5 @@
 import { DocMode } from "@/app/models/enum/DocMode";
-import Editor from "./Editor";
+import EditorView from "./EditorView";
 import GraphView from "./GraphView";
 import { BlockViewModel } from "@/app/viewModels/BlockViewModel";
 
@@ -12,7 +12,7 @@ const SingleDoc = ({ mode, blockViewModel }: SingleDocProps) => {
     return (
         <div className={`w-full max-w-3xl`}>
             {mode === DocMode.Edit && (
-                <Editor blockViewModel={blockViewModel} />
+                <EditorView blockViewModel={blockViewModel} />
             )}
             {mode === DocMode.Graph && (
                 <GraphView blocks={blockViewModel.blocks} />
