@@ -3,16 +3,16 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkBreaks from "remark-breaks";
 import rehypeRaw from "rehype-raw";
-import { EditorViewModel } from "@/app/viewModels/editor/EditorViewModel";
+import { BlockViewModel } from "@/app/viewModels/BlockViewModel";
 
 interface BlockViewProps {
     index: number;
-    editorViewModel: EditorViewModel;
+    blockViewModel: BlockViewModel;
 }
 
-export const BlockView = ({ index, editorViewModel }: BlockViewProps) => {
+export const BlockView = ({ index, blockViewModel }: BlockViewProps) => {
     const { blocks, addBlock, setIsOnFocus, updateBlockContent, deleteBlock } =
-        editorViewModel;
+        blockViewModel;
     const { id, type, content, isSelected, isOnFocus } = blocks[index];
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -52,9 +52,11 @@ export const BlockView = ({ index, editorViewModel }: BlockViewProps) => {
         }
         if (e.key === "Enter" && !e.shiftKey) {
             e.preventDefault();
+            const previousBlockId =
+                index + 1 < blocks.length ? blocks[index + 1].id : id + 1;
             setIsOnFocus(id, false);
             addBlock(id + 1, "md", "");
-            setIsOnFocus(id + 1, true);
+            setIsOnFocus(previousBlockId, true);
         } else if (e.key === "Escape") {
             setIsOnFocus(id, false);
         } else if (e.key === "ArrowUp") {
@@ -104,9 +106,9 @@ export const BlockView = ({ index, editorViewModel }: BlockViewProps) => {
         }, 0);
     };
 
-    useEffect(() => {
-        setIsOnFocus(id, true);
-    }, []);
+    // useEffect(() => {
+    //     setIsOnFocus(id, true);
+    // }, []);
 
     const handleFocus = () => {
         console.debug("handleFocus isEditing", isOnFocus);

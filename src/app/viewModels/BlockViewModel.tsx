@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
 import { Block } from "@/app/types/Block";
 import { BlockPayload } from "@/app/types/BlockPayload";
-import { EditorModel } from "@/app/models/editor/EditorModel";
+import { BlockService } from "@/app/models/services/BlockService";
 
-export interface EditorViewModel {
+export interface BlockViewModel {
     blocks: Block[];
     addBlock: (index: number, type?: "md" | "jsx", topic?: string) => void;
     updateBlockContent: (id: number, content: string | BlockPayload) => void;
@@ -12,16 +12,16 @@ export interface EditorViewModel {
     deleteBlock: (id: number) => void;
 }
 
-export function useEditorViewModel(): EditorViewModel {
+export function useBlockViewModel(): BlockViewModel {
     const [blocks, setBlocks] = useState<Block[]>([]);
 
     useEffect(() => {
-        setBlocks(EditorModel.getBlocks());
+        setBlocks(BlockService.getBlocks());
     }, []);
 
     const updateBlocks = useCallback((newBlocks: Block[]) => {
         setBlocks(newBlocks);
-        EditorModel.setBlocks(newBlocks);
+        BlockService.setBlocks(newBlocks);
     }, []);
 
     const addBlock = useCallback(
@@ -51,7 +51,7 @@ export function useEditorViewModel(): EditorViewModel {
                 const updatedBlocks = prevBlocks.map((block) =>
                     block.id === id ? { ...block, content } : block
                 );
-                EditorModel.setBlocks(updatedBlocks);
+                BlockService.setBlocks(updatedBlocks);
                 return [...updatedBlocks];
             });
         },
@@ -76,7 +76,7 @@ export function useEditorViewModel(): EditorViewModel {
             const updatedBlocks = prevBlocks.map((block) =>
                 block.id === id ? { ...block, isOnFocus: state } : block
             );
-            EditorModel.setBlocks(updatedBlocks);
+            BlockService.setBlocks(updatedBlocks);
             return [...updatedBlocks];
         });
     }, []);

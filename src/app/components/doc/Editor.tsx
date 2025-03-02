@@ -2,15 +2,15 @@
 
 import React, { useEffect, useRef } from "react";
 import { BlockView } from "@/app/components/editorPanel/BlockView";
-import { EditorViewModel } from "@/app/viewModels/editor/EditorViewModel";
+import { BlockViewModel } from "@/app/viewModels/BlockViewModel";
 import Toolbar from "./ToolBar";
 
 export interface EditorViewProps {
-    editorViewModel: EditorViewModel;
+    blockViewModel: BlockViewModel;
 }
 
-const Editor = ({ editorViewModel }: EditorViewProps) => {
-    const { blocks, addBlock } = editorViewModel;
+const Editor = ({ blockViewModel }: EditorViewProps) => {
+    const { blocks, addBlock } = blockViewModel;
     const lastBlockRef = useRef<HTMLDivElement>(null);
     console.debug("Editor 刷新", blocks);
 
@@ -33,13 +33,13 @@ const Editor = ({ editorViewModel }: EditorViewProps) => {
                     <BlockView
                         key={_index}
                         index={_index}
-                        editorViewModel={editorViewModel}
+                        blockViewModel={blockViewModel}
                     />
                 ))}
             </div>
             {shouldShowPlaceholder && (
                 <div
-                    className="opacity-50 cursor-pointer mt-4"
+                    className="text-slate-600 opacity-50 cursor-pointer mt-4"
                     onClick={() => addBlock(blocks.length, "md", "")}
                 >
                     click me (or press Enter)

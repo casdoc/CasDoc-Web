@@ -1,28 +1,33 @@
 import { DocMode } from "@/app/models/enum/DocMode";
-import { useDocModeViewModel } from "@/app/viewModels/DocViewModel";
+import { useDocModeViewModel } from "@/app/viewModels/DocModeViewModel";
 import DocModeBar from "./DocModeBar";
 import SplitView from "./SplitView";
-import { useEditorViewModel } from "@/app/viewModels/editor/EditorViewModel";
+import { useBlockViewModel } from "@/app/viewModels/BlockViewModel";
 import SingleDoc from "./SingleDoc";
 
 const DocView = () => {
-    const { mode, setDocMode } = useDocModeViewModel(DocMode.Edit);
-    const editorViewModel = useEditorViewModel();
+    const docModeViewModel = useDocModeViewModel();
+    const blockViewModel = useBlockViewModel();
 
     return (
         <div
             className={`w-full my-20 ${
-                mode === DocMode.Split ? "min-w-fit" : "max-w-3xl"
+                docModeViewModel.mode === DocMode.Split
+                    ? "min-w-fit"
+                    : "max-w-3xl"
             }`}
         >
-            <DocModeBar currentMode={mode} setDocMode={setDocMode} />
-            {mode === DocMode.Split ? (
+            <DocModeBar docModeViewModel={docModeViewModel} />
+            {docModeViewModel.mode === DocMode.Split ? (
                 <SplitView
-                    setDocMode={setDocMode}
-                    editorViewModel={editorViewModel}
+                    setDocMode={docModeViewModel.setDocMode}
+                    blockViewModel={blockViewModel}
                 />
             ) : (
-                <SingleDoc mode={mode} editorViewModel={editorViewModel} />
+                <SingleDoc
+                    mode={docModeViewModel.mode}
+                    blockViewModel={blockViewModel}
+                />
             )}
         </div>
     );

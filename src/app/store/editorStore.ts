@@ -3,7 +3,6 @@ import { v4 as uuidv4 } from "uuid";
 import { Block, EditorState, BlockType } from "../types/editor";
 
 interface EditorStore extends EditorState {
-    // 操作blocks的方法
     addBlock: (
         index: number,
         content?: string,
@@ -16,11 +15,9 @@ interface EditorStore extends EditorState {
     moveBlockUp: (id: string) => void;
     moveBlockDown: (id: string) => void;
 
-    // 編輯狀態控制
     setActiveBlock: (id: string | null) => void;
     setEditingBlock: (id: string | null) => void;
 
-    // 特殊操作
     handleEnterKey: (id: string) => void;
     handleEscapeKey: () => void;
 }
@@ -65,7 +62,6 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
     deleteBlock: (id) =>
         set((state) => {
             if (state.blocks.length <= 1) {
-                // 至少保留一个区块
                 return {
                     blocks: [{ id: uuidv4(), type: "markdown", content: "" }],
                     activeBlockId: null,
@@ -78,7 +74,6 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
                 (block) => block.id !== id
             );
 
-            // 设置新的活动区块
             const newActiveBlockId =
                 updatedBlocks[Math.min(blockIndex, updatedBlocks.length - 1)]
                     ?.id || null;
@@ -125,21 +120,17 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
         const blockIndex = state.blocks.findIndex((b) => b.id === id);
         const block = state.blocks[blockIndex];
 
-        // 检查是否是在列表中
         const isList = /^(\s*[-*+]\s|\s*\d+\.\s)/.test(block.content);
         const isEmpty = block.content.trim() === "";
 
         if (isList && isEmpty) {
-            // 如果是空列表项，则转换为普通文本
             state.updateBlockContent(id, "");
             return;
         } else if (isList) {
-            // 在列表中继续添加列表项，但不创建新区块
             const listMarker =
                 block.content.match(/^(\s*[-*+]\s|\s*\d+\.\s)/)?.[0] || "";
             state.addBlock(blockIndex, listMarker);
         } else {
-            // 普通区块，添加新区块
             state.addBlock(blockIndex);
         }
     },

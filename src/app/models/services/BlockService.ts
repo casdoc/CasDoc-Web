@@ -1,6 +1,8 @@
-const LOCAL_STORAGE_KEY = "editorBlocks";
 import { Block } from "../../types/Block";
-export const EditorModel = {
+
+const LOCAL_STORAGE_KEY = "BLOCKS";
+
+export const BlockService = {
     getBlocks(): Block[] {
         if (typeof window === "undefined") return [];
         const stored = localStorage.getItem(LOCAL_STORAGE_KEY);

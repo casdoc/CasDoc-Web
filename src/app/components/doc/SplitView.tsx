@@ -1,25 +1,25 @@
 import SingleDoc from "./SingleDoc";
 import { DocMode } from "@/app/models/enum/DocMode";
-import { EditorViewModel } from "@/app/viewModels/editor/EditorViewModel";
+import { BlockViewModel } from "@/app/viewModels/BlockViewModel";
 
 interface SplitViewProps {
     setDocMode: (mode: DocMode) => void;
-    editorViewModel: EditorViewModel;
+    blockViewModel: BlockViewModel;
 }
 
-const SplitView = ({ editorViewModel }: SplitViewProps) => {
+const SplitView = ({ blockViewModel }: SplitViewProps) => {
     return (
         <div className="flex w-full h-full ml-8">
             <div className="w-1/2 pl-4">
                 <SingleDoc
                     mode={DocMode.Edit}
-                    editorViewModel={editorViewModel}
+                    blockViewModel={blockViewModel}
                 />
             </div>
             <div className="w-1/2 pr-4">
                 <SingleDoc
                     mode={DocMode.Graph}
-                    editorViewModel={editorViewModel}
+                    blockViewModel={blockViewModel}
                 />
             </div>
         </div>
