@@ -1,6 +1,6 @@
 export enum DocMode {
     Edit = "edit",
-    Preview = "preview",
+    // Preview = "preview",
     Graph = "graph",
-    Split = "split"
+    Split = "split",
 }

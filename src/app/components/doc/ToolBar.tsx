@@ -12,14 +12,14 @@ const formatOptions = [
 
 const Toolbar = ({ onApplyFormat }: ToolbarProps) => {
     return (
-        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 w-fit px-5 bg-[#9AA6B2] p-3 shadow-xl z-50 rounded-lg flex">
+        <div className="w-fit px-5 bg-[#9AA6B2] p-3 shadow-xl z-50 rounded-lg flex">
             {formatOptions.map(({ label, format }) => (
                 <button
-                    disabled={label === "+"}
+                    disabled={true}
                     key={format}
                     className={`px-3 py-1 mx-1 bg-[#D9D9D9] border rounded hover:bg-[#F8FAFC]
                         ${
-                            label === "+"
+                            true // label === "+"
                                 ? "opacity-30 cursor-not-allowed"
                                 : "cursor-pointer"
                         }`}
