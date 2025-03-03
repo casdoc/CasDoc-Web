@@ -54,11 +54,21 @@ export const BlockView = ({ index, blockViewModel }: BlockViewProps) => {
             e.preventDefault();
             const previousBlockId =
                 index + 1 < blocks.length ? blocks[index + 1].id : id + 1;
+            const cursorPos = (e.target as HTMLTextAreaElement).selectionStart;
+
+            const beforeContent = blocks[index].content
+                .toString()
+                .slice(0, cursorPos);
+            const afterContent = blocks[index].content
+                .toString()
+                .slice(cursorPos);
+
             setIsOnFocus(id, false);
-            addBlock(id + 1, "md", "");
+            addBlock(index, afterContent, "md", "");
+            updateBlockContent(id, beforeContent);
             setIsOnFocus(previousBlockId, true);
         } else if (e.key === "Escape") {
-            setIsOnFocus(id, false);
+            setIsOnFocus(index, false);
         } else if (e.key === "ArrowUp") {
             e.preventDefault();
             if (index > 0) {
@@ -119,6 +129,10 @@ export const BlockView = ({ index, blockViewModel }: BlockViewProps) => {
             textareaRef.current.setSelectionRange(pos, pos);
         }
     };
+
+    useEffect(() => {
+        setIsOnFocus(index + 1, true);
+    }, []);
 
     const handleBlur = () => {
         setIsOnFocus(id, !isOnFocus);

@@ -1,11 +1,16 @@
 import { useState, useEffect, useCallback } from "react";
-import { Block } from "@/app/types/Block";
-import { BlockPayload } from "@/app/types/BlockPayload";
+import { Block } from "@/app/models/types/Block";
+import { BlockPayload } from "@/app/models/types/BlockPayload";
 import { BlockService } from "@/app/models/services/BlockService";
 
 export interface BlockViewModel {
     blocks: Block[];
-    addBlock: (index: number, type?: "md" | "jsx", topic?: string) => void;
+    addBlock: (
+        index: number,
+        content: string,
+        type?: "md" | "jsx",
+        topic?: string
+    ) => void;
     updateBlockContent: (id: number, content: string | BlockPayload) => void;
     toggleBlockSelection: (id: number) => void;
     setIsOnFocus: (id: number, state: boolean) => void;
@@ -25,7 +30,12 @@ export function useBlockViewModel(): BlockViewModel {
     }, []);
 
     const addBlock = useCallback(
-        (index: number, type: "md" | "jsx" = "md", topic: string = "") => {
+        (
+            index: number,
+            content: string,
+            type: "md" | "jsx" = "md",
+            topic: string = ""
+        ) => {
             const id = blocks.reduce(
                 (acc, block) => Math.max(acc, block.id),
                 0
@@ -34,7 +44,7 @@ export function useBlockViewModel(): BlockViewModel {
                 id: id + 1,
                 type,
                 topic,
-                content: "",
+                content: content,
                 isSelected: false,
                 isOnFocus: false,
             };
