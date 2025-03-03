@@ -22,6 +22,9 @@ export function useBlockViewModel(): BlockViewModel {
 
     useEffect(() => {
         setBlocks(BlockService.getBlocks());
+        if (!blocks || blocks.length === 0) {
+            addBlock(-1, "", "md", "");
+        }
     }, []);
 
     const updateBlocks = useCallback((newBlocks: Block[]) => {
@@ -47,6 +50,10 @@ export function useBlockViewModel(): BlockViewModel {
                 content: content,
                 isSelected: false,
                 isOnFocus: false,
+                position: {
+                    x: 150 * (index + 1),
+                    y: 100,
+                },
             };
             const newBlocks = [...blocks];
             newBlocks.splice(index + 1, 0, newBlock);

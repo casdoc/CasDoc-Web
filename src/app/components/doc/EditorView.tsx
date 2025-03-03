@@ -23,7 +23,7 @@ const EditorView = ({ blockViewModel }: EditorViewProps) => {
         <div className="max-w-4xl min-h-screen bg-white rounded-lg shadow-xl py-10 px-6">
             <div
                 ref={lastBlockRef}
-                className="border-b-slate-400 border-opacity-50 border-b"
+                className="border-b-slate-400 border-opacity-50 border-b pb-3"
             >
                 {blocks.map((_, _index) => (
                     <BlockView

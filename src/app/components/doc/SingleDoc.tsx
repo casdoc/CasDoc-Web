@@ -15,7 +15,7 @@ const SingleDoc = ({ mode, blockViewModel }: SingleDocProps) => {
                 <EditorView blockViewModel={blockViewModel} />
             )}
             {mode === DocMode.Graph && (
-                <GraphView blocks={blockViewModel.blocks} />
+                <GraphView blockViewModel={blockViewModel} />
             )}
         </div>
     );

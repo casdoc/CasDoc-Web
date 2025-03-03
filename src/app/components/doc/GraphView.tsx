@@ -1,12 +1,12 @@
-import ProjectTreeView from "./ProjectTreeView";
-import { Block } from "@/app/models/types/Block";
+import { BlockViewModel } from "@/app/viewModels/BlockViewModel";
+import FlowView from "./FlowView";
 
 interface GraphViewProps {
-    blocks: Block[];
+    blockViewModel: BlockViewModel;
 }
 
-const GraphView = ({ blocks }: GraphViewProps) => {
-    return <ProjectTreeView blocks={blocks} />;
+const GraphView = ({ blockViewModel }: GraphViewProps) => {
+    return <FlowView blockViewModel={blockViewModel} />;
 };
 
 export default GraphView;
