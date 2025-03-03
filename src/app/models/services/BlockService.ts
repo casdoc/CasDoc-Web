@@ -1,4 +1,4 @@
-import { Block } from "../../types/Block";
+import { Block } from "../types/Block";
 
 const LOCAL_STORAGE_KEY = "BLOCKS";
 

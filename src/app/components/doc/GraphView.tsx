@@ -1,5 +1,5 @@
 import ProjectTreeView from "./ProjectTreeView";
-import { Block } from "@/app/types/Block";
+import { Block } from "@/app/models/types/Block";
 
 interface GraphViewProps {
     blocks: Block[];

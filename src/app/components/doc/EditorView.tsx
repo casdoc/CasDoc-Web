@@ -12,13 +12,6 @@ export interface EditorViewProps {
 const EditorView = ({ blockViewModel }: EditorViewProps) => {
     const { blocks, addBlock } = blockViewModel;
     const lastBlockRef = useRef<HTMLDivElement>(null);
-    console.debug("Editor 刷新", blocks);
-
-    useEffect(() => {
-        if (!blocks.length) {
-            addBlock(-1, "md", "");
-        }
-    }, []);
 
     const lastContent =
         blocks.length > 0 ? blocks[blocks.length - 1].content : "";
@@ -28,7 +21,10 @@ const EditorView = ({ blockViewModel }: EditorViewProps) => {
 
     return (
         <div className="max-w-4xl min-h-screen bg-white rounded-lg shadow-xl py-10 px-6">
-            <div ref={lastBlockRef}>
+            <div
+                ref={lastBlockRef}
+                className="border-b-slate-400 border-opacity-50 border-b"
+            >
                 {blocks.map((_, _index) => (
                     <BlockView
                         key={_index}
@@ -40,7 +36,7 @@ const EditorView = ({ blockViewModel }: EditorViewProps) => {
             {shouldShowPlaceholder && (
                 <div
                     className="text-slate-600 opacity-50 cursor-pointer mt-4"
-                    onClick={() => addBlock(blocks.length, "md", "")}
+                    onClick={() => addBlock(blocks.length, "", "md", "")}
                 >
                     click me (or press Enter)
                 </div>

@@ -3,19 +3,23 @@
 import { useCallback, useEffect } from "react";
 import {
     ReactFlow,
-    useNodesState,
-    useEdgesState,
-    addEdge,
     Background,
+    addEdge,
+    applyNodeChanges,
+    applyEdgeChanges,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { Block } from "@/app/models/types/Block";
+import { useFlowViewModel } from "@/app/viewModels/FlowViewModel";
 
 interface ProjectTreeViewProps {
     blocks: Block[];
 }
 
-const ProjectTreeView = ({ blocks }: ProjectTreeViewProps) => {
+const FlowView = ({ blocks }: ProjectTreeViewProps) => {
+    const flowViewModel = useFlowViewModel();
+
+    // 將 blocks 轉成 ReactFlow 所需的 nodes 與 edges
     const convertBlocksToNodes = (blocks: Block[]) => {
         return blocks
             .filter((block) => {
@@ -27,7 +31,7 @@ const ProjectTreeView = ({ blocks }: ProjectTreeViewProps) => {
             .map((block, index) => ({
                 id: block.id.toString(),
                 position: { x: 100 * index, y: 100 },
-                data: { label: block.topic || `${block.content}` },
+                data: { label: block.content },
             }));
     };
 
@@ -43,20 +47,36 @@ const ProjectTreeView = ({ blocks }: ProjectTreeViewProps) => {
         return edges;
     };
 
-    const initialNodes = convertBlocksToNodes(blocks);
-    const initialEdges = convertBlocksToEdges(blocks);
-
-    const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-    const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-
+    // 當 blocks 改變時，同步更新 flowViewModel 的 nodes 與 edges
     useEffect(() => {
-        setNodes(convertBlocksToNodes(blocks));
-        setEdges(convertBlocksToEdges(blocks));
-    }, [blocks, setNodes, setEdges]);
+        flowViewModel.setNodes(convertBlocksToNodes(blocks));
+        flowViewModel.setEdges(convertBlocksToEdges(blocks));
+    }, [blocks, flowViewModel]);
 
+    // 處理 ReactFlow 的 onNodesChange，利用 helper applyNodeChanges
+    const onNodesChange = useCallback(
+        (changes: any) => {
+            const newNodes = applyNodeChanges(changes, flowViewModel.nodes);
+            flowViewModel.setNodes(newNodes);
+        },
+        [flowViewModel.nodes, flowViewModel.setNodes]
+    );
+
+    // 處理 onEdgesChange，利用 helper applyEdgeChanges
+    const onEdgesChange = useCallback(
+        (changes: any) => {
+            const newEdges = applyEdgeChanges(changes, flowViewModel.edges);
+            flowViewModel.setEdges(newEdges);
+        },
+        [flowViewModel.edges, flowViewModel.setEdges]
+    );
+
+    // 處理新增連線，轉交給 view model 的 addNewEdge 方法
     const onConnect = useCallback(
-        (params: any) => setEdges((eds) => addEdge(params, eds)),
-        [setEdges]
+        (params: any) => {
+            flowViewModel.addNewEdge(params);
+        },
+        [flowViewModel]
     );
 
     return (
@@ -65,8 +85,8 @@ const ProjectTreeView = ({ blocks }: ProjectTreeViewProps) => {
             className="bg-white rounded-lg"
         >
             <ReactFlow
-                nodes={nodes}
-                edges={edges}
+                nodes={flowViewModel.nodes}
+                edges={flowViewModel.edges}
                 onNodesChange={onNodesChange}
                 onEdgesChange={onEdgesChange}
                 onConnect={onConnect}
@@ -77,4 +97,4 @@ const ProjectTreeView = ({ blocks }: ProjectTreeViewProps) => {
     );
 };
 
-export default ProjectTreeView;
+export default FlowView;
