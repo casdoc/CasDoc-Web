@@ -8,7 +8,7 @@ export interface BlockViewModel {
     addBlock: (
         index: number,
         content: string,
-        type?: "md" | "jsx",
+        type: "md" | "jsx",
         topic?: string
     ) => void;
     updateBlockContent: (id: number, content: string | BlockPayload) => void;
@@ -22,9 +22,6 @@ export function useBlockViewModel(): BlockViewModel {
 
     useEffect(() => {
         setBlocks(BlockService.getBlocks());
-        if (!blocks || blocks.length === 0) {
-            addBlock(-1, "", "md", "");
-        }
     }, []);
 
     const updateBlocks = useCallback((newBlocks: Block[]) => {

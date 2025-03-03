@@ -11,6 +11,11 @@ export interface EditorViewProps {
 
 const EditorView = ({ blockViewModel }: EditorViewProps) => {
     const { blocks, addBlock } = blockViewModel;
+
+    // If there are no blocks, add an empty block.
+    if (!blocks || blocks.length === 0) {
+        addBlock(-1, "", "md", "");
+    }
     const lastBlockRef = useRef<HTMLDivElement>(null);
 
     const lastContent =
