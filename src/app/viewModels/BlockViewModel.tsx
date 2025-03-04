@@ -19,10 +19,8 @@ export interface BlockViewModel {
 
 export function useBlockViewModel(): BlockViewModel {
     const [blocks, setBlocks] = useState<Block[]>([emptyBlock]);
-    console.debug("init blocks", blocks);
     useEffect(() => {
         setBlocks(BlockService.getBlocks());
-        console.debug("get blocks", blocks);
     }, []);
 
     const updateBlocks = useCallback((newBlocks: Block[]) => {

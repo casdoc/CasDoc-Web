@@ -4,7 +4,6 @@ import remarkGfm from "remark-gfm";
 import remarkBreaks from "remark-breaks";
 import rehypeRaw from "rehype-raw";
 import { BlockViewModel } from "@/app/viewModels/BlockViewModel";
-import { set } from "lodash";
 
 interface BlockViewProps {
     index: number;
@@ -37,14 +36,11 @@ export const BlockView = ({ index, blockViewModel }: BlockViewProps) => {
         }
     }, [isOnFocus, content, blocks, index]);
 
-    const handleClickTextarea = (
+    const handleClickBlock = (
         e: React.MouseEvent<HTMLDivElement, MouseEvent>
     ) => {
         e.stopPropagation();
-        console.debug("textarea 被點擊");
-        console.debug("更新前isEditing", isOnFocus);
         setIsOnFocus(id, true);
-        console.debug("更新後isEditing", isOnFocus);
     };
 
     const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -52,6 +48,10 @@ export const BlockView = ({ index, blockViewModel }: BlockViewProps) => {
     };
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
+        const currentCursorPos = textareaRef
+            ? textareaRef.current?.selectionStart
+            : 0;
+        console.debug("currentCursorPos", currentCursorPos);
         if (
             index > 0 &&
             (e.key === "Delete" || e.key === "Backspace") &&
@@ -83,13 +83,13 @@ export const BlockView = ({ index, blockViewModel }: BlockViewProps) => {
             e.preventDefault();
             if (index > 0) {
                 setIsOnFocus(id, false);
-                setIsOnFocus(blocks[index - 1].id, true);
+                setIsOnFocus(blocks[index - 1].id, true, currentCursorPos);
             }
         } else if (e.key === "ArrowDown") {
             e.preventDefault();
             if (index < blocks.length - 1) {
                 setIsOnFocus(id, false);
-                setIsOnFocus(blocks[index + 1].id, true);
+                setIsOnFocus(blocks[index + 1].id, true, currentCursorPos);
             }
         } else if (
             textareaRef.current &&
@@ -156,7 +156,7 @@ export const BlockView = ({ index, blockViewModel }: BlockViewProps) => {
             ) : (
                 <div
                     className="w-full bg-white h-full prose min-h-6 min-w-full overflow-wrap-normal break-words whitespace-normal overflow-x-hidden"
-                    onClick={handleClickTextarea}
+                    onClick={handleClickBlock}
                 >
                     {type === "md" ? (
                         <ReactMarkdown
