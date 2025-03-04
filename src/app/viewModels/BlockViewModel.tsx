@@ -52,7 +52,6 @@ export function useBlockViewModel(): BlockViewModel {
                 id: idx + 1, // 1-based index
             }));
             updateBlocks(reorderedBlocks);
-            // console.debug("reorderedBlocks", reorderedBlocks);
         },
         [blocks, updateBlocks]
     );

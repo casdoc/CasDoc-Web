@@ -40,7 +40,6 @@ export const BlockView = ({ index, blockViewModel }: BlockViewProps) => {
     };
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
-        console.debug("handleKeyDown");
         if (
             index > 0 &&
             (e.key === "Delete" || e.key === "Backspace") &&
@@ -54,11 +53,7 @@ export const BlockView = ({ index, blockViewModel }: BlockViewProps) => {
         if (e.key === "Enter" && !e.shiftKey) {
             e.preventDefault();
             const prevIndex = id;
-            // const previousBlockId =
-            //     index + 1 < blocks.length ? blocks[index + 1].id : id + 1;
-            // console.debug("previousBlockId", previousBlockId);
             const cursorPos = (e.target as HTMLTextAreaElement).selectionStart;
-
             const beforeContent = blocks[index].content
                 .toString()
                 .slice(0, cursorPos);
@@ -69,8 +64,7 @@ export const BlockView = ({ index, blockViewModel }: BlockViewProps) => {
             setIsOnFocus(id, false);
             addBlock(index, afterContent, "md", "");
             updateBlockContent(id, beforeContent);
-            console.debug("prevIndex", prevIndex);
-            // setIsOnFocus(prevIndex + 1, true);
+            setIsOnFocus(prevIndex + 1, true);
         } else if (e.key === "Escape") {
             setIsOnFocus(index, false);
         } else if (e.key === "ArrowUp") {
