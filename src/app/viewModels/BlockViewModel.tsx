@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { Block } from "@/app/models/types/Block";
+import { Block, emptyBlock } from "@/app/models/types/Block";
 import { BlockPayload } from "@/app/models/types/BlockPayload";
 import { BlockService } from "@/app/models/services/BlockService";
 
@@ -18,10 +18,11 @@ export interface BlockViewModel {
 }
 
 export function useBlockViewModel(): BlockViewModel {
-    const [blocks, setBlocks] = useState<Block[]>([]);
+    const [blocks, setBlocks] = useState<Block[]>([emptyBlock]);
 
     useEffect(() => {
         setBlocks(BlockService.getBlocks());
+        console.debug("set blocks");
     }, []);
 
     const updateBlocks = useCallback((newBlocks: Block[]) => {
@@ -36,25 +37,22 @@ export function useBlockViewModel(): BlockViewModel {
             type: "md" | "jsx" = "md",
             topic: string = ""
         ) => {
-            const id = blocks.reduce(
-                (acc, block) => Math.max(acc, block.id),
-                0
-            );
             const newBlock: Block = {
-                id: id + 1,
+                id: index + 1,
                 type,
                 topic,
                 content: content,
                 isSelected: false,
                 isOnFocus: false,
-                position: {
-                    x: 150 * (index + 1),
-                    y: 100,
-                },
             };
             const newBlocks = [...blocks];
             newBlocks.splice(index + 1, 0, newBlock);
-            updateBlocks(newBlocks);
+            const reorderedBlocks = newBlocks.map((block, idx) => ({
+                ...block,
+                id: idx + 1, // 1-based index
+            }));
+            updateBlocks(reorderedBlocks);
+            // console.debug("reorderedBlocks", reorderedBlocks);
         },
         [blocks, updateBlocks]
     );

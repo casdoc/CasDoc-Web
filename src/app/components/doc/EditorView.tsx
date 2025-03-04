@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
 import { BlockView } from "@/app/components/editorPanel/BlockView";
 import { BlockViewModel } from "@/app/viewModels/BlockViewModel";
 import Toolbar from "./ToolBar";
@@ -12,10 +12,6 @@ export interface EditorViewProps {
 const EditorView = ({ blockViewModel }: EditorViewProps) => {
     const { blocks, addBlock } = blockViewModel;
 
-    // If there are no blocks, add an empty block.
-    if (!blocks || blocks.length === 0) {
-        addBlock(-1, "", "md", "");
-    }
     const lastBlockRef = useRef<HTMLDivElement>(null);
 
     const lastContent =

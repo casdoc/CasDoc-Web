@@ -40,6 +40,7 @@ export const BlockView = ({ index, blockViewModel }: BlockViewProps) => {
     };
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
+        console.debug("handleKeyDown");
         if (
             index > 0 &&
             (e.key === "Delete" || e.key === "Backspace") &&
@@ -52,8 +53,10 @@ export const BlockView = ({ index, blockViewModel }: BlockViewProps) => {
         }
         if (e.key === "Enter" && !e.shiftKey) {
             e.preventDefault();
-            const previousBlockId =
-                index + 1 < blocks.length ? blocks[index + 1].id : id + 1;
+            const prevIndex = id;
+            // const previousBlockId =
+            //     index + 1 < blocks.length ? blocks[index + 1].id : id + 1;
+            // console.debug("previousBlockId", previousBlockId);
             const cursorPos = (e.target as HTMLTextAreaElement).selectionStart;
 
             const beforeContent = blocks[index].content
@@ -66,7 +69,8 @@ export const BlockView = ({ index, blockViewModel }: BlockViewProps) => {
             setIsOnFocus(id, false);
             addBlock(index, afterContent, "md", "");
             updateBlockContent(id, beforeContent);
-            setIsOnFocus(previousBlockId, true);
+            console.debug("prevIndex", prevIndex);
+            // setIsOnFocus(prevIndex + 1, true);
         } else if (e.key === "Escape") {
             setIsOnFocus(index, false);
         } else if (e.key === "ArrowUp") {
@@ -129,10 +133,6 @@ export const BlockView = ({ index, blockViewModel }: BlockViewProps) => {
             textareaRef.current.setSelectionRange(pos, pos);
         }
     };
-
-    useEffect(() => {
-        setIsOnFocus(index + 1, true);
-    }, []);
 
     const handleBlur = () => {
         setIsOnFocus(id, !isOnFocus);

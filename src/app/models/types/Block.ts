@@ -25,9 +25,13 @@ export interface Block {
 
     /** Indicates whether the block is being edited. */
     isOnFocus: boolean;
-
-    position: {
-        x: number;
-        y: number;
-    };
 }
+
+export const emptyBlock: Block = {
+    id: 0,
+    type: "md",
+    topic: "",
+    content: "",
+    isSelected: false,
+    isOnFocus: true,
+};
