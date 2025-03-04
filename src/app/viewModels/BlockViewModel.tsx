@@ -13,16 +13,16 @@ export interface BlockViewModel {
     ) => void;
     updateBlockContent: (id: number, content: string | BlockPayload) => void;
     toggleBlockSelection: (id: number) => void;
-    setIsOnFocus: (id: number, state: boolean) => void;
+    setIsOnFocus: (id: number, state: boolean, cursorPos?: number) => void;
     deleteBlock: (id: number) => void;
 }
 
 export function useBlockViewModel(): BlockViewModel {
     const [blocks, setBlocks] = useState<Block[]>([emptyBlock]);
-
+    console.debug("init blocks", blocks);
     useEffect(() => {
         setBlocks(BlockService.getBlocks());
-        console.debug("set blocks");
+        console.debug("get blocks", blocks);
     }, []);
 
     const updateBlocks = useCallback((newBlocks: Block[]) => {
@@ -82,15 +82,24 @@ export function useBlockViewModel(): BlockViewModel {
         [blocks, updateBlocks]
     );
 
-    const setIsOnFocus = useCallback((id: number, state: boolean) => {
-        setBlocks((prevBlocks) => {
-            const updatedBlocks = prevBlocks.map((block) =>
-                block.id === id ? { ...block, isOnFocus: state } : block
-            );
-            BlockService.setBlocks(updatedBlocks);
-            return [...updatedBlocks];
-        });
-    }, []);
+    const setIsOnFocus = useCallback(
+        (id: number, state: boolean, cursorPos?: number) => {
+            setBlocks((prevBlocks) => {
+                const updatedBlocks = prevBlocks.map((block) =>
+                    block.id === id
+                        ? {
+                              ...block,
+                              isOnFocus: state,
+                              cursorPos: cursorPos,
+                          }
+                        : block
+                );
+                BlockService.setBlocks(updatedBlocks);
+                return [...updatedBlocks];
+            });
+        },
+        []
+    );
 
     const deleteBlock = useCallback(
         (id: number) => {

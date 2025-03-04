@@ -4,6 +4,7 @@ import remarkGfm from "remark-gfm";
 import remarkBreaks from "remark-breaks";
 import rehypeRaw from "rehype-raw";
 import { BlockViewModel } from "@/app/viewModels/BlockViewModel";
+import { set } from "lodash";
 
 interface BlockViewProps {
     index: number;
@@ -22,8 +23,19 @@ export const BlockView = ({ index, blockViewModel }: BlockViewProps) => {
             textareaRef.current.style.height =
                 textareaRef.current.scrollHeight + "px";
             textareaRef.current.focus();
+            if (blocks[index].cursorPos !== undefined) {
+                textareaRef.current.setSelectionRange(
+                    blocks[index].cursorPos,
+                    blocks[index].cursorPos
+                );
+            } else {
+                textareaRef.current.setSelectionRange(
+                    textareaRef.current.value.length,
+                    textareaRef.current.value.length
+                );
+            }
         }
-    }, [isOnFocus, content]);
+    }, [isOnFocus, content, blocks, index]);
 
     const handleClickTextarea = (
         e: React.MouseEvent<HTMLDivElement, MouseEvent>
@@ -84,9 +96,14 @@ export const BlockView = ({ index, blockViewModel }: BlockViewProps) => {
             textareaRef.current.selectionStart === 0 &&
             e.key === "ArrowLeft"
         ) {
+            e.preventDefault();
             if (index > 0) {
                 setIsOnFocus(id, false);
-                setIsOnFocus(blocks[index - 1].id, true);
+                setIsOnFocus(
+                    blocks[index - 1].id,
+                    true,
+                    textareaRef.current.value.length
+                );
             }
         } else if (
             textareaRef.current &&
@@ -94,9 +111,10 @@ export const BlockView = ({ index, blockViewModel }: BlockViewProps) => {
                 textareaRef.current.value.length &&
             e.key === "ArrowRight"
         ) {
+            e.preventDefault();
             if (index < blocks.length - 1) {
                 setIsOnFocus(id, false);
-                setIsOnFocus(blocks[index + 1].id, true);
+                setIsOnFocus(blocks[index + 1].id, true, 0);
             }
         }
     };
@@ -112,20 +130,6 @@ export const BlockView = ({ index, blockViewModel }: BlockViewProps) => {
             setIsOnFocus(previousBlockId, true);
             updateBlockContent(previousBlockId, str);
         }, 0);
-    };
-
-    const handleFocus = (e: React.FocusEvent<HTMLTextAreaElement>) => {
-        console.debug("handleFocus isEditing", isOnFocus);
-        console.debug("textarea 獲得焦點");
-        const target = e.target;
-        const len = target.value.length;
-        setCursorPosition(len);
-    };
-
-    const setCursorPosition = (pos: number) => {
-        if (textareaRef.current) {
-            textareaRef.current.setSelectionRange(pos, pos);
-        }
     };
 
     const handleBlur = () => {
@@ -146,7 +150,6 @@ export const BlockView = ({ index, blockViewModel }: BlockViewProps) => {
                     value={typeof content === "string" ? content : ""}
                     onChange={handleContentChange}
                     onKeyDown={handleKeyDown}
-                    onFocus={handleFocus}
                     onBlur={handleBlur}
                     rows={1}
                 />

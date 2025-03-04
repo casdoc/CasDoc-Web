@@ -20,6 +20,7 @@ export interface Block {
      */
     content: string | BlockPayload;
 
+    cursorPos?: number;
     /** Indicates whether the block is currently selected. */
     isSelected: boolean;
 
@@ -32,6 +33,7 @@ export const emptyBlock: Block = {
     type: "md",
     topic: "",
     content: "",
+    cursorPos: 0,
     isSelected: false,
     isOnFocus: true,
 };

@@ -10,7 +10,6 @@ export const BlockService = {
     },
 
     setBlocks(blocks: Block[]): void {
-        console.debug("setBlocks", blocks);
         if (typeof window !== "undefined") {
             localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(blocks));
         }
