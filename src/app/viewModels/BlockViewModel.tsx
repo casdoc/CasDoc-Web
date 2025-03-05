@@ -22,9 +22,6 @@ export function useBlockViewModel(): BlockViewModel {
 
     useEffect(() => {
         setBlocks(BlockService.getBlocks());
-        if (!blocks || blocks.length === 0) {
-            addBlock(-1, "", "md", "");
-        }
     }, []);
 
     const updateBlocks = useCallback((newBlocks: Block[]) => {
