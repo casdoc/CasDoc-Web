@@ -93,21 +93,42 @@ export const BlockView = ({ index, blockViewModel }: BlockViewProps) => {
         } else if (e.key === "Backspace" && currentCursorPos === 0) {
             e.preventDefault();
             if (index > 0) {
-                handleDeleteBlock(index);
+                handleDeleteBlock(index, "backspace");
+            }
+        } else if (e.key === "Delete" && currentCursorPos === contentLength) {
+            e.preventDefault();
+            if (index < blocks.length - 1) {
+                handleDeleteBlock(index, "delete");
             }
         }
     };
 
-    const handleDeleteBlock = (index: number) => {
-        const prevBlock = blocks[index - 1];
-        if (prevBlock.type === "md") {
-            const deleteContent = blocks[index].content as string;
-            const prevContent = prevBlock.content as string;
-            const mergedContent = prevContent + deleteContent;
-            const prevContentLength = prevContent.length;
-            deleteBlock(id);
-            updateBlockContent(prevBlock.id, mergedContent);
-            setIsOnFocus(prevBlock.id, true, prevContentLength);
+    const handleDeleteBlock = (
+        index: number,
+        action: "backspace" | "delete"
+    ) => {
+        if (action === "backspace") {
+            const prevBlock = blocks[index - 1];
+            if (prevBlock.type === "md") {
+                const deleteContent = blocks[index].content as string;
+                const prevContent = prevBlock.content as string;
+                const mergedContent = prevContent + deleteContent;
+                const prevContentLength = prevContent.length;
+                deleteBlock(id);
+                updateBlockContent(prevBlock.id, mergedContent);
+                setIsOnFocus(prevBlock.id, true, prevContentLength);
+            }
+        } else if (action === "delete") {
+            const nextBlock = blocks[index + 1];
+            if (nextBlock.type === "md") {
+                const currentContent = blocks[index].content as string;
+                const nextContent = nextBlock.content as string;
+                const mergedContent = currentContent + nextContent;
+                const currentContentLength = currentContent.length;
+                deleteBlock(nextBlock.id);
+                updateBlockContent(id, mergedContent);
+                setIsOnFocus(id, true, currentContentLength);
+            }
         }
     };
 
