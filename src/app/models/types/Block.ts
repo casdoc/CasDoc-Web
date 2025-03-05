@@ -35,5 +35,5 @@ export const emptyBlock: Block = {
     content: "",
     cursorPos: 0,
     isSelected: false,
-    isOnFocus: true,
+    isOnFocus: false,
 };

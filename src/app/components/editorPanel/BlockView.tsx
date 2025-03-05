@@ -47,7 +47,14 @@ export const BlockView = ({ index, blockViewModel }: BlockViewProps) => {
     const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         updateBlockContent(id, e.target.value, e.target.selectionStart);
     };
-
+    const getCursorLine = (textarea: HTMLTextAreaElement) => {
+        const textBeforeCursor = textarea.value.slice(
+            0,
+            textarea.selectionStart
+        );
+        const lines = textBeforeCursor.split("\n");
+        return lines.length;
+    };
     const handleKeyDown = (e: React.KeyboardEvent) => {
         const textarea = textareaRef.current;
         if (!textarea) return;
@@ -64,16 +71,46 @@ export const BlockView = ({ index, blockViewModel }: BlockViewProps) => {
         } else if (e.key === "Escape") {
             handleBlur();
         } else if (e.key === "ArrowUp") {
-            e.preventDefault();
-            if (index > 0) {
-                setIsOnFocus(id, false);
-                setIsOnFocus(blocks[index - 1].id, true, currentCursorPos);
+            const cursorLine = getCursorLine(textarea);
+            if (cursorLine === 1) {
+                e.preventDefault();
+                if (index > 0) {
+                    const prevBlockContent = blocks[index - 1]
+                        .content as string;
+                    const totalLines = prevBlockContent.split("\n");
+                    const lastLine = totalLines[totalLines.length - 1];
+                    const pos =
+                        lastLine.length > currentCursorPos
+                            ? prevBlockContent.length -
+                              (lastLine.length - currentCursorPos)
+                            : prevBlockContent.length;
+                    setIsOnFocus(id, false);
+                    setIsOnFocus(blocks[index - 1].id, true, pos);
+                }
             }
         } else if (e.key === "ArrowDown") {
-            e.preventDefault();
-            if (index < blocks.length - 1) {
-                setIsOnFocus(id, false);
-                setIsOnFocus(blocks[index + 1].id, true, currentCursorPos);
+            const cursorLine = getCursorLine(textarea);
+            const totalLines = textarea.value.split("\n");
+            if (cursorLine === totalLines.length) {
+                e.preventDefault();
+                console.debug(
+                    "contentLength - currentCursorPos",
+                    contentLength - currentCursorPos
+                );
+                if (index < blocks.length - 1) {
+                    const nextBlockContent = blocks[index + 1]
+                        .content as string;
+                    const nextBlockLines = nextBlockContent.split("\n");
+                    const cursorLinePos =
+                        totalLines[totalLines.length - 1].length -
+                        (contentLength - currentCursorPos);
+                    const pos =
+                        nextBlockLines[0].length > cursorLinePos
+                            ? cursorLinePos
+                            : nextBlockLines[0].length;
+                    setIsOnFocus(id, false);
+                    setIsOnFocus(blocks[index + 1].id, true, pos);
+                }
             }
         } else if (e.key === "ArrowLeft" && currentCursorPos === 0) {
             e.preventDefault();
