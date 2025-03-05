@@ -25,9 +25,4 @@ export interface Block {
 
     /** Indicates whether the block is being edited. */
     isOnFocus: boolean;
-
-    position: {
-        x: number;
-        y: number;
-    };
 }

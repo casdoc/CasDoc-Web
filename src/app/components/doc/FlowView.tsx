@@ -7,19 +7,19 @@ import {
     useEdgesState,
     addEdge,
     Background,
-    ConnectionLineType,
+    Panel,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { Block } from "@/app/models/types/Block";
 import { BlockViewModel } from "@/app/viewModels/BlockViewModel";
 import dagre from "@dagrejs/dagre";
 
-const dagreGraph = new dagre.graphlib.Graph();
-dagreGraph.setDefaultEdgeLabel(() => ({}));
 const nodeWidth = 172;
 const nodeHeight = 36;
 
-const getLayoutedElements = (nodes: any[], edges: any[], direction = "TB") => {
+const getLayoutedElements = (nodes: any[], edges: any[], direction = "LR") => {
+    const dagreGraph = new dagre.graphlib.Graph();
+    dagreGraph.setDefaultEdgeLabel(() => ({}));
     const isHorizontal = direction === "LR";
     dagreGraph.setGraph({ rankdir: direction });
 
@@ -33,18 +33,20 @@ const getLayoutedElements = (nodes: any[], edges: any[], direction = "TB") => {
 
     dagre.layout(dagreGraph);
 
-    nodes.forEach((node) => {
+    const layoutedNodes = nodes.map((node) => {
         const nodeWithPosition = dagreGraph.node(node.id);
-        node.targetPosition = isHorizontal ? "left" : "top";
-        node.sourcePosition = isHorizontal ? "right" : "bottom";
-
-        node.position = {
-            x: nodeWithPosition.x - nodeWidth / 2,
-            y: nodeWithPosition.y - nodeHeight / 2,
+        return {
+            ...node,
+            targetPosition: isHorizontal ? "left" : "top",
+            sourcePosition: isHorizontal ? "right" : "bottom",
+            position: {
+                x: nodeWithPosition.x - nodeWidth / 2,
+                y: nodeWithPosition.y - nodeHeight / 2,
+            },
         };
     });
 
-    return { nodes, edges };
+    return { nodes: layoutedNodes, edges };
 };
 
 interface FlowViewProps {
@@ -55,6 +57,7 @@ const FlowView = ({ blockViewModel }: FlowViewProps) => {
     const { blocks } = blockViewModel;
 
     const convertBlocksToNodes = (blocks: Block[]) => {
+        const defaultPosition = { x: 0, y: 0 };
         return blocks
             .filter((block) => {
                 if (typeof block.content === "string") {
@@ -62,21 +65,20 @@ const FlowView = ({ blockViewModel }: FlowViewProps) => {
                 }
                 return true;
             })
-            .map((block, index) => ({
+            .map((block, _) => ({
                 id: block.id.toString(),
-                // 若 block 中有自訂 position，就先使用，否則暫時給個預設值，後續再用 dagre layout 重新計算
-                position: block.position ?? { x: 150 * index, y: 100 },
+                position: defaultPosition,
                 data: { label: block.topic || `${block.content}` },
             }));
     };
 
     const convertBlocksToEdges = (blocks: Block[]) => {
         const edges = [];
-        for (let i = 0; i < blocks.length - 1; i++) {
+        for (let i = 1; i < blocks.length; i++) {
             edges.push({
-                id: `e-${blocks[i].id}-${blocks[i + 1].id}`,
-                source: blocks[i].id.toString(),
-                target: blocks[i + 1].id.toString(),
+                id: `e-${blocks[0].id}-${blocks[i].id}`,
+                source: blocks[0].id.toString(),
+                target: blocks[i].id.toString(),
             });
         }
         return edges;
@@ -91,8 +93,9 @@ const FlowView = ({ blockViewModel }: FlowViewProps) => {
     useEffect(() => {
         const newNodes = convertBlocksToNodes(blocks);
         const newEdges = convertBlocksToEdges(blocks);
+        const defaultType = "LR";
         const { nodes: layoutedNodes, edges: layoutedEdges } =
-            getLayoutedElements(newNodes, newEdges);
+            getLayoutedElements(newNodes, newEdges, defaultType);
         setNodes(layoutedNodes);
         setEdges(layoutedEdges);
     }, [blocks, setNodes, setEdges]);
@@ -100,6 +103,16 @@ const FlowView = ({ blockViewModel }: FlowViewProps) => {
     const onConnect = useCallback(
         (params: any) => setEdges((eds) => addEdge(params, eds)),
         [setEdges]
+    );
+
+    const onLayout = useCallback(
+        (direction: string) => {
+            const { nodes: layoutedNodes, edges: layoutedEdges } =
+                getLayoutedElements(nodes, edges, direction);
+            setNodes([...layoutedNodes]);
+            setEdges([...layoutedEdges]);
+        },
+        [nodes, edges, setNodes, setEdges]
     );
 
     return (
@@ -110,10 +123,19 @@ const FlowView = ({ blockViewModel }: FlowViewProps) => {
                 onNodesChange={onNodesChange}
                 onEdgesChange={onEdgesChange}
                 onConnect={onConnect}
-                connectionLineType={ConnectionLineType.SmoothStep}
-                fitView
             >
                 <Background variant={"dots" as any} gap={12} size={1} />
+                <Panel position="top-right">
+                    {["TB", "LR"].map((key, _) => (
+                        <button
+                            key={key}
+                            onClick={() => onLayout(key)}
+                            className="bg-gray-400 mr-3 p-2 rounded-md text-white shadow-md"
+                        >
+                            Vertical Layout
+                        </button>
+                    ))}
+                </Panel>
             </ReactFlow>
         </div>
     );
