@@ -13,72 +13,56 @@ interface BlockViewProps {
 export const BlockView = ({ index, blockViewModel }: BlockViewProps) => {
     const { blocks, addBlock, setIsOnFocus, updateBlockContent, deleteBlock } =
         blockViewModel;
-    const { id, type, content, isSelected, isOnFocus } = blocks[index];
+    const { id, type, content, cursorPos, isSelected, isOnFocus } =
+        blocks[index];
     const textareaRef = useRef<HTMLTextAreaElement>(null);
-
     useEffect(() => {
         if (isOnFocus && textareaRef.current) {
-            textareaRef.current.style.height = "auto";
-            textareaRef.current.style.height =
-                textareaRef.current.scrollHeight + "px";
-            textareaRef.current.focus();
-            if (blocks[index].cursorPos !== undefined) {
-                textareaRef.current.setSelectionRange(
-                    blocks[index].cursorPos,
-                    blocks[index].cursorPos
-                );
+            const ref = textareaRef.current as HTMLTextAreaElement;
+            ref.style.height = "auto";
+            ref.style.height = ref.scrollHeight + "px";
+            ref.focus();
+            if (cursorPos !== undefined) {
+                if (cursorPos === Infinity) {
+                    ref.setSelectionRange(ref.value.length, ref.value.length);
+                } else {
+                    ref.setSelectionRange(cursorPos, cursorPos);
+                }
             } else {
                 textareaRef.current.setSelectionRange(
-                    textareaRef.current.value.length,
-                    textareaRef.current.value.length
+                    ref.value.length,
+                    ref.value.length
                 );
             }
         }
-    }, [isOnFocus, content, blocks, index]);
+    }, [blocks, index, isOnFocus, cursorPos]);
 
     const handleClickBlock = (
         e: React.MouseEvent<HTMLDivElement, MouseEvent>
     ) => {
         e.stopPropagation();
-        setIsOnFocus(id, true);
+        setIsOnFocus(id, true, Infinity);
     };
 
     const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        updateBlockContent(id, e.target.value);
+        updateBlockContent(id, e.target.value, e.target.selectionStart);
     };
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
-        const currentCursorPos = textareaRef
-            ? textareaRef.current?.selectionStart
-            : 0;
-        console.debug("currentCursorPos", currentCursorPos);
-        if (
-            index > 0 &&
-            (e.key === "Delete" || e.key === "Backspace") &&
-            textareaRef.current &&
-            textareaRef.current.selectionStart === 0
-        ) {
-            e.preventDefault();
-            handleDeleteBlock();
-            return;
-        }
+        const textarea = textareaRef.current;
+        if (!textarea) return;
+        const currentCursorPos = textarea.selectionStart;
+        const contentLength = textarea.value.length;
+
         if (e.key === "Enter" && !e.shiftKey) {
             e.preventDefault();
-            const prevIndex = id;
-            const cursorPos = (e.target as HTMLTextAreaElement).selectionStart;
-            const beforeContent = blocks[index].content
-                .toString()
-                .slice(0, cursorPos);
-            const afterContent = blocks[index].content
-                .toString()
-                .slice(cursorPos);
-
-            setIsOnFocus(id, false);
+            const beforeContent = textarea.value.slice(0, currentCursorPos);
+            const afterContent = textarea.value.slice(currentCursorPos);
             addBlock(index, afterContent, "md", "");
-            updateBlockContent(id, beforeContent);
-            setIsOnFocus(prevIndex + 1, true);
+            updateBlockContent(id, beforeContent, undefined);
+            setIsOnFocus(id + 1, true, 0);
         } else if (e.key === "Escape") {
-            setIsOnFocus(index, false);
+            handleBlur();
         } else if (e.key === "ArrowUp") {
             e.preventDefault();
             if (index > 0) {
@@ -91,56 +75,50 @@ export const BlockView = ({ index, blockViewModel }: BlockViewProps) => {
                 setIsOnFocus(id, false);
                 setIsOnFocus(blocks[index + 1].id, true, currentCursorPos);
             }
-        } else if (
-            textareaRef.current &&
-            textareaRef.current.selectionStart === 0 &&
-            e.key === "ArrowLeft"
-        ) {
+        } else if (e.key === "ArrowLeft" && currentCursorPos === 0) {
             e.preventDefault();
             if (index > 0) {
                 setIsOnFocus(id, false);
-                setIsOnFocus(
-                    blocks[index - 1].id,
-                    true,
-                    textareaRef.current.value.length
-                );
+                setIsOnFocus(blocks[index - 1].id, true, Infinity);
             }
         } else if (
-            textareaRef.current &&
-            textareaRef.current.selectionStart ===
-                textareaRef.current.value.length &&
-            e.key === "ArrowRight"
+            e.key === "ArrowRight" &&
+            currentCursorPos === contentLength
         ) {
             e.preventDefault();
             if (index < blocks.length - 1) {
                 setIsOnFocus(id, false);
                 setIsOnFocus(blocks[index + 1].id, true, 0);
             }
+        } else if (e.key === "Backspace" && currentCursorPos === 0) {
+            e.preventDefault();
+            if (index > 0) {
+                handleDeleteBlock(index);
+            }
         }
     };
 
-    const handleDeleteBlock = () => {
-        const previousBlockId = blocks[index - 1].id;
-        const str =
-            blocks[index - 1].content +
-            (typeof content === "string" ? content : "");
-        setIsOnFocus(id, false);
-        deleteBlock(id);
-        setTimeout(() => {
-            setIsOnFocus(previousBlockId, true);
-            updateBlockContent(previousBlockId, str);
-        }, 0);
+    const handleDeleteBlock = (index: number) => {
+        const prevBlock = blocks[index - 1];
+        if (prevBlock.type === "md") {
+            const deleteContent = blocks[index].content as string;
+            const prevContent = prevBlock.content as string;
+            const mergedContent = prevContent + deleteContent;
+            const prevContentLength = prevContent.length;
+            deleteBlock(id);
+            updateBlockContent(prevBlock.id, mergedContent);
+            setIsOnFocus(prevBlock.id, true, prevContentLength);
+        }
     };
 
     const handleBlur = () => {
-        setIsOnFocus(id, !isOnFocus);
-        console.debug("textarea 失去焦點");
+        setIsOnFocus(id, false);
     };
 
     return (
         <div
             className={`group flex flex-row min-h-6 items-stretch justify-stretch ${
-                isSelected ? "bg-blue-300" : "bg-white-400"
+                isOnFocus ? "bg-blue-300" : "bg-white-400"
             } `}
         >
             {isOnFocus && type === "md" ? (
@@ -155,7 +133,7 @@ export const BlockView = ({ index, blockViewModel }: BlockViewProps) => {
                 />
             ) : (
                 <div
-                    className="w-full bg-white h-full prose min-h-6 min-w-full overflow-wrap-normal break-words whitespace-normal overflow-x-hidden"
+                    className="w-full bg-white h-full prose min-h-6 min-w-full overflow-wrap-normal break-words whitespace-normal overflow-x-hidden hover:cursor-text"
                     onClick={handleClickBlock}
                 >
                     {type === "md" ? (

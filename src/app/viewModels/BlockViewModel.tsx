@@ -11,7 +11,11 @@ export interface BlockViewModel {
         type: "md" | "jsx",
         topic?: string
     ) => void;
-    updateBlockContent: (id: number, content: string | BlockPayload) => void;
+    updateBlockContent: (
+        id: number,
+        content: string | BlockPayload,
+        cursorPos?: number
+    ) => void;
     toggleBlockSelection: (id: number) => void;
     setIsOnFocus: (id: number, state: boolean, cursorPos?: number) => void;
     deleteBlock: (id: number) => void;
@@ -19,6 +23,7 @@ export interface BlockViewModel {
 
 export function useBlockViewModel(): BlockViewModel {
     const [blocks, setBlocks] = useState<Block[]>([emptyBlock]);
+
     useEffect(() => {
         setBlocks(BlockService.getBlocks());
     }, []);
@@ -39,6 +44,7 @@ export function useBlockViewModel(): BlockViewModel {
                 id: index + 1,
                 type,
                 topic,
+                cursorPos: 0,
                 content: content,
                 isSelected: false,
                 isOnFocus: false,
@@ -55,10 +61,12 @@ export function useBlockViewModel(): BlockViewModel {
     );
 
     const updateBlockContent = useCallback(
-        (id: number, content: string | BlockPayload) => {
+        (id: number, content: string | BlockPayload, cursorPos?: number) => {
             setBlocks((prevBlocks) => {
                 const updatedBlocks = prevBlocks.map((block) =>
-                    block.id === id ? { ...block, content } : block
+                    block.id === id
+                        ? { ...block, content: content, cursorPos: cursorPos }
+                        : block
                 );
                 BlockService.setBlocks(updatedBlocks);
                 return [...updatedBlocks];
@@ -101,7 +109,13 @@ export function useBlockViewModel(): BlockViewModel {
 
     const deleteBlock = useCallback(
         (id: number) => {
-            updateBlocks(blocks.filter((block) => block.id !== id));
+            const reorderedBlocks = blocks
+                .filter((block) => block.id !== id)
+                .map((block, idx) => ({
+                    ...block,
+                    id: idx + 1, // 1-based index
+                }));
+            updateBlocks(reorderedBlocks);
         },
         [blocks, updateBlocks]
     );

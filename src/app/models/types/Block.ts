@@ -29,7 +29,7 @@ export interface Block {
 }
 
 export const emptyBlock: Block = {
-    id: 0,
+    id: 1,
     type: "md",
     topic: "",
     content: "",
