@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
     ReactFlow,
     useNodesState,
@@ -11,14 +11,14 @@ import {
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import dagre from "@dagrejs/dagre";
-
-const nodeWidth = 172;
-const nodeHeight = 36;
+import { ZoomSlider } from "./zoom-slider";
 
 const getLayoutedElements = (
     nodes: any[],
     structuralEdges: any[],
-    direction = "LR"
+    direction = "LR",
+    nodeWidth: number,
+    nodeHeight: number
 ) => {
     const dagreGraph = new dagre.graphlib.Graph();
     dagreGraph.setDefaultEdgeLabel(() => ({}));
@@ -71,14 +71,14 @@ const computeProximityEdges = (nodes: any[], threshold: number = 200) => {
     return proxEdges;
 };
 
-interface DataItems {
+interface NodeItems {
     id: number;
     content: string;
     topic: string;
     parentId: number;
 }
 
-const dataItems: DataItems[] = [
+const dataItems: NodeItems[] = [
     { id: 1, content: "SDD", topic: "SDD", parentId: 1 },
 
     { id: 2, content: "引言與範圍", topic: "SDD", parentId: 1 },
@@ -117,7 +117,7 @@ const dataItems: DataItems[] = [
     { id: 28, content: "參考文件", topic: "SDD", parentId: 26 },
 ];
 
-const convertDataToNodes = (data: DataItems[]) => {
+const convertDataToNodes = (data: NodeItems[]) => {
     const defaultPosition = { x: 0, y: 0 };
     return data
         .filter((item) => {
@@ -133,7 +133,7 @@ const convertDataToNodes = (data: DataItems[]) => {
         }));
 };
 
-const convertDataToStructuralEdges = (data: DataItems[]) => {
+const convertDataToStructuralEdges = (data: NodeItems[]) => {
     const edges = [];
     if (data.length > 0) {
         for (let i = 1; i < data.length; i++) {
@@ -149,12 +149,18 @@ const convertDataToStructuralEdges = (data: DataItems[]) => {
 };
 
 const FlowView = () => {
+    const [selectedLayout, setSelectedLayout] = useState("LR");
+    const [nodeWidth, setNodeWidth] = useState(242);
+    const [nodeHeight, setNodeHeight] = useState(12);
+
     const initialNodes = convertDataToNodes(dataItems);
     const initialStructuralEdges = convertDataToStructuralEdges(dataItems);
     const { nodes: layoutedNodes } = getLayoutedElements(
         initialNodes,
         initialStructuralEdges,
-        "LR"
+        "LR",
+        nodeWidth,
+        nodeHeight
     );
     const initialProximityEdges = computeProximityEdges(layoutedNodes);
     const initialEdges = [...initialStructuralEdges, ...initialProximityEdges];
@@ -168,7 +174,9 @@ const FlowView = () => {
         const { nodes: layoutedNodes } = getLayoutedElements(
             newNodes,
             newStructuralEdges,
-            "LR"
+            "LR",
+            nodeWidth,
+            nodeHeight
         );
         const newProximityEdges = computeProximityEdges(layoutedNodes);
         setNodes(layoutedNodes);
@@ -181,13 +189,21 @@ const FlowView = () => {
     );
 
     const onLayout = useCallback(
-        (direction: "LR" | "TB") => {
+        (direction: string) => {
+            const tmp = nodeWidth;
+            setNodeWidth(nodeHeight);
+            setNodeHeight(tmp);
+
+            setSelectedLayout(direction);
+
             const newNodes = convertDataToNodes(dataItems);
             const newStructuralEdges = convertDataToStructuralEdges(dataItems);
             const { nodes: layoutedNodes } = getLayoutedElements(
                 newNodes,
                 newStructuralEdges,
-                direction
+                direction,
+                nodeWidth,
+                nodeHeight
             );
             const newProximityEdges = computeProximityEdges(layoutedNodes);
             setNodes(layoutedNodes);
@@ -208,19 +224,19 @@ const FlowView = () => {
             >
                 <Background variant={"dots" as any} gap={12} size={1} />
                 <Panel position="top-right">
-                    <button
-                        onClick={() => onLayout("TB")}
-                        className="bg-gray-400 mr-3 p-2 rounded-md text-white shadow-md"
-                    >
-                        Vertical Layout
-                    </button>
-                    <button
-                        onClick={() => onLayout("LR")}
-                        className="bg-gray-400 mr-3 p-2 rounded-md text-white shadow-md"
-                    >
-                        Horizontal Layout
-                    </button>
+                    {["TB", "LR"].map((key, _) => (
+                        <button
+                            key={key}
+                            onClick={() => onLayout(key)}
+                            className={`bg-gray-400 mr-3 p-2 rounded-md text-white shadow-md hover:opacity-70 ${
+                                key === selectedLayout && "bg-gray-500"
+                            }`}
+                        >
+                            {key === "TB" ? "Horizontal" : "Vertical"}
+                        </button>
+                    ))}
                 </Panel>
+                <ZoomSlider position="top-left" />
             </ReactFlow>
         </div>
     );

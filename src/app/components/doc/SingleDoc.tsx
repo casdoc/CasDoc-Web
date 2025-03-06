@@ -1,6 +1,6 @@
 import { DocMode } from "@/app/models/enum/DocMode";
 import EditorView from "./EditorView";
-import GraphView from "./GraphView";
+import GraphView from "../flow/GraphView";
 import { BlockViewModel } from "@/app/viewModels/BlockViewModel";
 
 interface SingleDocProps {

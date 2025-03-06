@@ -6,7 +6,7 @@ interface GraphViewProps {
 }
 
 const GraphView = ({ blockViewModel }: GraphViewProps) => {
-    return <FlowView blockViewModel={blockViewModel} />;
+    return <FlowView />;
 };
 
 export default GraphView;
