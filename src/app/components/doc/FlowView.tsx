@@ -10,14 +10,11 @@ import {
     Panel,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { Block } from "@/app/models/types/Block";
-import { BlockViewModel } from "@/app/viewModels/BlockViewModel";
 import dagre from "@dagrejs/dagre";
 
 const nodeWidth = 172;
 const nodeHeight = 36;
 
-// 使用 structuralEdges (樹狀連線) 作為 dagre layout 的依據，不受 proximity edges 影響
 const getLayoutedElements = (
     nodes: any[],
     structuralEdges: any[],
@@ -54,7 +51,6 @@ const getLayoutedElements = (
     return { nodes: layoutedNodes, structuralEdges };
 };
 
-// 根據 proximity（近距離）產生額外連線，若兩個節點距離小於 threshold，就連線
 const computeProximityEdges = (nodes: any[], threshold: number = 200) => {
     if (!nodes || nodes.length === 0) return [];
     const parent = nodes[0];
@@ -75,65 +71,100 @@ const computeProximityEdges = (nodes: any[], threshold: number = 200) => {
     return proxEdges;
 };
 
-interface FlowViewProps {
-    blockViewModel: BlockViewModel;
+interface DataItems {
+    id: number;
+    content: string;
+    topic: string;
+    parentId: number;
 }
 
-const FlowView = ({ blockViewModel }: FlowViewProps) => {
-    const { blocks } = blockViewModel;
+const dataItems: DataItems[] = [
+    { id: 1, content: "SDD", topic: "SDD", parentId: 1 },
 
-    // 將 blocks 轉換為 nodes，初始位置預設為 { x: 0, y: 0 }，後續由 dagre 調整
-    const convertBlocksToNodes = (blocks: Block[]) => {
-        return blocks
-            .filter((block) => {
-                if (typeof block.content === "string") {
-                    return block.content.trim() !== "";
-                }
-                return true;
-            })
-            .map((block) => ({
-                id: block.id.toString(),
-                position: { x: 0, y: 0 },
-                data: { label: block.topic || `${block.content}` },
-            }));
-    };
+    { id: 2, content: "引言與範圍", topic: "SDD", parentId: 1 },
+    { id: 3, content: "目的", topic: "SDD", parentId: 2 },
+    { id: 4, content: "文件範圍", topic: "SDD", parentId: 2 },
 
-    // 建立 structural edges（樹狀連線）：假設第一個 block 為根節點，其餘皆為子節點
-    const convertBlocksToStructuralEdges = (blocks: Block[]) => {
-        const edges = [];
-        if (blocks.length > 0) {
-            for (let i = 1; i < blocks.length; i++) {
-                edges.push({
-                    id: `e-${blocks[0].id}-${blocks[i].id}`,
-                    source: blocks[0].id.toString(),
-                    target: blocks[i].id.toString(),
-                    arrowHeadType: "arrowclosed",
-                });
+    { id: 5, content: "系統概述", topic: "SDD", parentId: 1 },
+    { id: 6, content: "系統架構", topic: "SDD", parentId: 5 },
+    { id: 7, content: "系統需求概述", topic: "SDD", parentId: 5 },
+
+    { id: 8, content: "詳細設計", topic: "SDD", parentId: 1 },
+    { id: 9, content: "模組設計", topic: "SDD", parentId: 8 },
+    { id: 10, content: "API 設計", topic: "SDD", parentId: 8 },
+    { id: 11, content: "演算法設計", topic: "SDD", parentId: 8 },
+
+    { id: 12, content: "資料庫設計", topic: "SDD", parentId: 1 },
+    { id: 13, content: "資料模型", topic: "SDD", parentId: 12 },
+    { id: 14, content: "表格設計", topic: "SDD", parentId: 12 },
+    { id: 15, content: "索引與效能優化", topic: "SDD", parentId: 12 },
+
+    { id: 16, content: "介面設計", topic: "SDD", parentId: 1 },
+    { id: 17, content: "前端 UI 設計", topic: "SDD", parentId: 16 },
+    { id: 18, content: "後端 API 介面", topic: "SDD", parentId: 16 },
+
+    { id: 19, content: "安全性與效能考量", topic: "SDD", parentId: 1 },
+    { id: 20, content: "身份驗證與授權", topic: "SDD", parentId: 19 },
+    { id: 21, content: "效能最佳化", topic: "SDD", parentId: 19 },
+
+    { id: 22, content: "測試計劃與驗收策略", topic: "SDD", parentId: 1 },
+    { id: 23, content: "單元測試", topic: "SDD", parentId: 22 },
+    { id: 24, content: "整合測試", topic: "SDD", parentId: 22 },
+    { id: 25, content: "驗收測試", topic: "SDD", parentId: 22 },
+
+    { id: 26, content: "附錄", topic: "SDD", parentId: 1 },
+    { id: 27, content: "術語表", topic: "SDD", parentId: 26 },
+    { id: 28, content: "參考文件", topic: "SDD", parentId: 26 },
+];
+
+const convertDataToNodes = (data: DataItems[]) => {
+    const defaultPosition = { x: 0, y: 0 };
+    return data
+        .filter((item) => {
+            if (typeof item.content === "string") {
+                return item.content.trim() !== "";
             }
-        }
-        return edges;
-    };
+            return true;
+        })
+        .map((item) => ({
+            id: item.id.toString(),
+            position: defaultPosition,
+            data: { label: item.content },
+        }));
+};
 
-    const initialNodes = convertBlocksToNodes(blocks);
-    const initialStructuralEdges = convertBlocksToStructuralEdges(blocks);
-    // 先進行 dagre 排版，僅依據 structuralEdges，不包括 proximity edges
+const convertDataToStructuralEdges = (data: DataItems[]) => {
+    const edges = [];
+    if (data.length > 0) {
+        for (let i = 1; i < data.length; i++) {
+            edges.push({
+                id: `e-${data[i].parentId}-${data[i].id}`,
+                source: data[i].parentId!.toString(),
+                target: data[i].id.toString(),
+                arrowHeadType: "arrowclosed",
+            });
+        }
+    }
+    return edges;
+};
+
+const FlowView = () => {
+    const initialNodes = convertDataToNodes(dataItems);
+    const initialStructuralEdges = convertDataToStructuralEdges(dataItems);
     const { nodes: layoutedNodes } = getLayoutedElements(
         initialNodes,
         initialStructuralEdges,
         "LR"
     );
-    // 依據排版後的節點位置，計算 proximity edges
     const initialProximityEdges = computeProximityEdges(layoutedNodes);
-    // 最終 edges 為 structural 與 proximity edges 的合併
     const initialEdges = [...initialStructuralEdges, ...initialProximityEdges];
 
     const [nodes, setNodes, onNodesChange] = useNodesState(layoutedNodes);
     const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
-    // 當 blocks 改變時，重新計算 nodes 與 edges
     useEffect(() => {
-        const newNodes = convertBlocksToNodes(blocks);
-        const newStructuralEdges = convertBlocksToStructuralEdges(blocks);
+        const newNodes = convertDataToNodes(dataItems);
+        const newStructuralEdges = convertDataToStructuralEdges(dataItems);
         const { nodes: layoutedNodes } = getLayoutedElements(
             newNodes,
             newStructuralEdges,
@@ -142,18 +173,17 @@ const FlowView = ({ blockViewModel }: FlowViewProps) => {
         const newProximityEdges = computeProximityEdges(layoutedNodes);
         setNodes(layoutedNodes);
         setEdges([...newStructuralEdges, ...newProximityEdges]);
-    }, [blocks, setNodes, setEdges]);
+    }, [setNodes, setEdges]);
 
     const onConnect = useCallback(
         (params: any) => setEdges((eds) => addEdge(params, eds)),
         [setEdges]
     );
 
-    // layout 切換函式：重新以指定方向排版，並重新計算 proximity edges
     const onLayout = useCallback(
         (direction: "LR" | "TB") => {
-            const newNodes = convertBlocksToNodes(blocks);
-            const newStructuralEdges = convertBlocksToStructuralEdges(blocks);
+            const newNodes = convertDataToNodes(dataItems);
+            const newStructuralEdges = convertDataToStructuralEdges(dataItems);
             const { nodes: layoutedNodes } = getLayoutedElements(
                 newNodes,
                 newStructuralEdges,
@@ -163,7 +193,7 @@ const FlowView = ({ blockViewModel }: FlowViewProps) => {
             setNodes(layoutedNodes);
             setEdges([...newStructuralEdges, ...newProximityEdges]);
         },
-        [blocks, setNodes, setEdges]
+        [setNodes, setEdges]
     );
 
     return (
