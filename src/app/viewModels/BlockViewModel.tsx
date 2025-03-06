@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { Block } from "@/app/models/types/Block";
+import { Block, emptyBlock } from "@/app/models/types/Block";
 import { BlockPayload } from "@/app/models/types/BlockPayload";
 import { BlockService } from "@/app/models/services/BlockService";
 
@@ -8,17 +8,21 @@ export interface BlockViewModel {
     addBlock: (
         index: number,
         content: string,
-        type?: "md" | "jsx",
+        type: "md" | "jsx",
         topic?: string
     ) => void;
-    updateBlockContent: (id: number, content: string | BlockPayload) => void;
+    updateBlockContent: (
+        id: number,
+        content: string | BlockPayload,
+        cursorPos?: number
+    ) => void;
     toggleBlockSelection: (id: number) => void;
-    setIsOnFocus: (id: number, state: boolean) => void;
+    setIsOnFocus: (id: number, state: boolean, cursorPos?: number) => void;
     deleteBlock: (id: number) => void;
 }
 
 export function useBlockViewModel(): BlockViewModel {
-    const [blocks, setBlocks] = useState<Block[]>([]);
+    const [blocks, setBlocks] = useState<Block[]>([emptyBlock]);
 
     useEffect(() => {
         setBlocks(BlockService.getBlocks());
@@ -36,30 +40,33 @@ export function useBlockViewModel(): BlockViewModel {
             type: "md" | "jsx" = "md",
             topic: string = ""
         ) => {
-            const id = blocks.reduce(
-                (acc, block) => Math.max(acc, block.id),
-                0
-            );
             const newBlock: Block = {
-                id: id + 1,
+                id: index + 1,
                 type,
                 topic,
+                cursorPos: 0,
                 content: content,
                 isSelected: false,
                 isOnFocus: false,
             };
             const newBlocks = [...blocks];
             newBlocks.splice(index + 1, 0, newBlock);
-            updateBlocks(newBlocks);
+            const reorderedBlocks = newBlocks.map((block, idx) => ({
+                ...block,
+                id: idx + 1, // 1-based index
+            }));
+            updateBlocks(reorderedBlocks);
         },
         [blocks, updateBlocks]
     );
 
     const updateBlockContent = useCallback(
-        (id: number, content: string | BlockPayload) => {
+        (id: number, content: string | BlockPayload, cursorPos?: number) => {
             setBlocks((prevBlocks) => {
                 const updatedBlocks = prevBlocks.map((block) =>
-                    block.id === id ? { ...block, content } : block
+                    block.id === id
+                        ? { ...block, content: content, cursorPos: cursorPos }
+                        : block
                 );
                 BlockService.setBlocks(updatedBlocks);
                 return [...updatedBlocks];
@@ -81,19 +88,34 @@ export function useBlockViewModel(): BlockViewModel {
         [blocks, updateBlocks]
     );
 
-    const setIsOnFocus = useCallback((id: number, state: boolean) => {
-        setBlocks((prevBlocks) => {
-            const updatedBlocks = prevBlocks.map((block) =>
-                block.id === id ? { ...block, isOnFocus: state } : block
-            );
-            BlockService.setBlocks(updatedBlocks);
-            return [...updatedBlocks];
-        });
-    }, []);
+    const setIsOnFocus = useCallback(
+        (id: number, state: boolean, cursorPos?: number) => {
+            setBlocks((prevBlocks) => {
+                const updatedBlocks = prevBlocks.map((block) =>
+                    block.id === id
+                        ? {
+                              ...block,
+                              isOnFocus: state,
+                              cursorPos: cursorPos,
+                          }
+                        : block
+                );
+                BlockService.setBlocks(updatedBlocks);
+                return [...updatedBlocks];
+            });
+        },
+        []
+    );
 
     const deleteBlock = useCallback(
         (id: number) => {
-            updateBlocks(blocks.filter((block) => block.id !== id));
+            const reorderedBlocks = blocks
+                .filter((block) => block.id !== id)
+                .map((block, idx) => ({
+                    ...block,
+                    id: idx + 1, // 1-based index
+                }));
+            updateBlocks(reorderedBlocks);
         },
         [blocks, updateBlocks]
     );

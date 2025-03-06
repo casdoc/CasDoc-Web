@@ -1,49 +1,34 @@
-"use client";
-
-import React, { useEffect, useRef } from "react";
-import { BlockView } from "@/app/components/editorPanel/BlockView";
 import { BlockViewModel } from "@/app/viewModels/BlockViewModel";
-import Toolbar from "./ToolBar";
+import { useEditor, EditorContent } from "@tiptap/react";
+import { ExtensionKit } from "@/extensions/ExtensionKit";
 
 export interface EditorViewProps {
     blockViewModel: BlockViewModel;
 }
-
 const EditorView = ({ blockViewModel }: EditorViewProps) => {
-    const { blocks, addBlock } = blockViewModel;
-    const lastBlockRef = useRef<HTMLDivElement>(null);
+    const editor = useEditor({
+        extensions: [...ExtensionKit()],
+        // immediatelyRender: true,
+        // shouldRerenderOnTransaction: false,
+        // autofocus: true,
+        content: `<h1>This is a 1st level heading</h1>
+        <h2>This is a 2nd level heading</h2>
+        <h3>This is a 3rd level heading</h3>
+        <h4>This 4th level heading will be converted to a paragraph, because levels are configured to be only 1, 2 or 3.</h4`,
+    });
 
-    const lastContent =
-        blocks.length > 0 ? blocks[blocks.length - 1].content : "";
-    const shouldShowPlaceholder =
-        blocks.length === 0 ||
-        (typeof lastContent === "string" && lastContent.trim() !== "");
-
+    if (!editor) {
+        return null;
+    }
+    // window.editor = editor;
     return (
         <div className="max-w-4xl min-h-screen bg-white rounded-lg shadow-xl py-10 px-6">
-            <div
-                ref={lastBlockRef}
-                className="border-b-slate-400 border-opacity-50 border-b pb-3"
-            >
-                {blocks.map((_, _index) => (
-                    <BlockView
-                        key={_index}
-                        index={_index}
-                        blockViewModel={blockViewModel}
-                    />
-                ))}
-            </div>
-            {shouldShowPlaceholder && (
-                <div
-                    className="text-slate-600 opacity-50 cursor-pointer mt-4"
-                    onClick={() => addBlock(blocks.length, "", "md", "")}
-                >
-                    click me (or press Enter)
-                </div>
-            )}
-            <div className="fixed bottom-8">
-                <Toolbar onApplyFormat={(tmp) => tmp} />
-            </div>
+            {/* <div className="relative flex flex-col flex-1 h-full overflow-hidden border-red-400 border-2"> */}
+            <EditorContent
+                editor={editor}
+                className="prose border-red-400 border-2 h-full"
+            />
+            {/* </div> */}
         </div>
     );
 };

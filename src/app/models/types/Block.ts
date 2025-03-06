@@ -20,9 +20,20 @@ export interface Block {
      */
     content: string | BlockPayload;
 
+    cursorPos?: number;
     /** Indicates whether the block is currently selected. */
     isSelected: boolean;
 
     /** Indicates whether the block is being edited. */
     isOnFocus: boolean;
 }
+
+export const emptyBlock: Block = {
+    id: 1,
+    type: "md",
+    topic: "",
+    content: "",
+    cursorPos: 0,
+    isSelected: false,
+    isOnFocus: false,
+};
