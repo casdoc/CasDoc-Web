@@ -8,7 +8,11 @@ import {
     addEdge,
     Background,
     Panel,
+    MarkerType,
 } from "@xyflow/react";
+import { PiTreeStructureLight } from "react-icons/pi";
+import { FaRegMoon } from "react-icons/fa";
+import { IoSunny } from "react-icons/io5";
 import "@xyflow/react/dist/style.css";
 
 import { ZoomSlider } from "./zoom-slider/zoom-slider";
@@ -20,7 +24,16 @@ import {
     convertDataToStructuralEdges,
 } from "./utils/converter";
 
+const defaultEdgeOptions = {
+    type: "default",
+    markerEnd: {
+        type: MarkerType.ArrowClosed,
+        color: "#b1b1b7",
+    },
+};
+
 const FlowView = () => {
+    const [colorMode, setColorMode] = useState<"light" | "dark">("light");
     const [selectedLayout, setSelectedLayout] = useState("LR");
     const [nodeWidth, setNodeWidth] = useState(242);
     const [nodeHeight, setNodeHeight] = useState(12);
@@ -93,6 +106,8 @@ const FlowView = () => {
                 onEdgesChange={onEdgesChange}
                 onConnect={onConnect}
                 fitView
+                colorMode={colorMode}
+                defaultEdgeOptions={defaultEdgeOptions}
             >
                 <Background variant={"dots" as any} gap={12} size={1} />
                 <Panel position="top-right">
@@ -104,9 +119,26 @@ const FlowView = () => {
                                 key === selectedLayout && "bg-gray-500"
                             }`}
                         >
-                            {key === "TB" ? "Horizontal" : "Vertical"}
+                            <PiTreeStructureLight
+                                size={20}
+                                className={`${key === "TB" && "rotate-90"}`}
+                            />
                         </button>
                     ))}
+                    <button
+                        onClick={() =>
+                            setColorMode(
+                                colorMode === "light" ? "dark" : "light"
+                            )
+                        }
+                        className="bg-gray-400 mr-3 p-2 rounded-md text-white shadow-md hover:opacity-70"
+                    >
+                        {colorMode === "dark" ? (
+                            <FaRegMoon size={20} />
+                        ) : (
+                            <IoSunny size={20} />
+                        )}
+                    </button>
                 </Panel>
                 <ZoomSlider position="top-left" />
             </ReactFlow>

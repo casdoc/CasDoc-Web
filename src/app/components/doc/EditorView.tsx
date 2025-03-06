@@ -1,3 +1,5 @@
+"use client";
+
 import { BlockViewModel } from "@/app/viewModels/BlockViewModel";
 import { useEditor, EditorContent } from "@tiptap/react";
 import { ExtensionKit } from "@/extensions/ExtensionKit";
@@ -8,7 +10,7 @@ export interface EditorViewProps {
 const EditorView = ({ blockViewModel }: EditorViewProps) => {
     const editor = useEditor({
         extensions: [...ExtensionKit()],
-        // immediatelyRender: true,
+        immediatelyRender: false,
         // shouldRerenderOnTransaction: false,
         // autofocus: true,
         content: `<h1>This is a 1st level heading</h1>
