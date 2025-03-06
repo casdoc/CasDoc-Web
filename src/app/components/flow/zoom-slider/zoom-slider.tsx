@@ -9,9 +9,9 @@ import {
     PanelProps,
 } from "@xyflow/react";
 
-import { Slider } from "./ui/slider";
-import { Button } from "./ui/button";
-import { cn } from "@/lib/utils";
+import { Slider } from "./slider";
+import { Button } from "./button";
+import { cn } from "./lib/utils";
 
 export const ZoomSlider = forwardRef<
     HTMLDivElement,
