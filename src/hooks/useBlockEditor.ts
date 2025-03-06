@@ -18,7 +18,7 @@ export const useBlockEditor = ({ editorOptions }: BlockEditorProps) => {
                 class: "prose prose-sm sm:prose-base lg:prose-lg xl:prose-2xl m-5 focus:outline-none",
             },
         },
-        // immediatelyRender: true,
+        immediatelyRender: false,
         // shouldRerenderOnTransaction: false,
         // autofocus: true,
         // content: `<h1>This is a 1st level heading</h1>
@@ -27,6 +27,6 @@ export const useBlockEditor = ({ editorOptions }: BlockEditorProps) => {
         // <h4>This 4th level heading will be converted to a paragraph, because levels are configured to be only 1, 2 or 3.</h4`,
         content: tmpData,
     });
-    window.editor = editor;
+    // window.editor = editor;
     return { editor };
 };

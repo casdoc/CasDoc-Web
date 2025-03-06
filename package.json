@@ -9,11 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
-<<<<<<< HEAD
     "@dagrejs/dagre": "^1.1.4",
-=======
     "@floating-ui/react": "^0.27.5",
->>>>>>> feature/editor
     "@mdx-js/loader": "^3.1.0",
     "@mdx-js/react": "^3.1.0",
     "@next/mdx": "^15.1.7",
@@ -46,10 +43,7 @@
     "@tiptap/suggestion": "^2.11.5",
     "@types/mdx": "^2.0.13",
     "@xyflow/react": "^12.4.4",
-<<<<<<< HEAD
     "class-variance-authority": "^0.7.1",
-=======
->>>>>>> feature/editor
     "clsx": "^2.1.1",
     "lodash": "^4.17.21",
     "lucide-react": "^0.477.0",
@@ -60,11 +54,7 @@
     "react-icons": "^5.5.0",
     "react-markdown": "^10.0.0",
     "tailwind-merge": "^3.0.2",
-<<<<<<< HEAD
     "tailwindcss-animate": "^1.0.7"
-=======
-    "tippy.js": "^6.3.7"
->>>>>>> feature/editor
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
