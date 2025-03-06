@@ -9,14 +9,14 @@ interface SplitViewProps {
 
 const SplitView = ({ blockViewModel }: SplitViewProps) => {
     return (
-        <div className="flex w-full h-full ml-8">
-            <div className="w-1/2 pl-4">
+        <div className="flex w-full h-full justify-center">
+            <div className="w-5/12 mx-8">
                 <SingleDoc
                     mode={DocMode.Edit}
                     blockViewModel={blockViewModel}
                 />
             </div>
-            <div className="w-1/2 pr-4">
+            <div className="w-5/12 mx-8">
                 <SingleDoc
                     mode={DocMode.Graph}
                     blockViewModel={blockViewModel}

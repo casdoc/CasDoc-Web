@@ -108,6 +108,7 @@ const FlowView = () => {
                 fitView
                 colorMode={colorMode}
                 defaultEdgeOptions={defaultEdgeOptions}
+                minZoom={0.4}
             >
                 <Background variant={"dots" as any} gap={12} size={1} />
                 <Panel position="top-right">
