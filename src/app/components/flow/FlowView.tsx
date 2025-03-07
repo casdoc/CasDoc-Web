@@ -7,12 +7,10 @@ import {
     useEdgesState,
     addEdge,
     Background,
-    Panel,
     MarkerType,
+    BackgroundVariant,
 } from "@xyflow/react";
-import { PiTreeStructureLight } from "react-icons/pi";
-import { FaRegMoon } from "react-icons/fa";
-import { IoSunny } from "react-icons/io5";
+
 import "@xyflow/react/dist/style.css";
 
 import { ZoomSlider } from "./zoom-slider/zoom-slider";
@@ -23,6 +21,7 @@ import {
     convertDataToNodes,
     convertDataToStructuralEdges,
 } from "./utils/converter";
+import { FlowSettingPanel } from "./setting-panel/FlowSettingPanel";
 
 const defaultEdgeOptions = {
     type: "default",
@@ -35,8 +34,8 @@ const defaultEdgeOptions = {
 const FlowView = () => {
     const [colorMode, setColorMode] = useState<"light" | "dark">("light");
     const [selectedLayout, setSelectedLayout] = useState("LR");
-    const [nodeWidth, setNodeWidth] = useState(242);
-    const [nodeHeight, setNodeHeight] = useState(12);
+    const nodeWidth = 242;
+    const nodeHeight = 12;
 
     const initialNodes = convertDataToNodes(dataItems);
     const initialStructuralEdges = convertDataToStructuralEdges(dataItems);
@@ -75,10 +74,8 @@ const FlowView = () => {
 
     const onLayout = useCallback(
         (direction: string) => {
-            const tmp = nodeWidth;
-            setNodeWidth(nodeHeight);
-            setNodeHeight(tmp);
-
+            const height = direction === "LR" ? nodeHeight : nodeWidth;
+            const width = direction === "TB" ? nodeWidth : nodeHeight;
             setSelectedLayout(direction);
 
             const newNodes = convertDataToNodes(dataItems);
@@ -87,8 +84,8 @@ const FlowView = () => {
                 newNodes,
                 newStructuralEdges,
                 direction,
-                nodeWidth,
-                nodeHeight
+                width,
+                height
             );
             const newProximityEdges = computeProximityEdges(layoutedNodes);
             setNodes(layoutedNodes);
@@ -110,37 +107,17 @@ const FlowView = () => {
                 defaultEdgeOptions={defaultEdgeOptions}
                 minZoom={0.4}
             >
-                <Background variant={"dots" as any} gap={12} size={1} />
-                <Panel position="top-right">
-                    {["TB", "LR"].map((key, _) => (
-                        <button
-                            key={key}
-                            onClick={() => onLayout(key)}
-                            className={`bg-gray-400 mr-3 p-2 rounded-md text-white shadow-md hover:opacity-70 ${
-                                key === selectedLayout && "bg-gray-500"
-                            }`}
-                        >
-                            <PiTreeStructureLight
-                                size={20}
-                                className={`${key === "TB" && "rotate-90"}`}
-                            />
-                        </button>
-                    ))}
-                    <button
-                        onClick={() =>
-                            setColorMode(
-                                colorMode === "light" ? "dark" : "light"
-                            )
-                        }
-                        className="bg-gray-400 mr-3 p-2 rounded-md text-white shadow-md hover:opacity-70"
-                    >
-                        {colorMode === "dark" ? (
-                            <FaRegMoon size={20} />
-                        ) : (
-                            <IoSunny size={20} />
-                        )}
-                    </button>
-                </Panel>
+                <Background
+                    variant={BackgroundVariant.Cross}
+                    gap={12}
+                    size={1}
+                />
+                <FlowSettingPanel
+                    onLayout={onLayout}
+                    selectedLayout={selectedLayout}
+                    colorMode={colorMode}
+                    setColorMode={setColorMode}
+                />
                 <ZoomSlider position="top-left" />
             </ReactFlow>
         </div>
