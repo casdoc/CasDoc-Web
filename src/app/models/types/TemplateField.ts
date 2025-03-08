@@ -1,6 +1,5 @@
-import { BaseEntity } from "@/app/models/entity/BaseEntity";
 import { FieldType } from "../enum/FieldType";
-export interface TemplateField extends BaseEntity {
+export interface TemplateField {
     key: string;
     type: FieldType;
     label: string;

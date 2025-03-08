@@ -1,3 +1,3 @@
 export interface JsonObject {
-    [key: string]: unknown;
+    [key: string]: any;
 }
