@@ -1,5 +1,7 @@
 "use client";
 
+export { TraceComponent } from "./TraceComponent/Extension";
+
 export { StarterKit } from "@tiptap/starter-kit";
 export { Highlight } from "@tiptap/extension-highlight";
 export { Underline } from "@tiptap/extension-underline";

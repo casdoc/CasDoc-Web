@@ -1,14 +1,21 @@
-import { mergeAttributes, Node } from "@tiptap/core";
+import { Node, mergeAttributes } from "@tiptap/core";
 import { ReactNodeViewRenderer } from "@tiptap/react";
+import { Component } from "./Component";
 
-import { TraceComponent } from "./TraceComponent";
-
-export default Node.create({
-    name: "TraceComponent",
+export const TraceComponent = Node.create({
+    name: "traceComponent",
 
     group: "block",
 
-    content: "inline*",
+    atom: true,
+
+    addAttributes() {
+        return {
+            count: {
+                default: 0,
+            },
+        };
+    },
 
     parseHTML() {
         return [
@@ -18,25 +25,11 @@ export default Node.create({
         ];
     },
 
-    addKeyboardShortcuts() {
-        return {
-            "Mod-Enter": () => {
-                return this.editor
-                    .chain()
-                    .insertContentAt(this.editor.state.selection.head, {
-                        type: this.type.name,
-                    })
-                    .focus()
-                    .run();
-            },
-        };
-    },
-
     renderHTML({ HTMLAttributes }) {
-        return ["TraceComponent", mergeAttributes(HTMLAttributes), 0];
+        return ["TraceComponent", mergeAttributes(HTMLAttributes)];
     },
 
     addNodeView() {
-        return ReactNodeViewRenderer(TraceComponent);
+        return ReactNodeViewRenderer(Component);
     },
 });
