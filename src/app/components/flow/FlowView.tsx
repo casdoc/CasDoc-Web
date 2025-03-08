@@ -9,6 +9,8 @@ import {
     Background,
     MarkerType,
     BackgroundVariant,
+    Controls,
+    MiniMap,
 } from "@xyflow/react";
 
 import "@xyflow/react/dist/style.css";
@@ -22,6 +24,11 @@ import {
     convertDataToStructuralEdges,
 } from "./utils/converter";
 import { FlowSettingPanel } from "./setting-panel/FlowSettingPanel";
+
+import CustomNode from "./CustomNode";
+const nodeTypes = {
+    custom: CustomNode,
+};
 
 const defaultEdgeOptions = {
     type: "default",
@@ -106,6 +113,7 @@ const FlowView = () => {
                 colorMode={colorMode}
                 defaultEdgeOptions={defaultEdgeOptions}
                 minZoom={0.4}
+                nodeTypes={nodeTypes}
             >
                 <Background
                     variant={BackgroundVariant.Cross}
@@ -119,6 +127,8 @@ const FlowView = () => {
                     setColorMode={setColorMode}
                 />
                 <ZoomSlider position="top-left" />
+                <MiniMap />
+                <Controls />
             </ReactFlow>
         </div>
     );

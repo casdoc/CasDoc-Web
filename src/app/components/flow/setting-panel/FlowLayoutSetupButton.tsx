@@ -11,11 +11,12 @@ export const FlowLayoutSetupButton = ({
         <>
             {["TB", "LR"].map((key) => (
                 <button
+                    disabled={true}
                     key={key}
                     onClick={() => onLayout(key)}
                     className={`bg-gray-400 mr-3 p-2 rounded-md text-white shadow-md hover:opacity-70 ${
                         key === selectedLayout && "bg-gray-500"
-                    }`}
+                    } cursor-not-allowed`}
                 >
                     <PiTreeStructureLight
                         size={20}

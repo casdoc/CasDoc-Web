@@ -1,11 +1,11 @@
-export interface NodeItems {
+export interface NodeItem {
     id: number;
     content: string;
     topic: string;
     parentId: number;
 }
 
-export const dataItems: NodeItems[] = [
+export const dataItems: NodeItem[] = [
     { id: 1, content: "SDD", topic: "SDD", parentId: 1 },
 
     { id: 2, content: "引言與範圍", topic: "SDD", parentId: 1 },

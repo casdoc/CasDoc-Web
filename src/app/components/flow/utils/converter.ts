@@ -13,6 +13,7 @@ export const convertDataToNodes = (data: NodeItems[]) => {
             id: item.id.toString(),
             position: defaultPosition,
             data: { label: item.content },
+            type: "custom",
         }));
 };
 
