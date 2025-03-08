@@ -15,6 +15,7 @@ export const computeProximityEdges = (
                 source: parent.id,
                 target: nodes[i].id,
                 arrowHeadType: "arrowclosed",
+                type: "bezier",
             });
         }
     }
