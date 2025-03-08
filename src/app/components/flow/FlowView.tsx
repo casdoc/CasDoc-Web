@@ -11,6 +11,8 @@ import {
     BackgroundVariant,
     Controls,
     MiniMap,
+    ConnectionMode,
+    ConnectionLineType,
 } from "@xyflow/react";
 
 import "@xyflow/react/dist/style.css";
@@ -109,11 +111,13 @@ const FlowView = () => {
                 onNodesChange={onNodesChange}
                 onEdgesChange={onEdgesChange}
                 onConnect={onConnect}
-                fitView
-                colorMode={colorMode}
-                defaultEdgeOptions={defaultEdgeOptions}
-                minZoom={0.4}
                 nodeTypes={nodeTypes}
+                fitView
+                connectionMode={ConnectionMode.Loose}
+                defaultEdgeOptions={defaultEdgeOptions}
+                connectionLineType={ConnectionLineType.Bezier}
+                colorMode={colorMode}
+                minZoom={0.4}
             >
                 <Background
                     variant={BackgroundVariant.Cross}

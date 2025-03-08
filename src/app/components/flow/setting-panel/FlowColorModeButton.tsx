@@ -10,8 +10,9 @@ export const FlowColorModeButton = ({
 }) => {
     return (
         <button
+            disabled={true}
             onClick={() => setMode(mode === "light" ? "dark" : "light")}
-            className="bg-gray-400 mr-3 p-2 rounded-md text-white shadow-md hover:opacity-70"
+            className="bg-gray-400 mr-3 p-2 rounded-md text-white shadow-md hover:opacity-70 cursor-not-allowed"
         >
             {mode === "dark" ? <FaRegMoon size={20} /> : <IoSunny size={20} />}
         </button>

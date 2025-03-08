@@ -1,6 +1,6 @@
-import { NodeItems } from "../demo-data/NodeItems";
+import { NodeItem } from "../demo-data/NodeItems";
 
-export const convertDataToNodes = (data: NodeItems[]) => {
+export const convertDataToNodes = (data: NodeItem[]) => {
     const defaultPosition = { x: 0, y: 0 };
     return data
         .filter((item) => {
@@ -17,7 +17,7 @@ export const convertDataToNodes = (data: NodeItems[]) => {
         }));
 };
 
-export const convertDataToStructuralEdges = (data: NodeItems[]) => {
+export const convertDataToStructuralEdges = (data: NodeItem[]) => {
     const edges = [];
     if (data.length > 0) {
         for (let i = 1; i < data.length; i++) {
@@ -26,6 +26,7 @@ export const convertDataToStructuralEdges = (data: NodeItems[]) => {
                 source: data[i].parentId!.toString(),
                 target: data[i].id.toString(),
                 arrowHeadType: "arrowclosed",
+                type: "smoothstep",
             });
         }
     }
