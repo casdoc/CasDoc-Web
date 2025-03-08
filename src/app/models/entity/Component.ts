@@ -6,7 +6,7 @@ export class Component extends BaseEntity {
     private _topicType: string;
     private _templateType: string;
     private _connections: Connection[];
-    private _data: JsonObject;
+    private _content: JsonObject;
 
     constructor(
         id: string,
@@ -16,14 +16,14 @@ export class Component extends BaseEntity {
         topicType: string,
         templateType: string,
         connections: Connection[],
-        data: JsonObject
+        content: JsonObject
     ) {
         super(id, createdAt, updatedAt);
         this._documentId = documentId;
         this._topicType = topicType;
         this._templateType = templateType;
         this._connections = connections;
-        this._data = data;
+        this._content = content;
     }
 
     getDocumentId(): string {
@@ -84,15 +84,15 @@ export class Component extends BaseEntity {
         }
     }
 
-    getData(): JsonObject {
-        return this._data;
+    getContent(): JsonObject {
+        return this._content;
     }
 
     setData(value: JsonObject): void {
         if (!Array.isArray(value)) {
             throw new Error("Data must be an array of JsonObject.");
         }
-        this._data = value;
+        this._content = value;
         this.updatedAt = new Date();
     }
 }

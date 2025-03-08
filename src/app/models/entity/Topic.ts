@@ -4,10 +4,8 @@ import { BaseEntity } from "@/app/models/entity/BaseEntity";
 export class Topic extends BaseEntity {
     private _documentId: string;
     private _documentType: DocumentType;
-    private _type: string;
-    private _title: string;
+    private _name: string;
     private _description: string;
-    private _sortOrder: number;
 
     constructor(
         id: string,
@@ -15,18 +13,14 @@ export class Topic extends BaseEntity {
         updatedAt: Date,
         documentId: string,
         documentType: DocumentType,
-        type: string,
-        title: string,
-        description: string,
-        sortOrder: number
+        name: string,
+        description: string
     ) {
         super(id, createdAt, updatedAt);
         this._documentId = documentId;
         this._documentType = documentType;
-        this._type = type;
-        this._title = title;
+        this._name = name;
         this._description = description;
-        this._sortOrder = sortOrder;
     }
 
     getDocumentId(): string {
@@ -50,27 +44,15 @@ export class Topic extends BaseEntity {
         this.updatedAt = new Date();
     }
 
-    getType(): string {
-        return this._type;
+    getName(): string {
+        return this._name;
     }
 
     setType(value: string): void {
         if (!value.trim()) {
             throw new Error("Type cannot be empty.");
         }
-        this._type = value;
-        this.updatedAt = new Date();
-    }
-
-    getTitle(): string {
-        return this._title;
-    }
-
-    setTitle(value: string): void {
-        if (!value.trim()) {
-            throw new Error("Title cannot be empty.");
-        }
-        this._title = value;
+        this._name = value;
         this.updatedAt = new Date();
     }
 
@@ -80,18 +62,6 @@ export class Topic extends BaseEntity {
 
     setDescription(value: string): void {
         this._description = value;
-        this.updatedAt = new Date();
-    }
-
-    getSortOrder(): number {
-        return this._sortOrder;
-    }
-
-    setSortOrder(value: number): void {
-        if (!Number.isInteger(value) || value < 0) {
-            throw new Error("Sort order must be a non-negative integer.");
-        }
-        this._sortOrder = value;
         this.updatedAt = new Date();
     }
 }
