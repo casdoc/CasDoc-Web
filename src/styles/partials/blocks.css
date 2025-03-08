@@ -53,7 +53,7 @@
             @apply font-bold block;
         }
 
-        > button {
+        /* > button {
             @apply bg-transparent border-none cursor-pointer flex items-center justify-center rounded text-xs h-5 w-5;
 
             &:hover {
@@ -63,7 +63,7 @@
             &::before {
                 content: "\25B6";
             }
-        }
+        } */
 
         &.is-open > button::before {
             @apply rotate-90;
