@@ -2,12 +2,12 @@ import { DocMode } from "@/app/models/enum/DocMode";
 import { useDocModeViewModel } from "@/app/viewModels/DocModeViewModel";
 import DocModeBar from "./DocModeBar";
 import SplitView from "./SplitView";
-import { useBlockViewModel } from "@/app/viewModels/BlockViewModel";
+// import { useBlockViewModel } from "@/app/viewModels/BlockViewModel";
 import SingleDoc from "./SingleDoc";
 
 const DocView = () => {
     const docModeViewModel = useDocModeViewModel();
-    const blockViewModel = useBlockViewModel();
+    // const blockViewModel = useBlockViewModel();
 
     return (
         <div
@@ -19,15 +19,9 @@ const DocView = () => {
         >
             <DocModeBar docModeViewModel={docModeViewModel} />
             {docModeViewModel.mode === DocMode.Split ? (
-                <SplitView
-                    setDocMode={docModeViewModel.setDocMode}
-                    blockViewModel={blockViewModel}
-                />
+                <SplitView setDocMode={docModeViewModel.setDocMode} />
             ) : (
-                <SingleDoc
-                    mode={docModeViewModel.mode}
-                    blockViewModel={blockViewModel}
-                />
+                <SingleDoc mode={docModeViewModel.mode} />
             )}
         </div>
     );

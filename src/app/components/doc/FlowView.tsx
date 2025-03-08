@@ -9,8 +9,8 @@ import {
     Background,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { Block } from "@/app/models/types/Block";
-import { BlockViewModel } from "@/app/viewModels/BlockViewModel";
+// import { Block } from "@/app/models/types/Block";
+// import { BlockViewModel } from "@/app/viewModels/BlockViewModel";
 
 interface FlowViewProps {
     blockViewModel: BlockViewModel;

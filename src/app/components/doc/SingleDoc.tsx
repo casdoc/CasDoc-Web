@@ -1,12 +1,12 @@
 import { DocMode } from "@/app/models/enum/DocMode";
-import EditorView from "./EditorView";
+// import EditorView from "./EditorView";
 import GraphView from "./GraphView";
-import { BlockViewModel } from "@/app/viewModels/BlockViewModel";
+// import { BlockViewModel } from "@/app/viewModels/BlockViewModel";
 import { BlockEditor } from "@/components/BlockEditor/BlockEditor";
 
 interface SingleDocProps {
     mode: DocMode;
-    blockViewModel: BlockViewModel;
+    // blockViewModel: BlockViewModel;
 }
 
 const SingleDoc = ({ mode, blockViewModel }: SingleDocProps) => {

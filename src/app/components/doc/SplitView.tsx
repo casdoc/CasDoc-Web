@@ -1,10 +1,8 @@
 import SingleDoc from "./SingleDoc";
 import { DocMode } from "@/app/models/enum/DocMode";
-import { BlockViewModel } from "@/app/viewModels/BlockViewModel";
 
 interface SplitViewProps {
     setDocMode: (mode: DocMode) => void;
-    blockViewModel: BlockViewModel;
 }
 
 const SplitView = ({ blockViewModel }: SplitViewProps) => {
@@ -13,15 +11,15 @@ const SplitView = ({ blockViewModel }: SplitViewProps) => {
             <div className="w-1/2 pl-4">
                 <SingleDoc
                     mode={DocMode.Edit}
-                    blockViewModel={blockViewModel}
+                    // blockViewModel={blockViewModel}
                 />
             </div>
-            <div className="w-1/2 pr-4">
+            {/* <div className="w-1/2 pr-4">
                 <SingleDoc
                     mode={DocMode.Graph}
-                    blockViewModel={blockViewModel}
+                    // blockViewModel={blockViewModel}
                 />
-            </div>
+            </div> */}
         </div>
     );
 };
