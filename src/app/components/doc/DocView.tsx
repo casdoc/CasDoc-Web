@@ -1,28 +1,26 @@
 import { DocMode } from "@/app/models/enum/DocMode";
 import { useDocModeViewModel } from "@/app/viewModels/DocModeViewModel";
-import DocModeBar from "./DocModeBar";
 import SplitView from "./SplitView";
-// import { useBlockViewModel } from "@/app/viewModels/BlockViewModel";
-import SingleDoc from "./SingleDoc";
-
+import { EditorHeader } from "@/components/BlockEditor/EditorHeader";
+import { useBlockEditor } from "@/hooks/useBlockEditor";
+import { BlockEditor } from "@/components/BlockEditor/BlockEditor";
 const DocView = () => {
-    const docModeViewModel = useDocModeViewModel();
-    // const blockViewModel = useBlockViewModel();
-
+    const { mode, setDocMode } = useDocModeViewModel();
+    const { editor } = useBlockEditor({});
+    if (!editor) {
+        return null;
+    }
     return (
-        <div
-            className={`w-full my-20 ${
-                docModeViewModel.mode === DocMode.Split
-                    ? "min-w-fit"
-                    : "max-w-3xl"
-            }`}
-        >
-            <DocModeBar docModeViewModel={docModeViewModel} />
-            {docModeViewModel.mode === DocMode.Split ? (
-                <SplitView setDocMode={docModeViewModel.setDocMode} />
-            ) : (
-                <SingleDoc mode={docModeViewModel.mode} />
-            )}
+        <div className="relative flex flex-col flex-1 h-dvh w-dvw ">
+            <EditorHeader mode={mode as DocMode} setDocMode={setDocMode} />
+            {mode === DocMode.Split ? (
+                <div>splitView</div>
+            ) : mode === DocMode.Edit ? (
+                <BlockEditor editor={editor} />
+            ) : mode === DocMode.Graph ? (
+                // <GraphView blockViewModel={blockViewModel} />
+                <div>Graph View</div>
+            ) : null}
         </div>
     );
 };
