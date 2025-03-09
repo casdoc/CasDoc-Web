@@ -1,6 +1,6 @@
 import { Editor, EditorContent } from "@tiptap/react";
-import "@/styles/index.css";
 import { ContentItemMenu } from "../DragMenu/ContentItemMenu";
+import "@/styles/index.css";
 interface BlockEditorProps {
     editor: Editor;
 }

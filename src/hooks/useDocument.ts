@@ -20,7 +20,13 @@ export function useDocumentViewModel() {
                 "default-project",
                 "Untitled Document",
                 "No description",
-                []
+                [
+                    {
+                        type: "heading",
+                        attrs: { textAlign: null, level: 1 },
+                        content: [{ type: "text", text: "" }],
+                    },
+                ]
             );
             DocumentService.saveDocument(emptyDoc);
             docs = [emptyDoc];

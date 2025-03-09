@@ -18,7 +18,6 @@ export const SlashCommand = Extension.create({
     name: extensionName,
 
     priority: 200,
-
     onCreate() {
         popup = tippy("body", {
             interactive: true,
@@ -42,11 +41,11 @@ export const SlashCommand = Extension.create({
     addProseMirrorPlugins() {
         return [
             Suggestion({
+                pluginKey: new PluginKey(extensionName),
                 editor: this.editor,
                 char: "/",
                 allowSpaces: true,
                 startOfLine: true,
-                pluginKey: new PluginKey(extensionName),
                 allow: ({ state, range }) => {
                     const $from = state.doc.resolve(range.from);
                     const isRootDepth = $from.depth === 1;

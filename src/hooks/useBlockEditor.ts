@@ -22,27 +22,31 @@ export const useBlockEditor = ({
         : { type: "doc", content: [] };
     const editor = useEditor({
         ...editorOptions,
+        shouldRerenderOnTransaction: false,
+        // autofocus: true,
         extensions: [...ExtensionKit()],
         editorProps: {
             attributes: {
-                class: "prose prose-sm sm:prose-base lg:prose-lg xl:prose-2xl m-5 focus:outline-none",
+                class: "prose prose-sm sm:prose-base lg:prose-lg xl:prose-2xl m-5 focus:outline-none min-h-full",
+                autocomplete: "off",
+                autocorrect: "off",
+                autocapitalize: "off",
             },
         },
         // content: initialContent,
-        content: tmp,
+        // content: tmp,
         onUpdate({ editor }) {
             console.debug(editor.getJSON().content);
             const updatedContent = editor.getJSON().content as JsonObject[];
-            // console.debug("updatedContent", updatedContent);
             document?.setAllContent(updatedContent);
             if (document) updateDocument(document);
         },
-        // onCreate({ editor }) {
-        //     editor.commands.setContent(
-        //         { type: "doc", content: document?.getContent() },
-        //         false
-        //     );
-        // },
+        onCreate({ editor }) {
+            editor.commands.setContent(
+                { type: "doc", content: document?.getContent() },
+                false
+            );
+        },
     });
 
     // useEffect(() => {
