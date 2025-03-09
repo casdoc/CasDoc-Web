@@ -18,7 +18,7 @@ export const useBlockEditor = ({ editorOptions }: BlockEditorProps) => {
                 class: "prose prose-sm sm:prose-base lg:prose-lg xl:prose-2xl m-5 focus:outline-none",
             },
         },
-
+        onUpdate({ editor }) {},
         // content: tmpData
         content: `
          <p>
