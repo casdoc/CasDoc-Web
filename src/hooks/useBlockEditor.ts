@@ -7,23 +7,15 @@ interface BlockEditorProps {
     document?: Document;
     updateDocument: (document: Document) => void;
 }
-declare global {
-    interface Window {
-        editor: Editor | null;
-    }
-}
+
 export const useBlockEditor = ({
     document,
     updateDocument,
     ...editorOptions
 }: BlockEditorProps & Partial<Omit<EditorOptions, "extensions">>) => {
-    const initialContent = document
-        ? { type: "doc", content: document.getContent() }
-        : { type: "doc", content: [] };
     const editor = useEditor({
         ...editorOptions,
-        shouldRerenderOnTransaction: false,
-        // autofocus: true,
+        autofocus: true,
         extensions: [...ExtensionKit()],
         editorProps: {
             attributes: {
@@ -33,8 +25,7 @@ export const useBlockEditor = ({
                 autocapitalize: "off",
             },
         },
-        // content: initialContent,
-        // content: tmp,
+
         onUpdate({ editor }) {
             console.debug(editor.getJSON().content);
             const updatedContent = editor.getJSON().content as JsonObject[];
@@ -48,10 +39,6 @@ export const useBlockEditor = ({
             );
         },
     });
-
-    // useEffect(() => {
-    //     window.editor = editor as Editor;
-    // }, [editor]);
 
     return { editor };
 };

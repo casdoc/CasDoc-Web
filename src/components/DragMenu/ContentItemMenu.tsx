@@ -46,7 +46,7 @@ export const ContentItemMenu = ({
             }}
         >
             {isEditable ? (
-                <div className="flex items-center gap-0.5">
+                <div className="flex items-center ">
                     <Toolbar.Button onClick={actions.handleAdd}>
                         <Icon name="Plus" />
                     </Toolbar.Button>
