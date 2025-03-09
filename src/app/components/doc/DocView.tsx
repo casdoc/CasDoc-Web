@@ -28,7 +28,7 @@ const DocView = ({ documentId }: DocViewProps) => {
             <EditorHeader mode={mode as DocMode} setDocMode={setDocMode} />
             {mode === DocMode.Split ? (
                 <div className="flex w-full h-full">
-                    <div className="w-1/2 ">
+                    <div className="w-1/2 pl-3">
                         <BlockEditor editor={editor} />
                     </div>
                     <div className={dividerClassName}></div>

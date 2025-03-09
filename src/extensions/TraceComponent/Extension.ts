@@ -7,7 +7,8 @@ export const TraceComponent = Node.create({
 
     group: "block",
 
-    atom: true,
+    content: "block+",
+    // atom: true,
 
     addAttributes() {
         return {
