@@ -9,7 +9,7 @@ export default function Home() {
     return (
         <NodeSelectionProvider>
             <div className="min-w-fit h-screen flex flex-col items-center bg-gray-100 text-black">
-                <DocView />
+                <DocView documentId="default-document" />
                 <EditPanel />
             </div>
         </NodeSelectionProvider>
