@@ -21,6 +21,7 @@ import {
     TaskItem,
     TaskList,
     Underline,
+    TraceComponent,
 } from ".";
 
 export const ExtensionKit = () => [
@@ -61,6 +62,7 @@ export const ExtensionKit = () => [
         placeholder: () => "",
     }),
     Focus,
+    TraceComponent,
 ];
 
 export default ExtensionKit;
