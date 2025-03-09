@@ -33,11 +33,15 @@ const nodeTypes = {
 };
 
 const defaultEdgeOptions = {
-    type: "default",
+    type: "smoothstep",
     markerEnd: {
         type: MarkerType.ArrowClosed,
         color: "#b1b1b7",
+        width: 30,
+        height: 30,
     },
+    animated: false,
+    curvature: 0.1,
 };
 
 const FlowView = () => {
@@ -115,7 +119,7 @@ const FlowView = () => {
                 fitView
                 connectionMode={ConnectionMode.Loose}
                 defaultEdgeOptions={defaultEdgeOptions}
-                connectionLineType={ConnectionLineType.Bezier}
+                connectionLineType={ConnectionLineType.SmoothStep}
                 colorMode={colorMode}
                 minZoom={0.4}
             >

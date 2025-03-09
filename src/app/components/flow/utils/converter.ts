@@ -26,7 +26,7 @@ export const convertDataToStructuralEdges = (data: NodeItem[]) => {
                 source: data[i].parentId!.toString(),
                 target: data[i].id.toString(),
                 arrowHeadType: "arrowclosed",
-                type: "smoothstep",
+                type: "bazier",
             });
         }
     }
