@@ -8,7 +8,7 @@ import { NodeSelectionProvider } from "@/app/viewModels/NodeSelectionContext";
 export default function Home() {
     return (
         <NodeSelectionProvider>
-            <div className="min-w-fit min-h-screen flex flex-col items-center bg-gray-100 text-black">
+            <div className="min-w-fit h-screen flex flex-col items-center bg-gray-100 text-black">
                 <DocView />
                 <EditPanel />
             </div>

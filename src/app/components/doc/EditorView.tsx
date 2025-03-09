@@ -1,13 +1,10 @@
 "use client";
 
-import { BlockViewModel } from "@/app/viewModels/BlockViewModel";
 import { useEditor, EditorContent } from "@tiptap/react";
 import { ExtensionKit } from "@/extensions/ExtensionKit";
 import tmpData from "./tmp.json";
-export interface EditorViewProps {
-    blockViewModel: BlockViewModel;
-}
-const EditorView = ({ blockViewModel }: EditorViewProps) => {
+
+const EditorView = () => {
     const editor = useEditor({
         extensions: [...ExtensionKit()],
         editorProps: {
@@ -30,7 +27,7 @@ const EditorView = ({ blockViewModel }: EditorViewProps) => {
     }
     console.debug(editor.getJSON());
     return (
-        <div className="max-w-4xl min-h-screen bg-white rounded-lg shadow-xl py-10 px-6">
+        <div className="w-4xl h-screen bg-white rounded-lg shadow-xl py-10 px-6">
             {/* <div className="relative flex flex-col flex-1 h-full overflow-hidden border-red-400 border-2"> */}
             <EditorContent editor={editor} />
             {/* </div> */}

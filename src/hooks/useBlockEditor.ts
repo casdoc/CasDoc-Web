@@ -18,17 +18,9 @@ export const useBlockEditor = ({ editorOptions }: BlockEditorProps) => {
                 class: "prose prose-sm sm:prose-base lg:prose-lg xl:prose-2xl m-5 focus:outline-none",
             },
         },
-
-        // content: tmpData
-        content: `
-         <p>
-            This is still the text editor you’re used to, but enriched with node views.
-            </p>
-            <TraceComponent count="0"/>
-            <p>
-            Did you see that? That’s a React component. We are really living in the future.
-            </p>`,
+        immediatelyRender: false,
+        content: tmpData,
     });
-    window.editor = editor;
+    // window.editor = editor;
     return { editor };
 };
