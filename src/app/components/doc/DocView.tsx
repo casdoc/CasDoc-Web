@@ -6,6 +6,7 @@ import { BlockEditor } from "@/components/BlockEditor/BlockEditor";
 import GraphView from "../flow/GraphView";
 import { useDocumentViewModel } from "@/hooks/useDocument";
 import { cn } from "@/utils";
+
 interface DocViewProps {
     documentId: string;
 }
@@ -29,11 +30,13 @@ const DocView = ({ documentId }: DocViewProps) => {
             <EditorHeader mode={mode as DocMode} setDocMode={setDocMode} />
             {mode === DocMode.Split ? (
                 <div className="flex w-full h-full">
-                    <div className="w-1/2 ">
+                    <div className="w-1/2">
                         <BlockEditor editor={editor} />
                     </div>
                     <div className={dividerClassName}></div>
-                    <div className="w-1/2 ">Graph View</div>
+                    <div className="w-1/2 flex-1 overflow-y-auto h-full">
+                        <GraphView />
+                    </div>
                 </div>
             ) : mode === DocMode.Edit ? (
                 <BlockEditor editor={editor} />

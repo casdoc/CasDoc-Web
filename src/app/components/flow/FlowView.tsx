@@ -108,7 +108,7 @@ const FlowView = () => {
     );
 
     return (
-        <div className="w-full h-screen bg-white rounded-lg">
+        <div className="w-full h-full bg-white rounded-lg">
             <ReactFlow
                 nodes={nodes}
                 edges={edges}
