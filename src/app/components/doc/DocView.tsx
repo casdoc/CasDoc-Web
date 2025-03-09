@@ -3,11 +3,21 @@ import { useDocModeViewModel } from "@/app/viewModels/DocModeViewModel";
 import { EditorHeader } from "@/components/BlockEditor/EditorHeader";
 import { useBlockEditor } from "@/hooks/useBlockEditor";
 import { BlockEditor } from "@/components/BlockEditor/BlockEditor";
+import { useDocumentViewModel } from "@/hooks/useDocument";
 import { cn } from "@/utils";
-const DocView = () => {
+interface DocViewProps {
+    documentId: string;
+}
+
+const DocView = ({ documentId }: DocViewProps) => {
     const { mode, setDocMode } = useDocModeViewModel();
-    const { editor } = useBlockEditor({});
-    if (!editor) {
+    const { getDocumentById, updateDocument } = useDocumentViewModel();
+    const document = getDocumentById(documentId);
+    const { editor } = useBlockEditor({
+        document,
+        updateDocument,
+    });
+    if (!editor || !document) {
         return null;
     }
     const dividerClassName = cn(
