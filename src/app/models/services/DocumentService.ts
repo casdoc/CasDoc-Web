@@ -1,6 +1,6 @@
 import { Document } from "@/app/models/entity/Document";
 
-const STORAGE_KEY = "documents";
+const STORAGE_KEY = "DOCUMENTS";
 
 export class DocumentService {
     static getAllDocuments(): Document[] {

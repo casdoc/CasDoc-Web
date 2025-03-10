@@ -1,8 +1,8 @@
 import ExtensionKit from "@/extensions/ExtensionKit";
-import { Editor, EditorOptions, useEditor } from "@tiptap/react";
+import { EditorOptions, useEditor } from "@tiptap/react";
 import { JsonObject } from "@/app/models/types/JsonObject";
 import { Document } from "@/app/models/entity/Document";
-import tmp from "@/app/components/doc/tmp.json";
+// import tmp from "@/app/components/doc/tmp.json";
 interface BlockEditorProps {
     document?: Document;
     updateDocument: (document: Document) => void;
@@ -16,6 +16,7 @@ export const useBlockEditor = ({
     const editor = useEditor({
         ...editorOptions,
         autofocus: true,
+        immediatelyRender: false,
         extensions: [...ExtensionKit()],
         editorProps: {
             attributes: {
