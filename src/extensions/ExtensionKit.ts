@@ -22,8 +22,11 @@ import {
     TaskList,
     Underline,
     TopicComponentX,
+    TopicComponentY,
     TemplateComponentA,
     TemplateComponentB,
+    TemplateComponentC,
+    TemplateComponentD,
 } from ".";
 
 export const ExtensionKit = () => [
@@ -65,8 +68,11 @@ export const ExtensionKit = () => [
     }),
     Focus,
     TopicComponentX,
+    TopicComponentY,
     TemplateComponentA,
     TemplateComponentB,
+    TemplateComponentC,
+    TemplateComponentD,
 ];
 
 export default ExtensionKit;

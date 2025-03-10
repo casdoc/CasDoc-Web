@@ -17,7 +17,7 @@ export const convertDataToNodes = (data: any) => {
     //         type: "custom",
     //     }));
     return data.map((item: any) => ({
-        id: item.type,
+        id: `${item.id}`,
         position: defaultPosition,
         data: { label: item.type },
         type: "custom",
@@ -36,9 +36,9 @@ export const convertDataToStructuralEdges = (data: any) => {
             //     type: "default",
             // });
             edges.push({
-                id: `e-${data[i].attrs.parent}-${data[i].type}`,
-                source: data[i].attrs.parent,
-                target: data[i].type,
+                id: `e-${data[i].attrs.parent}-${data[i].id}`,
+                source: `${data[i].attrs.parent}`,
+                target: `${data[i].id}`,
                 arrowHeadType: MarkerType.ArrowClosed,
                 type: "default",
             });

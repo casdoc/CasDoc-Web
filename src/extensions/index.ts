@@ -1,8 +1,11 @@
 "use client";
 
-export { TopicComponentX } from "./TopicComponentX/Extension";
-export { TemplateComponentA } from "./TemplateComponentA/Extension";
-export { TemplateComponentB } from "./TemplateComponentB/Extension";
+export { TopicComponentX } from "./topic/TopicComponentX/Extension";
+export { TopicComponentY } from "./topic/TopicComponentY/Extension";
+export { TemplateComponentA } from "./template/TemplateComponentA/Extension";
+export { TemplateComponentB } from "./template/TemplateComponentB/Extension";
+export { TemplateComponentC } from "./template/TemplateComponentC/Extension";
+export { TemplateComponentD } from "./template/TemplateComponentD/Extension";
 
 export { StarterKit } from "@tiptap/starter-kit";
 export { Highlight } from "@tiptap/extension-highlight";

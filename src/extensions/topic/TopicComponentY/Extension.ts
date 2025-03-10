@@ -2,8 +2,8 @@ import { Node, mergeAttributes } from "@tiptap/core";
 import { ReactNodeViewRenderer } from "@tiptap/react";
 import { Component } from "./Component";
 
-export const TemplateComponentB = Node.create({
-    name: "templateComponentB",
+export const TopicComponentY = Node.create({
+    name: "topicComponentY",
 
     group: "block",
 
@@ -11,9 +11,6 @@ export const TemplateComponentB = Node.create({
 
     addAttributes() {
         return {
-            count: {
-                default: 0,
-            },
             parent: {
                 default: "",
             },
@@ -23,13 +20,13 @@ export const TemplateComponentB = Node.create({
     parseHTML() {
         return [
             {
-                tag: "TemplateComponentB",
+                tag: "TopicComponentY",
             },
         ];
     },
 
     renderHTML({ HTMLAttributes }) {
-        return ["TemplateComponentB", mergeAttributes(HTMLAttributes)];
+        return ["TopicComponentY", mergeAttributes(HTMLAttributes)];
     },
 
     addNodeView() {
