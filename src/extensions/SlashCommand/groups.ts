@@ -2,6 +2,22 @@ import { Group } from "./types";
 
 export const GROUPS: Group[] = [
     {
+        name: "topic",
+        title: "Topic",
+        commands: [
+            {
+                name: "he",
+                label: "Heading 1",
+                iconName: "Heading1",
+                description: "High priority section title",
+                aliases: ["h1"],
+                action: (editor) => {
+                    editor.chain().focus().setHeading({ level: 1 }).run();
+                },
+            },
+        ],
+    },
+    {
         name: "format",
         title: "Format",
         commands: [
