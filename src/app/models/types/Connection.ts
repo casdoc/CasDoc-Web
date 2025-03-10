@@ -1,4 +1,5 @@
 export interface Connection {
+    sourceId: string;
     targetId: string;
-    label: string;
+    description: string;
 }
