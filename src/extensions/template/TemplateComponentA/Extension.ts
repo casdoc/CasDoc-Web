@@ -14,6 +14,9 @@ export const TemplateComponentA = Node.create({
             parent: {
                 default: "",
             },
+            content: {
+                default: "系統架構",
+            },
         };
     },
 

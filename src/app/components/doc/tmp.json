@@ -5,7 +5,8 @@
             "id": 0,
             "type": "paragraph",
             "attrs": {
-                "textAlign": null
+                "textAlign": null,
+                "content": "SDD"
             },
             "content": [
                 {
@@ -18,7 +19,8 @@
             "id": 1,
             "type": "topicComponentX",
             "attrs": {
-                "parent": 0
+                "parent": 0,
+                "content": "系統概述"
             },
             "content": [
                 {
@@ -33,7 +35,8 @@
             "id": 2,
             "type": "templateComponentA",
             "attrs": {
-                "parent": 1
+                "parent": 1,
+                "content": "系統架構"
             },
             "content": [
                 {
@@ -48,7 +51,8 @@
             "id": 3,
             "type": "templateComponentB",
             "attrs": {
-                "parent": 1
+                "parent": 1,
+                "content": "系統需求"
             },
             "content": [
                 {
@@ -63,7 +67,8 @@
             "id": 4,
             "type": "topicComponentY",
             "attrs": {
-                "parent": 0
+                "parent": 0,
+                "content": "測試計劃"
             },
             "content": [
                 {
@@ -78,7 +83,8 @@
             "id": 5,
             "type": "templateComponentC",
             "attrs": {
-                "parent": 4
+                "parent": 4,
+                "content": "單元測試"
             },
             "content": [
                 {
@@ -93,7 +99,8 @@
             "id": 6,
             "type": "templateComponentD",
             "attrs": {
-                "parent": 4
+                "parent": 4,
+                "content": "整合測試"
             },
             "content": [
                 {
@@ -108,7 +115,8 @@
             "id": 7,
             "type": "templateComponentB",
             "attrs": {
-                "parent": 1
+                "parent": 1,
+                "content": "系統需求"
             },
             "content": [
                 {

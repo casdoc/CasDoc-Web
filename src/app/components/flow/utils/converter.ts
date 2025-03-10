@@ -19,7 +19,7 @@ export const convertDataToNodes = (data: any) => {
     return data.map((item: any) => ({
         id: `${item.id}`,
         position: defaultPosition,
-        data: { label: item.type },
+        data: { label: item.attrs.content || "empty" },
         type: "custom",
     }));
 };

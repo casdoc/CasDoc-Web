@@ -1,15 +1,17 @@
 import { useEffect, useState } from "react";
 import { useNodeSelection } from "../../viewModels/NodeSelectionContext";
-import { dataItems, NodeItem } from "../flow/demo-data/NodeItems";
+import tmp from "@/app/components/doc/tmp.json";
 
 export const EditPanel = () => {
     const { selectedNode, selectNode } = useNodeSelection();
-    const [node, setNode] = useState<NodeItem>();
+    const [node, setNode] = useState<any>();
     const [isMounted, setIsMounted] = useState(false);
 
     useEffect(() => {
         if (selectedNode) {
-            const item = dataItems.find((item) => item.id == selectedNode);
+            const item = tmp.content.find(
+                (item) => `${item.id}` === `${selectedNode}`
+            );
             setNode(item);
         }
     }, [selectedNode]);
@@ -41,7 +43,7 @@ export const EditPanel = () => {
                 <div className="mt-4">
                     <p className="text-sm text-gray-600">ID: {selectedNode}</p>
                     <pre className="bg-gray-100 p-2 mt-2 rounded text-xs">
-                        {node?.content}
+                        {node?.attrs.content}
                     </pre>
                 </div>
             ) : (
