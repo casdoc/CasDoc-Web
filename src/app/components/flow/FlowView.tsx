@@ -18,7 +18,8 @@ import {
 import "@xyflow/react/dist/style.css";
 
 import { ZoomSlider } from "./zoom-slider/zoom-slider";
-import { dataItems } from "./demo-data/NodeItems";
+// import { dataItems } from "./demo-data/NodeItems";
+import tmp from "@/app/components/doc/tmp.json";
 import { getLayoutedElements } from "./utils/getLayoutedElements";
 import { computeProximityEdges } from "./utils/computeProximityEdges";
 import {
@@ -50,8 +51,8 @@ const FlowView = () => {
     const nodeWidth = 242;
     const nodeHeight = 12;
 
-    const initialNodes = convertDataToNodes(dataItems);
-    const initialStructuralEdges = convertDataToStructuralEdges(dataItems);
+    const initialNodes = convertDataToNodes(tmp.content);
+    const initialStructuralEdges = convertDataToStructuralEdges(tmp.content);
     const { nodes: layoutedNodes } = getLayoutedElements(
         initialNodes,
         initialStructuralEdges,
@@ -66,8 +67,8 @@ const FlowView = () => {
     const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
     useEffect(() => {
-        const newNodes = convertDataToNodes(dataItems);
-        const newStructuralEdges = convertDataToStructuralEdges(dataItems);
+        const newNodes = convertDataToNodes(tmp.content);
+        const newStructuralEdges = convertDataToStructuralEdges(tmp.content);
         const { nodes: layoutedNodes } = getLayoutedElements(
             newNodes,
             newStructuralEdges,
@@ -91,8 +92,10 @@ const FlowView = () => {
             const width = direction === "TB" ? nodeWidth : nodeHeight;
             setSelectedLayout(direction);
 
-            const newNodes = convertDataToNodes(dataItems);
-            const newStructuralEdges = convertDataToStructuralEdges(dataItems);
+            const newNodes = convertDataToNodes(tmp.content);
+            const newStructuralEdges = convertDataToStructuralEdges(
+                tmp.content
+            );
             const { nodes: layoutedNodes } = getLayoutedElements(
                 newNodes,
                 newStructuralEdges,

@@ -1,6 +1,8 @@
 "use client";
 
-export { TraceComponent } from "./TraceComponent/Extension";
+export { TopicComponentX } from "./TopicComponentX/Extension";
+export { TemplateComponentA } from "./TemplateComponentA/Extension";
+export { TemplateComponentB } from "./TemplateComponentB/Extension";
 
 export { StarterKit } from "@tiptap/starter-kit";
 export { Highlight } from "@tiptap/extension-highlight";

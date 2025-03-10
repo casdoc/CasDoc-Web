@@ -13,10 +13,10 @@ export const Component: React.FC<NodeViewProps> = ({
 
     return (
         <NodeViewWrapper>
-            <label contentEditable={false}>Component</label>
-            <div className="bg-blue-700">
+            <label contentEditable={false}>Topic X</label>
+            <div className="bg-red-400">
                 <button onClick={increase}>
-                    This button has been clicked {node.attrs.count} times.
+                    Parent --{">"} {node.attrs.parent}
                 </button>
             </div>
         </NodeViewWrapper>

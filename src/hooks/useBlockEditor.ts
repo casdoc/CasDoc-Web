@@ -3,16 +3,20 @@ import { Editor, EditorOptions, useEditor } from "@tiptap/react";
 import { useEffect } from "react";
 import { JsonObject } from "@/app/models/types/JsonObject";
 import { Document } from "@/app/models/entity/Document";
+import tmp from "@/app/components/doc/tmp.json";
+
 interface BlockEditorProps {
     document?: Document;
     updateDocument: (document: Document) => void;
     editorOptions?: Partial<Omit<EditorOptions, "extensions">>;
 }
+
 declare global {
     interface Window {
         editor: Editor | null;
     }
 }
+
 export const useBlockEditor = ({
     document,
     updateDocument,
@@ -29,19 +33,20 @@ export const useBlockEditor = ({
                 class: "prose prose-sm sm:prose-base lg:prose-lg xl:prose-2xl m-5 focus:outline-none",
             },
         },
-        content: initialContent,
+        // content: initialContent,
+        content: tmp,
         onUpdate({ editor }) {
             const updatedContent = editor.getJSON().content as JsonObject[];
             // console.debug("updatedContent", updatedContent);
             document?.setAllContent(updatedContent);
             if (document) updateDocument(document);
         },
-        onCreate({ editor }) {
-            editor.commands.setContent(
-                { type: "doc", content: document?.getContent() },
-                false
-            );
-        },
+        // onCreate({ editor }) {
+        //     editor.commands.setContent(
+        //         { type: "doc", content: document?.getContent() },
+        //         false
+        //     );
+        // },
     });
 
     useEffect(() => {

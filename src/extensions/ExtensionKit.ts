@@ -21,7 +21,9 @@ import {
     TaskItem,
     TaskList,
     Underline,
-    TraceComponent,
+    TopicComponentX,
+    TemplateComponentA,
+    TemplateComponentB,
 } from ".";
 
 export const ExtensionKit = () => [
@@ -62,7 +64,9 @@ export const ExtensionKit = () => [
         placeholder: () => "",
     }),
     Focus,
-    TraceComponent,
+    TopicComponentX,
+    TemplateComponentA,
+    TemplateComponentB,
 ];
 
 export default ExtensionKit;
