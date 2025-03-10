@@ -2,17 +2,45 @@ import { Group } from "./types";
 
 export const GROUPS: Group[] = [
     {
-        name: "topic",
-        title: "Topic",
+        name: "template",
+        title: "Template",
         commands: [
             {
-                name: "he",
-                label: "Heading 1",
-                iconName: "Heading1",
-                description: "High priority section title",
-                aliases: ["h1"],
+                name: "dataSchema",
+                label: "Data Schema",
+                iconName: "SquareLibrary",
+                aliases: ["dataSchema"],
+                description: "Data shcema topic, hover to see tempaltes",
                 action: (editor) => {
-                    editor.chain().focus().setHeading({ level: 1 }).run();
+                    editor
+                        .chain()
+                        .focus()
+                        .insertContent({
+                            type: "dataSchema",
+                            attrs: {
+                                name: "User",
+                                type: "Object",
+                                description: "使用者資料",
+                                fields: [
+                                    {
+                                        name: "id",
+                                        type: "number",
+                                        description: "使用者 ID",
+                                    },
+                                    {
+                                        name: "username",
+                                        type: "string",
+                                        description: "使用者名稱",
+                                    },
+                                    {
+                                        name: "email",
+                                        type: "string",
+                                        description: "電子郵件",
+                                    },
+                                ],
+                            },
+                        })
+                        .run();
                 },
             },
         ],

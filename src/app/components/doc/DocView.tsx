@@ -5,6 +5,7 @@ import { useBlockEditor } from "@/hooks/useBlockEditor";
 import { BlockEditor } from "@/components/BlockEditor/BlockEditor";
 import { useDocumentViewModel } from "@/hooks/useDocument";
 import { cn } from "@/utils";
+import { useEffect } from "react";
 interface DocViewProps {
     documentId: string;
 }
@@ -17,6 +18,16 @@ const DocView = ({ documentId }: DocViewProps) => {
         document,
         updateDocument,
     });
+    // useEffect(() => {
+    //     // 当视图模式改变时，确保编辑器有时间正确渲染
+    //     if (editor) {
+    //         // 小延迟让 React 完成当前渲染周期
+    //         const timer = setTimeout(() => {
+    //             editor.commands.focus();
+    //         }, 0);
+    //         return () => clearTimeout(timer);
+    //     }
+    // }, [mode, editor]);
     if (!editor || !document) {
         return null;
     }
@@ -29,15 +40,14 @@ const DocView = ({ documentId }: DocViewProps) => {
             {mode === DocMode.Split ? (
                 <div className="flex w-screen h-full">
                     <div className="w-1/2 pl-2">
-                        <BlockEditor editor={editor} />
+                        <BlockEditor key={`editor-${mode}`} editor={editor} />
                     </div>
                     <div className={dividerClassName}></div>
                     <div className="w-1/2 ">Graph View</div>
                 </div>
             ) : mode === DocMode.Edit ? (
-                <BlockEditor editor={editor} />
+                <BlockEditor key={`editor-${mode}`} editor={editor} />
             ) : mode === DocMode.Graph ? (
-                // <GraphView blockViewModel={blockViewModel} />
                 <div>Graph View</div>
             ) : null}
         </div>

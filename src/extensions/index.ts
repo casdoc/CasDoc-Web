@@ -1,6 +1,6 @@
 "use client";
 
-export { TraceComponent } from "./TraceComponent/Extension";
+export { DataSchemaExtension } from "./Templates/DataSchema/DataSchemaExtension";
 
 export { StarterKit } from "@tiptap/starter-kit";
 export { Highlight } from "@tiptap/extension-highlight";

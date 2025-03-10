@@ -2,23 +2,28 @@
     "type": "doc",
     "content": [
         {
-            "type": "traceComponent",
+            "type": "dataSchema",
             "attrs": {
-                "count": 10
-            },
-            "content": [
-                {
-                    "type": "paragraph",
-                    "attrs": {
-                        "textAlign": null
+                "name": "User",
+                "type": "Object",
+                "description": "使用者資料",
+                "fields": [
+                    {
+                        "name": "id",
+                        "type": "number",
+                        "description": "使用者 ID"
+                    },
+                    {
+                        "name": "username",
+                        "type": "string",
+                        "description": "使用者名稱"
+                    },
+                    {
+                        "name": "email",
+                        "type": "string",
+                        "description": "電子郵件"
                     }
-                }
-            ]
-        },
-        {
-            "type": "traceComponent",
-            "attrs": {
-                "count": 10
+                ]
             },
             "content": [
                 {
