@@ -18,7 +18,7 @@ import {
 import "@xyflow/react/dist/style.css";
 
 import { ZoomSlider } from "./zoom-slider/zoom-slider";
-import tmp from "@/app/components/doc/tmp.json";
+// import tmp from "@/app/components/doc/tmp.json";
 import { getLayoutedElements } from "./utils/getLayoutedElements";
 import {
     connectConnectionEdges,
@@ -46,7 +46,8 @@ const defaultEdgeOptions = {
     curvature: 0.1,
 };
 
-const GraphView = () => {
+const GraphView = ({ getNodes }: { getNodes: () => any }) => {
+    const propsNodes = getNodes();
     const [colorMode, setColorMode] = useState<"light" | "dark">("light");
     const [selectedLayout, setSelectedLayout] = useState("LR");
     const nodeWidth = 242;
@@ -54,8 +55,8 @@ const GraphView = () => {
 
     const { fetchConnectionEdges, updConnectionEdges, removeConnectionEdge } =
         useGraphViewModel();
-    const initialNodes = convertDataToNodes(tmp.content);
-    const initialStructuralEdges = convertDataToStructuralEdges(tmp.content);
+    const initialNodes = convertDataToNodes(propsNodes);
+    const initialStructuralEdges = convertDataToStructuralEdges(propsNodes);
     const { nodes: layoutedNodes } = getLayoutedElements(
         initialNodes,
         initialStructuralEdges,
@@ -97,8 +98,8 @@ const GraphView = () => {
 
     const init = (width: number, height: number) => {
         const connectionEdges = fetchConnectionEdges();
-        const newNodes = convertDataToNodes(tmp.content);
-        const newStructuralEdges = convertDataToStructuralEdges(tmp.content);
+        const newNodes = convertDataToNodes(propsNodes);
+        const newStructuralEdges = convertDataToStructuralEdges(propsNodes);
         const { nodes: layoutedNodes } = getLayoutedElements(
             newNodes,
             newStructuralEdges,

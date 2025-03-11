@@ -44,8 +44,8 @@ export function useDocumentViewModel() {
         DocumentService.saveDocument(document);
         setDocuments(DocumentService.getAllDocuments());
     };
-    const getNodes = (id: string) => {
-        const content = getDocumentById(id)?.getContent();
+    const getNodes = (documentId: string) => {
+        const content = getDocumentById(documentId)?.getContent();
         console.debug("content", content);
         if (!content) return [];
         const ret = [];

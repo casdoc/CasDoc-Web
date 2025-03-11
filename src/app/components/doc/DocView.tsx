@@ -13,7 +13,8 @@ interface DocViewProps {
 
 const DocView = ({ documentId }: DocViewProps) => {
     const { mode, setDocMode } = useDocModeViewModel();
-    const { getDocumentById, updateDocument } = useDocumentViewModel();
+    const { getDocumentById, updateDocument, getNodes } =
+        useDocumentViewModel();
     const document = getDocumentById(documentId);
     const { editor } = useBlockEditor({
         document,
@@ -45,13 +46,13 @@ const DocView = ({ documentId }: DocViewProps) => {
                     </div>
                     <div className={dividerClassName}></div>
                     <div className="w-1/2 flex-1 overflow-y-auto h-full">
-                        <GraphView />
+                        <GraphView getNodes={() => getNodes(documentId)} />
                     </div>
                 </div>
             ) : mode === DocMode.Edit ? (
                 <BlockEditor key={`editor-${mode}`} editor={editor} />
             ) : mode === DocMode.Graph ? (
-                <GraphView />
+                <GraphView getNodes={() => getNodes(documentId)} />
             ) : null}
         </div>
     );
