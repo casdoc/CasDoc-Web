@@ -16,7 +16,7 @@ export const GROUPS: Group[] = [
                         .chain()
                         .focus()
                         .insertContent({
-                            type: "dataSchema",
+                            type: "template-dataSchema",
                             attrs: {
                                 name: "User",
                                 type: "Object",
