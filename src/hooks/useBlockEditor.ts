@@ -3,7 +3,7 @@ import { EditorOptions, useEditor } from "@tiptap/react";
 import { JsonObject } from "@/app/models/types/JsonObject";
 import { Document } from "@/app/models/entity/Document";
 import tmp from "@/app/components/doc/tmp.json";
-// import { startTransition } from "react";
+//
 interface BlockEditorProps {
     document?: Document;
     updateDocument: (document: Document) => void;
@@ -30,13 +30,10 @@ export const useBlockEditor = ({
         // content: initialContent,
         content: tmp,
         onUpdate({ editor }) {
-            console.error("onUpdate");
-            // startTransition(() => {
             console.debug(editor.getJSON().content);
             const updatedContent = editor.getJSON().content as JsonObject[];
             document?.setAllContent(updatedContent);
             if (document) updateDocument(document);
-            // });
         },
         onCreate({ editor }) {
             editor.commands.setContent(

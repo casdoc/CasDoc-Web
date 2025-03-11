@@ -3,7 +3,7 @@ import { ReactNodeViewRenderer } from "@tiptap/react";
 import { DataSchemaComponent } from "./DataSchemaComponent";
 
 export const DataSchemaExtension = Node.create({
-    name: "dataSchema",
+    name: "template-dataSchema",
 
     group: "block",
 

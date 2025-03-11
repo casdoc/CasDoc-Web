@@ -51,13 +51,13 @@ export function useDocumentViewModel() {
         const ret = [];
         for (let i = 0; i < content.length; i++) {
             console.debug("content[i]", content[i]);
-            if (content[i].type === "Topic") {
+            if (content[i].type.startsWith("topic")) {
                 ret.push({
                     id: content[i].attrs.id,
                     pid: content[i].attrs.documentId,
                     label: content[i].attrs.names,
                 });
-            } else if (content[i].type === "Component") {
+            } else if (content[i].type.startsWith("template")) {
                 ret.push({
                     id: content[i].attrs.id,
                     pid: content[i].attrs.topicId,

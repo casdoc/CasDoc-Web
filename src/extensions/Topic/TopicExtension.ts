@@ -1,0 +1,35 @@
+import { Node, mergeAttributes } from "@tiptap/core";
+import { ReactNodeViewRenderer } from "@tiptap/react";
+import { TopicComponent } from "./TopicComponent";
+
+export const TopicExtension = Node.create({
+    name: "topic",
+
+    group: "block",
+
+    atom: true,
+
+    addAttributes() {
+        return {
+            name: {
+                default: "",
+            },
+        };
+    },
+
+    parseHTML() {
+        return [
+            {
+                tag: "topic",
+            },
+        ];
+    },
+
+    renderHTML({ HTMLAttributes }) {
+        return ["topic", mergeAttributes(HTMLAttributes)];
+    },
+
+    addNodeView() {
+        return ReactNodeViewRenderer(TopicComponent);
+    },
+});
