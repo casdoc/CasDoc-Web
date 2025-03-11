@@ -2,6 +2,31 @@ import { Group } from "./types";
 
 export const GROUPS: Group[] = [
     {
+        name: "topic",
+        title: "Topic",
+        commands: [
+            {
+                name: "topic",
+                label: "topic",
+                iconName: "SquareLibrary",
+                aliases: ["topic"],
+                description: "topic of data schema",
+                action: (editor) => {
+                    editor
+                        .chain()
+                        .focus()
+                        .insertContent({
+                            type: "topic",
+                            attrs: {
+                                name: "Data schema",
+                            },
+                        })
+                        .run();
+                },
+            },
+        ],
+    },
+    {
         name: "template",
         title: "Template",
         commands: [

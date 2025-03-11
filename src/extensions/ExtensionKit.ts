@@ -22,6 +22,7 @@ import {
     TaskList,
     Underline,
     DataSchemaExtension,
+    TopicExtension,
 } from ".";
 
 export const ExtensionKit = () => [
@@ -63,6 +64,7 @@ export const ExtensionKit = () => [
     }),
     Focus,
     DataSchemaExtension,
+    TopicExtension,
 ];
 
 export default ExtensionKit;
