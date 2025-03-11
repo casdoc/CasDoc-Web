@@ -6,7 +6,7 @@ import { BlockEditor } from "@/components/BlockEditor/BlockEditor";
 import GraphView from "../flow/GraphView";
 import { useDocumentViewModel } from "@/hooks/useDocument";
 import { cn } from "@/utils";
-import { useEffect } from "react";
+
 interface DocViewProps {
     documentId: string;
 }

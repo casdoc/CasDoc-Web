@@ -1,6 +1,6 @@
 import React, { memo } from "react";
 import { Handle, Position, useConnection } from "@xyflow/react";
-import { useNodeSelection } from "../../viewModels/NodeSelectionContext";
+import { useNodeSelection } from "../../viewModels/context/NodeSelectionContext";
 
 function CustomNode({ id, data }: any) {
     const { selectedNode, selectNode } = useNodeSelection();

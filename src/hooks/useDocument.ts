@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Document } from "@/app/models/entity/Document";
 import { DocumentService } from "@/app/models/services/DocumentService";
 import { DocumentType } from "@/app/models/enum/DocumentType";
-import { v4 as uuidv4 } from "uuid";
+// import { v4 as uuidv4 } from "uuid";
 
 export function useDocumentViewModel() {
     const [documents, setDocuments] = useState<Document[]>([]);

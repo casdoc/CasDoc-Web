@@ -27,6 +27,7 @@ export default function RootLayout({
             <body
                 className={`${geistSans.variable} ${geistMono.variable} antialiased h-dvh`}
             >
+                <NextTopLoader showSpinner={false} />
                 {children}
             </body>
         </html>

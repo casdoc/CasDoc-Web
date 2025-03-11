@@ -3,7 +3,7 @@ import { EditorOptions, useEditor } from "@tiptap/react";
 import { JsonObject } from "@/app/models/types/JsonObject";
 import { Document } from "@/app/models/entity/Document";
 import tmp from "@/app/components/doc/tmp.json";
-import { startTransition } from "react";
+// import { startTransition } from "react";
 interface BlockEditorProps {
     document?: Document;
     updateDocument: (document: Document) => void;

@@ -1,11 +1,14 @@
 "use client";
+
 import { Editor, EditorContent } from "@tiptap/react";
 import { ContentItemMenu } from "../DragMenu/ContentItemMenu";
 import "@/styles/index.css";
 import { useEffect, useState } from "react";
+
 interface BlockEditorProps {
     editor: Editor;
 }
+
 export const BlockEditor = ({ editor }: BlockEditorProps) => {
     const [mounted, setMounted] = useState(false);
 

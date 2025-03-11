@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNodeSelection } from "../../viewModels/NodeSelectionContext";
+import { useNodeSelection } from "../../viewModels/context/NodeSelectionContext";
 import tmp from "@/app/components/doc/tmp.json";
 import {
     ConnectionEdge,

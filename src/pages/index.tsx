@@ -3,7 +3,7 @@
 import "@/app/globals.css";
 import DocView from "@/app/components/doc/DocView";
 import { EditPanel } from "@/app/components/editPanel/EditPanel";
-import { NodeSelectionProvider } from "@/app/viewModels/NodeSelectionContext";
+import { NodeSelectionProvider } from "@/app/viewModels/context/NodeSelectionContext";
 
 export default function Home() {
     return (

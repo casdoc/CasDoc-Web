@@ -1,5 +1,6 @@
 import { BaseEntity } from "@/app/models/entity/BaseEntity";
 import { JsonObject } from "../types/JsonObject";
+
 export class Component extends BaseEntity {
     private _documentId: string;
     private _topicId: string;
