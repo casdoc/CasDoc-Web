@@ -5,6 +5,7 @@ export interface GraphViewModel {
     fetchConnectionEdges: () => void;
     updConnectionEdges: (edge: ConnectionEdge) => void;
     searchBySourceId: (sourceId: number) => ConnectionEdge[];
+    removeConnectionEdge: (edge: ConnectionEdge) => void;
 }
 
 export interface ConnectionEdge {
@@ -46,5 +47,20 @@ export function useGraphViewModel(): GraphViewModel {
         );
     };
 
-    return { fetchConnectionEdges, updConnectionEdges, searchBySourceId };
+    const removeConnectionEdge = useCallback((edge: ConnectionEdge) => {
+        setConnectionEdges((prevEdges) => {
+            const newEdges = prevEdges.filter(
+                (e) => !(e.source === edge.source && e.target === edge.target)
+            );
+            GraphService.setEdges(newEdges);
+            return newEdges;
+        });
+    }, []);
+
+    return {
+        fetchConnectionEdges,
+        updConnectionEdges,
+        searchBySourceId,
+        removeConnectionEdge,
+    };
 }

@@ -29,6 +29,7 @@ import { FlowSettingPanel } from "./setting-panel/FlowSettingPanel";
 
 import CustomNode from "./CustomNode";
 import { useGraphViewModel } from "@/app/viewModels/GraphViewModel";
+
 const nodeTypes = {
     custom: CustomNode,
 };
@@ -51,7 +52,8 @@ const GraphView = () => {
     const nodeWidth = 242;
     const nodeHeight = 12;
 
-    const { fetchConnectionEdges, updConnectionEdges } = useGraphViewModel();
+    const { fetchConnectionEdges, updConnectionEdges, removeConnectionEdge } =
+        useGraphViewModel();
     const initialNodes = convertDataToNodes(tmp.content);
     const initialStructuralEdges = convertDataToStructuralEdges(tmp.content);
     const { nodes: layoutedNodes } = getLayoutedElements(
@@ -95,7 +97,6 @@ const GraphView = () => {
 
     const init = (width: number, height: number) => {
         const connectionEdges = fetchConnectionEdges();
-        console.log(connectionEdges);
         const newNodes = convertDataToNodes(tmp.content);
         const newStructuralEdges = convertDataToStructuralEdges(tmp.content);
         const { nodes: layoutedNodes } = getLayoutedElements(
@@ -110,6 +111,16 @@ const GraphView = () => {
         setEdges([...newStructuralEdges, ...tmpConnectionEdges]);
     };
 
+    const onEdgesDelete = useCallback(
+        (params: any) => {
+            removeConnectionEdge({
+                source: params[0].source,
+                target: params[0].target,
+            });
+        },
+        [setEdges]
+    );
+
     return (
         <div className="w-full h-full bg-white rounded-lg">
             <ReactFlow
@@ -117,6 +128,7 @@ const GraphView = () => {
                 edges={edges}
                 onNodesChange={onNodesChange}
                 onEdgesChange={onEdgesChange}
+                onEdgesDelete={onEdgesDelete}
                 onConnect={onConnect}
                 nodeTypes={nodeTypes}
                 fitView

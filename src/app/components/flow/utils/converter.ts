@@ -7,6 +7,7 @@ export const convertDataToNodes = (data: any) => {
         position: defaultPosition,
         data: { label: item.attrs.content || "empty" },
         type: "custom",
+        deletable: false,
     }));
 };
 
@@ -21,7 +22,7 @@ export const convertDataToStructuralEdges = (data: any) => {
                 source: `${data[i].attrs.parent}`,
                 target: `${data[i].id}`,
                 arrowHeadType: MarkerType.ArrowClosed,
-                type: "bazier",
+                type: "default",
             });
         }
     }
@@ -30,6 +31,7 @@ export const convertDataToStructuralEdges = (data: any) => {
 
 export const connectConnectionEdges = (connectionEdges: any) => {
     const edges = [];
+
     // component connection edges
     if (connectionEdges.length > 0) {
         for (let i = 0; i < connectionEdges.length; i++) {
