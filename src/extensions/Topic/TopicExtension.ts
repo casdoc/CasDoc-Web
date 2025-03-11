@@ -11,6 +11,12 @@ export const TopicExtension = Node.create({
 
     addAttributes() {
         return {
+            documentId: {
+                default: "default-document",
+            },
+            id: {
+                default: "test-topic-1",
+            },
             name: {
                 default: "",
             },

@@ -1,7 +1,7 @@
 import { Node, mergeAttributes } from "@tiptap/core";
 import { ReactNodeViewRenderer } from "@tiptap/react";
 import { DataSchemaComponent } from "./DataSchemaComponent";
-
+import { v4 as uuidv4 } from "uuid";
 export const DataSchemaExtension = Node.create({
     name: "template-dataSchema",
 
@@ -11,6 +11,12 @@ export const DataSchemaExtension = Node.create({
 
     addAttributes() {
         return {
+            topicId: {
+                default: "test-topic-1",
+            },
+            id: {
+                default: uuidv4(),
+            },
             name: {
                 default: "",
             },
