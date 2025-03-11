@@ -42,7 +42,7 @@ const DocView = ({ documentId }: DocViewProps) => {
             ) : mode === DocMode.Graph ? (
                 <GraphView graphNodes={graphNodes} />
             ) : null} */}
-            <div className="flex flex-1">
+            <div className="flex flex-row overflow-y-auto h-full">
                 <div
                     className={`flex-1 overflow-y-auto ${
                         mode === DocMode.Edit ? "w-full" : ""
@@ -56,17 +56,15 @@ const DocView = ({ documentId }: DocViewProps) => {
                     <div className="bg-neutral-200 dark:bg-neutral-800 h-full min-h-[1.5rem] w-[1px] mx-1 first:ml-0 last:mr-0"></div>
                 )}
                 <div
-                    className={`flex-1 ${
-                        mode === DocMode.Split ? "w-1/2" : ""
-                    } ${mode === DocMode.Graph ? "w-full" : ""} ${
+                    className={`${
+                        mode === DocMode.Split ? "w-1/2 h-full" : ""
+                    } ${mode === DocMode.Graph ? "w-full h-full" : ""} ${
                         mode !== DocMode.Split && mode !== DocMode.Graph
                             ? "hidden"
                             : ""
                     }`}
                 >
-                    {mode === DocMode.Graph || mode === DocMode.Split ? (
-                        <GraphView graphNodes={graphNodes} />
-                    ) : null}
+                    <GraphView graphNodes={graphNodes} />
                 </div>
             </div>
         </div>

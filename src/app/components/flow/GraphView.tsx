@@ -113,7 +113,7 @@ const GraphView = ({ graphNodes }: GraphViewProps) => {
     );
 
     return (
-        <div className="w-full h-full bg-white rounded-lg">
+        <div className="w-full h-full bg-neutral-200">
             <ReactFlow
                 nodes={nodes}
                 edges={edges}
@@ -133,6 +133,7 @@ const GraphView = ({ graphNodes }: GraphViewProps) => {
                     variant={BackgroundVariant.Cross}
                     gap={12}
                     size={1}
+                    color="gray"
                 />
                 <FlowSettingPanel
                     onLayout={onLayout}
