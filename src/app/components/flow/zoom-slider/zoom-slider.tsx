@@ -16,7 +16,7 @@ import { cn } from "./lib/utils";
 export const ZoomSlider = forwardRef<
     HTMLDivElement,
     Omit<PanelProps, "children">
->(({ className, ...props }) => {
+>(({ className, ...props }, ref) => {
     const { zoom } = useViewport();
     const { zoomTo, zoomIn, zoomOut, fitView } = useReactFlow();
 
@@ -30,6 +30,7 @@ export const ZoomSlider = forwardRef<
 
     return (
         <Panel
+            ref={ref}
             className={cn(
                 "flex gap-1 rounded-md bg-primary-foreground p-1 text-foreground",
                 className
