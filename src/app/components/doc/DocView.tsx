@@ -27,21 +27,7 @@ const DocView = ({ documentId }: DocViewProps) => {
     return (
         <div className="relative flex flex-col flex-1 h-dvh w-dvw">
             <EditorHeader mode={mode as DocMode} setDocMode={setDocMode} />
-            {/* {mode === DocMode.Split ? (
-                <div className="flex w-screen h-full">
-                    <div className="w-1/2 pl-2">
-                        <BlockEditor key={`editor-${mode}`} editor={editor} />
-                    </div>
-                    <div className={dividerClassName}></div>
-                    <div className="w-1/2 flex-1 overflow-y-auto h-full">
-                        <GraphView graphNodes={graphNodes} />
-                    </div>
-                </div>
-            ) : mode === DocMode.Edit ? (
-                <BlockEditor key={`editor-${mode}`} editor={editor} />
-            ) : mode === DocMode.Graph ? (
-                <GraphView graphNodes={graphNodes} />
-            ) : null} */}
+            <div className="bg-neutral-300 dark:bg-neutral-800 w-full min-w-[1.5rem] h-[1px] my-1 first:mt-0 last:mt-0" />
             <div className="flex flex-row overflow-y-auto h-full">
                 <div
                     className={`flex-1 overflow-y-auto ${
