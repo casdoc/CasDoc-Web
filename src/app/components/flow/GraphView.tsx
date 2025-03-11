@@ -113,7 +113,7 @@ const GraphView = ({ graphNodes }: GraphViewProps) => {
     );
 
     return (
-        <div className="w-full h-full bg-neutral-200">
+        <div className="w-full h-full bg-white">
             <ReactFlow
                 nodes={nodes}
                 edges={edges}
