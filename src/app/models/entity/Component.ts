@@ -1,11 +1,10 @@
 import { BaseEntity } from "@/app/models/entity/BaseEntity";
-import { Connection } from "@/app/models/types/Connection";
 import { JsonObject } from "../types/JsonObject";
 export class Component extends BaseEntity {
     private _documentId: string;
-    private _topicType: string;
+    private _topicId: string;
     private _templateType: string;
-    private _connections: Connection[];
+    private _name: string;
     private _content: JsonObject;
 
     constructor(
@@ -13,16 +12,16 @@ export class Component extends BaseEntity {
         createdAt: Date,
         updatedAt: Date,
         documentId: string,
-        topicType: string,
+        topicId: string,
         templateType: string,
-        connections: Connection[],
+        name: string,
         content: JsonObject
     ) {
         super(id, createdAt, updatedAt);
         this._documentId = documentId;
-        this._topicType = topicType;
+        this._topicId = topicId;
         this._templateType = templateType;
-        this._connections = connections;
+        this._name = name;
         this._content = content;
     }
 
@@ -38,15 +37,15 @@ export class Component extends BaseEntity {
         this.updatedAt = new Date();
     }
 
-    getTopicType(): string {
-        return this._topicType;
+    getTopicId(): string {
+        return this._topicId;
     }
 
-    setTopicType(value: string): void {
+    setTopicId(value: string): void {
         if (!value.trim()) {
             throw new Error("Topic type cannot be empty.");
         }
-        this._topicType = value;
+        this._topicId = value;
         this.updatedAt = new Date();
     }
 
@@ -62,26 +61,16 @@ export class Component extends BaseEntity {
         this.updatedAt = new Date();
     }
 
-    getConnections(): Connection[] {
-        return this._connections;
+    getName(): string {
+        return this._name;
     }
 
-    addConnection(value: Connection): void {
-        if (!value) {
-            throw new Error("Connection cannot be null or undefined.");
+    setName(value: string): void {
+        if (!value.trim()) {
+            throw new Error("Name cannot be empty.");
         }
-        this._connections.push(value);
+        this._name = value;
         this.updatedAt = new Date();
-    }
-
-    deleteConnection(value: Connection): void {
-        const index = this._connections.indexOf(value);
-        if (index !== -1) {
-            this._connections.splice(index, 1);
-            this.updatedAt = new Date();
-        } else {
-            throw new Error("Connection not found.");
-        }
     }
 
     getContent(): JsonObject {

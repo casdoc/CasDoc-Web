@@ -42,6 +42,9 @@ export const DropdownButton = React.forwardRef<
             className={buttonClass}
             disabled={disabled}
             onClick={onClick}
+            onMouseEnter={(e) => {
+                console.debug("mouse enter");
+            }}
             ref={ref}
         >
             {children}
