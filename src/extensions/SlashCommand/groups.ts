@@ -1,5 +1,5 @@
 import { Group } from "./types";
-
+import uuid from "uuid";
 export const GROUPS: Group[] = [
     {
         name: "topic",
@@ -18,6 +18,8 @@ export const GROUPS: Group[] = [
                         .insertContent({
                             type: "topic",
                             attrs: {
+                                documentId: "default-document",
+                                id: "test-topic-1",
                                 name: "Data schema",
                             },
                         })
@@ -43,6 +45,8 @@ export const GROUPS: Group[] = [
                         .insertContent({
                             type: "template-dataSchema",
                             attrs: {
+                                topicId: "test-topic-1",
+                                id: uuid.v4(),
                                 name: "User",
                                 type: "Object",
                                 description: "使用者資料",
