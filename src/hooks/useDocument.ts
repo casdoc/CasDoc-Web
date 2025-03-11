@@ -3,6 +3,8 @@ import { Document } from "@/app/models/entity/Document";
 import { DocumentService } from "@/app/models/services/DocumentService";
 import { DocumentType } from "@/app/models/enum/DocumentType";
 import { v4 as uuidv4 } from "uuid";
+import { get } from "lodash";
+import { JsonObject } from "@/app/models/types/JsonObject";
 
 export function useDocumentViewModel() {
     const [documents, setDocuments] = useState<Document[]>([]);
@@ -42,11 +44,35 @@ export function useDocumentViewModel() {
         DocumentService.saveDocument(document);
         setDocuments(DocumentService.getAllDocuments());
     };
+    const getNodes = (id: string) => {
+        const content = getDocumentById(id)?.getContent();
+        console.debug("content", content);
+        if (!content) return [];
+        const ret = [];
+        for (let i = 0; i < content.length; i++) {
+            console.debug("content[i]", content[i]);
+            if (content[i].type === "Topic") {
+                ret.push({
+                    id: content[i].attrs.id,
+                    pid: content[i].attrs.documentId,
+                    label: content[i].attrs.names,
+                });
+            } else if (content[i].type === "Component") {
+                ret.push({
+                    id: content[i].attrs.id,
+                    pid: content[i].attrs.topicId,
+                    label: content[i].attrs.name,
+                });
+            }
+        }
+        return ret;
+    };
 
     return {
         documents,
         getDocumentById,
         addDocument,
         updateDocument,
+        getNodes,
     };
 }
