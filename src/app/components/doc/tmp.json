@@ -4,28 +4,7 @@
         {
             "id": 0,
             "type": "paragraph",
-            "type": "dataSchema",
             "attrs": {
-                "name": "User",
-                "type": "Object",
-                "description": "使用者資料",
-                "fields": [
-                    {
-                        "name": "id",
-                        "type": "number",
-                        "description": "使用者 ID"
-                    },
-                    {
-                        "name": "username",
-                        "type": "string",
-                        "description": "使用者名稱"
-                    },
-                    {
-                        "name": "email",
-                        "type": "string",
-                        "description": "電子郵件"
-                    }
-                ]
                 "textAlign": null,
                 "content": "SDD"
             },
@@ -141,10 +120,6 @@
             },
             "content": [
                 {
-                    "type": "paragraph",
-                    "attrs": {
-                        "textAlign": null
-                    }
                     "type": "paragraph",
                     "attrs": {
                         "textAlign": null
