@@ -55,7 +55,7 @@ export function useDocumentViewModel() {
                 ret.push({
                     id: content[i].attrs.id,
                     pid: content[i].attrs.documentId,
-                    label: content[i].attrs.names,
+                    label: content[i].attrs.name,
                 });
             } else if (content[i].type.startsWith("template")) {
                 ret.push({
