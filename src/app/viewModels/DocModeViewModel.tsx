@@ -3,12 +3,12 @@ import { DocMode } from "../models/enum/DocMode";
 import { DocModeService } from "../models/services/DocModeService";
 
 export interface DocModeViewModel {
-    mode: DocMode;
+    mode?: DocMode;
     setDocMode: (newMode: DocMode) => void;
 }
 
 export function useDocModeViewModel(): DocModeViewModel {
-    const [mode, setMode] = useState<DocMode>(DocMode.Edit);
+    const [mode, setMode] = useState<DocMode>();
 
     useEffect(() => {
         const localMode = DocModeService.getDocMode();

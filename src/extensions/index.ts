@@ -1,0 +1,28 @@
+"use client";
+
+export { TopicExtension } from "./Topic/TopicExtension";
+export { DataSchemaExtension } from "./Templates/DataSchema/DataSchemaExtension";
+
+export { StarterKit } from "@tiptap/starter-kit";
+export { Highlight } from "@tiptap/extension-highlight";
+export { Underline } from "@tiptap/extension-underline";
+export { Placeholder } from "@tiptap/extension-placeholder";
+export { TextAlign } from "@tiptap/extension-text-align";
+export { TextStyle } from "@tiptap/extension-text-style";
+export { FontFamily } from "@tiptap/extension-font-family";
+export { Typography } from "@tiptap/extension-typography";
+export { Color } from "@tiptap/extension-color";
+export { FocusClasses as Focus } from "@tiptap/extension-focus";
+export { Subscript } from "@tiptap/extension-subscript";
+export { Superscript } from "@tiptap/extension-superscript";
+export { Paragraph } from "@tiptap/extension-paragraph";
+export { BulletList } from "@tiptap/extension-bullet-list";
+export { OrderedList } from "@tiptap/extension-ordered-list";
+export { TaskItem } from "@tiptap/extension-task-item";
+export { TaskList } from "@tiptap/extension-task-list";
+export { Link } from "@tiptap/extension-link";
+export { Table } from "@tiptap/extension-table";
+export { TableCell } from "@tiptap/extension-table-cell";
+export { TableHeader } from "@tiptap/extension-table-header";
+export { TableRow } from "@tiptap/extension-table-row";
+export { SlashCommand } from "./SlashCommand";
