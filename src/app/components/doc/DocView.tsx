@@ -4,17 +4,18 @@ import { EditorHeader } from "@/components/BlockEditor/EditorHeader";
 import { useBlockEditor } from "@/hooks/useBlockEditor";
 import { BlockEditor } from "@/components/BlockEditor/BlockEditor";
 import GraphView from "../flow/GraphView";
-import { useDocumentViewModel } from "@/hooks/useDocument";
+import { DocumentViewModel } from "@/hooks/useDocument";
 import { cn } from "@/utils";
+import { GraphViewModel } from "@/app/viewModels/GraphViewModel";
 
 interface DocViewProps {
-    documentId: string;
+    documentViewModel: DocumentViewModel;
+    graphViewModel: GraphViewModel;
 }
 
-const DocView = ({ documentId }: DocViewProps) => {
+const DocView = ({ documentViewModel, graphViewModel }: DocViewProps) => {
     const { mode, setDocMode } = useDocModeViewModel();
-    const { document, updateDocument, graphNodes } =
-        useDocumentViewModel(documentId);
+    const { document, updateDocument, graphNodes } = documentViewModel;
     const { editor } = useBlockEditor({
         document,
         updateDocument,
@@ -36,13 +37,19 @@ const DocView = ({ documentId }: DocViewProps) => {
                     </div>
                     <div className={dividerClassName}></div>
                     <div className="w-1/2 flex-1 overflow-y-auto h-full">
-                        <GraphView graphNodes={graphNodes} />
+                        <GraphView
+                            graphNodes={graphNodes}
+                            graphViewModel={graphViewModel}
+                        />
                     </div>
                 </div>
             ) : mode === DocMode.Edit ? (
                 <BlockEditor key={`editor-${mode}`} editor={editor} />
             ) : mode === DocMode.Graph ? (
-                <GraphView graphNodes={graphNodes} />
+                <GraphView
+                    graphNodes={graphNodes}
+                    graphViewModel={graphViewModel}
+                />
             ) : null}
         </div>
     );

@@ -2,12 +2,20 @@ import { useState, useEffect } from "react";
 import { Document } from "@/app/models/entity/Document";
 import { DocumentService } from "@/app/models/services/DocumentService";
 import { DocumentType } from "@/app/models/enum/DocumentType";
-interface NodeInfo {
+
+export interface NodeInfo {
     id: string;
     pid: string;
     label: string;
 }
-export function useDocumentViewModel(documentId: string) {
+
+export interface DocumentViewModel {
+    document: Document | undefined;
+    updateDocument: (document: Document) => void;
+    graphNodes: Array<NodeInfo>;
+}
+
+export function useDocumentViewModel(documentId: string): DocumentViewModel {
     const [document, setDocument] = useState<Document>();
     const [graphNodes, setGraphNodes] = useState<Array<NodeInfo>>([]);
 
@@ -15,7 +23,6 @@ export function useDocumentViewModel(documentId: string) {
         let doc = DocumentService.getDocumentById(documentId);
         if (!doc) {
             const emptyDoc = new Document(
-                // uuidv4(),
                 "default-document",
                 new Date(),
                 new Date(),
@@ -31,6 +38,7 @@ export function useDocumentViewModel(documentId: string) {
 
         setDocument(doc);
     }, [documentId]);
+
     useEffect(() => {
         if (!document) return;
 
@@ -60,6 +68,7 @@ export function useDocumentViewModel(documentId: string) {
         }
         setGraphNodes(newNodes);
     }, [document]);
+
     const updateDocument = (document: Document) => {
         DocumentService.saveDocument(document);
         const doc = DocumentService.getDocumentById(document.id);
