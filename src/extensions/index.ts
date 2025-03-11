@@ -2,6 +2,12 @@
 
 export { TopicExtension } from "./Topic/TopicExtension";
 export { DataSchemaExtension } from "./Templates/DataSchema/DataSchemaExtension";
+export { TopicComponentX } from "./topic/TopicComponentX/Extension";
+export { TopicComponentY } from "./topic/TopicComponentY/Extension";
+export { TemplateComponentA } from "./template/TemplateComponentA/Extension";
+export { TemplateComponentB } from "./template/TemplateComponentB/Extension";
+export { TemplateComponentC } from "./template/TemplateComponentC/Extension";
+export { TemplateComponentD } from "./template/TemplateComponentD/Extension";
 
 export { StarterKit } from "@tiptap/starter-kit";
 export { Highlight } from "@tiptap/extension-highlight";

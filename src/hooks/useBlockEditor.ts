@@ -27,7 +27,8 @@ export const useBlockEditor = ({
                 autocapitalize: "off",
             },
         },
-        // content: tmp,
+        // content: initialContent,
+        content: tmp,
         onUpdate({ editor }) {
             console.debug(editor.getJSON().content);
             const updatedContent = editor.getJSON().content as JsonObject[];

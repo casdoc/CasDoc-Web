@@ -2,28 +2,121 @@
     "type": "doc",
     "content": [
         {
-            "type": "dataSchema",
+            "id": 0,
+            "type": "paragraph",
             "attrs": {
-                "name": "User",
-                "type": "Object",
-                "description": "使用者資料",
-                "fields": [
-                    {
-                        "name": "id",
-                        "type": "number",
-                        "description": "使用者 ID"
-                    },
-                    {
-                        "name": "username",
-                        "type": "string",
-                        "description": "使用者名稱"
-                    },
-                    {
-                        "name": "email",
-                        "type": "string",
-                        "description": "電子郵件"
+                "textAlign": null,
+                "content": "SDD"
+            },
+            "content": [
+                {
+                    "type": "text",
+                    "text": "SDD"
+                }
+            ]
+        },
+        {
+            "id": 1,
+            "type": "topicComponentX",
+            "attrs": {
+                "parent": 0,
+                "content": "系統概述"
+            },
+            "content": [
+                {
+                    "type": "paragraph",
+                    "attrs": {
+                        "textAlign": null
                     }
-                ]
+                }
+            ]
+        },
+        {
+            "id": 2,
+            "type": "templateComponentA",
+            "attrs": {
+                "parent": 1,
+                "content": "系統架構"
+            },
+            "content": [
+                {
+                    "type": "paragraph",
+                    "attrs": {
+                        "textAlign": null
+                    }
+                }
+            ]
+        },
+        {
+            "id": 3,
+            "type": "templateComponentB",
+            "attrs": {
+                "parent": 1,
+                "content": "系統需求"
+            },
+            "content": [
+                {
+                    "type": "paragraph",
+                    "attrs": {
+                        "textAlign": null
+                    }
+                }
+            ]
+        },
+        {
+            "id": 4,
+            "type": "topicComponentY",
+            "attrs": {
+                "parent": 0,
+                "content": "測試計劃"
+            },
+            "content": [
+                {
+                    "type": "paragraph",
+                    "attrs": {
+                        "textAlign": null
+                    }
+                }
+            ]
+        },
+        {
+            "id": 5,
+            "type": "templateComponentC",
+            "attrs": {
+                "parent": 4,
+                "content": "單元測試"
+            },
+            "content": [
+                {
+                    "type": "paragraph",
+                    "attrs": {
+                        "textAlign": null
+                    }
+                }
+            ]
+        },
+        {
+            "id": 6,
+            "type": "templateComponentD",
+            "attrs": {
+                "parent": 4,
+                "content": "整合測試"
+            },
+            "content": [
+                {
+                    "type": "paragraph",
+                    "attrs": {
+                        "textAlign": null
+                    }
+                }
+            ]
+        },
+        {
+            "id": 7,
+            "type": "templateComponentB",
+            "attrs": {
+                "parent": 1,
+                "content": "系統需求"
             },
             "content": [
                 {

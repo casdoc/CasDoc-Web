@@ -2,8 +2,8 @@ import { Node, mergeAttributes } from "@tiptap/core";
 import { ReactNodeViewRenderer } from "@tiptap/react";
 import { Component } from "./Component";
 
-export const TraceComponent = Node.create({
-    name: "traceComponent",
+export const TemplateComponentC = Node.create({
+    name: "templateComponentC",
 
     group: "block",
 
@@ -11,8 +11,8 @@ export const TraceComponent = Node.create({
 
     addAttributes() {
         return {
-            count: {
-                default: 0,
+            parent: {
+                default: "",
             },
         };
     },
@@ -20,13 +20,13 @@ export const TraceComponent = Node.create({
     parseHTML() {
         return [
             {
-                tag: "TraceComponent",
+                tag: "TemplateComponentC",
             },
         ];
     },
 
     renderHTML({ HTMLAttributes }) {
-        return ["TraceComponent", mergeAttributes(HTMLAttributes)];
+        return ["TemplateComponentC", mergeAttributes(HTMLAttributes)];
     },
 
     addNodeView() {
