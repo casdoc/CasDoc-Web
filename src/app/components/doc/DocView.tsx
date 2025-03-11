@@ -5,7 +5,6 @@ import { useBlockEditor } from "@/hooks/useBlockEditor";
 import { BlockEditor } from "@/components/BlockEditor/BlockEditor";
 import GraphView from "../flow/GraphView";
 import { useDocumentViewModel } from "@/hooks/useDocument";
-import { cn } from "@/utils";
 
 interface DocViewProps {
     documentId: string;
@@ -23,13 +22,12 @@ const DocView = ({ documentId }: DocViewProps) => {
     if (!editor || !document) {
         return null;
     }
-    const dividerClassName = cn(
-        "bg-neutral-200 dark:bg-neutral-800 h-full min-h-[1.5rem] w-[1px] mx-1 first:ml-0 last:mr-0"
-    );
+
+    const editorComponent = <BlockEditor editor={editor} />;
     return (
-        <div className="relative flex flex-col flex-1 h-full w-full">
+        <div className="relative flex flex-col flex-1 h-dvh w-dvw">
             <EditorHeader mode={mode as DocMode} setDocMode={setDocMode} />
-            {mode === DocMode.Split ? (
+            {/* {mode === DocMode.Split ? (
                 <div className="flex w-screen h-full">
                     <div className="w-1/2 pl-2">
                         <BlockEditor key={`editor-${mode}`} editor={editor} />
@@ -43,7 +41,34 @@ const DocView = ({ documentId }: DocViewProps) => {
                 <BlockEditor key={`editor-${mode}`} editor={editor} />
             ) : mode === DocMode.Graph ? (
                 <GraphView graphNodes={graphNodes} />
-            ) : null}
+            ) : null} */}
+            <div className="flex flex-1">
+                <div
+                    className={`flex-1 overflow-y-auto ${
+                        mode === DocMode.Edit ? "w-full" : ""
+                    } ${mode === DocMode.Graph ? "hidden" : ""} ${
+                        mode === DocMode.Split ? "w-1/2" : ""
+                    }`}
+                >
+                    {editorComponent}
+                </div>
+                {mode === DocMode.Split && (
+                    <div className="bg-neutral-200 dark:bg-neutral-800 h-full min-h-[1.5rem] w-[1px] mx-1 first:ml-0 last:mr-0"></div>
+                )}
+                <div
+                    className={`flex-1 ${
+                        mode === DocMode.Split ? "w-1/2" : ""
+                    } ${mode === DocMode.Graph ? "w-full" : ""} ${
+                        mode !== DocMode.Split && mode !== DocMode.Graph
+                            ? "hidden"
+                            : ""
+                    }`}
+                >
+                    {mode === DocMode.Graph || mode === DocMode.Split ? (
+                        <GraphView graphNodes={graphNodes} />
+                    ) : null}
+                </div>
+            </div>
         </div>
     );
 };
