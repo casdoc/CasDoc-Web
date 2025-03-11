@@ -2,17 +2,18 @@ import { useState, useEffect } from "react";
 import { Document } from "@/app/models/entity/Document";
 import { DocumentService } from "@/app/models/services/DocumentService";
 import { DocumentType } from "@/app/models/enum/DocumentType";
-import { v4 as uuidv4 } from "uuid";
-import { get } from "lodash";
-import { JsonObject } from "@/app/models/types/JsonObject";
-
-export function useDocumentViewModel() {
-    const [documents, setDocuments] = useState<Document[]>([]);
+interface NodeInfo {
+    id: string;
+    pid: string;
+    label: string;
+}
+export function useDocumentViewModel(documentId: string) {
+    const [document, setDocument] = useState<Document>();
+    const [graphNodes, setGraphNodes] = useState<Array<NodeInfo>>([]);
 
     useEffect(() => {
-        let docs = DocumentService.getAllDocuments();
-        console.debug("useDocumentViewModel", docs);
-        if (docs.length === 0) {
+        let doc = DocumentService.getDocumentById(documentId);
+        if (!doc) {
             const emptyDoc = new Document(
                 // uuidv4(),
                 "default-document",
@@ -25,54 +26,49 @@ export function useDocumentViewModel() {
                 []
             );
             DocumentService.saveDocument(emptyDoc);
-            docs = [emptyDoc];
+            doc = emptyDoc;
         }
 
-        setDocuments(docs);
-    }, []);
+        setDocument(doc);
+    }, [documentId]);
+    useEffect(() => {
+        if (!document) return;
 
-    const getDocumentById = (id: string) => {
-        return documents.find((doc) => doc.id === id);
-    };
-
-    const addDocument = (document: Document) => {
-        DocumentService.saveDocument(document);
-        setDocuments(DocumentService.getAllDocuments());
-    };
-
-    const updateDocument = (document: Document) => {
-        DocumentService.saveDocument(document);
-        setDocuments(DocumentService.getAllDocuments());
-    };
-    const getNodes = (documentId: string) => {
-        const content = getDocumentById(documentId)?.getContent();
+        const content = document.getContent();
         console.debug("content", content);
-        if (!content) return [];
-        const ret = [];
+        if (!content) {
+            setGraphNodes([]);
+            return;
+        }
+
+        const newNodes = [];
         for (let i = 0; i < content.length; i++) {
             console.debug("content[i]", content[i]);
             if (content[i].type.startsWith("topic")) {
-                ret.push({
+                newNodes.push({
                     id: content[i].attrs.id,
                     pid: content[i].attrs.documentId,
                     label: content[i].attrs.name,
                 });
             } else if (content[i].type.startsWith("template")) {
-                ret.push({
+                newNodes.push({
                     id: content[i].attrs.id,
                     pid: content[i].attrs.topicId,
                     label: content[i].attrs.name,
                 });
             }
         }
-        return ret;
+        setGraphNodes(newNodes);
+    }, [document]);
+    const updateDocument = (document: Document) => {
+        DocumentService.saveDocument(document);
+        const doc = DocumentService.getDocumentById(document.id);
+        if (doc) setDocument(doc);
     };
 
     return {
-        documents,
-        getDocumentById,
-        addDocument,
+        document,
         updateDocument,
-        getNodes,
+        graphNodes,
     };
 }

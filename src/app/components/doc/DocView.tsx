@@ -13,23 +13,13 @@ interface DocViewProps {
 
 const DocView = ({ documentId }: DocViewProps) => {
     const { mode, setDocMode } = useDocModeViewModel();
-    const { getDocumentById, updateDocument, getNodes } =
-        useDocumentViewModel();
-    const document = getDocumentById(documentId);
+    const { document, updateDocument, graphNodes } =
+        useDocumentViewModel(documentId);
     const { editor } = useBlockEditor({
         document,
         updateDocument,
     });
-    // useEffect(() => {
-    //     // 当视图模式改变时，确保编辑器有时间正确渲染
-    //     if (editor) {
-    //         // 小延迟让 React 完成当前渲染周期
-    //         const timer = setTimeout(() => {
-    //             editor.commands.focus();
-    //         }, 0);
-    //         return () => clearTimeout(timer);
-    //     }
-    // }, [mode, editor]);
+
     if (!editor || !document) {
         return null;
     }
@@ -46,13 +36,13 @@ const DocView = ({ documentId }: DocViewProps) => {
                     </div>
                     <div className={dividerClassName}></div>
                     <div className="w-1/2 flex-1 overflow-y-auto h-full">
-                        <GraphView getNodes={() => getNodes(documentId)} />
+                        <GraphView graphNodes={graphNodes} />
                     </div>
                 </div>
             ) : mode === DocMode.Edit ? (
                 <BlockEditor key={`editor-${mode}`} editor={editor} />
             ) : mode === DocMode.Graph ? (
-                <GraphView getNodes={() => getNodes(documentId)} />
+                <GraphView graphNodes={graphNodes} />
             ) : null}
         </div>
     );
