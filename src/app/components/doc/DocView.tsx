@@ -4,16 +4,17 @@ import { EditorHeader } from "@/components/BlockEditor/EditorHeader";
 import { useBlockEditor } from "@/hooks/useBlockEditor";
 import { BlockEditor } from "@/components/BlockEditor/BlockEditor";
 import GraphView from "../flow/GraphView";
-import { useDocumentViewModel } from "@/hooks/useDocument";
+import { DocumentViewModel } from "@/hooks/useDocument";
+import { GraphViewModel } from "@/app/viewModels/GraphViewModel";
 
 interface DocViewProps {
-    documentId: string;
+    documentViewModel: DocumentViewModel;
+    graphViewModel: GraphViewModel;
 }
 
-const DocView = ({ documentId }: DocViewProps) => {
+const DocView = ({ documentViewModel, graphViewModel }: DocViewProps) => {
     const { mode, setDocMode } = useDocModeViewModel();
-    const { document, updateDocument, graphNodes } =
-        useDocumentViewModel(documentId);
+    const { document, updateDocument, graphNodes } = documentViewModel;
     const { editor } = useBlockEditor({
         document,
         updateDocument,
@@ -49,7 +50,10 @@ const DocView = ({ documentId }: DocViewProps) => {
                             : ""
                     }`}
                 >
-                    <GraphView graphNodes={graphNodes} />
+                    <GraphView
+                        graphNodes={graphNodes}
+                        graphViewModel={graphViewModel}
+                    />
                 </div>
             </div>
         </div>

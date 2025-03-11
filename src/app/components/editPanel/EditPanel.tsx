@@ -1,14 +1,19 @@
 import { useEffect, useState } from "react";
 import { useNodeSelection } from "../../viewModels/context/NodeSelectionContext";
-import tmp from "@/app/components/doc/tmp.json";
 import {
     ConnectionEdge,
-    useGraphViewModel,
+    GraphViewModel,
 } from "@/app/viewModels/GraphViewModel";
+import { NodeInfo } from "@/hooks/useDocument";
 
-export const EditPanel = () => {
+interface EditPanelProps {
+    nodesData: NodeInfo[];
+    graphViewModel: GraphViewModel;
+}
+
+export const EditPanel = ({ nodesData, graphViewModel }: EditPanelProps) => {
     const { selectedNode, selectNode } = useNodeSelection();
-    const { searchBySourceId } = useGraphViewModel();
+    const { searchBySourceId } = graphViewModel;
     const [node, setNode] = useState<any>();
     const [isMounted, setIsMounted] = useState(false);
     const [connectionEdges, setConnectionEdges] = useState<ConnectionEdge[]>(
@@ -28,7 +33,7 @@ export const EditPanel = () => {
     }, []);
 
     const findNodeById = (id: string) => {
-        const node = tmp.content.find((item) => `${item.id}` === id);
+        const node = nodesData.find((item) => `${item.id}` === id);
         return node;
     };
 
@@ -55,14 +60,14 @@ export const EditPanel = () => {
                 <div className="mt-4">
                     <p className="text-sm text-gray-600">ID: {selectedNode}</p>
                     <pre className="bg-gray-100 p-2 mt-2 rounded text-xs">
-                        {node?.attrs.content}
+                        {node?.label}
                     </pre>
                     <div className="mt-5 pt-3 border-t border-gray-500">
                         <p className="font-bold my-2">Target To:</p>
                         {connectionEdges.length > 0 ? (
                             connectionEdges.map((edge) => {
                                 const target = findNodeById(edge.target);
-                                return <p>{target?.attrs.content}</p>;
+                                return <p>{target?.label}</p>;
                             })
                         ) : (
                             <p>no target...</p>

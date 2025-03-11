@@ -29,7 +29,11 @@ import {
 import { FlowSettingPanel } from "./setting-panel/FlowSettingPanel";
 
 import CustomNode from "./CustomNode";
-import { useGraphViewModel } from "@/app/viewModels/GraphViewModel";
+import {
+    GraphViewModel,
+    useGraphViewModel,
+} from "@/app/viewModels/GraphViewModel";
+import { NodeInfo } from "@/hooks/useDocument";
 
 const nodeTypes = {
     custom: CustomNode,
@@ -48,17 +52,18 @@ const defaultEdgeOptions = {
 };
 
 interface GraphViewProps {
-    graphNodes: Array<{ id: string; pid: string; label: string }>;
+    graphNodes: NodeInfo[];
+    graphViewModel: GraphViewModel;
 }
 
-const GraphView = ({ graphNodes }: GraphViewProps) => {
+const GraphView = ({ graphNodes, graphViewModel }: GraphViewProps) => {
     const [colorMode, setColorMode] = useState<"light" | "dark">("light");
     const [selectedLayout, setSelectedLayout] = useState("LR");
     const nodeWidth = 242;
     const nodeHeight = 12;
 
     const { fetchConnectionEdges, updConnectionEdges, removeConnectionEdge } =
-        useGraphViewModel();
+        graphViewModel;
     const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState<any>([]);
 
