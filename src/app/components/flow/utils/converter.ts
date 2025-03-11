@@ -5,7 +5,7 @@ export const convertDataToNodes = (data: any) => {
     return data.map((item: any) => ({
         id: `${item.id}`,
         position: defaultPosition,
-        data: { label: item.attrs.content || "empty" },
+        data: { label: item.label || "empty" },
         type: "custom",
         deletable: false,
     }));
@@ -18,8 +18,8 @@ export const convertDataToStructuralEdges = (data: any) => {
     if (data.length > 0) {
         for (let i = 1; i < data.length; i++) {
             edges.push({
-                id: `e-${data[i].attrs.parent}-${data[i].id}`,
-                source: `${data[i].attrs.parent}`,
+                id: `e-${data[i].pid}-${data[i].id}`,
+                source: `${data[i].pid}`,
                 target: `${data[i].id}`,
                 arrowHeadType: MarkerType.ArrowClosed,
                 type: "default",

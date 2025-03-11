@@ -1,6 +1,6 @@
 "use client";
 
-export { TopicExtension } from "./Topic/TopicExtension";
+export { TopicExtension } from "./topic/TopicExtension";
 export { DataSchemaExtension } from "./Templates/DataSchema/DataSchemaExtension";
 export { TopicComponentX } from "./topic/TopicComponentX/Extension";
 export { TopicComponentY } from "./topic/TopicComponentY/Extension";
