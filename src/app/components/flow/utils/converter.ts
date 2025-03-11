@@ -1,21 +1,7 @@
-import { MarkerType } from "@xyflow/react";
-import { NodeItem } from "../demo-data/NodeItems";
+import { MarkerType, Position } from "@xyflow/react";
 
 export const convertDataToNodes = (data: any) => {
     const defaultPosition = { x: 0, y: 0 };
-    // return data
-    //     .filter((item: any) => {
-    //         if (typeof item.content === "string") {
-    //             return item.content.trim() !== "";
-    //         }
-    //         return true;
-    //     })
-    //     .map((item: any) => ({
-    //         id: item.id.toString(),
-    //         position: defaultPosition,
-    //         data: { label: item.content },
-    //         type: "custom",
-    //     }));
     return data.map((item: any) => ({
         id: `${item.id}`,
         position: defaultPosition,
@@ -26,21 +12,34 @@ export const convertDataToNodes = (data: any) => {
 
 export const convertDataToStructuralEdges = (data: any) => {
     const edges = [];
+
+    // tree structure edges
     if (data.length > 0) {
         for (let i = 1; i < data.length; i++) {
-            // edges.push({
-            //     id: `e-${data[i].parentId}-${data[i].id}`,
-            //     source: data[i].parentId!.toString(),
-            //     target: data[i].id.toString(),
-            //     arrowHeadType: "arrowclosed",
-            //     type: "default",
-            // });
             edges.push({
                 id: `e-${data[i].attrs.parent}-${data[i].id}`,
                 source: `${data[i].attrs.parent}`,
                 target: `${data[i].id}`,
                 arrowHeadType: MarkerType.ArrowClosed,
-                type: "default",
+                type: "bazier",
+            });
+        }
+    }
+    return edges;
+};
+
+export const connectConnectionEdges = (connectionEdges: any) => {
+    const edges = [];
+    // component connection edges
+    if (connectionEdges.length > 0) {
+        for (let i = 0; i < connectionEdges.length; i++) {
+            edges.push({
+                id: `e-${connectionEdges[i].source}-${connectionEdges[i].target}`,
+                source: `${connectionEdges[i].source}`,
+                target: `${connectionEdges[i].target}`,
+                arrowHeadType: MarkerType.ArrowClosed,
+                type: "smoothstep",
+                targetHandle: Position.Right,
             });
         }
     }

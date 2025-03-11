@@ -1,3 +1,5 @@
+import { MarkerType } from "@xyflow/react";
+
 export const computeProximityEdges = (
     nodes: any[],
     threshold: number = 200
@@ -11,10 +13,10 @@ export const computeProximityEdges = (
         const dist = Math.sqrt(dx * dx + dy * dy);
         if (dist < threshold) {
             proxEdges.push({
-                id: `e-${parent.id}-${nodes[i].id}-prox`,
+                id: `e-${parent.id}-${nodes[i].id}`,
                 source: parent.id,
                 target: nodes[i].id,
-                arrowHeadType: "arrowclosed",
+                arrowHeadType: MarkerType.ArrowClosed,
                 type: "smoothstep",
             });
         }

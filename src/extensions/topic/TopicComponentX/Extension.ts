@@ -8,6 +8,7 @@ export const TopicComponentX = Node.create({
     group: "block",
 
     atom: true,
+    draggable: true,
 
     addAttributes() {
         return {
