@@ -1,5 +1,5 @@
 import { Group } from "./types";
-import uuid from "uuid";
+import { v4 as uuidv4 } from "uuid";
 export const GROUPS: Group[] = [
     {
         name: "topic",
@@ -46,7 +46,7 @@ export const GROUPS: Group[] = [
                             type: "template-dataSchema",
                             attrs: {
                                 topicId: "test-topic-1",
-                                id: uuid.v4(),
+                                id: uuidv4(),
                                 name: "User",
                                 type: "Object",
                                 description: "使用者資料",
