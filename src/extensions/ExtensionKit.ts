@@ -23,12 +23,6 @@ import {
     Underline,
     DataSchemaExtension,
     TopicExtension,
-    TopicComponentX,
-    TopicComponentY,
-    TemplateComponentA,
-    TemplateComponentB,
-    TemplateComponentC,
-    TemplateComponentD,
 } from ".";
 
 export const ExtensionKit = () => [
@@ -71,12 +65,6 @@ export const ExtensionKit = () => [
     Focus,
     DataSchemaExtension,
     TopicExtension,
-    TopicComponentX,
-    TopicComponentY,
-    TemplateComponentA,
-    TemplateComponentB,
-    TemplateComponentC,
-    TemplateComponentD,
 ];
 
 export default ExtensionKit;
