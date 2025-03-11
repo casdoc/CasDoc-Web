@@ -1,7 +1,9 @@
 import dagre from "@dagrejs/dagre";
 
 export const getLayoutedElements = (
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     nodes: any[],
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     structuralEdges: any[],
     direction = "LR",
     nodeWidth: number,

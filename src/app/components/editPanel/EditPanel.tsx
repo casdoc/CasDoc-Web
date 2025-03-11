@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNodeSelection } from "../../viewModels/context/NodeSelectionContext";
 import {
     ConnectionEdge,
@@ -14,28 +14,31 @@ interface EditPanelProps {
 export const EditPanel = ({ nodesData, graphViewModel }: EditPanelProps) => {
     const { selectedNode, selectNode } = useNodeSelection();
     const { searchBySourceId } = graphViewModel;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [node, setNode] = useState<any>();
     const [isMounted, setIsMounted] = useState(false);
     const [connectionEdges, setConnectionEdges] = useState<ConnectionEdge[]>(
         []
     );
 
+    const findNodeById = useCallback(
+        (id: string) => {
+            const node = nodesData.find((item) => `${item.id}` === id);
+            return node;
+        },
+        [nodesData]
+    );
     useEffect(() => {
         if (selectedNode) {
             const item = findNodeById(`${selectedNode}`);
             setConnectionEdges(searchBySourceId(selectedNode));
             setNode(item);
         }
-    }, [selectedNode]);
+    }, [findNodeById, searchBySourceId, selectedNode]);
 
     useEffect(() => {
         setIsMounted(true);
     }, []);
-
-    const findNodeById = (id: string) => {
-        const node = nodesData.find((item) => `${item.id}` === id);
-        return node;
-    };
 
     return (
         <div
@@ -67,7 +70,7 @@ export const EditPanel = ({ nodesData, graphViewModel }: EditPanelProps) => {
                         {connectionEdges.length > 0 ? (
                             connectionEdges.map((edge) => {
                                 const target = findNodeById(edge.target);
-                                return <p>{target?.label}</p>;
+                                return <p key={edge.target}>{target?.label}</p>;
                             })
                         ) : (
                             <p>no target...</p>

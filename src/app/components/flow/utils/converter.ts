@@ -1,7 +1,9 @@
 import { MarkerType, Position } from "@xyflow/react";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const convertDataToNodes = (data: any) => {
     const defaultPosition = { x: 0, y: 0 };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return data.map((item: any) => ({
         id: `${item.id}`,
         position: defaultPosition,
@@ -11,6 +13,7 @@ export const convertDataToNodes = (data: any) => {
     }));
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const convertDataToStructuralEdges = (data: any) => {
     const edges = [];
 
@@ -29,6 +32,7 @@ export const convertDataToStructuralEdges = (data: any) => {
     return edges;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const connectConnectionEdges = (connectionEdges: any) => {
     const edges = [];
 

@@ -12,6 +12,7 @@ import { MenuList } from "./MenuList";
 
 const extensionName = "slashCommand";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let popup: any;
 
 export const SlashCommand = Extension.create({
@@ -71,6 +72,7 @@ export const SlashCommand = Extension.create({
                     props,
                 }: {
                     editor: Editor;
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     props: any;
                 }) => {
                     const { view, state } = editor;
@@ -148,6 +150,7 @@ export const SlashCommand = Extension.create({
                     return withEnabledSettings;
                 },
                 render: () => {
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     let component: any;
 
                     let scrollHandler: (() => void) | null = null;
@@ -160,8 +163,6 @@ export const SlashCommand = Extension.create({
                             });
 
                             const { view } = props.editor;
-
-                            const editorNode = view.dom as HTMLElement;
 
                             const getReferenceClientRect = () => {
                                 if (!props.clientRect) {
@@ -225,8 +226,6 @@ export const SlashCommand = Extension.create({
 
                             const { view } = props.editor;
 
-                            const editorNode = view.dom as HTMLElement;
-
                             const getReferenceClientRect = () => {
                                 if (!props.clientRect) {
                                     return props.editor.storage[extensionName]
@@ -275,7 +274,6 @@ export const SlashCommand = Extension.create({
                                 scrollHandler
                             );
 
-                            // eslint-disable-next-line no-param-reassign
                             props.editor.storage[extensionName].rect =
                                 props.clientRect
                                     ? getReferenceClientRect()

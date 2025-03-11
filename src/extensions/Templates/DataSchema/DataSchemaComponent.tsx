@@ -8,10 +8,7 @@ interface Field {
     description: string;
 }
 
-export const DataSchemaComponent: React.FC<NodeViewProps> = ({
-    node,
-    updateAttributes,
-}) => {
+export const DataSchemaComponent: React.FC<NodeViewProps> = ({ node }) => {
     const { name, type, description, fields } = node.attrs;
 
     return (
