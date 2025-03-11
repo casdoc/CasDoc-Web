@@ -6,6 +6,7 @@ import {
     useNodesState,
     useEdgesState,
     addEdge,
+    Node,
     Background,
     MarkerType,
     BackgroundVariant,
@@ -18,7 +19,7 @@ import {
 import "@xyflow/react/dist/style.css";
 
 import { ZoomSlider } from "./zoom-slider/zoom-slider";
-// import tmp from "@/app/components/doc/tmp.json";
+
 import { getLayoutedElements } from "./utils/getLayoutedElements";
 import {
     connectConnectionEdges,
@@ -46,8 +47,11 @@ const defaultEdgeOptions = {
     curvature: 0.1,
 };
 
-const GraphView = ({ getNodes }: { getNodes: () => any }) => {
-    const propsNodes = getNodes();
+interface GraphViewProps {
+    graphNodes: Array<{ id: string; pid: string; label: string }>;
+}
+
+const GraphView = ({ graphNodes }: GraphViewProps) => {
     const [colorMode, setColorMode] = useState<"light" | "dark">("light");
     const [selectedLayout, setSelectedLayout] = useState("LR");
     const nodeWidth = 242;
@@ -55,24 +59,28 @@ const GraphView = ({ getNodes }: { getNodes: () => any }) => {
 
     const { fetchConnectionEdges, updConnectionEdges, removeConnectionEdge } =
         useGraphViewModel();
-    const initialNodes = convertDataToNodes(propsNodes);
-    const initialStructuralEdges = convertDataToStructuralEdges(propsNodes);
-    const { nodes: layoutedNodes } = getLayoutedElements(
-        initialNodes,
-        initialStructuralEdges,
-        "LR",
-        nodeWidth,
-        nodeHeight
-    );
-
-    const [nodes, setNodes, onNodesChange] = useNodesState(layoutedNodes);
-    const [edges, setEdges, onEdgesChange] = useEdgesState(
-        initialStructuralEdges
-    );
+    const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
+    const [edges, setEdges, onEdgesChange] = useEdgesState<any>([]);
 
     useEffect(() => {
-        init(nodeWidth, nodeHeight);
-    }, [setNodes, setEdges]);
+        if (!graphNodes || graphNodes.length === 0) return;
+
+        const connectionEdges = fetchConnectionEdges();
+        const newNodes = convertDataToNodes(graphNodes);
+        const newStructuralEdges = convertDataToStructuralEdges(graphNodes);
+
+        const { nodes: layoutedNodes } = getLayoutedElements(
+            newNodes,
+            newStructuralEdges,
+            "LR",
+            nodeWidth,
+            nodeHeight
+        );
+
+        const tmpConnectionEdges = connectConnectionEdges(connectionEdges);
+        setNodes(layoutedNodes);
+        setEdges([...newStructuralEdges, ...tmpConnectionEdges]);
+    }, [graphNodes, selectedLayout, fetchConnectionEdges, setNodes, setEdges]);
 
     const onConnect = useCallback(
         (params: any) => {
@@ -83,43 +91,25 @@ const GraphView = ({ getNodes }: { getNodes: () => any }) => {
             updConnectionEdges(connectionEdge);
             setEdges((eds) => addEdge(params, eds));
         },
-        [setEdges]
+        [setEdges, updConnectionEdges]
     );
-
     const onLayout = useCallback(
         (direction: string) => {
-            setSelectedLayout;
-            const height = direction === "LR" ? nodeHeight : nodeWidth;
-            const width = direction === "TB" ? nodeWidth : nodeHeight;
-            init(width, height);
+            setSelectedLayout(direction);
         },
-        [setNodes, setEdges]
+        [setSelectedLayout]
     );
-
-    const init = (width: number, height: number) => {
-        const connectionEdges = fetchConnectionEdges();
-        const newNodes = convertDataToNodes(propsNodes);
-        const newStructuralEdges = convertDataToStructuralEdges(propsNodes);
-        const { nodes: layoutedNodes } = getLayoutedElements(
-            newNodes,
-            newStructuralEdges,
-            "LR",
-            width,
-            height
-        );
-        const tmpConnectionEdges = connectConnectionEdges(connectionEdges);
-        setNodes(layoutedNodes);
-        setEdges([...newStructuralEdges, ...tmpConnectionEdges]);
-    };
 
     const onEdgesDelete = useCallback(
         (params: any) => {
-            removeConnectionEdge({
-                source: params[0].source,
-                target: params[0].target,
-            });
+            if (params && params.length > 0) {
+                removeConnectionEdge({
+                    source: params[0].source,
+                    target: params[0].target,
+                });
+            }
         },
-        [setEdges]
+        [removeConnectionEdge]
     );
 
     return (
