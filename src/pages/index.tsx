@@ -1,6 +1,7 @@
 "use client";
 
 import { LogoButton } from "@/app/components/LogoButton";
+import GuideButton from "@/app/components/GuideButton";
 import "@/app/globals.css";
 import Link from "next/link";
 
@@ -10,6 +11,9 @@ const Home = () => {
             <div className="relative flex-1 flex flex-col items-center justify-center px-4">
                 <div className="absolute top-4 left-4">
                     <LogoButton />
+                </div>
+                <div className="absolute top-0 right-4">
+                    <GuideButton />
                 </div>
 
                 <h1 className="text-6xl font-bold text-center mb-8 text-gray-800 select-none">
@@ -27,7 +31,6 @@ const Home = () => {
                 </Link>
             </div>
 
-            {/* Footer */}
             <footer className="w-full bg-gray-100 border-t border-gray-300 py-6">
                 <div className="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between">
                     <p className="text-gray-600 text-sm">
