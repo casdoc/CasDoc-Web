@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
@@ -11,17 +10,16 @@ import {
     Background,
     MarkerType,
     BackgroundVariant,
-    Controls,
     MiniMap,
     ConnectionMode,
     ConnectionLineType,
     useReactFlow,
+    Edge,
+    Connection,
 } from "@xyflow/react";
-
 import "@xyflow/react/dist/style.css";
 
 import { ZoomSlider } from "./zoom-slider/zoom-slider";
-
 import { getLayoutedElements } from "./utils/getLayoutedElements";
 import {
     connectConnectionEdges,
@@ -29,15 +27,13 @@ import {
     convertDataToStructuralEdges,
 } from "./utils/converter";
 import { FlowSettingPanel } from "./setting-panel/FlowSettingPanel";
-
 import CustomNode from "./CustomNode";
 import { GraphViewModel } from "@/app/viewModels/GraphViewModel";
 import { NodeInfo } from "@/hooks/useDocument";
 import { DocMode } from "@/app/models/enum/DocMode";
+import { FlowScrollModeButton } from "./setting-panel/FlowScrollModeButton";
 
-const nodeTypes = {
-    custom: CustomNode,
-};
+const nodeTypes = { custom: CustomNode };
 
 const defaultEdgeOptions = {
     type: "smoothstep",
@@ -60,14 +56,14 @@ interface GraphViewProps {
 const GraphView = ({ docMode, graphNodes, graphViewModel }: GraphViewProps) => {
     const [colorMode, setColorMode] = useState<"light" | "dark">("light");
     const [selectedLayout, setSelectedLayout] = useState("LR");
+    const [scrollMode, setScrollMode] = useState<"zoom" | "drag">("zoom");
     const nodeWidth = 242;
     const nodeHeight = 12;
 
     const { fetchConnectionEdges, updConnectionEdges, removeConnectionEdge } =
         graphViewModel;
     const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
-    const [edges, setEdges, onEdgesChange] = useEdgesState<any>([]);
-
+    const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
     const { fitView } = useReactFlow();
 
     useEffect(() => {
@@ -95,7 +91,7 @@ const GraphView = ({ docMode, graphNodes, graphViewModel }: GraphViewProps) => {
     }, [docMode, fitView]);
 
     const onConnect = useCallback(
-        (params: any) => {
+        (params: Connection) => {
             const connectionEdge = {
                 source: params.source,
                 target: params.target,
@@ -105,6 +101,7 @@ const GraphView = ({ docMode, graphNodes, graphViewModel }: GraphViewProps) => {
         },
         [setEdges, updConnectionEdges]
     );
+
     const onLayout = useCallback(
         (direction: string) => {
             setSelectedLayout(direction);
@@ -113,7 +110,7 @@ const GraphView = ({ docMode, graphNodes, graphViewModel }: GraphViewProps) => {
     );
 
     const onEdgesDelete = useCallback(
-        (params: any) => {
+        (params: Edge[]) => {
             if (params && params.length > 0) {
                 removeConnectionEdge({
                     source: params[0].source,
@@ -124,8 +121,12 @@ const GraphView = ({ docMode, graphNodes, graphViewModel }: GraphViewProps) => {
         [removeConnectionEdge]
     );
 
+    const handleToggleScrollMode = () => {
+        setScrollMode((prev) => (prev === "zoom" ? "drag" : "zoom"));
+    };
+
     return (
-        <div className="w-full h-full bg-white">
+        <div className="w-full h-full bg-white relative">
             <ReactFlow
                 nodes={nodes}
                 edges={edges}
@@ -140,6 +141,9 @@ const GraphView = ({ docMode, graphNodes, graphViewModel }: GraphViewProps) => {
                 connectionLineType={ConnectionLineType.SmoothStep}
                 colorMode={colorMode}
                 minZoom={0.4}
+                maxZoom={1.5}
+                zoomOnScroll={scrollMode === "zoom"}
+                panOnScroll={scrollMode === "drag"}
             >
                 <Background
                     variant={BackgroundVariant.Cross}
@@ -155,8 +159,11 @@ const GraphView = ({ docMode, graphNodes, graphViewModel }: GraphViewProps) => {
                 />
                 <ZoomSlider position="top-left" />
                 <MiniMap />
-                <Controls />
             </ReactFlow>
+            <FlowScrollModeButton
+                scrollMode={scrollMode}
+                handleToggleScrollMode={handleToggleScrollMode}
+            />
         </div>
     );
 };
