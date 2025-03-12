@@ -6,6 +6,7 @@ import { BlockEditor } from "@/components/BlockEditor/BlockEditor";
 import GraphView from "../flow/GraphView";
 import { DocumentViewModel } from "@/hooks/useDocument";
 import { GraphViewModel } from "@/app/viewModels/GraphViewModel";
+import { ReactFlowProvider } from "@xyflow/react";
 
 interface DocViewProps {
     documentViewModel: DocumentViewModel;
@@ -50,10 +51,13 @@ const DocView = ({ documentViewModel, graphViewModel }: DocViewProps) => {
                             : ""
                     }`}
                 >
-                    <GraphView
-                        graphNodes={graphNodes}
-                        graphViewModel={graphViewModel}
-                    />
+                    <ReactFlowProvider>
+                        <GraphView
+                            docMode={mode}
+                            graphNodes={graphNodes}
+                            graphViewModel={graphViewModel}
+                        />
+                    </ReactFlowProvider>
                 </div>
             </div>
         </div>

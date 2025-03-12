@@ -11,7 +11,7 @@ interface TabContent {
     image: string;
     alt: string;
     description: string;
-    layout: "left" | "right"; // "left": 圖片在左，"right": 圖片在右
+    layout: "left" | "right";
 }
 
 const GuidePopup = ({ onClose }: GuidePopupProps) => {
@@ -77,11 +77,11 @@ const GuidePopup = ({ onClose }: GuidePopupProps) => {
 
                 <div className="space-y-12 mb-32">
                     <div
-                        className={`flex flex-col my-20 md:${
+                        className={`flex ${
                             currentGuide.layout === "left"
                                 ? "flex-row"
                                 : "flex-row-reverse"
-                        } items-center md:space-x-8`}
+                        } my-20 items-center space-x-8`}
                     >
                         <div className="flex-shrink-0">
                             <Image
@@ -90,9 +90,10 @@ const GuidePopup = ({ onClose }: GuidePopupProps) => {
                                 width={700}
                                 height={500}
                                 className="mx-8 rounded-xl shadow-xl border border-gray-300"
+                                loading="lazy"
                             />
                         </div>
-                        <div className="mt-4 md:mt-0">
+                        <div>
                             <p className="text-gray-600 text-lg">
                                 {currentGuide.description}
                             </p>
@@ -107,7 +108,7 @@ const GuidePopup = ({ onClose }: GuidePopupProps) => {
                                 return prev + 1 >= tabs.length ? 0 : prev + 1;
                             })
                         }
-                        className="mx-2 px-4 py-2 bg-gray-300 text-gray-800 rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-400 transition-colors"
+                        className="mx-2 px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors"
                     >
                         Next
                     </button>

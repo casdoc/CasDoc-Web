@@ -15,6 +15,7 @@ import {
     MiniMap,
     ConnectionMode,
     ConnectionLineType,
+    useReactFlow,
 } from "@xyflow/react";
 
 import "@xyflow/react/dist/style.css";
@@ -32,6 +33,7 @@ import { FlowSettingPanel } from "./setting-panel/FlowSettingPanel";
 import CustomNode from "./CustomNode";
 import { GraphViewModel } from "@/app/viewModels/GraphViewModel";
 import { NodeInfo } from "@/hooks/useDocument";
+import { DocMode } from "@/app/models/enum/DocMode";
 
 const nodeTypes = {
     custom: CustomNode,
@@ -50,11 +52,12 @@ const defaultEdgeOptions = {
 };
 
 interface GraphViewProps {
+    docMode: DocMode | undefined;
     graphNodes: NodeInfo[];
     graphViewModel: GraphViewModel;
 }
 
-const GraphView = ({ graphNodes, graphViewModel }: GraphViewProps) => {
+const GraphView = ({ docMode, graphNodes, graphViewModel }: GraphViewProps) => {
     const [colorMode, setColorMode] = useState<"light" | "dark">("light");
     const [selectedLayout, setSelectedLayout] = useState("LR");
     const nodeWidth = 242;
@@ -64,6 +67,8 @@ const GraphView = ({ graphNodes, graphViewModel }: GraphViewProps) => {
         graphViewModel;
     const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState<any>([]);
+
+    const { fitView } = useReactFlow();
 
     useEffect(() => {
         if (!graphNodes || graphNodes.length === 0) return;
@@ -84,6 +89,10 @@ const GraphView = ({ graphNodes, graphViewModel }: GraphViewProps) => {
         setNodes(layoutedNodes);
         setEdges([...newStructuralEdges, ...tmpConnectionEdges]);
     }, [graphNodes, selectedLayout, fetchConnectionEdges, setNodes, setEdges]);
+
+    useEffect(() => {
+        fitView({ duration: 300 });
+    }, [docMode, fitView]);
 
     const onConnect = useCallback(
         (params: any) => {
