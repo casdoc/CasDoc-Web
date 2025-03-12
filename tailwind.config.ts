@@ -1,11 +1,11 @@
 import typography from "@tailwindcss/typography";
+import animate from "tailwindcss-animate";
 import type { Config } from "tailwindcss";
 /** @type {import('tailwindcss').Config} */
 
 export default {
     darkMode: ["class"],
     important: true,
-    darkMode: ["class"],
     content: [
         "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
         "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -13,8 +13,7 @@ export default {
         "./src/extensions/**/*.{js,ts,jsx,tsx,mdx}",
     ],
     safelist: ["ProseMirror"], //ensure that the ProseMirror class is not purged
-    plugins: [typography],
-    safelist: ["ProseMirror"],
+    plugins: [typography, animate],
     theme: {
         extend: {
             colors: {
@@ -66,5 +65,4 @@ export default {
             },
         },
     },
-    plugins: [typography, require("tailwindcss-animate")],
 } satisfies Config;

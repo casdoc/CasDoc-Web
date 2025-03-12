@@ -2,6 +2,7 @@ import React, { memo } from "react";
 import { Handle, Position, useConnection } from "@xyflow/react";
 import { useNodeSelection } from "../../viewModels/context/NodeSelectionContext";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function CustomNode({ id, data }: any) {
     const { selectedNode, selectNode } = useNodeSelection();
     const isSelected = selectedNode === id;

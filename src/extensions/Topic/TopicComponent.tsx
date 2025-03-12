@@ -2,10 +2,7 @@ import React from "react";
 import { NodeViewWrapper } from "@tiptap/react";
 import { NodeViewProps } from "@tiptap/core";
 
-export const TopicComponent: React.FC<NodeViewProps> = ({
-    node,
-    updateAttributes,
-}) => {
+export const TopicComponent: React.FC<NodeViewProps> = ({ node }) => {
     const { name } = node.attrs;
 
     return (

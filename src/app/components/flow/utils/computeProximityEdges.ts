@@ -1,6 +1,7 @@
 import { MarkerType } from "@xyflow/react";
 
 export const computeProximityEdges = (
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     nodes: any[],
     threshold: number = 200
 ) => {

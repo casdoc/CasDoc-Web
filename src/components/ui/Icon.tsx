@@ -1,4 +1,3 @@
-import { cn } from "@/utils";
 import { icons } from "lucide-react";
 import { memo } from "react";
 
@@ -17,7 +16,7 @@ export const Icon = memo(({ name, className, strokeWidth }: IconProps) => {
 
     return (
         <IconComponent
-            className={cn("w-4 h-4", className)}
+            className={`w-4 h-4 ${className || ""}`}
             strokeWidth={strokeWidth || 2.5}
         />
     );

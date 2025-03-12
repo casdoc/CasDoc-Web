@@ -1,29 +1,54 @@
 "use client";
 
+import { LogoButton } from "@/app/components/LogoButton";
+import Link from "next/link";
 import "@/app/globals.css";
-import DocView from "@/app/components/doc/DocView";
-import { EditPanel } from "@/app/components/editPanel/EditPanel";
-import { NodeSelectionProvider } from "@/app/viewModels/context/NodeSelectionContext";
-import { useDocumentViewModel } from "@/hooks/useDocument";
-import { useGraphViewModel } from "@/app/viewModels/GraphViewModel";
+import GuideButton from "@/app/components/GuideButton";
 
-export default function Home() {
-    const documentId = "default-document";
-    const documentViewModel = useDocumentViewModel(documentId);
-    const graphViewModel = useGraphViewModel();
-
+const Home = () => {
     return (
-        <NodeSelectionProvider>
-            <div className="min-w-fit h-screen flex flex-col items-center bg-gray-100 text-black">
-                <DocView
-                    documentViewModel={documentViewModel}
-                    graphViewModel={graphViewModel}
-                />
-                <EditPanel
-                    nodesData={documentViewModel.graphNodes}
-                    graphViewModel={graphViewModel}
-                />
+        <div className="flex flex-col min-h-screen bg-gray-100 font-sans">
+            <div className="relative flex-1 flex flex-col items-center justify-center px-4">
+                <div className="absolute top-4 left-4">
+                    <LogoButton />
+                </div>
+                <div className="absolute top-4 right-4">
+                    <GuideButton />
+                </div>
+                <h1 className="text-6xl font-bold text-center mb-8 text-gray-800 select-none">
+                    Trace text relationships.
+                </h1>
+                <h2 className="text-2xl text-center mb-14 max-w-2xl text-gray-600 select-none">
+                    CasDoc is a docs-editing tool that enhances <br />
+                    traceability through document structure visualization.
+                </h2>
+                <Link
+                    href="/doc"
+                    className="bg-black text-white font-bold px-6 py-3 rounded-lg shadow-lg text-lg hover:bg-gray-700 transition-colors duration-300 select-none"
+                >
+                    Get Started
+                </Link>
             </div>
-        </NodeSelectionProvider>
+
+            {/* Footer */}
+            <footer className="w-full bg-gray-100 border-t border-gray-300 py-6">
+                <div className="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between">
+                    <p className="text-gray-600 text-sm">
+                        © {new Date().getFullYear()} CasDoc. All rights
+                        reserved.
+                    </p>
+                    <div className="flex items-center gap-2 mt-4 sm:mt-0">
+                        <Link
+                            href="mailto:casdoc.official@gmail.com"
+                            className="text-gray-600 text-sm hover:text-gray-800 transition-colors"
+                        >
+                            casdoc.official@gmail.com
+                        </Link>
+                    </div>
+                </div>
+            </footer>
+        </div>
     );
-}
+};
+
+export default Home;

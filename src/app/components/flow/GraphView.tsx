@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
@@ -29,10 +30,7 @@ import {
 import { FlowSettingPanel } from "./setting-panel/FlowSettingPanel";
 
 import CustomNode from "./CustomNode";
-import {
-    GraphViewModel,
-    useGraphViewModel,
-} from "@/app/viewModels/GraphViewModel";
+import { GraphViewModel } from "@/app/viewModels/GraphViewModel";
 import { NodeInfo } from "@/hooks/useDocument";
 
 const nodeTypes = {
@@ -118,7 +116,7 @@ const GraphView = ({ graphNodes, graphViewModel }: GraphViewProps) => {
     );
 
     return (
-        <div className="w-full h-full bg-white rounded-lg">
+        <div className="w-full h-full bg-white">
             <ReactFlow
                 nodes={nodes}
                 edges={edges}
@@ -138,6 +136,7 @@ const GraphView = ({ graphNodes, graphViewModel }: GraphViewProps) => {
                     variant={BackgroundVariant.Cross}
                     gap={12}
                     size={1}
+                    color="gray"
                 />
                 <FlowSettingPanel
                     onLayout={onLayout}
