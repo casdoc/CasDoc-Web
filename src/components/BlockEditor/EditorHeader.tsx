@@ -44,7 +44,7 @@ export const EditorHeader = ({ mode, setDocMode }: EditorHeaderProps) => {
                     >
                         <Icon name={"SquareSplitHorizontal"} />
                     </Toolbar.Button>
-                    <div className="absolute -top-2 right-4">
+                    <div className="absolute top-4 right-4">
                         <GuideButton />
                     </div>
                 </div>

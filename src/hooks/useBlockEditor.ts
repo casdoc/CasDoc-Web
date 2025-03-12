@@ -2,8 +2,7 @@ import ExtensionKit from "@/extensions/ExtensionKit";
 import { EditorOptions, useEditor } from "@tiptap/react";
 import { JsonObject } from "@/app/models/types/JsonObject";
 import { Document } from "@/app/models/entity/Document";
-import tmp from "@/app/components/doc/tmp.json";
-//
+
 interface BlockEditorProps {
     document?: Document;
     updateDocument: (document: Document) => void;
@@ -27,8 +26,6 @@ export const useBlockEditor = ({
                 autocapitalize: "off",
             },
         },
-        // content: initialContent,
-        content: tmp,
         onUpdate({ editor }) {
             console.debug(editor.getJSON().content);
             const updatedContent = editor.getJSON().content as JsonObject[];

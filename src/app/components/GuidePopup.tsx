@@ -1,24 +1,50 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
-import { LogoButton } from "@/app/components/LogoButton";
-import "@/app/globals.css";
 
-const Guideline = () => {
+interface GuidePopupProps {
+    onClose: () => void;
+}
+
+const GuidePopup = ({ onClose }: GuidePopupProps) => {
+    const handleClickOutside = (
+        event: React.MouseEvent<HTMLDivElement, MouseEvent>
+    ) => {
+        if (event.target === event.currentTarget) {
+            onClose();
+        }
+    };
+
     return (
-        <div className="min-h-screen bg-gray-100 font-sans flex flex-col">
-            <div className="w-full max-w-7xl mx-auto px-4 py-8 mb-48">
-                <div className="flex justify-between items-center mb-8">
-                    <LogoButton />
-                    <Link href="/" className="text-gray-700 hover:underline">
-                        Back to Home
-                    </Link>
-                </div>
+        <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+            onClick={handleClickOutside}
+        >
+            <div className="bg-gray-100 font-sans w-full max-w-7xl mx-auto px-4 py-8 relative overflow-y-auto max-h-[calc(100vh-2rem)] my-14 rounded-xl">
+                <button
+                    onClick={onClose}
+                    className="absolute top-4 right-4 text-gray-700 hover:text-gray-900"
+                    title="Close"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-8 w-8"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                    >
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M6 18L18 6M6 6l12 12"
+                        />
+                    </svg>
+                </button>
                 <h1 className="text-4xl font-bold text-center my-12 text-gray-800">
                     Guidelines
                 </h1>
-                <div className="space-y-12">
+                <div className="space-y-12 mb-32">
                     <div className="flex flex-col my-60 md:flex-row items-center md:space-x-8">
                         <div className="flex-shrink-0">
                             <Image
@@ -61,24 +87,8 @@ const Guideline = () => {
                     </div>
                 </div>
             </div>
-            <footer className="w-full bg-gray-100 border-t border-gray-300 py-6">
-                <div className="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between">
-                    <p className="text-gray-600 text-sm">
-                        © {new Date().getFullYear()} CasDoc. All rights
-                        reserved.
-                    </p>
-                    <div className="flex items-center gap-2 mt-4 sm:mt-0">
-                        <Link
-                            href="mailto:casdoc.official@gmail.com"
-                            className="text-gray-600 text-sm hover:text-gray-800 transition-colors"
-                        >
-                            casdoc.official@gmail.com
-                        </Link>
-                    </div>
-                </div>
-            </footer>
         </div>
     );
 };
 
-export default Guideline;
+export default GuidePopup;
