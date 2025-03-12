@@ -10,6 +10,7 @@ interface GuidePopupProps {
 interface TabContent {
     image: string;
     alt: string;
+    tittle: string;
     description: string;
     layout: "left" | "right";
 }
@@ -21,6 +22,7 @@ const GuidePopup = ({ onClose }: GuidePopupProps) => {
         {
             image: "/guideA.png",
             alt: "Guideline 1",
+            tittle: "Type Slash!",
             description:
                 'Type the "/" command to attach topics or templates from the menu, and they will appear as nodes in the diagram panel arranged in a tree structure.',
             layout: "left",
@@ -28,6 +30,7 @@ const GuidePopup = ({ onClose }: GuidePopupProps) => {
         {
             image: "/guideB.png",
             alt: "Guideline 2",
+            tittle: "Connect Them!",
             description:
                 "Drag the node’s handle points to establish connections between nodes, and you can click on the nodes to trace these connections.",
             layout: "right",
@@ -35,6 +38,7 @@ const GuidePopup = ({ onClose }: GuidePopupProps) => {
     ];
 
     const currentGuide = tabs[currentTab];
+    const progress = ((currentTab + 1) / tabs.length) * 100;
 
     const handleClickOutside = (
         event: React.MouseEvent<HTMLDivElement, MouseEvent>
@@ -75,6 +79,13 @@ const GuidePopup = ({ onClose }: GuidePopupProps) => {
                     Guidelines
                 </h1>
 
+                <div className="w-full bg-gray-300 h-2 rounded-full overflow-hidden mb-6">
+                    <div
+                        className="h-full bg-blue-500 transition-all"
+                        style={{ width: `${progress}%` }}
+                    ></div>
+                </div>
+
                 <div className="space-y-12 mb-32">
                     <div
                         className={`flex ${
@@ -94,6 +105,9 @@ const GuidePopup = ({ onClose }: GuidePopupProps) => {
                             />
                         </div>
                         <div>
+                            <h2 className="mb-6 text-4xl font-semibold">
+                                {currentGuide.tittle}
+                            </h2>
                             <p className="text-gray-600 text-lg">
                                 {currentGuide.description}
                             </p>
@@ -108,13 +122,10 @@ const GuidePopup = ({ onClose }: GuidePopupProps) => {
                                 return prev + 1 >= tabs.length ? 0 : prev + 1;
                             })
                         }
-                        className="mx-2 px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors"
+                        className="mx-2 px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors shadow-lg"
                     >
                         Next
                     </button>
-                    <span className="mx-2 select-none">
-                        ({currentTab + 1}/{tabs.length})
-                    </span>
                 </div>
             </div>
         </div>
