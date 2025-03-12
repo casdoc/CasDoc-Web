@@ -4,6 +4,7 @@ import { useCallback } from "react";
 import { Icon } from "@/components/ui/Icon";
 import { Toolbar } from "@/components/ui/Toolbar";
 import { DocMode } from "@/app/models/enum/DocMode";
+import { LogoButton } from "@/app/components/LogoButton";
 interface EditorHeaderProps {
     mode: DocMode;
     setDocMode: (newMode: DocMode) => void;
@@ -20,6 +21,7 @@ export const EditorHeader = ({ mode, setDocMode }: EditorHeaderProps) => {
         <div className="flex flex-row items-center justify-between flex-none py-2 pl-6 pr-3 text-black bg-white border-b border-neutral-200 dark:bg-black dark:text-white dark:border-neutral-800">
             <div className="flex flex-row gap-x-1.5 items-center">
                 <div className="flex items-center gap-x-1.5">
+                    <LogoButton />
                     <Toolbar.Button
                         tooltip={"Editor mode"}
                         onClick={() => handleChangeView(DocMode.Edit)}
