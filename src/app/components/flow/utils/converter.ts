@@ -26,6 +26,7 @@ export const convertDataToStructuralEdges = (data: any) => {
                 target: `${data[i].id}`,
                 arrowHeadType: MarkerType.ArrowClosed,
                 type: "default",
+                deletable: false,
             });
         }
     }
