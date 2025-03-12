@@ -5,6 +5,7 @@ import { Icon } from "@/components/ui/Icon";
 import { Toolbar } from "@/components/ui/Toolbar";
 import { DocMode } from "@/app/models/enum/DocMode";
 import { LogoButton } from "@/app/components/LogoButton";
+import GuideButton from "@/app/components/GuideButton";
 interface EditorHeaderProps {
     mode: DocMode;
     setDocMode: (newMode: DocMode) => void;
@@ -43,6 +44,9 @@ export const EditorHeader = ({ mode, setDocMode }: EditorHeaderProps) => {
                     >
                         <Icon name={"SquareSplitHorizontal"} />
                     </Toolbar.Button>
+                    <div className="absolute top-4 right-4">
+                        <GuideButton />
+                    </div>
                 </div>
             </div>
         </div>

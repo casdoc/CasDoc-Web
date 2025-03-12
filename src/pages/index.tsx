@@ -1,8 +1,9 @@
 "use client";
 
 import { LogoButton } from "@/app/components/LogoButton";
-import "@/app/globals.css";
 import Link from "next/link";
+import "@/app/globals.css";
+import GuideButton from "@/app/components/GuideButton";
 
 const Home = () => {
     return (
@@ -11,7 +12,9 @@ const Home = () => {
                 <div className="absolute top-4 left-4">
                     <LogoButton />
                 </div>
-
+                <div className="absolute top-4 right-4">
+                    <GuideButton />
+                </div>
                 <h1 className="text-6xl font-bold text-center mb-8 text-gray-800 select-none">
                     Trace text relationships.
                 </h1>
