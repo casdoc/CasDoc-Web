@@ -56,7 +56,7 @@ interface GraphViewProps {
 const GraphView = ({ docMode, graphNodes, graphViewModel }: GraphViewProps) => {
     const [colorMode, setColorMode] = useState<"light" | "dark">("light");
     const [selectedLayout, setSelectedLayout] = useState("LR");
-    const [scrollMode, setScrollMode] = useState<"zoom" | "drag">("zoom");
+    const [scrollMode, setScrollMode] = useState<"zoom" | "drag">("drag");
     const nodeWidth = 242;
     const nodeHeight = 12;
 

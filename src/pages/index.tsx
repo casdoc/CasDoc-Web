@@ -1,11 +1,18 @@
 "use client";
 
+import { useState } from "react";
 import { LogoButton } from "@/app/components/LogoButton";
 import Link from "next/link";
 import "@/app/globals.css";
 import GuideButton from "@/app/components/GuideButton";
 
 const Home = () => {
+    const [loading, setLoading] = useState(false);
+
+    const handleClick = () => {
+        setLoading(true);
+    };
+
     return (
         <div className="flex flex-col min-h-screen bg-gray-100 font-sans">
             <div className="relative flex-1 flex flex-col items-center justify-center px-4">
@@ -24,13 +31,16 @@ const Home = () => {
                 </h2>
                 <Link
                     href="/doc"
-                    className="bg-black text-white font-bold px-6 py-3 rounded-lg shadow-lg text-lg hover:bg-gray-700 transition-colors duration-300 select-none"
+                    aria-disabled={loading}
+                    className={`bg-black text-white font-bold px-6 py-3 rounded-lg shadow-lg text-lg hover:bg-gray-700 transition-colors duration-300 select-none text-center min-w-[140px] ${
+                        loading && "opacity-60 cursor-not-allowed"
+                    }`}
+                    onClick={handleClick}
                 >
-                    Get Started
+                    {loading ? "Loading..." : "Get Started"}
                 </Link>
             </div>
 
-            {/* Footer */}
             <footer className="w-full bg-gray-100 border-t border-gray-300 py-6">
                 <div className="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between">
                     <p className="text-gray-600 text-sm">

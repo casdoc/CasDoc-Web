@@ -73,7 +73,7 @@ export const EditPanel = ({ nodesData, graphViewModel }: EditPanelProps) => {
                                 return <p key={edge.target}>{target?.label}</p>;
                             })
                         ) : (
-                            <p>no target...</p>
+                            <p className="text-gray-400">no target...</p>
                         )}
                     </div>
                 </div>

@@ -13,9 +13,13 @@ export const FlowScrollModeButton = ({
     return (
         <button
             onClick={handleToggleScrollMode}
-            className="absolute bottom-4 left-4 px-4 py-2 bg-gray-400 text-white rounded shadow hover:opacity-70 transition-colors duration-500"
+            className="absolute bottom-4 left-4 px-4 py-2 bg-gray-400 text-white rounded-md shadow-md hover:opacity-70 transition-colors duration-500"
         >
-            {scrollMode === "zoom" ? <TfiMouseAlt /> : <FaLaptop />}
+            {scrollMode === "zoom" ? (
+                <TfiMouseAlt size={20} />
+            ) : (
+                <FaLaptop size={20} />
+            )}
         </button>
     );
 };

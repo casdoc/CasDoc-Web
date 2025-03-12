@@ -17,6 +17,7 @@ interface TabContent {
 
 const GuidePopup = ({ onClose }: GuidePopupProps) => {
     const [currentTab, setCurrentTab] = useState(0);
+    const [imageLoaded, setImageLoaded] = useState(false);
 
     const tabs: TabContent[] = [
         {
@@ -46,6 +47,13 @@ const GuidePopup = ({ onClose }: GuidePopupProps) => {
         if (event.target === event.currentTarget) {
             onClose();
         }
+    };
+
+    const handleClick = () => {
+        setImageLoaded(false);
+        setCurrentTab((prev) => {
+            return prev + 1 >= tabs.length ? 0 : prev + 1;
+        });
     };
 
     return (
@@ -81,7 +89,7 @@ const GuidePopup = ({ onClose }: GuidePopupProps) => {
 
                 <div className="w-full bg-gray-300 h-2 rounded-full overflow-hidden mb-6">
                     <div
-                        className="h-full bg-blue-500 transition-all"
+                        className="h-full bg-blue-500 transition-all duration-700"
                         style={{ width: `${progress}%` }}
                     ></div>
                 </div>
@@ -94,14 +102,24 @@ const GuidePopup = ({ onClose }: GuidePopupProps) => {
                                 : "flex-row-reverse"
                         } my-20 items-center space-x-8`}
                     >
-                        <div className="flex-shrink-0">
+                        <div className="flex-shrink-0 relative">
+                            {!imageLoaded && (
+                                <div className="absolute inset-0 flex items-center justify-center bg-gray-200">
+                                    <span className="text-gray-500">
+                                        Loading...
+                                    </span>
+                                </div>
+                            )}
                             <Image
                                 src={currentGuide.image}
                                 alt={currentGuide.alt}
                                 width={700}
                                 height={500}
-                                className="mx-8 rounded-xl shadow-xl border border-gray-300"
+                                className={`mx-8 rounded-xl shadow-xl border border-gray-300 transition-opacity duration-500 ${
+                                    imageLoaded ? "opacity-100" : "opacity-0"
+                                }`}
                                 loading="lazy"
+                                onLoad={() => setImageLoaded(true)}
                             />
                         </div>
                         <div>
@@ -117,11 +135,7 @@ const GuidePopup = ({ onClose }: GuidePopupProps) => {
 
                 <div className="flex justify-end items-center">
                     <button
-                        onClick={() =>
-                            setCurrentTab((prev) => {
-                                return prev + 1 >= tabs.length ? 0 : prev + 1;
-                            })
-                        }
+                        onClick={handleClick}
                         className="mx-2 px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors shadow-lg"
                     >
                         Next
