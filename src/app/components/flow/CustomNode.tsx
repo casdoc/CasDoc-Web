@@ -17,8 +17,8 @@ function CustomNode({ id, data }: any) {
     return (
         <button onClick={handleClick}>
             <div
-                className={`px-4 py-2 shadow-md rounded-md bg-white border-2 border-stone-400 ${
-                    isSelected && "border-yellow-500"
+                className={`px-4 py-2 shadow-md rounded-md bg-white border-2 ${
+                    isSelected ? "border-indigo-500" : "border-stone-400"
                 }`}
             >
                 <div className="flex">{data.label}</div>
