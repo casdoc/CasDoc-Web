@@ -42,7 +42,7 @@ export const EditPanel = ({ nodesData, graphViewModel }: EditPanelProps) => {
 
     return (
         <div
-            className={`fixed top-0 right-0 h-full w-80 bg-white shadow-lg p-4 transform transition-transform duration-500 ${
+            className={`fixed top-0 right-0 mt-14 h-full w-80 bg-white shadow-lg p-4 transform transition-transform duration-500 ${
                 isMounted
                     ? selectedNode
                         ? "translate-x-0"
