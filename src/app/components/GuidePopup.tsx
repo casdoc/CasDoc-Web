@@ -81,7 +81,7 @@ const GuidePopup = ({ onClose }: GuidePopupProps) => {
                     </svg>
                 </button>
 
-                <h1 className="text-3xl md:text-4xl font-bold text-center my-8 text-gray-800">
+                <h1 className="text-4xl font-bold text-center my-12 text-gray-800">
                     Guidelines
                 </h1>
 
@@ -94,13 +94,13 @@ const GuidePopup = ({ onClose }: GuidePopupProps) => {
 
                 <div className="space-y-12 mb-8 md:mb-32">
                     <div
-                        className={`flex flex-col md:${
+                        className={`flex flex-col ${
                             currentGuide.layout === "left"
-                                ? "flex-row"
-                                : "flex-row-reverse"
-                        } items-center space-y-8 md:space-y-0 md:space-x-8 my-8`}
+                                ? "md:flex-row"
+                                : "md:flex-row-reverse"
+                        } my-20 items-center space-x-8`}
                     >
-                        <div className="relative w-full md:w-auto">
+                        <div className="relative m-8 md:w-auto">
                             {!imageLoaded && (
                                 <div className="absolute inset-0 flex items-center justify-center bg-gray-200">
                                     <span className="text-gray-500">
@@ -113,14 +113,14 @@ const GuidePopup = ({ onClose }: GuidePopupProps) => {
                                 alt={currentGuide.alt}
                                 width={700}
                                 height={500}
-                                className={`w-full md:w-auto rounded-xl shadow-xl border border-gray-300 transition-opacity duration-500 ${
+                                className={`w-auto rounded-xl shadow-xl border border-gray-300 transition-opacity duration-500 ${
                                     imageLoaded ? "opacity-100" : "opacity-0"
                                 }`}
                                 loading="lazy"
                                 onLoad={() => setImageLoaded(true)}
                             />
                         </div>
-                        <div className="px-4 text-center md:text-left">
+                        <div className="max-w-lg text-center md:text-left">
                             <h2 className="mb-4 text-2xl md:text-4xl font-semibold">
                                 {currentGuide.tittle}
                             </h2>
