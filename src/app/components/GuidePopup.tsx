@@ -17,6 +17,7 @@ interface TabContent {
 
 const GuidePopup = ({ onClose }: GuidePopupProps) => {
     const [currentTab, setCurrentTab] = useState(0);
+    const [imageLoaded, setImageLoaded] = useState(false);
 
     const tabs: TabContent[] = [
         {
@@ -48,6 +49,11 @@ const GuidePopup = ({ onClose }: GuidePopupProps) => {
         }
     };
 
+    const handleClick = () => {
+        setImageLoaded(false);
+        setCurrentTab((prev) => (prev + 1 >= tabs.length ? 0 : prev + 1));
+    };
+
     return (
         <div
             className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
@@ -75,40 +81,50 @@ const GuidePopup = ({ onClose }: GuidePopupProps) => {
                     </svg>
                 </button>
 
-                <h1 className="text-4xl font-bold text-center my-12 text-gray-800">
+                <h1 className="text-3xl md:text-4xl font-bold text-center my-8 text-gray-800">
                     Guidelines
                 </h1>
 
                 <div className="w-full bg-gray-300 h-2 rounded-full overflow-hidden mb-6">
                     <div
-                        className="h-full bg-blue-500 transition-all"
+                        className="h-full bg-blue-500 transition-all duration-700"
                         style={{ width: `${progress}%` }}
                     ></div>
                 </div>
 
-                <div className="space-y-12 mb-32">
+                <div className="space-y-12 mb-8 md:mb-32">
                     <div
-                        className={`flex ${
+                        className={`flex flex-col md:${
                             currentGuide.layout === "left"
                                 ? "flex-row"
                                 : "flex-row-reverse"
-                        } my-20 items-center space-x-8`}
+                        } items-center space-y-8 md:space-y-0 md:space-x-8 my-8`}
                     >
-                        <div className="flex-shrink-0">
+                        <div className="relative w-full md:w-auto">
+                            {!imageLoaded && (
+                                <div className="absolute inset-0 flex items-center justify-center bg-gray-200">
+                                    <span className="text-gray-500">
+                                        Loading...
+                                    </span>
+                                </div>
+                            )}
                             <Image
                                 src={currentGuide.image}
                                 alt={currentGuide.alt}
                                 width={700}
                                 height={500}
-                                className="mx-8 rounded-xl shadow-xl border border-gray-300"
+                                className={`w-full md:w-auto rounded-xl shadow-xl border border-gray-300 transition-opacity duration-500 ${
+                                    imageLoaded ? "opacity-100" : "opacity-0"
+                                }`}
                                 loading="lazy"
+                                onLoad={() => setImageLoaded(true)}
                             />
                         </div>
-                        <div>
-                            <h2 className="mb-6 text-4xl font-semibold">
+                        <div className="px-4 text-center md:text-left">
+                            <h2 className="mb-4 text-2xl md:text-4xl font-semibold">
                                 {currentGuide.tittle}
                             </h2>
-                            <p className="text-gray-600 text-lg">
+                            <p className="text-gray-600 text-base md:text-lg">
                                 {currentGuide.description}
                             </p>
                         </div>
@@ -117,11 +133,7 @@ const GuidePopup = ({ onClose }: GuidePopupProps) => {
 
                 <div className="flex justify-end items-center">
                     <button
-                        onClick={() =>
-                            setCurrentTab((prev) => {
-                                return prev + 1 >= tabs.length ? 0 : prev + 1;
-                            })
-                        }
+                        onClick={handleClick}
                         className="mx-2 px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors shadow-lg"
                     >
                         Next

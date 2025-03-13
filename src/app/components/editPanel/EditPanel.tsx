@@ -42,7 +42,7 @@ export const EditPanel = ({ nodesData, graphViewModel }: EditPanelProps) => {
 
     return (
         <div
-            className={`fixed top-0 right-0 h-full w-80 bg-white shadow-lg p-4 transform transition-transform duration-500 ${
+            className={`fixed top-0 right-0 mt-14 h-full w-80 bg-white shadow-lg p-4 transform transition-transform duration-500 ${
                 isMounted
                     ? selectedNode
                         ? "translate-x-0"
@@ -73,7 +73,7 @@ export const EditPanel = ({ nodesData, graphViewModel }: EditPanelProps) => {
                                 return <p key={edge.target}>{target?.label}</p>;
                             })
                         ) : (
-                            <p>no target...</p>
+                            <p className="text-gray-400">no target...</p>
                         )}
                     </div>
                 </div>

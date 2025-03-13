@@ -19,7 +19,7 @@ const GuideButton = () => {
         <>
             <button
                 onClick={handleOpen}
-                className="mx-14 hover:opacity-50 duration-300 bg-none"
+                className="hover:opacity-50 hover:rotate-180 duration-300 bg-none"
             >
                 <FaRegCompass size={30} />
             </button>

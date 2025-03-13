@@ -17,8 +17,8 @@ function CustomNode({ id, data }: any) {
     return (
         <button onClick={handleClick}>
             <div
-                className={`px-4 py-2 shadow-md rounded-md bg-white border-2 border-stone-400 ${
-                    isSelected && "border-yellow-500"
+                className={`px-4 py-2 shadow-md rounded-md bg-white border ${
+                    isSelected ? "border-indigo-500" : "border-stone-400"
                 }`}
             >
                 <div className="flex">{data.label}</div>
@@ -28,7 +28,7 @@ function CustomNode({ id, data }: any) {
                         id="left"
                         type="target"
                         position={Position.Left}
-                        className="w-0.5 rounded-none h-5 border-0 !bg-gray-400"
+                        className="rounded-none h-5 border-0 !bg-gray-400"
                     />
                 )}
                 {(!connection.inProgress || isTarget) && (
@@ -36,7 +36,7 @@ function CustomNode({ id, data }: any) {
                         id="right"
                         type="source"
                         position={Position.Right}
-                        className="w-0.5 rounded-none h-5 border-0 !bg-gray-400"
+                        className="rounded-none h-5 border-0 !bg-gray-400"
                     />
                 )}
             </div>

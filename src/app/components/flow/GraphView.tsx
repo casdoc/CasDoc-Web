@@ -32,6 +32,7 @@ import { GraphViewModel } from "@/app/viewModels/GraphViewModel";
 import { NodeInfo } from "@/hooks/useDocument";
 import { DocMode } from "@/app/models/enum/DocMode";
 import { FlowScrollModeButton } from "./setting-panel/FlowScrollModeButton";
+import ToastManager from "@/app/viewModels/ToastManager";
 
 const nodeTypes = { custom: CustomNode };
 
@@ -56,7 +57,7 @@ interface GraphViewProps {
 const GraphView = ({ docMode, graphNodes, graphViewModel }: GraphViewProps) => {
     const [colorMode, setColorMode] = useState<"light" | "dark">("light");
     const [selectedLayout, setSelectedLayout] = useState("LR");
-    const [scrollMode, setScrollMode] = useState<"zoom" | "drag">("zoom");
+    const [scrollMode, setScrollMode] = useState<"zoom" | "drag">("drag");
     const nodeWidth = 242;
     const nodeHeight = 12;
 
@@ -65,6 +66,7 @@ const GraphView = ({ docMode, graphNodes, graphViewModel }: GraphViewProps) => {
     const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
     const { fitView } = useReactFlow();
+    const { showToast, ToastComponent } = ToastManager();
 
     useEffect(() => {
         if (!graphNodes || graphNodes.length === 0) return;
@@ -123,6 +125,7 @@ const GraphView = ({ docMode, graphNodes, graphViewModel }: GraphViewProps) => {
 
     const handleToggleScrollMode = () => {
         setScrollMode((prev) => (prev === "zoom" ? "drag" : "zoom"));
+        showToast(scrollMode === "zoom" ? "Scroll to pan" : "Scroll to zoom");
     };
 
     return (
@@ -159,6 +162,7 @@ const GraphView = ({ docMode, graphNodes, graphViewModel }: GraphViewProps) => {
                 />
                 <ZoomSlider position="top-left" />
                 <MiniMap />
+                {ToastComponent}
             </ReactFlow>
             <FlowScrollModeButton
                 scrollMode={scrollMode}
