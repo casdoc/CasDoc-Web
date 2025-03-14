@@ -26,13 +26,14 @@ import {
     convertDataToNodes,
     convertDataToStructuralEdges,
 } from "./utils/converter";
-import { FlowSettingPanel } from "./setting-panel/FlowSettingPanel";
+// import { FlowSettingPanel } from "./setting-panel/FlowSettingPanel";
 import CustomNode from "./CustomNode";
 import { GraphViewModel } from "@/app/viewModels/GraphViewModel";
 import { NodeInfo } from "@/hooks/useDocument";
 import { DocMode } from "@/app/models/enum/DocMode";
 import { FlowScrollModeButton } from "./setting-panel/FlowScrollModeButton";
 import ToastManager from "@/app/viewModels/ToastManager";
+import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext";
 
 const nodeTypes = { custom: CustomNode };
 
@@ -55,8 +56,8 @@ interface GraphViewProps {
 }
 
 const GraphView = ({ docMode, graphNodes, graphViewModel }: GraphViewProps) => {
-    const [colorMode, setColorMode] = useState<"light" | "dark">("light");
-    const [selectedLayout, setSelectedLayout] = useState("LR");
+    // const [colorMode, setColorMode] = useState<"light" | "dark">("light");
+    // const [selectedLayout, setSelectedLayout] = useState("LR");
     const [scrollMode, setScrollMode] = useState<"zoom" | "drag">("drag");
     const nodeWidth = 242;
     const nodeHeight = 12;
@@ -67,6 +68,7 @@ const GraphView = ({ docMode, graphNodes, graphViewModel }: GraphViewProps) => {
     const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
     const { fitView } = useReactFlow();
     const { showToast, ToastComponent } = ToastManager();
+    const { selectNode } = useNodeSelection();
 
     useEffect(() => {
         if (!graphNodes || graphNodes.length === 0) return;
@@ -86,7 +88,7 @@ const GraphView = ({ docMode, graphNodes, graphViewModel }: GraphViewProps) => {
         const tmpConnectionEdges = connectConnectionEdges(connectionEdges);
         setNodes(layoutedNodes);
         setEdges([...newStructuralEdges, ...tmpConnectionEdges]);
-    }, [graphNodes, selectedLayout, fetchConnectionEdges, setNodes, setEdges]);
+    }, [graphNodes, fetchConnectionEdges, setNodes, setEdges]);
 
     useEffect(() => {
         fitView({ duration: 300 });
@@ -104,12 +106,12 @@ const GraphView = ({ docMode, graphNodes, graphViewModel }: GraphViewProps) => {
         [setEdges, updConnectionEdges]
     );
 
-    const onLayout = useCallback(
-        (direction: string) => {
-            setSelectedLayout(direction);
-        },
-        [setSelectedLayout]
-    );
+    // const onLayout = useCallback(
+    //     (direction: string) => {
+    //         setSelectedLayout(direction);
+    //     },
+    //     [setSelectedLayout]
+    // );
 
     const onEdgesDelete = useCallback(
         (params: Edge[]) => {
@@ -142,11 +144,14 @@ const GraphView = ({ docMode, graphNodes, graphViewModel }: GraphViewProps) => {
                 connectionMode={ConnectionMode.Loose}
                 defaultEdgeOptions={defaultEdgeOptions}
                 connectionLineType={ConnectionLineType.SmoothStep}
-                colorMode={colorMode}
+                // colorMode={colorMode}
                 minZoom={0.4}
                 maxZoom={1.5}
                 zoomOnScroll={scrollMode === "zoom"}
                 panOnScroll={scrollMode === "drag"}
+                onPaneClick={() => selectNode(null)}
+                panOnScrollSpeed={1.1}
+                // onSelectionStart={() => alert("start")}
             >
                 <Background
                     variant={BackgroundVariant.Cross}
@@ -154,12 +159,12 @@ const GraphView = ({ docMode, graphNodes, graphViewModel }: GraphViewProps) => {
                     size={1}
                     color="gray"
                 />
-                <FlowSettingPanel
+                {/* <FlowSettingPanel
                     onLayout={onLayout}
                     selectedLayout={selectedLayout}
                     colorMode={colorMode}
                     setColorMode={setColorMode}
-                />
+                /> */}
                 <ZoomSlider position="top-left" />
                 <MiniMap />
                 {ToastComponent}

@@ -1,13 +1,7 @@
 import React, { forwardRef } from "react";
 import { Maximize, Minus, Plus } from "lucide-react";
 
-import {
-    Panel,
-    useViewport,
-    useStore,
-    useReactFlow,
-    PanelProps,
-} from "@xyflow/react";
+import { Panel, useViewport, useReactFlow, PanelProps } from "@xyflow/react";
 
 import { Slider } from "./slider";
 import { Button } from "./button";
@@ -19,14 +13,6 @@ export const ZoomSlider = forwardRef<
 >(({ className, ...props }, ref) => {
     const { zoom } = useViewport();
     const { zoomTo, zoomIn, zoomOut, fitView } = useReactFlow();
-
-    const { minZoom, maxZoom } = useStore(
-        (state) => ({
-            minZoom: state.minZoom,
-            maxZoom: state.maxZoom,
-        }),
-        (a, b) => a.minZoom !== b.minZoom || a.maxZoom !== b.maxZoom
-    );
 
     return (
         <Panel
@@ -47,8 +33,8 @@ export const ZoomSlider = forwardRef<
             <Slider
                 className="w-[140px]"
                 value={[zoom]}
-                min={minZoom}
-                max={maxZoom}
+                min={0.4}
+                max={1.5}
                 step={0.01}
                 onValueChange={(values) => zoomTo(values[0])}
             />
