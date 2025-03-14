@@ -1,10 +1,10 @@
 import { DocMode } from "@/app/models/enum/DocMode";
 import { useDocModeViewModel } from "@/app/viewModels/DocModeViewModel";
-import { EditorHeader } from "@/components/BlockEditor/EditorHeader";
-import { useBlockEditor } from "@/hooks/useBlockEditor";
-import { BlockEditor } from "@/components/BlockEditor/BlockEditor";
+import { EditorHeader } from "@/app/components/doc/BlockEditor/EditorHeader";
+import { useBlockEditor } from "@/app/viewModels/useBlockEditor";
+import { BlockEditor } from "@/app/components/doc/BlockEditor/BlockEditor";
 import GraphView from "../flow/GraphView";
-import { DocumentViewModel } from "@/hooks/useDocument";
+import { DocumentViewModel } from "@/app/viewModels/useDocument";
 import { GraphViewModel } from "@/app/viewModels/GraphViewModel";
 import { ReactFlowProvider } from "@xyflow/react";
 

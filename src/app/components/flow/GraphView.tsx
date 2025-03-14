@@ -29,7 +29,7 @@ import {
 // import { FlowSettingPanel } from "./setting-panel/FlowSettingPanel";
 import CustomNode from "./CustomNode";
 import { GraphViewModel } from "@/app/viewModels/GraphViewModel";
-import { NodeInfo } from "@/hooks/useDocument";
+import { NodeInfo } from "@/app/viewModels/useDocument";
 import { DocMode } from "@/app/models/enum/DocMode";
 import { FlowScrollModeButton } from "./setting-panel/FlowScrollModeButton";
 import ToastManager from "@/app/viewModels/ToastManager";

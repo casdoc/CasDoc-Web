@@ -4,7 +4,7 @@ import {
     ConnectionEdge,
     GraphViewModel,
 } from "@/app/viewModels/GraphViewModel";
-import { NodeInfo } from "@/hooks/useDocument";
+import { NodeInfo } from "@/app/viewModels/useDocument";
 
 interface EditPanelProps {
     nodesData: NodeInfo[];
