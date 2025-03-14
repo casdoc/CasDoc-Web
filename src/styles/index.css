@@ -16,7 +16,7 @@
 
     .selection,
     *::selection {
-        @apply bg-black/10 dark:bg-white/20 inline;
+        @apply bg-indigo-200 dark:bg-indigo-800/60 text-gray-900 dark:text-white inline;
     }
 
     & > .react-renderer {
