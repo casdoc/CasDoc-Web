@@ -92,36 +92,33 @@ const GuidePopup = ({ onClose }: GuidePopupProps) => {
                     ></div>
                 </div>
 
-                <div className="space-y-12 mb-8 md:mb-32">
+                <div className="space-y-12 mb-0 xl:mb-32">
                     <div
                         className={`flex flex-col ${
                             currentGuide.layout === "left"
-                                ? "md:flex-row"
-                                : "md:flex-row-reverse"
-                        } my-20 items-center space-x-8`}
+                                ? "lg:flex-row"
+                                : "lg:flex-row-reverse"
+                        } my-10 lg:my-20 items-center space-x-8`}
                     >
                         <div className="relative m-8 md:w-auto">
-                            {!imageLoaded && (
-                                <div className="absolute inset-0 flex items-center justify-center bg-gray-200">
-                                    <span className="text-gray-500">
-                                        Loading...
-                                    </span>
-                                </div>
-                            )}
                             <Image
                                 src={currentGuide.image}
                                 alt={currentGuide.alt}
                                 width={700}
                                 height={500}
-                                className={`w-auto rounded-xl shadow-xl border border-gray-300 transition-opacity duration-500 ${
-                                    imageLoaded ? "opacity-100" : "opacity-0"
+                                className={`lg:w-auto rounded-xl shadow-xl border border-gray-300 transition-all duration-500 hover:shadow-2xl ${
+                                    imageLoaded ? "opacity-100" : "opacity-20"
                                 }`}
                                 loading="lazy"
-                                onLoad={() => setImageLoaded(true)}
+                                onLoad={() =>
+                                    setTimeout(() => setImageLoaded(true), 350)
+                                }
+                                placeholder="blur"
+                                blurDataURL={currentGuide.image}
                             />
                         </div>
-                        <div className="max-w-lg text-center md:text-left">
-                            <h2 className="mb-4 text-2xl md:text-4xl font-semibold">
+                        <div className="max-w-lg lg:max-w-sm xl:max-w-lg text-center md:text-left">
+                            <h2 className="mb-4 text-2xl lg:text-3xl xl:text-4xl font-semibold">
                                 {currentGuide.tittle}
                             </h2>
                             <p className="text-gray-600 text-base md:text-lg">

@@ -33,6 +33,7 @@ import { NodeInfo } from "@/hooks/useDocument";
 import { DocMode } from "@/app/models/enum/DocMode";
 import { FlowScrollModeButton } from "./setting-panel/FlowScrollModeButton";
 import ToastManager from "@/app/viewModels/ToastManager";
+import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext";
 
 const nodeTypes = { custom: CustomNode };
 
@@ -67,6 +68,7 @@ const GraphView = ({ docMode, graphNodes, graphViewModel }: GraphViewProps) => {
     const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
     const { fitView } = useReactFlow();
     const { showToast, ToastComponent } = ToastManager();
+    const { selectNode } = useNodeSelection();
 
     useEffect(() => {
         if (!graphNodes || graphNodes.length === 0) return;
@@ -147,6 +149,7 @@ const GraphView = ({ docMode, graphNodes, graphViewModel }: GraphViewProps) => {
                 maxZoom={1.5}
                 zoomOnScroll={scrollMode === "zoom"}
                 panOnScroll={scrollMode === "drag"}
+                onPaneClick={() => selectNode(null)}
             >
                 <Background
                     variant={BackgroundVariant.Cross}
