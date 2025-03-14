@@ -150,6 +150,8 @@ const GraphView = ({ docMode, graphNodes, graphViewModel }: GraphViewProps) => {
                 zoomOnScroll={scrollMode === "zoom"}
                 panOnScroll={scrollMode === "drag"}
                 onPaneClick={() => selectNode(null)}
+                panOnScrollSpeed={1.1}
+                // onSelectionStart={() => alert("start")}
             >
                 <Background
                     variant={BackgroundVariant.Cross}
