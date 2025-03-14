@@ -1,11 +1,11 @@
-import { Icon } from "@/components/ui/Icon";
-import { Toolbar } from "@/components/ui/Toolbar";
+import { Icon } from "@/app/components/doc/ui/Icon";
+import { Toolbar } from "@/app/components/doc/ui/Toolbar";
 import DragHandle from "@tiptap-pro/extension-drag-handle-react";
 import { Editor } from "@tiptap/react";
 
 import * as Popover from "@radix-ui/react-popover";
-import { Surface } from "@/components/ui/Surface";
-import { DropdownButton } from "@/components/ui/Dropdown";
+import { Surface } from "@/app/components/doc/ui/Surface";
+import { DropdownButton } from "@/app/components/doc/ui/Dropdown";
 import useContentItemActions from "./hooks/useContentItemActions";
 import { useData } from "./hooks/useData";
 import { useEffect, useState } from "react";

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { LogoButton } from "@/app/components/LogoButton";
 import Link from "next/link";
 import "@/app/globals.css";
-import GuideButton from "@/app/components/GuideButton";
+import GuideButton from "@/app/components/guide/GuideButton";
 
 const Home = () => {
     const [loading, setLoading] = useState(false);
@@ -14,7 +14,7 @@ const Home = () => {
     };
 
     return (
-        <div className="flex flex-col min-h-screen bg-gray-100 font-sans">
+        <div className="flex flex-col h-dvh bg-gray-100 font-sans">
             <div className="relative flex-1 flex flex-col items-center justify-center px-4 text-center">
                 <div className="absolute top-4 left-0 md:left-4">
                     <LogoButton />
