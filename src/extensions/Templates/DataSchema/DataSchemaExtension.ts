@@ -8,6 +8,8 @@ export const DataSchemaExtension = Node.create({
     group: "block",
 
     atom: true,
+    isolating: true,
+    selectable: true,
 
     addAttributes() {
         return {
@@ -26,7 +28,6 @@ export const DataSchemaExtension = Node.create({
             description: {
                 default: "",
             },
-            // fields 為一個陣列，每個元素包含 name, type 與 description
             fields: {
                 default: [],
             },

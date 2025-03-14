@@ -9,6 +9,7 @@ export const TopicExtension = Node.create({
 
     atom: true,
     selectable: true,
+    isolating: true,
     addAttributes() {
         return {
             documentId: {

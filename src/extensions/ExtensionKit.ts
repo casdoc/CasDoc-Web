@@ -31,7 +31,9 @@ export const ExtensionKit = () => [
         nested: true,
     }),
 
-    StarterKit,
+    StarterKit.configure({
+        gapcursor: false, //forbid gap cursor appear between custom nodes
+    }),
 
     TextStyle,
     FontFamily,

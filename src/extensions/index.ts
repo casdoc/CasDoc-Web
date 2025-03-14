@@ -1,6 +1,6 @@
 "use client";
 
-export { TopicExtension } from "./Topic/TopicExtension";
+export { TopicExtension } from "./Topics/TopicExtension";
 export { DataSchemaExtension } from "./Templates/DataSchema/DataSchemaExtension";
 
 export { StarterKit } from "@tiptap/starter-kit";
