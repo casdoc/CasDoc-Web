@@ -16,6 +16,7 @@ import {
     useReactFlow,
     Edge,
     Connection,
+    useStoreApi,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 
@@ -66,9 +67,10 @@ const GraphView = ({ docMode, graphNodes, graphViewModel }: GraphViewProps) => {
         graphViewModel;
     const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
-    const { fitView } = useReactFlow();
+    const { fitView, setCenter } = useReactFlow();
     const { showToast, ToastComponent } = ToastManager();
-    const { selectNode } = useNodeSelection();
+    const { selectedNode, selectNode } = useNodeSelection();
+    const store = useStoreApi();
 
     useEffect(() => {
         if (!graphNodes || graphNodes.length === 0) {
@@ -132,6 +134,26 @@ const GraphView = ({ docMode, graphNodes, graphViewModel }: GraphViewProps) => {
         setScrollMode((prev) => (prev === "zoom" ? "drag" : "zoom"));
         showToast(scrollMode === "zoom" ? "Scroll to pan" : "Scroll to zoom");
     };
+
+    useEffect(() => {
+        if (!selectedNode) {
+            fitView({ duration: 500 });
+            return;
+        }
+        const { nodeLookup } = store.getState();
+        const nodes = Array.from(nodeLookup).map(([, node]) => node);
+
+        if (nodes.length > 0) {
+            const node = nodes.find((n) => n.id === selectedNode);
+            if (!node) return;
+
+            const x = node.position.x + 280;
+            const y = node.position.y / 2;
+            const zoom = 1.1;
+
+            setCenter(x, y, { zoom, duration: 500 });
+        }
+    }, [selectedNode, setCenter, store, fitView]);
 
     return (
         <div className="w-full h-full bg-white relative">
