@@ -22,7 +22,7 @@ export const DataSchemaComponent: React.FC<NodeViewProps> = ({
 
     return (
         <NodeViewWrapper
-            className={`p-4 border-2 rounded-lg shadow-md bg-white ${
+            className={`cursor-pointer hover:bg-gray-50 p-6 border-2 rounded-lg shadow-md bg-white ${
                 isSelected && "border-indigo-500"
             } ${!isSelected && selected && "border-gray-500"}`}
             onClick={handleClick}

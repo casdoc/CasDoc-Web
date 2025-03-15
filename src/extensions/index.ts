@@ -2,8 +2,8 @@
 
 export { TopicExtension } from "./Topics/TopicExtension";
 export { DataSchemaExtension } from "./Templates/DataSchema/DataSchemaExtension";
+export { Heading } from "./Heading";
 export { Link } from "./Link";
-
 export { StarterKit } from "@tiptap/starter-kit";
 export { Highlight } from "@tiptap/extension-highlight";
 export { Underline } from "@tiptap/extension-underline";

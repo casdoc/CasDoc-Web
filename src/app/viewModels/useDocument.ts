@@ -60,6 +60,13 @@ export function useDocumentViewModel(documentId: string): DocumentViewModel {
             return;
         }
         bindDocument(document);
+        const firstChild = content[0];
+
+        if (!firstChild || !firstChild?.content) {
+            document.setTitle("Untitled Document");
+        } else {
+            document.setTitle(firstChild.content[0].text);
+        }
 
         const newGraphNodes = [];
         const newEditNodes = [];
