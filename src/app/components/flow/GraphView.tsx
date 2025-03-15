@@ -71,7 +71,10 @@ const GraphView = ({ docMode, graphNodes, graphViewModel }: GraphViewProps) => {
     const { selectNode } = useNodeSelection();
 
     useEffect(() => {
-        if (!graphNodes || graphNodes.length === 0) return;
+        if (!graphNodes || graphNodes.length === 0) {
+            setNodes([]);
+            return;
+        }
 
         const connectionEdges = fetchConnectionEdges();
         const newNodes = convertDataToNodes(graphNodes);
