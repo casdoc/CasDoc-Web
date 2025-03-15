@@ -1,3 +1,5 @@
+"use server";
+
 import Link from "next/link";
 import { GrDocumentTest } from "react-icons/gr";
 

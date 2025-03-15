@@ -1,4 +1,4 @@
-"use client";
+"use server";
 
 import { FaRegCompass } from "react-icons/fa";
 import GuidePopup from "./GuidePopup";
