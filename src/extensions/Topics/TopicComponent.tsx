@@ -9,7 +9,7 @@ export const TopicComponent: React.FC<NodeViewProps> = ({ node, selected }) => {
     const isSelected = selectedNode === id || selected;
 
     const handleClick = () => {
-        selectNode(isSelected ? null : id);
+        selectNode(selectedNode === id ? null : id);
     };
 
     return (

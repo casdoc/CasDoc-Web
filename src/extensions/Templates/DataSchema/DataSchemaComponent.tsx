@@ -15,9 +15,8 @@ export const DataSchemaComponent: React.FC<NodeViewProps> = ({
     const { id, name, type, description, fields } = node.attrs;
     const { selectedNode, selectNode } = useNodeSelection();
     const isSelected = selectedNode === id || selected;
-
     const handleClick = () => {
-        selectNode(isSelected ? null : id);
+        selectNode(selectedNode === id ? null : id);
     };
 
     return (
