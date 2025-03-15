@@ -32,10 +32,19 @@ export const useBlockEditor = ({
             if (document) updateDocument(document);
         },
         onCreate({ editor }) {
-            editor.commands.setContent(
-                { type: "doc", content: document?.getContent() },
-                false
-            );
+            // Only set content if editor is empty or if document has content
+            if (
+                !editor.isEmpty ||
+                (document && document.getContent().length > 0)
+            ) {
+                editor.commands.setContent(
+                    { type: "doc", content: document?.getContent() },
+                    false
+                );
+            } else {
+                // Explicitly set an empty heading
+                editor.commands.setNode("heading", { level: 1 });
+            }
         },
     });
 
