@@ -82,7 +82,7 @@ export class Document extends BaseEntity {
     }
 
     getTopicById = (id: string) => {
-        const topic = this._content.find((item) => item.attrs.id === id);
+        const topic = this._content.find((item) => item.attrs?.id === id);
         return topic?.attrs;
     };
 }

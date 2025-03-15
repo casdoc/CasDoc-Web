@@ -12,6 +12,7 @@ export interface GraphNode {
 
 export interface EditNode {
     id: string;
+    type: string;
     name: string;
     fields?: Array<JsonObject>;
 }
@@ -63,14 +64,13 @@ export function useDocumentViewModel(documentId: string): DocumentViewModel {
         const newGraphNodes = [];
         const newEditNodes = [];
         for (let i = 0; i < content.length; i++) {
-            console.log(content[i].attrs);
             const graphNode = newGraphNode(content[i]);
             if (graphNode) newGraphNodes.push(graphNode);
             if (
                 content[i].type.startsWith("topic") ||
                 content[i].type.startsWith("template")
             ) {
-                const editNode = newEditNode(content[i].attrs);
+                const editNode = newEditNode(content[i].type, content[i].attrs);
                 if (editNode) newEditNodes.push(editNode);
             }
         }
@@ -116,9 +116,10 @@ export function useDocumentViewModel(documentId: string): DocumentViewModel {
         updateDocument(document);
     };
 
-    const newEditNode = (content: JsonObject) => {
+    const newEditNode = (type: string, content: JsonObject) => {
         const editNode = {
             id: content.id,
+            type: type,
             name: content.name,
             fields: content.fields,
         };

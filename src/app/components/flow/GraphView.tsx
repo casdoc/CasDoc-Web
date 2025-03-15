@@ -146,7 +146,7 @@ const GraphView = ({ docMode, graphNodes, graphViewModel }: GraphViewProps) => {
                 connectionLineType={ConnectionLineType.SmoothStep}
                 // colorMode={colorMode}
                 minZoom={0.4}
-                maxZoom={1.5}
+                maxZoom={1.8}
                 zoomOnScroll={scrollMode === "zoom"}
                 panOnScroll={scrollMode === "drag"}
                 onPaneClick={() => selectNode(null)}

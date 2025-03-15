@@ -4,7 +4,7 @@ import { GraphService } from "../models/services/GraphService";
 export interface GraphViewModel {
     fetchConnectionEdges: () => void;
     updConnectionEdges: (edge: ConnectionEdge) => void;
-    searchBySourceId: (sourceId: number) => ConnectionEdge[];
+    searchBySourceId: (sourceId: string) => ConnectionEdge[];
     removeConnectionEdge: (edge: ConnectionEdge) => void;
 }
 
@@ -41,7 +41,7 @@ export function useGraphViewModel(): GraphViewModel {
         });
     }, []);
 
-    const searchBySourceId = (sourceId: number): ConnectionEdge[] => {
+    const searchBySourceId = (sourceId: string): ConnectionEdge[] => {
         return connectionEdges.filter(
             (edge) => edge.source === sourceId.toString()
         );

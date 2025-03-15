@@ -1,3 +1,4 @@
+import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext";
 import { ConnectionEdge } from "@/app/viewModels/GraphViewModel";
 import { EditNode } from "@/app/viewModels/useDocument";
 
@@ -10,19 +11,23 @@ const EditPanelRelationship = ({
     connectionEdges,
     findNodeById,
 }: EditPanelRelationshipProps) => {
+    const { selectNode } = useNodeSelection();
+
     return (
         <div className="mt-5 pt-3 border-t border-gray-500">
             <p className="font-bold my-2">Target To:</p>
             {connectionEdges.length > 0 ? (
                 connectionEdges.map((edge) => {
                     const target = findNodeById(edge.target);
+                    if (!target || target.name.trim() === "") return null;
                     return (
-                        <p
+                        <button
+                            onClick={() => selectNode(edge.target)}
                             key={edge.target}
-                            className="bg-gray-100 p-2 mb-2 rounded text-xs w-full"
+                            className="flex justify-start bg-gray-100 py-2 mb-2 px-4 rounded text-sm w-full"
                         >
                             {target?.name}
-                        </p>
+                        </button>
                     );
                 })
             ) : (

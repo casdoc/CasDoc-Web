@@ -28,6 +28,7 @@ const EditPanelFields = ({
                         <TextArea
                             size="2"
                             resize="none"
+                            radius="large"
                             className="bg-white"
                             value={field.name}
                             onChange={(e) =>
@@ -42,6 +43,7 @@ const EditPanelFields = ({
                         <TextArea
                             size="2"
                             resize="none"
+                            radius="large"
                             className="bg-white"
                             value={field.description}
                             onChange={(e) =>
@@ -56,6 +58,7 @@ const EditPanelFields = ({
                         <TextArea
                             size="2"
                             resize="none"
+                            radius="large"
                             className="bg-white"
                             value={field.type}
                             onChange={(e) =>
