@@ -23,10 +23,10 @@ export const useBlockEditor = ({
                 autocomplete: "off",
                 autocorrect: "off",
                 autocapitalize: "off",
+                spellcheck: "false",
             },
         },
         onUpdate({ editor }) {
-            console.debug(editor.getJSON().content);
             const updatedContent = editor.getJSON().content as JsonObject[];
             document?.setAllContent(updatedContent);
             if (document) updateDocument(document);

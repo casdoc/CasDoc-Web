@@ -60,44 +60,41 @@ const EditPanelView = ({
         updateEditNodeById(updatedNode.id, { name: updatedNode.name });
     };
 
-    const handleFieldNameChange = (
+    const handleFieldChange = (
         e: React.ChangeEvent<HTMLTextAreaElement>,
-        index: number
+        index: number,
+        key: "name" | "description" | "type"
     ) => {
         if (!node) return;
         const newFields = [...(node.fields ?? [])];
-        newFields[index] = { ...newFields[index], name: e.target.value };
+
+        newFields[index] = {
+            ...newFields[index],
+            [key]: e.target.value,
+        };
 
         const updatedNode: EditNode = { ...node, fields: newFields };
         setNode(updatedNode);
         updateEditNodeById(updatedNode.id, { fields: newFields });
     };
 
-    const handleFieldDescriptionChange = (
-        e: React.ChangeEvent<HTMLTextAreaElement>,
-        index: number
-    ) => {
+    const handleAddField = () => {
         if (!node) return;
         const newFields = [...(node.fields ?? [])];
-        newFields[index] = { ...newFields[index], description: e.target.value };
+        newFields.push({ name: "", description: "", type: "" });
 
         const updatedNode: EditNode = { ...node, fields: newFields };
         setNode(updatedNode);
-
         updateEditNodeById(updatedNode.id, { fields: newFields });
     };
 
-    const handleFieldTypeChange = (
-        e: React.ChangeEvent<HTMLTextAreaElement>,
-        index: number
-    ) => {
+    const handleRemoveField = (index: number) => {
         if (!node) return;
         const newFields = [...(node.fields ?? [])];
-        newFields[index] = { ...newFields[index], type: e.target.value };
+        newFields.splice(index, 1);
 
         const updatedNode: EditNode = { ...node, fields: newFields };
         setNode(updatedNode);
-
         updateEditNodeById(updatedNode.id, { fields: newFields });
     };
 
@@ -139,17 +136,20 @@ const EditPanelView = ({
                         {node?.fields && node.fields.length > 0 ? (
                             <EditPanelFields
                                 fields={node.fields}
-                                handleFieldNameChange={handleFieldNameChange}
-                                handleFieldDescriptionChange={
-                                    handleFieldDescriptionChange
-                                }
-                                handleFieldTypeChange={handleFieldTypeChange}
+                                handleFieldChange={handleFieldChange}
+                                handleRemoveField={handleRemoveField}
                             />
                         ) : (
                             <p className="text-gray-400 text-sm">
                                 No fields available.
                             </p>
                         )}
+                        <button
+                            className="mt-4 px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600"
+                            onClick={handleAddField}
+                        >
+                            + Add Field
+                        </button>
                     </div>
                     <div className="bg-white border border-gray-200 rounded p-4 mr-4 shadow">
                         <h2 className="text-lg font-semibold mb-4">

@@ -1,27 +1,21 @@
 import { JsonObject } from "@/app/models/types/JsonObject";
 import { TextArea } from "@radix-ui/themes";
+import { FaRegTrashAlt } from "react-icons/fa";
 
 interface EditPanelFieldsProps {
     fields: Array<JsonObject>;
-    handleFieldNameChange: (
+    handleFieldChange: (
         e: React.ChangeEvent<HTMLTextAreaElement>,
-        index: number
+        index: number,
+        key: "name" | "description" | "type"
     ) => void;
-    handleFieldDescriptionChange: (
-        e: React.ChangeEvent<HTMLTextAreaElement>,
-        index: number
-    ) => void;
-    handleFieldTypeChange: (
-        e: React.ChangeEvent<HTMLTextAreaElement>,
-        index: number
-    ) => void;
+    handleRemoveField: (index: number) => void;
 }
 
 const EditPanelFields = ({
     fields,
-    handleFieldNameChange,
-    handleFieldDescriptionChange,
-    handleFieldTypeChange,
+    handleFieldChange,
+    handleRemoveField,
 }: EditPanelFieldsProps) => {
     return (
         <div className="flex flex-col space-y-4">
@@ -36,7 +30,9 @@ const EditPanelFields = ({
                             resize="none"
                             className="bg-white"
                             value={field.name}
-                            onChange={(e) => handleFieldNameChange(e, index)}
+                            onChange={(e) =>
+                                handleFieldChange(e, index, "name")
+                            }
                         />
                     </div>
                     <div className="ml-2 w-full">
@@ -49,7 +45,7 @@ const EditPanelFields = ({
                             className="bg-white"
                             value={field.description}
                             onChange={(e) =>
-                                handleFieldDescriptionChange(e, index)
+                                handleFieldChange(e, index, "description")
                             }
                         />
                     </div>
@@ -62,8 +58,18 @@ const EditPanelFields = ({
                             resize="none"
                             className="bg-white"
                             value={field.type}
-                            onChange={(e) => handleFieldTypeChange(e, index)}
+                            onChange={(e) =>
+                                handleFieldChange(e, index, "type")
+                            }
                         />
+                    </div>
+                    <div className="flex items-center ml-3 pt-2">
+                        <button
+                            className="text-xs text-red-500 hover:underline"
+                            onClick={() => handleRemoveField(index)}
+                        >
+                            <FaRegTrashAlt />
+                        </button>
                     </div>
                 </div>
             ))}

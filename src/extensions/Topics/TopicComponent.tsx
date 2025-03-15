@@ -4,7 +4,7 @@ import { NodeViewProps } from "@tiptap/core";
 import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext";
 import { useDocContext } from "@/app/viewModels/context/DocContext";
 
-export const TopicComponent: React.FC<NodeViewProps> = ({ node }) => {
+export const TopicComponent: React.FC<NodeViewProps> = ({ node, selected }) => {
     const { id, name: initialName } = node.attrs;
     const { selectedNode, selectNode } = useNodeSelection();
     const { document } = useDocContext();
@@ -35,9 +35,10 @@ export const TopicComponent: React.FC<NodeViewProps> = ({ node }) => {
 
     return (
         <NodeViewWrapper
-            className={`p-6 border-2 rounded-lg shadow-md bg-white ${
+            className={`p-6 border-2 rounded-lg shadow-md  bg-white ${
                 isSelected && "border-indigo-500"
-            }`}
+            } ${!isSelected && selected && "border-gray-500"}
+            `}
             onClick={handleClick}
         >
             <div className="mb-6 border-l-4 border-indigo-500 pl-4">
