@@ -36,6 +36,7 @@ export const ExtensionKit = () => [
     TextStyle,
     FontFamily,
     Color,
+
     Link.configure({
         openOnClick: false,
     }),

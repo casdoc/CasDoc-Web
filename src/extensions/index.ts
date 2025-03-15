@@ -2,6 +2,7 @@
 
 export { TopicExtension } from "./Topic/TopicExtension";
 export { DataSchemaExtension } from "./Templates/DataSchema/DataSchemaExtension";
+export { Link } from "./Link";
 
 export { StarterKit } from "@tiptap/starter-kit";
 export { Highlight } from "@tiptap/extension-highlight";
@@ -20,7 +21,6 @@ export { BulletList } from "@tiptap/extension-bullet-list";
 export { OrderedList } from "@tiptap/extension-ordered-list";
 export { TaskItem } from "@tiptap/extension-task-item";
 export { TaskList } from "@tiptap/extension-task-list";
-export { Link } from "@tiptap/extension-link";
 export { Table } from "@tiptap/extension-table";
 export { TableCell } from "@tiptap/extension-table-cell";
 export { TableHeader } from "@tiptap/extension-table-header";
