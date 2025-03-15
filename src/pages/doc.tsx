@@ -20,7 +20,7 @@ export default function Doc() {
                     graphViewModel={graphViewModel}
                 />
                 <EditPanel
-                    nodesData={documentViewModel.graphNodes}
+                    documentViewModel={documentViewModel}
                     graphViewModel={graphViewModel}
                 />
             </div>

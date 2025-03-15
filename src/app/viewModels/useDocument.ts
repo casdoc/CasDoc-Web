@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Document } from "@/app/models/entity/Document";
 import { DocumentService } from "@/app/models/services/DocumentService";
 import { DocumentType } from "@/app/models/enum/DocumentType";
+import { JsonObject } from "../models/types/JsonObject";
 
 export interface GraphNode {
     id: string;
@@ -9,15 +10,23 @@ export interface GraphNode {
     label: string;
 }
 
+export interface EditNode {
+    id: string;
+    name: string;
+    fields?: Array<JsonObject>;
+}
+
 export interface DocumentViewModel {
     document: Document | undefined;
     updateDocument: (document: Document) => void;
     graphNodes: Array<GraphNode>;
+    editNodes: Array<EditNode>;
 }
 
 export function useDocumentViewModel(documentId: string): DocumentViewModel {
     const [document, setDocument] = useState<Document>();
     const [graphNodes, setGraphNodes] = useState<Array<GraphNode>>([]);
+    const [editNodes, setEditNodes] = useState<Array<EditNode>>([]);
 
     useEffect(() => {
         let doc = DocumentService.getDocumentById(documentId);
@@ -49,24 +58,22 @@ export function useDocumentViewModel(documentId: string): DocumentViewModel {
             return;
         }
 
-        const newNodes = [];
+        const newGraphNodes = [];
+        const newEditNodes = [];
         for (let i = 0; i < content.length; i++) {
-            console.debug("content[i]", content[i]);
-            if (content[i].type.startsWith("topic")) {
-                newNodes.push({
-                    id: content[i].attrs.id,
-                    pid: content[i].attrs.documentId,
-                    label: content[i].attrs.name,
-                });
-            } else if (content[i].type.startsWith("template")) {
-                newNodes.push({
-                    id: content[i].attrs.id,
-                    pid: content[i].attrs.topicId,
-                    label: content[i].attrs.name,
-                });
+            console.log(content[i].attrs);
+            const graphNode = newGraphNode(content[i]);
+            if (graphNode) newGraphNodes.push(graphNode);
+            if (
+                content[i].type.startsWith("topic") ||
+                content[i].type.startsWith("template")
+            ) {
+                const editNode = newEditNode(content[i].attrs);
+                if (editNode) newEditNodes.push(editNode);
             }
         }
-        setGraphNodes(newNodes);
+        setGraphNodes(newGraphNodes);
+        setEditNodes(newEditNodes);
     }, [document]);
 
     const updateDocument = (document: Document) => {
@@ -75,9 +82,37 @@ export function useDocumentViewModel(documentId: string): DocumentViewModel {
         if (doc) setDocument(doc);
     };
 
+    const newEditNode = (content: JsonObject) => {
+        const editNode = {
+            id: content.id,
+            name: content.name,
+            fields: content.fields,
+        };
+        return editNode;
+    };
+
+    const newGraphNode = (content: JsonObject) => {
+        if (content.type.startsWith("topic")) {
+            const graphNode = {
+                id: content.attrs.id,
+                pid: content.attrs.documentId,
+                label: content.attrs.name,
+            };
+            return graphNode;
+        } else if (content.type.startsWith("template")) {
+            const graphNode = {
+                id: content.attrs.id,
+                pid: content.attrs.topicId,
+                label: content.attrs.name,
+            };
+            return graphNode;
+        }
+    };
+
     return {
         document,
         updateDocument,
         graphNodes,
+        editNodes,
     };
 }

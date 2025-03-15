@@ -1,20 +1,28 @@
+"use client";
+
 import { useCallback, useEffect, useState } from "react";
-import { useNodeSelection } from "../../viewModels/context/NodeSelectionContext";
+import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext";
 import {
     ConnectionEdge,
     GraphViewModel,
 } from "@/app/viewModels/GraphViewModel";
-import { GraphNode } from "@/app/viewModels/useDocument";
+import { DocumentViewModel, EditNode } from "@/app/viewModels/useDocument";
+import { TextArea } from "@radix-ui/themes";
 
 interface EditPanelProps {
-    nodesData: GraphNode[];
+    documentViewModel: DocumentViewModel;
     graphViewModel: GraphViewModel;
 }
 
-export const EditPanel = ({ nodesData, graphViewModel }: EditPanelProps) => {
+export const EditPanel = ({
+    documentViewModel,
+    graphViewModel,
+}: EditPanelProps) => {
     const { selectedNode, selectNode } = useNodeSelection();
     const { searchBySourceId } = graphViewModel;
-    const [node, setNode] = useState<GraphNode>();
+    const { editNodes } = documentViewModel;
+
+    const [node, setNode] = useState<EditNode>();
     const [isMounted, setIsMounted] = useState(false);
     const [connectionEdges, setConnectionEdges] = useState<ConnectionEdge[]>(
         []
@@ -22,17 +30,17 @@ export const EditPanel = ({ nodesData, graphViewModel }: EditPanelProps) => {
 
     const findNodeById = useCallback(
         (id: string) => {
-            const node = nodesData.find((item) => `${item.id}` === id);
-            return node;
+            return editNodes.find((item) => String(item.id) === id);
         },
-        [nodesData]
+        [editNodes]
     );
 
     useEffect(() => {
         if (selectedNode) {
-            const item = findNodeById(`${selectedNode}`);
-            setConnectionEdges(searchBySourceId(selectedNode));
+            const item = findNodeById(String(selectedNode));
             setNode(item);
+            const edges = searchBySourceId(selectedNode);
+            setConnectionEdges(edges);
         }
     }, [findNodeById, searchBySourceId, selectedNode]);
 
@@ -40,9 +48,16 @@ export const EditPanel = ({ nodesData, graphViewModel }: EditPanelProps) => {
         setIsMounted(true);
     }, []);
 
+    const handleNodeNameChange = (
+        e: React.ChangeEvent<HTMLTextAreaElement>
+    ) => {
+        if (!node) return;
+        setNode({ ...node, name: e.target.value });
+    };
+
     return (
         <div
-            className={`fixed top-0 right-0 mt-14 h-full w-80 bg-white shadow-lg p-4 transform transition-transform duration-500 ${
+            className={`fixed top-0 right-0 mt-14 h-full w-96 bg-white shadow-lg p-4 transform transition-transform duration-500 border-l border-l-gray-300 ${
                 isMounted
                     ? selectedNode
                         ? "translate-x-0"
@@ -62,15 +77,39 @@ export const EditPanel = ({ nodesData, graphViewModel }: EditPanelProps) => {
             {selectedNode ? (
                 <div className="mt-4">
                     <p className="text-sm text-gray-600">ID: {selectedNode}</p>
-                    <pre className="bg-gray-100 p-2 mt-2 rounded text-xs">
-                        {node?.label}
-                    </pre>
+
+                    <TextArea
+                        className="resize-none bg-gray-100 p-2 mt-2 rounded text-xs w-full"
+                        value={node?.name ?? ""}
+                        onChange={handleNodeNameChange}
+                    />
+
+                    <div className="mt-5 pt-3 border-t border-gray-500">
+                        <p className="font-bold my-2">Fields</p>
+                        {node?.fields?.map((field, index) => (
+                            <div
+                                key={index}
+                                className="bg-gray-100 p-2 mb-2 rounded text-xs w-full"
+                            >
+                                <p className="font-semibold">{field.name}</p>
+                                <p>{field.description}</p>
+                            </div>
+                        ))}
+                    </div>
+
                     <div className="mt-5 pt-3 border-t border-gray-500">
                         <p className="font-bold my-2">Target To:</p>
                         {connectionEdges.length > 0 ? (
                             connectionEdges.map((edge) => {
                                 const target = findNodeById(edge.target);
-                                return <p key={edge.target}>{target?.label}</p>;
+                                return (
+                                    <p
+                                        key={edge.target}
+                                        className="bg-gray-100 p-2 mb-2 rounded text-xs w-full"
+                                    >
+                                        {target?.name}
+                                    </p>
+                                );
                             })
                         ) : (
                             <p className="text-gray-400">no target...</p>
