@@ -5,6 +5,7 @@ import {
     Focus,
     FontFamily,
     Highlight,
+    Heading,
     Link,
     Placeholder,
     StarterKit,
@@ -30,9 +31,12 @@ export const ExtensionKit = () => [
     TaskItem.configure({
         nested: true,
     }),
-
+    Heading.configure({
+        levels: [1, 2, 3, 4],
+    }),
     StarterKit.configure({
         gapcursor: false, //forbid gap cursor appear between custom nodes
+        heading: false,
     }),
 
     TextStyle,
