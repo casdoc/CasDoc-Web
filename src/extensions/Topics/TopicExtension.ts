@@ -7,8 +7,9 @@ export const TopicExtension = Node.create({
 
     group: "block",
 
-    atom: true,
-
+    atom: false,
+    selectable: true,
+    isolating: true,
     addAttributes() {
         return {
             documentId: {
@@ -36,6 +37,9 @@ export const TopicExtension = Node.create({
     },
 
     addNodeView() {
-        return ReactNodeViewRenderer(TopicComponent);
+        return ReactNodeViewRenderer(TopicComponent, {
+            as: "div",
+            className: "topic-node-wrapper",
+        });
     },
 });

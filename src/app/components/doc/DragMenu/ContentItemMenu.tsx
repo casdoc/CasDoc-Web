@@ -47,9 +47,6 @@ export const ContentItemMenu = ({
         >
             {isEditable ? (
                 <div className="flex items-center">
-                    <Toolbar.Button onClick={actions.handleAdd}>
-                        <Icon name="Plus" />
-                    </Toolbar.Button>
                     <Popover.Root open={menuOpen} onOpenChange={setMenuOpen}>
                         <Popover.Trigger asChild>
                             <Toolbar.Button>

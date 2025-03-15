@@ -53,7 +53,7 @@ export function useDocumentViewModel(documentId: string): DocumentViewModel {
         if (!document) return;
 
         const content = document.getContent();
-        console.debug("content", content);
+
         if (!content) {
             setGraphNodes([]);
             return;

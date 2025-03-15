@@ -1,4 +1,3 @@
-// import React, { useState } from "react";
 import { NodeViewWrapper } from "@tiptap/react";
 import { NodeViewProps } from "@tiptap/core";
 import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext";
@@ -9,7 +8,10 @@ interface Field {
     description: string;
 }
 
-export const DataSchemaComponent: React.FC<NodeViewProps> = ({ node }) => {
+export const DataSchemaComponent: React.FC<NodeViewProps> = ({
+    node,
+    selected,
+}) => {
     const { id, name, type, description, fields } = node.attrs;
     const { selectedNode, selectNode } = useNodeSelection();
     const isSelected = selectedNode === id;
@@ -22,7 +24,7 @@ export const DataSchemaComponent: React.FC<NodeViewProps> = ({ node }) => {
         <NodeViewWrapper
             className={`p-6 border-2 rounded-lg shadow-md bg-white ${
                 isSelected && "border-indigo-500"
-            }`}
+            } ${!isSelected && selected && "border-gray-500"}`}
             onClick={handleClick}
         >
             <div className="mb-6 border-l-4 border-indigo-500 pl-4">
