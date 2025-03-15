@@ -50,7 +50,7 @@ export const useLinkEditorState = ({
     };
 };
 
-export const LinkEditorPanel = ({
+const LinkEditorPanel = ({
     onSetLink,
     initialOpenInNewTab,
     initialUrl,
@@ -101,3 +101,5 @@ export const LinkEditorPanel = ({
         </Surface>
     );
 };
+
+export default LinkEditorPanel;

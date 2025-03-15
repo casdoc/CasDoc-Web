@@ -9,11 +9,7 @@ export type LinkPreviewPanelProps = {
     onClear: () => void;
 };
 
-export const LinkPreviewPanel = ({
-    onClear,
-    onEdit,
-    url,
-}: LinkPreviewPanelProps) => {
+const LinkPreviewPanel = ({ onClear, onEdit, url }: LinkPreviewPanelProps) => {
     const sanitizedLink = url?.startsWith("javascript:") ? "" : url;
     return (
         <Surface className="flex items-center gap-2 p-2">
@@ -39,3 +35,5 @@ export const LinkPreviewPanel = ({
         </Surface>
     );
 };
+
+export default LinkPreviewPanel;
