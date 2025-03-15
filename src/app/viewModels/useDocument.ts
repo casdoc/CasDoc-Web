@@ -48,6 +48,13 @@ export function useDocumentViewModel(documentId: string): DocumentViewModel {
             setGraphNodes([]);
             return;
         }
+        const firstChild = content[0];
+
+        if (!firstChild || !firstChild?.content) {
+            document.setTitle("Untitled Document");
+        } else {
+            document.setTitle(firstChild.content[0].text);
+        }
 
         const newNodes = [];
         for (let i = 0; i < content.length; i++) {
