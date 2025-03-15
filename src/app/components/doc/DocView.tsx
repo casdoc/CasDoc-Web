@@ -25,7 +25,9 @@ const DocView = ({ documentViewModel, graphViewModel }: DocViewProps) => {
         return null;
     }
 
-    const editorComponent = <BlockEditor editor={editor} />;
+    const editorComponent = (
+        <BlockEditor editor={editor} title={document.getTitle()} />
+    );
     return (
         <div className="relative flex flex-col flex-1 h-dvh w-dvw bg-white">
             <EditorHeader mode={mode as DocMode} setDocMode={setDocMode} />
