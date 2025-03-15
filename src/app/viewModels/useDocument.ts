@@ -43,7 +43,7 @@ export function useDocumentViewModel(documentId: string): DocumentViewModel {
         if (!document) return;
 
         const content = document.getContent();
-        console.debug("content", content);
+
         if (!content) {
             setGraphNodes([]);
             return;
@@ -51,7 +51,6 @@ export function useDocumentViewModel(documentId: string): DocumentViewModel {
 
         const newNodes = [];
         for (let i = 0; i < content.length; i++) {
-            console.debug("content[i]", content[i]);
             if (content[i].type.startsWith("topic")) {
                 newNodes.push({
                     id: content[i].attrs.id,
