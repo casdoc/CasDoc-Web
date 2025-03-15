@@ -19,6 +19,7 @@ export interface EditNode {
 export interface DocumentViewModel {
     document: Document | undefined;
     updateDocument: (document: Document) => void;
+    updateEditNodeById: (nodeId: string, changes: Partial<EditNode>) => void;
     graphNodes: Array<GraphNode>;
     editNodes: Array<EditNode>;
 }
@@ -79,7 +80,39 @@ export function useDocumentViewModel(documentId: string): DocumentViewModel {
     const updateDocument = (document: Document) => {
         DocumentService.saveDocument(document);
         const doc = DocumentService.getDocumentById(document.id);
-        if (doc) setDocument(doc);
+        if (doc) {
+            setDocument(doc);
+        }
+    };
+
+    const updateEditNodeById = (nodeId: string, changes: Partial<EditNode>) => {
+        if (!document) return;
+
+        const updatedEditNodes = editNodes.map((node) =>
+            node.id === nodeId ? { ...node, ...changes } : node
+        );
+        setEditNodes(updatedEditNodes);
+
+        const oldContent = document.getContent() || [];
+        const newContent = oldContent.map((item) => {
+            if (item?.attrs?.id === nodeId) {
+                const updatedNode = updatedEditNodes.find(
+                    (n) => n.id === nodeId
+                );
+                return {
+                    ...item,
+                    attrs: {
+                        ...item.attrs,
+                        name: updatedNode?.name,
+                        fields: updatedNode?.fields,
+                    },
+                };
+            }
+            return item;
+        });
+
+        document.setAllContent(newContent);
+        updateDocument(document);
     };
 
     const newEditNode = (content: JsonObject) => {
@@ -112,6 +145,7 @@ export function useDocumentViewModel(documentId: string): DocumentViewModel {
     return {
         document,
         updateDocument,
+        updateEditNodeById,
         graphNodes,
         editNodes,
     };

@@ -23,7 +23,7 @@ const EditPanelView = ({
 }: EditPanelProps) => {
     const { selectedNode, selectNode } = useNodeSelection();
     const { searchBySourceId } = graphViewModel;
-    const { editNodes } = documentViewModel;
+    const { updateEditNodeById, editNodes } = documentViewModel;
 
     const [node, setNode] = useState<EditNode>();
     const [isMounted, setIsMounted] = useState(false);
@@ -55,7 +55,9 @@ const EditPanelView = ({
         e: React.ChangeEvent<HTMLTextAreaElement>
     ) => {
         if (!node) return;
-        setNode({ ...node, name: e.target.value });
+        const updatedNode: EditNode = { ...node, name: e.target.value };
+        setNode(updatedNode);
+        updateEditNodeById(updatedNode.id, { name: updatedNode.name });
     };
 
     const handleFieldNameChange = (
@@ -65,7 +67,10 @@ const EditPanelView = ({
         if (!node) return;
         const newFields = [...(node.fields ?? [])];
         newFields[index] = { ...newFields[index], name: e.target.value };
-        setNode({ ...node, fields: newFields });
+
+        const updatedNode: EditNode = { ...node, fields: newFields };
+        setNode(updatedNode);
+        updateEditNodeById(updatedNode.id, { fields: newFields });
     };
 
     const handleFieldDescriptionChange = (
@@ -75,7 +80,11 @@ const EditPanelView = ({
         if (!node) return;
         const newFields = [...(node.fields ?? [])];
         newFields[index] = { ...newFields[index], description: e.target.value };
-        setNode({ ...node, fields: newFields });
+
+        const updatedNode: EditNode = { ...node, fields: newFields };
+        setNode(updatedNode);
+
+        updateEditNodeById(updatedNode.id, { fields: newFields });
     };
 
     const handleFieldTypeChange = (
@@ -85,7 +94,11 @@ const EditPanelView = ({
         if (!node) return;
         const newFields = [...(node.fields ?? [])];
         newFields[index] = { ...newFields[index], type: e.target.value };
-        setNode({ ...node, fields: newFields });
+
+        const updatedNode: EditNode = { ...node, fields: newFields };
+        setNode(updatedNode);
+
+        updateEditNodeById(updatedNode.id, { fields: newFields });
     };
 
     return (
@@ -121,7 +134,6 @@ const EditPanelView = ({
                             onChange={handleNodeNameChange}
                         />
                     </div>
-
                     <div className="bg-white border border-gray-200 rounded p-4 mr-4 shadow">
                         <h2 className="text-lg font-semibold mb-4">Fields</h2>
                         {node?.fields && node.fields.length > 0 ? (
@@ -139,7 +151,6 @@ const EditPanelView = ({
                             </p>
                         )}
                     </div>
-
                     <div className="bg-white border border-gray-200 rounded p-4 mr-4 shadow">
                         <h2 className="text-lg font-semibold mb-4">
                             Relationships
