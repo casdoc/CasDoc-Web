@@ -1,8 +1,8 @@
 import { createContext, useContext, useState } from "react";
 
 interface NodeSelectionContextType {
-    selectedNode: number | null;
-    selectNode: (id: number | null) => void;
+    selectedNode: string | null;
+    selectNode: (id: string | null) => void;
 }
 
 const NodeSelectionContext = createContext<
@@ -14,9 +14,9 @@ export const NodeSelectionProvider = ({
 }: {
     children: React.ReactNode;
 }) => {
-    const [selectedNode, setSelectedNode] = useState<number | null>(null);
+    const [selectedNode, setSelectedNode] = useState<string | null>(null);
 
-    const selectNode = (id: number | null) => {
+    const selectNode = (id: string | null) => {
         setSelectedNode(id);
     };
 

@@ -2,23 +2,34 @@ import { useState, useEffect } from "react";
 import { Document } from "@/app/models/entity/Document";
 import { DocumentService } from "@/app/models/services/DocumentService";
 import { DocumentType } from "@/app/models/enum/DocumentType";
-
+import { JsonObject } from "../models/types/JsonObject";
+import { useDocContext } from "./context/DocContext";
 export interface GraphNode {
     id: string;
     pid: string;
     label: string;
 }
 
+export interface EditNode {
+    id: string;
+    type: string;
+    name: string;
+    fields?: Array<JsonObject>;
+}
+
 export interface DocumentViewModel {
     document: Document | undefined;
     updateDocument: (document: Document) => void;
+    updateEditNodeById: (nodeId: string, changes: Partial<EditNode>) => void;
     graphNodes: Array<GraphNode>;
+    editNodes: Array<EditNode>;
 }
 
 export function useDocumentViewModel(documentId: string): DocumentViewModel {
     const [document, setDocument] = useState<Document>();
     const [graphNodes, setGraphNodes] = useState<Array<GraphNode>>([]);
-
+    const [editNodes, setEditNodes] = useState<Array<EditNode>>([]);
+    const { bindDocument } = useDocContext();
     useEffect(() => {
         let doc = DocumentService.getDocumentById(documentId);
         if (!doc) {
@@ -48,6 +59,7 @@ export function useDocumentViewModel(documentId: string): DocumentViewModel {
             setGraphNodes([]);
             return;
         }
+        bindDocument(document);
         const firstChild = content[0];
 
         if (!firstChild || !firstChild?.content) {
@@ -56,34 +68,94 @@ export function useDocumentViewModel(documentId: string): DocumentViewModel {
             document.setTitle(firstChild.content[0].text);
         }
 
-        const newNodes = [];
+        const newGraphNodes = [];
+        const newEditNodes = [];
         for (let i = 0; i < content.length; i++) {
-            if (content[i].type.startsWith("topic")) {
-                newNodes.push({
-                    id: content[i].attrs.id,
-                    pid: content[i].attrs.documentId,
-                    label: content[i].attrs.name,
-                });
-            } else if (content[i].type.startsWith("template")) {
-                newNodes.push({
-                    id: content[i].attrs.id,
-                    pid: content[i].attrs.topicId,
-                    label: content[i].attrs.name,
-                });
+            const graphNode = newGraphNode(content[i]);
+            if (graphNode) newGraphNodes.push(graphNode);
+            if (
+                content[i].type.startsWith("topic") ||
+                content[i].type.startsWith("template")
+            ) {
+                const editNode = newEditNode(content[i].type, content[i].attrs);
+                if (editNode) newEditNodes.push(editNode);
             }
         }
-        setGraphNodes(newNodes);
-    }, [document]);
+        setGraphNodes(newGraphNodes);
+        setEditNodes(newEditNodes);
+    }, [document, bindDocument]);
 
     const updateDocument = (document: Document) => {
         DocumentService.saveDocument(document);
         const doc = DocumentService.getDocumentById(document.id);
-        if (doc) setDocument(doc);
+        if (doc) {
+            setDocument(doc);
+        }
+    };
+
+    const updateEditNodeById = (nodeId: string, changes: Partial<EditNode>) => {
+        if (!document) return;
+
+        const updatedEditNodes = editNodes.map((node) =>
+            node.id === nodeId ? { ...node, ...changes } : node
+        );
+        setEditNodes(updatedEditNodes);
+
+        const oldContent = document.getContent() || [];
+        const newContent = oldContent.map((item) => {
+            if (item?.attrs?.id === nodeId) {
+                const updatedNode = updatedEditNodes.find(
+                    (n) => n.id === nodeId
+                );
+                return {
+                    ...item,
+                    attrs: {
+                        ...item.attrs,
+                        name: updatedNode?.name,
+                        fields: updatedNode?.fields,
+                    },
+                };
+            }
+            return item;
+        });
+
+        document.setAllContent(newContent);
+        updateDocument(document);
+    };
+
+    const newEditNode = (type: string, content: JsonObject) => {
+        const editNode = {
+            id: content.id,
+            type: type,
+            name: content.name,
+            fields: content.fields,
+        };
+        return editNode;
+    };
+
+    const newGraphNode = (content: JsonObject) => {
+        if (content.type.startsWith("topic")) {
+            const graphNode = {
+                id: content.attrs.id,
+                pid: content.attrs.documentId,
+                label: content.attrs.name,
+            };
+            return graphNode;
+        } else if (content.type.startsWith("template")) {
+            const graphNode = {
+                id: content.attrs.id,
+                pid: content.attrs.topicId,
+                label: content.attrs.name,
+            };
+            return graphNode;
+        }
     };
 
     return {
         document,
         updateDocument,
+        updateEditNodeById,
         graphNodes,
+        editNodes,
     };
 }
