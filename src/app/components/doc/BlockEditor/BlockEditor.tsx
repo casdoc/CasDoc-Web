@@ -17,7 +17,7 @@ export const BlockEditor = ({ editor, title }: BlockEditorProps) => {
             <ContentItemMenu editor={editor} />
             <LinkMenu editor={editor} appendTo={menuContainerRef} />
             <div className=" border-t-2 border-gray-200 bg-white h-16 px-4 mx-auto flex justify-end items-start pb-1 max-w-2xl">
-                <span className="text-sm text-gray-400 font-medium py-1 truncate max-w-xs">
+                <span className="text-sm text-gray-400 font-medium py-1 truncate max-w-xs cursor-default">
                     {title}
                 </span>
             </div>
