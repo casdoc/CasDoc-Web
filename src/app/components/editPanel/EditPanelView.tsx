@@ -112,46 +112,51 @@ const EditPanelView = ({
 
             {selectedNode ? (
                 <div className="mt-4 flex flex-col h-full space-y-4 overflow-auto pb-32">
-                    <div className="bg-white border border-gray-200 rounded p-4 mr-4 shadow">
+                    <div className="bg-white border border-gray-200 rounded-lg p-4 mr-4 shadow">
                         <h2 className="text-lg font-semibold mb-4">
                             Basic Info
                         </h2>
-                        <p className="text-sm text-gray-500 mb-2">
+                        <p className="text-sm text-gray-500 mb-4">
                             <span className="font-semibold">ID:</span>{" "}
                             {selectedNode}
                         </p>
-                        <label className="text-sm text-gray-500 block mb-1">
+                        <label className="text-sm text-gray-500 block mb-1 pl-1">
                             Node Name
                         </label>
                         <TextArea
                             size="2"
                             resize="none"
-                            className="resize-none bg-white p-2 rounded text-sm w-full"
+                            radius="large"
+                            className="resize-none bg-white p-2 text-sm w-full"
                             value={node?.name ?? ""}
                             onChange={handleNodeNameChange}
                         />
                     </div>
-                    <div className="bg-white border border-gray-200 rounded p-4 mr-4 shadow">
-                        <h2 className="text-lg font-semibold mb-4">Fields</h2>
-                        {node?.fields && node.fields.length > 0 ? (
-                            <EditPanelFields
-                                fields={node.fields}
-                                handleFieldChange={handleFieldChange}
-                                handleRemoveField={handleRemoveField}
-                            />
-                        ) : (
-                            <p className="text-gray-400 text-sm">
-                                No fields available.
-                            </p>
-                        )}
-                        <button
-                            className="mt-4 px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600"
-                            onClick={handleAddField}
-                        >
-                            + Add Field
-                        </button>
-                    </div>
-                    <div className="bg-white border border-gray-200 rounded p-4 mr-4 shadow">
+                    {node?.type && node?.type.startsWith("template") && (
+                        <div className="bg-white border border-gray-200 rounded-lg p-4 mr-4 shadow">
+                            <h2 className="text-lg font-semibold mb-4">
+                                Fields
+                            </h2>
+                            {node?.fields && node.fields.length > 0 ? (
+                                <EditPanelFields
+                                    fields={node.fields}
+                                    handleFieldChange={handleFieldChange}
+                                    handleRemoveField={handleRemoveField}
+                                />
+                            ) : (
+                                <p className="text-gray-400 text-sm">
+                                    No fields available.
+                                </p>
+                            )}
+                            <button
+                                className="mt-6 px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600"
+                                onClick={handleAddField}
+                            >
+                                + Add Field
+                            </button>
+                        </div>
+                    )}
+                    <div className="bg-white border border-gray-200 rounded-lg p-4 mr-4 shadow">
                         <h2 className="text-lg font-semibold mb-4">
                             Relationships
                         </h2>
