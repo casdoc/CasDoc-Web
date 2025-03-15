@@ -96,7 +96,7 @@ const GraphView = ({ docMode, graphNodes, graphViewModel }: GraphViewProps) => {
     }, [graphNodes, fetchConnectionEdges, setNodes, setEdges]);
 
     useEffect(() => {
-        fitView({ duration: 300 });
+        fitView({ duration: 500 });
     }, [docMode, fitView]);
 
     const onConnect = useCallback(

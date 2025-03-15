@@ -47,24 +47,14 @@ export const GROUPS: Group[] = [
                             attrs: {
                                 topicId: "test-topic-1",
                                 id: uuidv4(),
-                                name: "User",
+                                name: "default",
                                 type: "Object",
-                                description: "使用者資料",
+                                description: "This is a default description",
                                 fields: [
                                     {
-                                        name: "id",
-                                        type: "number",
-                                        description: "使用者 ID",
-                                    },
-                                    {
-                                        name: "username",
-                                        type: "string",
-                                        description: "使用者名稱",
-                                    },
-                                    {
-                                        name: "email",
-                                        type: "string",
-                                        description: "電子郵件",
+                                        name: "field",
+                                        type: "default",
+                                        description: "default field",
                                     },
                                 ],
                             },

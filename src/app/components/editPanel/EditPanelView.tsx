@@ -127,6 +127,7 @@ const EditPanelView = ({
                             size="2"
                             resize="none"
                             radius="large"
+                            placeholder="Write something..."
                             className="resize-none bg-white p-2 text-sm w-full"
                             value={node?.name ?? ""}
                             onChange={handleNodeNameChange}

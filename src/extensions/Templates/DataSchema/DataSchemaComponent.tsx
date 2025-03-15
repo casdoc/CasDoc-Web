@@ -95,26 +95,34 @@ export const DataSchemaComponent: React.FC<NodeViewProps> = ({
             <div className="border rounded-lg overflow-hidden">
                 {fields && fields.length > 0 ? (
                     <div className="divide-y divide-gray-100">
-                        {fields.map((field: Field, index: number) => (
-                            <div
-                                key={index}
-                                className="py-2 px-4 hover:bg-gray-50 transition-colors"
-                            >
-                                <div className="flex justify-between items-center">
-                                    <span className="font-medium text-gray-800">
-                                        {field.name}
-                                    </span>
-                                    <span className="text-xs bg-gray-100 px-2 py-1 rounded text-gray-600">
-                                        {field.type}
-                                    </span>
+                        {fields.map((field: Field, index: number) => {
+                            if (
+                                field.name.trim() === "" &&
+                                field.type.trim() === "" &&
+                                field.description.trim() === ""
+                            )
+                                return;
+                            return (
+                                <div
+                                    key={index}
+                                    className="py-2 px-4 hover:bg-gray-50 transition-colors"
+                                >
+                                    <div className="flex justify-between items-center">
+                                        <span className="font-medium text-gray-800">
+                                            {field.name}
+                                        </span>
+                                        <span className="text-xs bg-gray-100 px-2 py-1 rounded text-gray-600">
+                                            {field.type}
+                                        </span>
+                                    </div>
+                                    {field.description && (
+                                        <p className="mt-1 text-sm text-gray-500">
+                                            {field.description}
+                                        </p>
+                                    )}
                                 </div>
-                                {field.description && (
-                                    <p className="mt-1 text-sm text-gray-500">
-                                        {field.description}
-                                    </p>
-                                )}
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 ) : (
                     <div className="p-4 text-center text-gray-400">
