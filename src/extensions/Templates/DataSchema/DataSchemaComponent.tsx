@@ -14,16 +14,17 @@ export const DataSchemaComponent: React.FC<NodeViewProps> = ({
 }) => {
     const { id, name, type, description, fields } = node.attrs;
     const { selectedNode, selectNode } = useNodeSelection();
-    const isSelected = selectedNode === id || selected;
+    const isSelected = selectedNode === id;
+
     const handleClick = () => {
-        selectNode(selectedNode === id ? null : id);
+        selectNode(isSelected ? null : id);
     };
 
     return (
         <NodeViewWrapper
             className={`p-6 border-2 rounded-lg shadow-md bg-white ${
                 isSelected && "border-indigo-500"
-            }`}
+            } ${!isSelected && selected && "border-gray-500"}`}
             onClick={handleClick}
         >
             <div className="mb-6 border-l-4 border-indigo-500 pl-4">

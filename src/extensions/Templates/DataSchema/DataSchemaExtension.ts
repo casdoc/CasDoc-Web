@@ -7,7 +7,7 @@ export const DataSchemaExtension = Node.create({
 
     group: "block",
 
-    atom: true,
+    atom: false,
     isolating: true,
     selectable: true,
 

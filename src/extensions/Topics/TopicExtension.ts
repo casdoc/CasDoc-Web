@@ -7,7 +7,7 @@ export const TopicExtension = Node.create({
 
     group: "block",
 
-    atom: true,
+    atom: false,
     selectable: true,
     isolating: true,
     addAttributes() {
