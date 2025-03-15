@@ -2,7 +2,7 @@
 
 import "@/app/globals.css";
 import DocView from "@/app/components/doc/DocView";
-import { EditPanel } from "@/app/components/editPanel/EditPanel";
+import EditPanel from "@/app/components/editPanel/EditPanelView";
 import { NodeSelectionProvider } from "@/app/viewModels/context/NodeSelectionContext";
 import { useDocumentViewModel } from "@/app/viewModels/useDocument";
 import { useGraphViewModel } from "@/app/viewModels/GraphViewModel";
