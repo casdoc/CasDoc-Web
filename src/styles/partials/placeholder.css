@@ -7,13 +7,13 @@
     &.ProseMirror-focused {
         /* Slashmenu Placeholder */
         > p.has-focus.is-empty::before {
-            content: "Type  /  to browse options";
+            content: "Type '/ ' for commands";
         }
 
         > [data-type="columns"]
             > [data-type="column"]
             > p.is-empty.has-focus::before {
-            content: "Type  /  to browse options";
+            content: "Type '/ ' for commands";
         }
     }
 
