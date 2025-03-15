@@ -1,4 +1,4 @@
-import { DocMode } from "../enum/DocMode";
+import DocMode from "../enum/DocMode";
 
 const LOCAL_STORAGE_KEY = "DOC_MODE";
 

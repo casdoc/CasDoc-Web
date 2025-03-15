@@ -4,18 +4,17 @@ import {
     ConnectionEdge,
     GraphViewModel,
 } from "@/app/viewModels/GraphViewModel";
-import { NodeInfo } from "@/app/viewModels/useDocument";
+import { GraphNode } from "@/app/viewModels/useDocument";
 
 interface EditPanelProps {
-    nodesData: NodeInfo[];
+    nodesData: GraphNode[];
     graphViewModel: GraphViewModel;
 }
 
 export const EditPanel = ({ nodesData, graphViewModel }: EditPanelProps) => {
     const { selectedNode, selectNode } = useNodeSelection();
     const { searchBySourceId } = graphViewModel;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const [node, setNode] = useState<any>();
+    const [node, setNode] = useState<GraphNode>();
     const [isMounted, setIsMounted] = useState(false);
     const [connectionEdges, setConnectionEdges] = useState<ConnectionEdge[]>(
         []
@@ -28,6 +27,7 @@ export const EditPanel = ({ nodesData, graphViewModel }: EditPanelProps) => {
         },
         [nodesData]
     );
+
     useEffect(() => {
         if (selectedNode) {
             const item = findNodeById(`${selectedNode}`);
