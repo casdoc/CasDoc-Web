@@ -22,19 +22,21 @@ export const DataSchemaComponent: React.FC<NodeViewProps> = ({
 
     return (
         <NodeViewWrapper
-            className={`p-6 border-2 rounded-lg shadow-md bg-white ${
+            className={`p-4 border-2 rounded-lg shadow-md bg-white ${
                 isSelected && "border-indigo-500"
             } ${!isSelected && selected && "border-gray-500"}`}
             onClick={handleClick}
         >
-            <div className="mb-6 border-l-4 border-indigo-500 pl-4">
-                <h2 className="text-2xl font-bold text-indigo-700">
-                    {name || "Schema Name"}
-                </h2>
-                <div className="flex items-center mt-1">
-                    <span className="px-2 py-1 text-xs bg-gray-100 rounded-md text-gray-700">
-                        {type || "Schema Type"}
-                    </span>
+            <div className="mb-4 border-l-4 border-indigo-500 pl-4">
+                <div className="flex justify-between">
+                    <h2 className="text-2xl font-bold text-indigo-700">
+                        {name || "Schema Name"}
+                    </h2>
+                    <div className="flex items-center mt-1 mr-3">
+                        <span className="px-2 py-1 text-xs bg-gray-100 rounded-md text-gray-700">
+                            {type || "Schema Type"}
+                        </span>
+                    </div>
                 </div>
                 <p className="mt-2 text-sm text-gray-600">
                     {description || "Schema Description"}
@@ -47,7 +49,7 @@ export const DataSchemaComponent: React.FC<NodeViewProps> = ({
                         {fields.map((field: Field, index: number) => (
                             <div
                                 key={index}
-                                className="p-3 hover:bg-gray-50 transition-colors"
+                                className="py-2 px-4 hover:bg-gray-50 transition-colors"
                             >
                                 <div className="flex justify-between items-center">
                                     <span className="font-medium text-gray-800">

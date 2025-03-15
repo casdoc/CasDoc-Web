@@ -35,7 +35,7 @@ export const TopicComponent: React.FC<NodeViewProps> = ({ node, selected }) => {
 
     return (
         <NodeViewWrapper
-            className={`p-6 border-2 rounded-lg shadow-md  bg-white ${
+            className={`p-4 border-2 rounded-lg shadow-md bg-white ${
                 isSelected && "border-indigo-500"
             } ${!isSelected && selected && "border-gray-500"}
             `}
