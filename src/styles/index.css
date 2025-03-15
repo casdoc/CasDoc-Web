@@ -8,14 +8,14 @@
 @import "./partials/typography.css";
 
 .ProseMirror {
-    @apply caret-black dark:caret-white outline-0 pr-8 pl-20 py-12 z-0 lg:pl-8 lg:pr-8 mx-auto max-w-2xl;
+    @apply caret-black dark:caret-white outline-0 pr-8 pl-20 pt-12 z-0 lg:pl-8 lg:pr-8 mx-auto max-w-2xl;
 
     .selection {
         @apply inline bg-slate-600;
     }
 
     p {
-        @apply py-0 my-4; /* adjust default margin */
+        @apply py-0 my-6 /* adjust default margin */;
     }
 
     .selection,
@@ -24,7 +24,7 @@
     }
 
     & > .react-renderer {
-        @apply first:mt-0 last:mb-0;
+        @apply my-6 first:mt-0 last:mb-0;
     }
 
     &.resize-cursor {
