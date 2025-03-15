@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
-import { DocMode } from "../models/enum/DocMode";
+import DocMode from "../models/enum/DocMode";
 import { DocModeService } from "../models/services/DocModeService";
 
 export interface DocModeViewModel {

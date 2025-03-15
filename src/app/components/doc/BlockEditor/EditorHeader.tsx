@@ -3,15 +3,16 @@
 import { useCallback } from "react";
 import { Icon } from "@/app/components/doc/ui/Icon";
 import { Toolbar } from "@/app/components/doc/ui/Toolbar";
-import { DocMode } from "@/app/models/enum/DocMode";
-import { LogoButton } from "@/app/components/LogoButton";
+import DocMode from "@/app/models/enum/DocMode";
+import LogoButton from "@/app/components/LogoButton";
 import GuideButton from "@/app/components/guide/GuideButton";
+
 interface EditorHeaderProps {
     mode: DocMode;
     setDocMode: (newMode: DocMode) => void;
 }
 
-export const EditorHeader = ({ mode, setDocMode }: EditorHeaderProps) => {
+const EditorHeader = ({ mode, setDocMode }: EditorHeaderProps) => {
     const handleChangeView = useCallback(
         (newMode: DocMode) => {
             setDocMode(newMode);
@@ -52,3 +53,5 @@ export const EditorHeader = ({ mode, setDocMode }: EditorHeaderProps) => {
         </div>
     );
 };
+
+export default EditorHeader;

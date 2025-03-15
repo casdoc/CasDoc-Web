@@ -101,6 +101,13 @@ const GuidePopup = ({ onClose }: GuidePopupProps) => {
                         } my-10 lg:my-20 items-center space-x-8`}
                     >
                         <div className="relative m-8 md:w-auto">
+                            {!imageLoaded && (
+                                <div className="absolute inset-0 flex items-center justify-center bg-gray-200">
+                                    <span className="text-gray-500">
+                                        Loading...
+                                    </span>
+                                </div>
+                            )}
                             <Image
                                 src={currentGuide.image}
                                 alt={currentGuide.alt}
@@ -110,9 +117,7 @@ const GuidePopup = ({ onClose }: GuidePopupProps) => {
                                     imageLoaded ? "opacity-100" : "opacity-20"
                                 }`}
                                 loading="lazy"
-                                onLoad={() =>
-                                    setTimeout(() => setImageLoaded(true), 350)
-                                }
+                                onLoad={() => setImageLoaded(true)}
                                 placeholder="blur"
                                 blurDataURL={currentGuide.image}
                             />

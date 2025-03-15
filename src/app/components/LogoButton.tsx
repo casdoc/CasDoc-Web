@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { GrDocumentTest } from "react-icons/gr";
 
-export const LogoButton = () => {
+const LogoButton = () => {
     return (
         <Link
             href="/"
@@ -12,3 +12,5 @@ export const LogoButton = () => {
         </Link>
     );
 };
+
+export default LogoButton;

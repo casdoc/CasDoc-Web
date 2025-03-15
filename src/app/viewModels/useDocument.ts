@@ -3,7 +3,7 @@ import { Document } from "@/app/models/entity/Document";
 import { DocumentService } from "@/app/models/services/DocumentService";
 import { DocumentType } from "@/app/models/enum/DocumentType";
 
-export interface NodeInfo {
+export interface GraphNode {
     id: string;
     pid: string;
     label: string;
@@ -12,12 +12,12 @@ export interface NodeInfo {
 export interface DocumentViewModel {
     document: Document | undefined;
     updateDocument: (document: Document) => void;
-    graphNodes: Array<NodeInfo>;
+    graphNodes: Array<GraphNode>;
 }
 
 export function useDocumentViewModel(documentId: string): DocumentViewModel {
     const [document, setDocument] = useState<Document>();
-    const [graphNodes, setGraphNodes] = useState<Array<NodeInfo>>([]);
+    const [graphNodes, setGraphNodes] = useState<Array<GraphNode>>([]);
 
     useEffect(() => {
         let doc = DocumentService.getDocumentById(documentId);

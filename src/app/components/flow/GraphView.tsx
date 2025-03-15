@@ -29,8 +29,8 @@ import {
 // import { FlowSettingPanel } from "./setting-panel/FlowSettingPanel";
 import CustomNode from "./CustomNode";
 import { GraphViewModel } from "@/app/viewModels/GraphViewModel";
-import { NodeInfo } from "@/app/viewModels/useDocument";
-import { DocMode } from "@/app/models/enum/DocMode";
+import { GraphNode } from "@/app/viewModels/useDocument";
+import DocMode from "@/app/models/enum/DocMode";
 import { FlowScrollModeButton } from "./setting-panel/FlowScrollModeButton";
 import ToastManager from "@/app/viewModels/ToastManager";
 import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext";
@@ -51,7 +51,7 @@ const defaultEdgeOptions = {
 
 interface GraphViewProps {
     docMode: DocMode | undefined;
-    graphNodes: NodeInfo[];
+    graphNodes: GraphNode[];
     graphViewModel: GraphViewModel;
 }
 
