@@ -1,6 +1,8 @@
 import { NodeViewWrapper } from "@tiptap/react";
 import { NodeViewProps } from "@tiptap/core";
 import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext";
+import { useEffect, useState } from "react";
+import { useDocContext } from "@/app/viewModels/context/DocContext";
 
 interface Field {
     name: string;
@@ -12,9 +14,56 @@ export const DataSchemaComponent: React.FC<NodeViewProps> = ({
     node,
     selected,
 }) => {
-    const { id, name, type, description, fields } = node.attrs;
+    const {
+        id,
+        name: initName,
+        type: initType,
+        description: initDescription,
+        fields: initFields,
+    } = node.attrs;
     const { selectedNode, selectNode } = useNodeSelection();
     const isSelected = selectedNode === id;
+    const [name, setName] = useState(initName || "Schema Name");
+    const [type, setType] = useState(initType || "Schema Type");
+    const [description, setDescription] = useState(
+        initDescription || "Schema Description"
+    );
+    const [fields, setFields] = useState<Field[]>(initFields || []);
+    const { document } = useDocContext();
+
+    useEffect(() => {
+        if (initName !== undefined) {
+            setName(initName);
+        }
+        if (initType !== undefined) {
+            setType(initType);
+        }
+        if (initDescription !== undefined) {
+            setDescription(initDescription);
+        }
+        if (initFields !== undefined) {
+            setFields(initFields);
+        }
+    }, [initName, initType, initDescription, initFields]);
+
+    useEffect(() => {
+        console.debug("document", document);
+        if (!document) return;
+        const topicData = document.getTopicById(id);
+        console.debug("topicData", topicData);
+        if (topicData && topicData.name !== name) {
+            setName(topicData.name);
+        }
+        if (topicData && topicData.type !== type) {
+            setType(topicData.type);
+        }
+        if (topicData && topicData.description !== description) {
+            setDescription(topicData.description);
+        }
+        if (topicData && topicData.fields !== fields) {
+            setFields(topicData.fields);
+        }
+    }, [document, id, name, type, description, fields]);
 
     const handleClick = () => {
         selectNode(isSelected ? null : id);
