@@ -51,6 +51,12 @@ const EditPanelView = ({
         setIsMounted(true);
     }, []);
 
+    useEffect(() => {
+        if (!node) {
+            selectNode(null);
+        }
+    }, [node, selectNode]);
+
     const handleNodeNameChange = (
         e: React.ChangeEvent<HTMLTextAreaElement>
     ) => {
