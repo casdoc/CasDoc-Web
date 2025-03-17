@@ -19,14 +19,15 @@ const EditPanelRelationship = ({
             {connectionEdges.length > 0 ? (
                 connectionEdges.map((edge) => {
                     const target = findNodeById(edge.target);
-                    if (!target || target.name.trim() === "") return null;
+                    if (!target || target.config.name.trim() === "")
+                        return null;
                     return (
                         <button
                             onClick={() => selectNode(edge.target)}
                             key={edge.target}
                             className="flex justify-start bg-gray-100 py-2 mb-2 px-4 rounded text-sm w-full"
                         >
-                            {target?.name}
+                            {target?.config.name}
                         </button>
                     );
                 })
