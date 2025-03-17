@@ -7,10 +7,10 @@ export const GROUPS: Group[] = [
         commands: [
             {
                 name: "topic",
-                label: "topic",
+                label: "Topic",
                 iconName: "SquareLibrary",
                 aliases: ["topic"],
-                description: "topic of data schema",
+                description: "topic component",
                 action: (editor) => {
                     editor
                         .chain()
@@ -20,7 +20,7 @@ export const GROUPS: Group[] = [
                             attrs: {
                                 documentId: "default-document",
                                 id: uuidv4(),
-                                name: "Data schema",
+                                name: "Topic",
                             },
                         })
                         .run();
@@ -37,7 +37,7 @@ export const GROUPS: Group[] = [
                 label: "Data Schema",
                 iconName: "SquareLibrary",
                 aliases: ["dataSchema"],
-                description: "Data shcema topic, hover to see tempaltes",
+                description: "data schema component of templates",
                 action: (editor) => {
                     editor
                         .chain()
@@ -47,7 +47,37 @@ export const GROUPS: Group[] = [
                             attrs: {
                                 topicId: "test-topic-1",
                                 id: uuidv4(),
-                                name: "default",
+                                name: "Schema",
+                                type: "Object",
+                                description: "This is a default description",
+                                fields: [
+                                    {
+                                        name: "field",
+                                        type: "default",
+                                        description: "default field",
+                                    },
+                                ],
+                            },
+                        })
+                        .run();
+                },
+            },
+            {
+                name: "apiInterface",
+                label: "API Interface",
+                iconName: "SquareLibrary",
+                aliases: ["apiInterface"],
+                description: "API interface component of templates",
+                action: (editor) => {
+                    editor
+                        .chain()
+                        .focus()
+                        .insertContent({
+                            type: "template-dataSchema",
+                            attrs: {
+                                topicId: "test-topic-1",
+                                id: uuidv4(),
+                                name: "API",
                                 type: "Object",
                                 description: "This is a default description",
                                 fields: [
