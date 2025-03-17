@@ -45,11 +45,12 @@ export const GROUPS: Group[] = [
                         .insertContent({
                             type: "template-dataSchema",
                             attrs: {
-                                topicId: "test-topic-1",
+                                topicId: "root",
                                 id: uuidv4(),
                                 name: "Schema",
                                 type: "Object",
-                                description: "This is a default description",
+                                description:
+                                    "This is a data schema description",
                                 fields: [
                                     {
                                         name: "field",
@@ -75,16 +76,19 @@ export const GROUPS: Group[] = [
                         .insertContent({
                             type: "template-apiInterface",
                             attrs: {
-                                topicId: "test-topic-1",
+                                topicId: "root",
                                 id: uuidv4(),
                                 name: "API",
-                                type: "Object",
-                                description: "This is a default description",
+                                type: "GET",
+                                description:
+                                    "This is a api interface description",
                                 fields: [
                                     {
-                                        name: "field",
-                                        type: "default",
-                                        description: "default field",
+                                        name: "id",
+                                        type: "string",
+                                        required: true,
+                                        description:
+                                            "Unique identifier for the resource",
                                     },
                                 ],
                             },
