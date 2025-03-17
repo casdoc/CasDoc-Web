@@ -71,14 +71,18 @@ export const DataSchemaComponent: React.FC<NodeViewProps> = ({
 
     return (
         <NodeViewWrapper
-            className={`cursor-pointer hover:bg-gray-50 p-4 border-2 rounded-lg shadow-md bg-white ${
-                isSelected && "border-indigo-500"
-            } ${!isSelected && selected && "border-gray-500"}`}
+            className={`ml-8 cursor-pointer hover:bg-gray-50 rounded-lg pt-2 border-2 bg-white ${
+                isSelected
+                    ? "border-indigo-500"
+                    : selected
+                    ? "border-gray-500"
+                    : "border-white hover:border-gray-200"
+            }`}
             onClick={handleClick}
         >
-            <div className="mb-4 border-l-4 border-indigo-500 pl-4">
+            <div className="pl-4">
                 <div className="flex justify-between">
-                    <h2 className="text-2xl font-bold text-indigo-700">
+                    <h2 className="text-xl font-bold text-indigo-700">
                         {name || "Schema Name"}
                     </h2>
                     <div className="flex items-center mt-1 mr-3">
@@ -87,12 +91,12 @@ export const DataSchemaComponent: React.FC<NodeViewProps> = ({
                         </span>
                     </div>
                 </div>
-                <p className="mt-2 text-sm text-gray-600">
+                <p className="mt-0 text-sm text-gray-600">
                     {description || "Schema Description"}
                 </p>
             </div>
 
-            <div className="border rounded-lg overflow-hidden">
+            <div className="ml-8 overflow-hidden">
                 {fields && fields.length > 0 ? (
                     <div className="divide-y divide-gray-100">
                         {fields.map((field: Field, index: number) => {
@@ -100,8 +104,9 @@ export const DataSchemaComponent: React.FC<NodeViewProps> = ({
                                 field.name.trim() === "" &&
                                 field.type.trim() === "" &&
                                 field.description.trim() === ""
-                            )
+                            ) {
                                 return;
+                            }
                             return (
                                 <div
                                     key={index}
@@ -116,7 +121,7 @@ export const DataSchemaComponent: React.FC<NodeViewProps> = ({
                                         </span>
                                     </div>
                                     {field.description && (
-                                        <p className="mt-1 text-sm text-gray-500">
+                                        <p className="mt-0 text-sm text-gray-500">
                                             {field.description}
                                         </p>
                                     )}

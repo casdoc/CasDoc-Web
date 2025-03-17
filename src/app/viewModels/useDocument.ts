@@ -67,7 +67,7 @@ export function useDocumentViewModel(documentId: string): DocumentViewModel {
                 {
                     id: "root",
                     pid: "root",
-                    label: "root",
+                    label: document.getTitle() || "Untitled",
                 },
             ]);
             return;
@@ -83,11 +83,11 @@ export function useDocumentViewModel(documentId: string): DocumentViewModel {
 
         const newGraphNodes: GraphNode[] = [];
         const newEditNodes: EditNode[] = [];
-        let lastTopicId: string | undefined = undefined; // 追蹤最近的 topic id
+        let lastTopicId: string | undefined = undefined;
 
         for (let i = 0; i < content.length; i++) {
             if (content[i].type.startsWith("topic")) {
-                lastTopicId = content[i].attrs.id; // 更新最近的 topic id
+                lastTopicId = content[i].attrs.id;
             }
 
             const graphNode = newGraphNode(content[i], lastTopicId);
@@ -106,7 +106,7 @@ export function useDocumentViewModel(documentId: string): DocumentViewModel {
             {
                 id: "root",
                 pid: "root",
-                label: "root",
+                label: document.getTitle() || "Untitled",
             },
             ...newGraphNodes,
         ]);

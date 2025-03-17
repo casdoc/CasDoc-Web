@@ -35,13 +35,17 @@ export const TopicComponent: React.FC<NodeViewProps> = ({ node, selected }) => {
 
     return (
         <NodeViewWrapper
-            className={`cursor-pointer hover:bg-gray-50 p-4 border-2 rounded-lg shadow-md  bg-white ${
-                isSelected && "border-indigo-500"
-            } ${!isSelected && selected && "border-gray-500"}
+            className={`cursor-pointer hover:bg-gray-50 rounded-lg border-2 p-4 bg-white ${
+                isSelected
+                    ? "border-indigo-500"
+                    : selected
+                    ? "border-gray-500"
+                    : "border-white hover:border-gray-200"
+            }
             `}
             onClick={handleClick}
         >
-            <div className="mb-1 border-l-4 border-indigo-500 pl-4">
+            <div className="border-l-4 border-indigo-500 pl-3">
                 <h2 className="text-2xl font-bold text-indigo-700">{name}</h2>
             </div>
         </NodeViewWrapper>
