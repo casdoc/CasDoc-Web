@@ -134,26 +134,30 @@ const EditPanelView = ({
                             <span className="font-semibold">ID:</span>{" "}
                             {selectedNode}
                         </p>
-                        <label className="text-sm text-gray-500 block mb-1 pl-1">
-                            Node Name
-                        </label>
                         {node?.config && Object.keys(node.config).length > 0 ? (
-                            <div className="bg-white border border-gray-200 rounded-lg p-4 mr-4 shadow">
-                                <h2 className="text-lg font-semibold mb-4">
-                                    Config Fields
-                                </h2>
+                            <div className="grid grid-cols-2 gap-x-4 gap-y-2">
                                 {Object.entries(node.config).map(
                                     ([key, value]) => (
-                                        <div key={key} className="mb-2">
-                                            <label className="text-sm text-gray-500 block mb-1 pl-1">
+                                        <div
+                                            key={key}
+                                            className="flex flex-col space-y-1"
+                                        >
+                                            <label
+                                                className="text-sm text-gray-600 font-medium truncate"
+                                                title={key}
+                                            >
                                                 {key}
                                             </label>
                                             <TextArea
                                                 size="2"
                                                 resize="none"
-                                                radius="large"
-                                                className="resize-none bg-white p-2 text-sm w-full"
-                                                value={value as string}
+                                                radius="medium"
+                                                className="resize-none bg-white p-2 text-sm w-full border border-gray-300 rounded-md focus:ring focus:ring-indigo-200"
+                                                value={
+                                                    value !== undefined
+                                                        ? String(value)
+                                                        : ""
+                                                }
                                                 onChange={(e) =>
                                                     handleConfigChange(e, key)
                                                 }
@@ -163,7 +167,9 @@ const EditPanelView = ({
                                 )}
                             </div>
                         ) : (
-                            <>123</>
+                            <p className="text-gray-500 text-sm">
+                                No config fields
+                            </p>
                         )}
                     </div>
                     {node?.type && node?.type.startsWith("template") && (
