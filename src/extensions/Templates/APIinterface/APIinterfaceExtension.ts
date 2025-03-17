@@ -1,10 +1,10 @@
 import { Node, mergeAttributes } from "@tiptap/core";
 import { ReactNodeViewRenderer } from "@tiptap/react";
-import { APIinterfaceComponent } from "./APIinterfaceComponent";
+import APIinterfaceComponent from "./APIinterfaceComponent";
 import { v4 as uuidv4 } from "uuid";
 
 export const APIinterfaceExtension = Node.create({
-    name: "template-dataSchema",
+    name: "template-apiInterface",
 
     group: "block",
 
@@ -38,13 +38,13 @@ export const APIinterfaceExtension = Node.create({
     parseHTML() {
         return [
             {
-                tag: "data-schema",
+                tag: "api-interface",
             },
         ];
     },
 
     renderHTML({ HTMLAttributes }) {
-        return ["data-schema", mergeAttributes(HTMLAttributes)];
+        return ["api-interface", mergeAttributes(HTMLAttributes)];
     },
 
     addNodeView() {

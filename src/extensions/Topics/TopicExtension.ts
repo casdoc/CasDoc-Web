@@ -1,6 +1,6 @@
 import { Node, mergeAttributes } from "@tiptap/core";
 import { ReactNodeViewRenderer } from "@tiptap/react";
-import { TopicComponent } from "./TopicComponent";
+import TopicComponent from "./TopicComponent";
 
 export const TopicExtension = Node.create({
     name: "topic",

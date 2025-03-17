@@ -10,10 +10,7 @@ interface Field {
     description: string;
 }
 
-export const DataSchemaComponent: React.FC<NodeViewProps> = ({
-    node,
-    selected,
-}) => {
+const DataSchemaComponent: React.FC<NodeViewProps> = ({ node, selected }) => {
     const {
         id,
         name: initName,
@@ -138,3 +135,5 @@ export const DataSchemaComponent: React.FC<NodeViewProps> = ({
         </NodeViewWrapper>
     );
 };
+
+export default DataSchemaComponent;

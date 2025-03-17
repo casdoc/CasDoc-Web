@@ -4,7 +4,7 @@ import { NodeViewProps } from "@tiptap/core";
 import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext";
 import { useDocContext } from "@/app/viewModels/context/DocContext";
 
-export const TopicComponent: React.FC<NodeViewProps> = ({ node, selected }) => {
+const TopicComponent: React.FC<NodeViewProps> = ({ node, selected }) => {
     const { id, name: initialName } = node.attrs;
     const { selectedNode, selectNode } = useNodeSelection();
     const { document } = useDocContext();
@@ -51,3 +51,5 @@ export const TopicComponent: React.FC<NodeViewProps> = ({ node, selected }) => {
         </NodeViewWrapper>
     );
 };
+
+export default TopicComponent;

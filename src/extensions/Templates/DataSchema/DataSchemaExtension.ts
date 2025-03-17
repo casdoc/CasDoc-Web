@@ -1,7 +1,8 @@
 import { Node, mergeAttributes } from "@tiptap/core";
 import { ReactNodeViewRenderer } from "@tiptap/react";
-import { DataSchemaComponent } from "./DataSchemaComponent";
+import DataSchemaComponent from "./DataSchemaComponent";
 import { v4 as uuidv4 } from "uuid";
+
 export const DataSchemaExtension = Node.create({
     name: "template-dataSchema",
 

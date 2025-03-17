@@ -73,7 +73,7 @@ export const GROUPS: Group[] = [
                         .chain()
                         .focus()
                         .insertContent({
-                            type: "template-dataSchema",
+                            type: "template-apiInterface",
                             attrs: {
                                 topicId: "test-topic-1",
                                 id: uuidv4(),
