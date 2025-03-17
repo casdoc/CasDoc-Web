@@ -5,18 +5,18 @@ import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext"
 import { useDocContext } from "@/app/viewModels/context/DocContext";
 
 const TopicComponent: React.FC<NodeViewProps> = ({ node, selected }) => {
-    const { id, name: initialName } = node.attrs;
+    const { id, config: initialConfig } = node.attrs;
     const { selectedNode, selectNode } = useNodeSelection();
     const { document } = useDocContext();
     const isSelected = selectedNode === id;
-    const [name, setName] = useState(initialName || "Untitled Topic");
+    const [config, setConfig] = useState(initialConfig || "Untitled Topic");
 
     // Sync from node attributes to state
     useEffect(() => {
-        if (initialName !== undefined) {
-            setName(initialName);
+        if (initialConfig !== undefined) {
+            setConfig(initialConfig);
         }
-    }, [initialName]);
+    }, [initialConfig]);
 
     // Sync from viewModel to state
     useEffect(() => {
@@ -24,10 +24,10 @@ const TopicComponent: React.FC<NodeViewProps> = ({ node, selected }) => {
         if (!document) return;
         const topicData = document.getTopicById(id);
         console.debug("topicData", topicData);
-        if (topicData && topicData.name !== name) {
-            setName(topicData.name);
+        if (topicData && topicData.config !== config) {
+            setConfig(topicData.config);
         }
-    }, [document, id, name]);
+    }, [document, id, config]);
 
     const handleClick = () => {
         selectNode(isSelected ? null : id);
@@ -35,7 +35,7 @@ const TopicComponent: React.FC<NodeViewProps> = ({ node, selected }) => {
 
     return (
         <NodeViewWrapper
-            className={`cursor-pointer hover:bg-gray-50 rounded-lg border-2 p-4 bg-white ${
+            className={`cursor-pointer hover:bg-gray-50 rounded-lg border-2 px-4 py-2 bg-white ${
                 isSelected
                     ? "border-indigo-500"
                     : selected
@@ -46,7 +46,12 @@ const TopicComponent: React.FC<NodeViewProps> = ({ node, selected }) => {
             onClick={handleClick}
         >
             <div className="border-l-4 border-indigo-500 pl-3">
-                <h2 className="text-2xl font-bold text-indigo-700">{name}</h2>
+                <h2 className="text-2xl font-bold text-indigo-700 m-0 px-0 pb-1">
+                    {config.name}
+                </h2>
+                <p className="m-0 p-0 text-sm text-gray-500 font-semibold">
+                    {config.description}
+                </p>
             </div>
         </NodeViewWrapper>
     );

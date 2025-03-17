@@ -20,7 +20,10 @@ export const GROUPS: Group[] = [
                             attrs: {
                                 documentId: "default-document",
                                 id: uuidv4(),
-                                name: "Topic",
+                                config: {
+                                    name: "Topic",
+                                    description: "This is a topic description",
+                                },
                             },
                         })
                         .run();

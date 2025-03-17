@@ -18,8 +18,8 @@ export const TopicExtension = Node.create({
             id: {
                 default: "test-topic-1",
             },
-            name: {
-                default: "",
+            config: {
+                defauilt: {},
             },
         };
     },
