@@ -10,19 +10,12 @@ export interface GraphNode {
     label: string;
 }
 
-export interface EditNode {
-    id: string;
-    type: string;
-    name: string;
-    fields?: Array<JsonObject>;
-}
-
 export interface DocumentViewModel {
     document: Document | undefined;
     updateDocument: (document: Document) => void;
-    updateEditNodeById: (nodeId: string, changes: Partial<EditNode>) => void;
+    updateEditNodeById: (nodeId: string, changes: Partial<JsonObject>) => void;
     graphNodes: Array<GraphNode>;
-    editNodes: Array<EditNode>;
+    editNodes: Array<JsonObject>;
 }
 
 export function useDocumentViewModel(documentId: string): DocumentViewModel {
@@ -34,7 +27,7 @@ export function useDocumentViewModel(documentId: string): DocumentViewModel {
             label: "root",
         },
     ]);
-    const [editNodes, setEditNodes] = useState<Array<EditNode>>([]);
+    const [editNodes, setEditNodes] = useState<Array<JsonObject>>([]);
     const { bindDocument } = useDocContext();
 
     useEffect(() => {
@@ -82,7 +75,7 @@ export function useDocumentViewModel(documentId: string): DocumentViewModel {
         }
 
         const newGraphNodes: GraphNode[] = [];
-        const newEditNodes: EditNode[] = [];
+        const newEditNodes: JsonObject[] = [];
         let lastTopicId: string | undefined = undefined;
 
         for (let i = 0; i < content.length; i++) {
@@ -121,7 +114,10 @@ export function useDocumentViewModel(documentId: string): DocumentViewModel {
         }
     };
 
-    const updateEditNodeById = (nodeId: string, changes: Partial<EditNode>) => {
+    const updateEditNodeById = (
+        nodeId: string,
+        changes: Partial<JsonObject>
+    ) => {
         if (!document) return;
 
         const updatedEditNodes = editNodes.map((node) =>

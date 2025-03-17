@@ -6,11 +6,12 @@ import {
     ConnectionEdge,
     GraphViewModel,
 } from "@/app/viewModels/GraphViewModel";
-import { DocumentViewModel, EditNode } from "@/app/viewModels/useDocument";
+import { DocumentViewModel } from "@/app/viewModels/useDocument";
 import { TextArea } from "@radix-ui/themes";
 import EditPanelHeader from "./EditPanelHeader";
 import EditPanelRelationship from "./EditPanelRelationship";
 import EditPanelFields from "./EditPanelFields";
+import { JsonObject } from "@/app/models/types/JsonObject";
 
 interface EditPanelProps {
     documentViewModel: DocumentViewModel;
@@ -25,7 +26,7 @@ const EditPanelView = ({
     const { searchBySourceId } = graphViewModel;
     const { updateEditNodeById, editNodes } = documentViewModel;
 
-    const [node, setNode] = useState<EditNode>();
+    const [node, setNode] = useState<JsonObject>();
     const [isMounted, setIsMounted] = useState(false);
     const [connectionEdges, setConnectionEdges] = useState<ConnectionEdge[]>(
         []
@@ -61,7 +62,7 @@ const EditPanelView = ({
         e: React.ChangeEvent<HTMLTextAreaElement>
     ) => {
         if (!node) return;
-        const updatedNode: EditNode = { ...node, name: e.target.value };
+        const updatedNode: JsonObject = { ...node, name: e.target.value };
         setNode(updatedNode);
         updateEditNodeById(updatedNode.id, { name: updatedNode.name });
     };
@@ -79,7 +80,7 @@ const EditPanelView = ({
             [key]: e.target.value,
         };
 
-        const updatedNode: EditNode = { ...node, fields: newFields };
+        const updatedNode: JsonObject = { ...node, fields: newFields };
         setNode(updatedNode);
         updateEditNodeById(updatedNode.id, { fields: newFields });
     };
@@ -89,7 +90,7 @@ const EditPanelView = ({
         const newFields = [...(node.fields ?? [])];
         newFields.push({ name: "", description: "", type: "" });
 
-        const updatedNode: EditNode = { ...node, fields: newFields };
+        const updatedNode: JsonObject = { ...node, fields: newFields };
         setNode(updatedNode);
         updateEditNodeById(updatedNode.id, { fields: newFields });
     };
@@ -99,7 +100,7 @@ const EditPanelView = ({
         const newFields = [...(node.fields ?? [])];
         newFields.splice(index, 1);
 
-        const updatedNode: EditNode = { ...node, fields: newFields };
+        const updatedNode: JsonObject = { ...node, fields: newFields };
         setNode(updatedNode);
         updateEditNodeById(updatedNode.id, { fields: newFields });
     };

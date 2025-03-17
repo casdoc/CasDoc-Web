@@ -1,10 +1,10 @@
+import { JsonObject } from "@/app/models/types/JsonObject";
 import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext";
 import { ConnectionEdge } from "@/app/viewModels/GraphViewModel";
-import { EditNode } from "@/app/viewModels/useDocument";
 
 interface EditPanelRelationshipProps {
     connectionEdges: ConnectionEdge[];
-    findNodeById: (id: string) => EditNode | undefined;
+    findNodeById: (id: string) => JsonObject | undefined;
 }
 
 const EditPanelRelationship = ({
