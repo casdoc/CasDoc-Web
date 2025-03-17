@@ -29,21 +29,6 @@ const DataSchemaComponent: React.FC<NodeViewProps> = ({ node, selected }) => {
     const { document } = useDocContext();
 
     useEffect(() => {
-        if (initName !== undefined) {
-            setName(initName);
-        }
-        if (initType !== undefined) {
-            setType(initType);
-        }
-        if (initDescription !== undefined) {
-            setDescription(initDescription);
-        }
-        if (initFields !== undefined) {
-            setFields(initFields);
-        }
-    }, [initName, initType, initDescription, initFields]);
-
-    useEffect(() => {
         console.debug("document", document);
         if (!document) return;
         const topicData = document.getTopicById(id);
@@ -128,7 +113,7 @@ const DataSchemaComponent: React.FC<NodeViewProps> = ({ node, selected }) => {
                     </div>
                 ) : (
                     <div className="p-4 text-center text-gray-400">
-                        尚未定義任何 field
+                        No fields yet
                     </div>
                 )}
             </div>
