@@ -36,6 +36,23 @@ const APIinterfaceComponent: React.FC<NodeViewProps> = ({ node, selected }) => {
         selectNode(isSelected ? null : id);
     };
 
+    const getMethodColor = (method?: string): string => {
+        switch (method?.toUpperCase()) {
+            case "GET":
+                return "bg-green-500";
+            case "POST":
+                return "bg-blue-500";
+            case "PUT":
+                return "bg-yellow-500";
+            case "DELETE":
+                return "bg-red-500";
+            case "PATCH":
+                return "bg-purple-500";
+            default:
+                return "bg-gray-400";
+        }
+    };
+
     return (
         <NodeViewWrapper
             className={`ml-8 cursor-pointer hover:bg-gray-50 rounded-lg pt-2 border-2 bg-white ${
@@ -50,19 +67,11 @@ const APIinterfaceComponent: React.FC<NodeViewProps> = ({ node, selected }) => {
             <div className="pl-4">
                 <div className="flex items-center pb-2">
                     <span
-                        className={`px-2 py-1 text-xs rounded-md text-white font-bold mr-2 ${
-                            config.method === "GET"
-                                ? "bg-green-500"
-                                : config.method === "POST"
-                                ? "bg-blue-500"
-                                : config.method === "PUT"
-                                ? "bg-yellow-500"
-                                : config.method === "DELETE"
-                                ? "bg-red-500"
-                                : "bg-gray-400"
-                        }`}
+                        className={`px-2 py-1 text-xs rounded-md text-white font-bold mr-2 ${getMethodColor(
+                            config.method
+                        )}`}
                     >
-                        {config.method || "Method"}
+                        {config.method?.toUpperCase() || "METHOD"}
                     </span>
                     <span className="text-xl font-bold text-indigo-700">
                         {config.name || "API name"}
