@@ -4,10 +4,12 @@ import { DocumentService } from "@/app/models/services/DocumentService";
 import { DocumentType } from "@/app/models/enum/DocumentType";
 import { JsonObject } from "../models/types/JsonObject";
 import { useDocContext } from "./context/DocContext";
+
 export interface GraphNode {
     id: string;
     pid: string;
     label: string;
+    type: string;
 }
 
 export interface DocumentViewModel {
@@ -25,6 +27,7 @@ export function useDocumentViewModel(documentId: string): DocumentViewModel {
             id: "root",
             pid: "root",
             label: "root",
+            type: "",
         },
     ]);
     const [editNodes, setEditNodes] = useState<Array<JsonObject>>([]);
@@ -61,6 +64,7 @@ export function useDocumentViewModel(documentId: string): DocumentViewModel {
                     id: "root",
                     pid: "root",
                     label: document.getTitle() || "Untitled",
+                    type: "",
                 },
             ]);
             return;
@@ -100,6 +104,7 @@ export function useDocumentViewModel(documentId: string): DocumentViewModel {
                 id: "root",
                 pid: "root",
                 label: document.getTitle() || "Untitled",
+                type: "",
             },
             ...newGraphNodes,
         ]);
@@ -164,12 +169,14 @@ export function useDocumentViewModel(documentId: string): DocumentViewModel {
                 id: content.attrs.id,
                 pid: "root",
                 label: content.attrs.config.name,
+                type: content.type,
             };
         } else if (content.type.startsWith("template")) {
             return {
                 id: content.attrs.id,
                 pid: lastTopicId || content.attrs.topicId,
                 label: content.attrs.config?.name || "",
+                type: content.type,
             };
         }
     };
