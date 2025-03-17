@@ -79,10 +79,12 @@ export const GROUPS: Group[] = [
                                 topicId: "root",
                                 id: uuidv4(),
                                 name: "API name",
-                                method: "GET",
-                                description:
-                                    "This is a api interface description",
-                                uri: "/api/v1/demo",
+                                config: {
+                                    method: "GET",
+                                    description:
+                                        "This is a api interface description",
+                                    uri: "/api/v1/demo",
+                                },
                                 fields: [
                                     {
                                         name: "id",

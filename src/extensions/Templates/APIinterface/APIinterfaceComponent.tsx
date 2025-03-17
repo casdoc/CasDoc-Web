@@ -15,20 +15,14 @@ const APIinterfaceComponent: React.FC<NodeViewProps> = ({ node, selected }) => {
     const {
         id,
         name: initName,
-        method: initMethod,
-        description: initDescription,
-        uri: initUri,
+        method: initConfig,
         fields: initFields,
     } = node.attrs;
 
     const { selectedNode, selectNode } = useNodeSelection();
     const isSelected = selectedNode === id;
     const [name, setName] = useState(initName || "Schema Name");
-    const [method, setMethod] = useState(initMethod || "Schema Type");
-    const [description, setDescription] = useState(
-        initDescription || "Schema Description"
-    );
-    const [uri, setUri] = useState(initUri || "/api/v1/demo");
+    const [config, setConfig] = useState(initConfig || {});
     const [fields, setFields] = useState<Parameters[]>(initFields || []);
     const { document } = useDocContext();
 
@@ -41,19 +35,13 @@ const APIinterfaceComponent: React.FC<NodeViewProps> = ({ node, selected }) => {
         if (topicData.name !== name) {
             setName(topicData.name);
         }
-        if (topicData.method !== method) {
-            setMethod(topicData.method);
-        }
-        if (topicData.description !== description) {
-            setDescription(topicData.description);
+        if (topicData.config !== config) {
+            setConfig(topicData.config);
         }
         if (topicData.fields !== fields) {
             setFields(topicData.fields);
         }
-        if (topicData.uri !== uri) {
-            setUri(topicData.uri);
-        }
-    }, [document, id, name, method, description, fields, uri]);
+    }, [document, id, name, fields, config]);
 
     const handleClick = () => {
         selectNode(isSelected ? null : id);
@@ -74,27 +62,29 @@ const APIinterfaceComponent: React.FC<NodeViewProps> = ({ node, selected }) => {
                 <div className="flex items-center pb-2">
                     <span
                         className={`px-2 py-1 text-xs rounded-md text-white font-bold mr-2 ${
-                            method === "GET"
+                            config.method === "GET"
                                 ? "bg-green-500"
-                                : method === "POST"
+                                : config.method === "POST"
                                 ? "bg-blue-500"
-                                : method === "PUT"
+                                : config.method === "PUT"
                                 ? "bg-yellow-500"
-                                : method === "DELETE"
+                                : config.method === "DELETE"
                                 ? "bg-red-500"
                                 : "bg-gray-400"
                         }`}
                     >
-                        {method || "Method"}
+                        {config.method || "Method"}
                     </span>
                     <span className="text-xl font-bold text-indigo-700">
                         {name || "API name"}
                     </span>
                 </div>
                 <div>
-                    <p className="m-0 text-sm text-gray-600">{description}</p>
+                    <p className="m-0 text-sm text-gray-600">
+                        {config.description}
+                    </p>
                     <p className="m-0 py-2 text-sm text-black font-semibold">
-                        URI : {uri}
+                        URI : {config.uri}
                     </p>
                 </div>
             </div>

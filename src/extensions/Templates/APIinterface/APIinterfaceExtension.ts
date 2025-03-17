@@ -23,14 +23,11 @@ export const APIinterfaceExtension = Node.create({
             name: {
                 default: "",
             },
-            method: {
-                default: "",
-            },
-            uri: {
-                default: "",
-            },
-            description: {
-                default: "",
+            config: {
+                default: {
+                    method: "GET",
+                    uri: "/api/v1/demo",
+                },
             },
             fields: {
                 default: [],
