@@ -12,36 +12,25 @@ interface Parameters {
 }
 
 const APIinterfaceComponent: React.FC<NodeViewProps> = ({ node, selected }) => {
-    const {
-        id,
-        name: initName,
-        method: initConfig,
-        fields: initFields,
-    } = node.attrs;
+    const { id, config: initConfig, fields: initFields } = node.attrs;
 
     const { selectedNode, selectNode } = useNodeSelection();
     const isSelected = selectedNode === id;
-    const [name, setName] = useState(initName || "Schema Name");
     const [config, setConfig] = useState(initConfig || {});
     const [fields, setFields] = useState<Parameters[]>(initFields || []);
     const { document } = useDocContext();
 
     useEffect(() => {
-        console.debug("document", document);
         if (!document) return;
         const topicData = document.getTopicById(id);
-        console.log("topicData", topicData);
         if (!topicData) return;
-        if (topicData.name !== name) {
-            setName(topicData.name);
-        }
         if (topicData.config !== config) {
             setConfig(topicData.config);
         }
         if (topicData.fields !== fields) {
             setFields(topicData.fields);
         }
-    }, [document, id, name, fields, config]);
+    }, [document, id, fields, config]);
 
     const handleClick = () => {
         selectNode(isSelected ? null : id);
@@ -76,7 +65,7 @@ const APIinterfaceComponent: React.FC<NodeViewProps> = ({ node, selected }) => {
                         {config.method || "Method"}
                     </span>
                     <span className="text-xl font-bold text-indigo-700">
-                        {name || "API name"}
+                        {config.name || "API name"}
                     </span>
                 </div>
                 <div>

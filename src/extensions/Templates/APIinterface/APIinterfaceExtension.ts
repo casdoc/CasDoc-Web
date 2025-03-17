@@ -20,13 +20,9 @@ export const APIinterfaceExtension = Node.create({
             id: {
                 default: uuidv4(),
             },
-            name: {
-                default: "",
-            },
             config: {
                 default: {
-                    method: "GET",
-                    uri: "/api/v1/demo",
+                    name: "",
                 },
             },
             fields: {

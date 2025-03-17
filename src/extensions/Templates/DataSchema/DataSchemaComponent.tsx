@@ -11,20 +11,10 @@ interface Field {
 }
 
 const DataSchemaComponent: React.FC<NodeViewProps> = ({ node, selected }) => {
-    const {
-        id,
-        name: initName,
-        type: initType,
-        description: initDescription,
-        fields: initFields,
-    } = node.attrs;
+    const { id, config: initConfig, fields: initFields } = node.attrs;
     const { selectedNode, selectNode } = useNodeSelection();
     const isSelected = selectedNode === id;
-    const [name, setName] = useState(initName || "Schema Name");
-    const [type, setType] = useState(initType || "Schema Type");
-    const [description, setDescription] = useState(
-        initDescription || "Schema Description"
-    );
+    const [config, setConfig] = useState(initConfig || {});
     const [fields, setFields] = useState<Field[]>(initFields || []);
     const { document } = useDocContext();
 
@@ -33,19 +23,13 @@ const DataSchemaComponent: React.FC<NodeViewProps> = ({ node, selected }) => {
         if (!document) return;
         const topicData = document.getTopicById(id);
         console.debug("topicData", topicData);
-        if (topicData && topicData.name !== name) {
-            setName(topicData.name);
-        }
-        if (topicData && topicData.type !== type) {
-            setType(topicData.type);
-        }
-        if (topicData && topicData.description !== description) {
-            setDescription(topicData.description);
+        if (topicData && topicData.config !== config) {
+            setConfig(topicData.config);
         }
         if (topicData && topicData.fields !== fields) {
             setFields(topicData.fields);
         }
-    }, [document, id, name, type, description, fields]);
+    }, [document, id, config, fields]);
 
     const handleClick = () => {
         selectNode(isSelected ? null : id);
@@ -65,16 +49,16 @@ const DataSchemaComponent: React.FC<NodeViewProps> = ({ node, selected }) => {
             <div className="pl-4">
                 <div className="flex justify-between">
                     <h2 className="text-xl font-bold text-indigo-700">
-                        {name || "Schema Name"}
+                        {config.name || "Schema Name"}
                     </h2>
                     <div className="flex items-center mt-1 mr-3">
                         <span className="px-2 py-1 text-xs bg-gray-100 rounded-md text-gray-700">
-                            {type || "Schema Type"}
+                            {config.type || "Schema Type"}
                         </span>
                     </div>
                 </div>
                 <p className="mt-0 text-sm text-gray-600">
-                    {description || "Schema Description"}
+                    {config.description || "Schema Description"}
                 </p>
             </div>
 

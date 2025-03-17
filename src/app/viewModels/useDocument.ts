@@ -135,8 +135,9 @@ export function useDocumentViewModel(documentId: string): DocumentViewModel {
                     ...item,
                     attrs: {
                         ...item.attrs,
-                        name: updatedNode?.name,
+                        name: updatedNode?.config.name,
                         fields: updatedNode?.fields,
+                        config: updatedNode?.config,
                     },
                 };
             }
@@ -151,7 +152,7 @@ export function useDocumentViewModel(documentId: string): DocumentViewModel {
         const editNode = {
             id: content.id,
             type: type,
-            name: content.name,
+            config: content.config,
             fields: content.fields,
         };
         return editNode;
@@ -162,13 +163,13 @@ export function useDocumentViewModel(documentId: string): DocumentViewModel {
             return {
                 id: content.attrs.id,
                 pid: "root",
-                label: content.attrs.name,
+                label: content.attrs.config.name,
             };
         } else if (content.type.startsWith("template")) {
             return {
                 id: content.attrs.id,
                 pid: lastTopicId || content.attrs.topicId,
-                label: content.attrs.name,
+                label: content.attrs.config?.name || "",
             };
         }
     };

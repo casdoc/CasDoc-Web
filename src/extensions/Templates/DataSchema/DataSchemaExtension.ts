@@ -20,14 +20,10 @@ export const DataSchemaExtension = Node.create({
             id: {
                 default: uuidv4(),
             },
-            name: {
-                default: "",
-            },
-            type: {
-                default: "",
-            },
-            description: {
-                default: "",
+            config: {
+                default: {
+                    name: "",
+                },
             },
             fields: {
                 default: [],

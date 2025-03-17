@@ -58,15 +58,6 @@ const EditPanelView = ({
         }
     }, [node, selectNode]);
 
-    const handleNodeNameChange = (
-        e: React.ChangeEvent<HTMLTextAreaElement>
-    ) => {
-        if (!node) return;
-        const updatedNode: JsonObject = { ...node, name: e.target.value };
-        setNode(updatedNode);
-        updateEditNodeById(updatedNode.id, { name: updatedNode.name });
-    };
-
     const handleFieldChange = (
         e: React.ChangeEvent<HTMLTextAreaElement>,
         index: number,
@@ -83,6 +74,22 @@ const EditPanelView = ({
         const updatedNode: JsonObject = { ...node, fields: newFields };
         setNode(updatedNode);
         updateEditNodeById(updatedNode.id, { fields: newFields });
+    };
+
+    const handleConfigChange = (
+        e: React.ChangeEvent<HTMLTextAreaElement>,
+        key: string
+    ) => {
+        if (!node) return;
+
+        const updatedConfig = {
+            ...node.config,
+            [key]: e.target.value,
+        };
+
+        const updatedNode: JsonObject = { ...node, config: updatedConfig };
+        setNode(updatedNode);
+        updateEditNodeById(updatedNode.id, { config: updatedConfig });
     };
 
     const handleAddField = () => {
@@ -130,15 +137,34 @@ const EditPanelView = ({
                         <label className="text-sm text-gray-500 block mb-1 pl-1">
                             Node Name
                         </label>
-                        <TextArea
-                            size="2"
-                            resize="none"
-                            radius="large"
-                            placeholder="Write something..."
-                            className="resize-none bg-white p-2 text-sm w-full"
-                            value={node?.name ?? ""}
-                            onChange={handleNodeNameChange}
-                        />
+                        {node?.config && Object.keys(node.config).length > 0 ? (
+                            <div className="bg-white border border-gray-200 rounded-lg p-4 mr-4 shadow">
+                                <h2 className="text-lg font-semibold mb-4">
+                                    Config Fields
+                                </h2>
+                                {Object.entries(node.config).map(
+                                    ([key, value]) => (
+                                        <div key={key} className="mb-2">
+                                            <label className="text-sm text-gray-500 block mb-1 pl-1">
+                                                {key}
+                                            </label>
+                                            <TextArea
+                                                size="2"
+                                                resize="none"
+                                                radius="large"
+                                                className="resize-none bg-white p-2 text-sm w-full"
+                                                value={value as string}
+                                                onChange={(e) =>
+                                                    handleConfigChange(e, key)
+                                                }
+                                            />
+                                        </div>
+                                    )
+                                )}
+                            </div>
+                        ) : (
+                            <>123</>
+                        )}
                     </div>
                     {node?.type && node?.type.startsWith("template") && (
                         <div className="bg-white border border-gray-200 rounded-lg p-4 mr-4 shadow">
