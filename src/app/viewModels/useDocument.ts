@@ -27,9 +27,16 @@ export interface DocumentViewModel {
 
 export function useDocumentViewModel(documentId: string): DocumentViewModel {
     const [document, setDocument] = useState<Document>();
-    const [graphNodes, setGraphNodes] = useState<Array<GraphNode>>([]);
+    const [graphNodes, setGraphNodes] = useState<Array<GraphNode>>([
+        {
+            id: "root",
+            pid: "root",
+            label: "root",
+        },
+    ]);
     const [editNodes, setEditNodes] = useState<Array<EditNode>>([]);
     const { bindDocument } = useDocContext();
+
     useEffect(() => {
         let doc = DocumentService.getDocumentById(documentId);
         if (!doc) {
@@ -56,7 +63,13 @@ export function useDocumentViewModel(documentId: string): DocumentViewModel {
         const content = document.getContent();
 
         if (!content) {
-            setGraphNodes([]);
+            setGraphNodes([
+                {
+                    id: "root",
+                    pid: "root",
+                    label: "root",
+                },
+            ]);
             return;
         }
         bindDocument(document);
@@ -68,11 +81,18 @@ export function useDocumentViewModel(documentId: string): DocumentViewModel {
             document.setTitle(firstChild.content[0].text);
         }
 
-        const newGraphNodes = [];
-        const newEditNodes = [];
+        const newGraphNodes: GraphNode[] = [];
+        const newEditNodes: EditNode[] = [];
+        let lastTopicId: string | undefined = undefined; // 追蹤最近的 topic id
+
         for (let i = 0; i < content.length; i++) {
-            const graphNode = newGraphNode(content[i]);
+            if (content[i].type.startsWith("topic")) {
+                lastTopicId = content[i].attrs.id; // 更新最近的 topic id
+            }
+
+            const graphNode = newGraphNode(content[i], lastTopicId);
             if (graphNode) newGraphNodes.push(graphNode);
+
             if (
                 content[i].type.startsWith("topic") ||
                 content[i].type.startsWith("template")
@@ -81,7 +101,15 @@ export function useDocumentViewModel(documentId: string): DocumentViewModel {
                 if (editNode) newEditNodes.push(editNode);
             }
         }
-        setGraphNodes(newGraphNodes);
+
+        setGraphNodes([
+            {
+                id: "root",
+                pid: "root",
+                label: "root",
+            },
+            ...newGraphNodes,
+        ]);
         setEditNodes(newEditNodes);
     }, [document, bindDocument]);
 
@@ -133,21 +161,19 @@ export function useDocumentViewModel(documentId: string): DocumentViewModel {
         return editNode;
     };
 
-    const newGraphNode = (content: JsonObject) => {
+    const newGraphNode = (content: JsonObject, lastTopicId?: string) => {
         if (content.type.startsWith("topic")) {
-            const graphNode = {
+            return {
                 id: content.attrs.id,
-                pid: content.attrs.documentId,
+                pid: "root",
                 label: content.attrs.name,
             };
-            return graphNode;
         } else if (content.type.startsWith("template")) {
-            const graphNode = {
+            return {
                 id: content.attrs.id,
-                pid: content.attrs.topicId,
+                pid: lastTopicId || content.attrs.topicId,
                 label: content.attrs.name,
             };
-            return graphNode;
         }
     };
 

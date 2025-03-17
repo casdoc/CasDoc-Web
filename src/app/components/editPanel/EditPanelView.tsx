@@ -51,6 +51,12 @@ const EditPanelView = ({
         setIsMounted(true);
     }, []);
 
+    useEffect(() => {
+        if (!node) {
+            selectNode(null);
+        }
+    }, [node, selectNode]);
+
     const handleNodeNameChange = (
         e: React.ChangeEvent<HTMLTextAreaElement>
     ) => {
@@ -100,7 +106,7 @@ const EditPanelView = ({
 
     return (
         <div
-            className={`fixed top-0 right-0 mt-14 h-screen w-1/3 bg-gray-50 shadow-lg p-4 border-l border-gray-300 transform transition-transform duration-500 ${
+            className={`fixed top-0 right-0 pt-20 h-screen w-1/3 bg-gray-50 shadow-lg p-4 border-l border-gray-300 transform transition-transform duration-500 ${
                 isMounted
                     ? selectedNode
                         ? "translate-x-0"

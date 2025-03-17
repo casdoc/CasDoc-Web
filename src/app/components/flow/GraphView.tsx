@@ -147,8 +147,14 @@ const GraphView = ({ docMode, graphNodes, graphViewModel }: GraphViewProps) => {
             const node = nodes.find((n) => n.id === selectedNode);
             if (!node) return;
 
-            const x = node.position.x + 280;
-            const y = node.position.y / 2;
+            let x = node.position.x + 280;
+            let y = node.position.y / 2;
+            if (node.measured.width) {
+                x += node.measured.width / 2;
+            }
+            if (node.measured.height) {
+                y += node.measured.height / 2;
+            }
             const zoom = 1.1;
 
             setCenter(x, y, { zoom, duration: 500 });

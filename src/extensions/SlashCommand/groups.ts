@@ -19,7 +19,7 @@ export const GROUPS: Group[] = [
                             type: "topic",
                             attrs: {
                                 documentId: "default-document",
-                                id: "test-topic-1",
+                                id: uuidv4(),
                                 name: "Data schema",
                             },
                         })
