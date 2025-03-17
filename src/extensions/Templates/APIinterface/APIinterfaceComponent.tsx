@@ -4,35 +4,53 @@ import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext"
 import { useEffect, useState } from "react";
 import { useDocContext } from "@/app/viewModels/context/DocContext";
 
-interface Field {
+interface Parameters {
     name: string;
     type: string;
+    required: boolean;
     description: string;
 }
 
-const DataSchemaComponent: React.FC<NodeViewProps> = ({ node, selected }) => {
+const APIinterfaceComponent: React.FC<NodeViewProps> = ({ node, selected }) => {
     const { id, config: initConfig, fields: initFields } = node.attrs;
+
     const { selectedNode, selectNode } = useNodeSelection();
     const isSelected = selectedNode === id;
     const [config, setConfig] = useState(initConfig || {});
-    const [fields, setFields] = useState<Field[]>(initFields || []);
+    const [fields, setFields] = useState<Parameters[]>(initFields || []);
     const { document } = useDocContext();
 
     useEffect(() => {
-        console.debug("document", document);
         if (!document) return;
         const topicData = document.getTopicById(id);
-        console.debug("topicData", topicData);
-        if (topicData && topicData.config !== config) {
+        if (!topicData) return;
+        if (topicData.config !== config) {
             setConfig(topicData.config);
         }
-        if (topicData && topicData.fields !== fields) {
+        if (topicData.fields !== fields) {
             setFields(topicData.fields);
         }
-    }, [document, id, config, fields]);
+    }, [document, id, fields, config]);
 
     const handleClick = () => {
         selectNode(isSelected ? null : id);
+    };
+
+    const getMethodColor = (method?: string): string => {
+        switch (method?.toUpperCase()) {
+            case "GET":
+                return "bg-green-500";
+            case "POST":
+                return "bg-blue-500";
+            case "PUT":
+                return "bg-yellow-500";
+            case "DELETE":
+                return "bg-red-500";
+            case "PATCH":
+                return "bg-purple-500";
+            default:
+                return "bg-gray-400";
+        }
     };
 
     return (
@@ -47,25 +65,32 @@ const DataSchemaComponent: React.FC<NodeViewProps> = ({ node, selected }) => {
             onClick={handleClick}
         >
             <div className="pl-4">
-                <div className="flex justify-between">
-                    <h2 className="text-xl font-bold text-indigo-700">
-                        {config.name || "Schema Name"}
-                    </h2>
-                    <div className="flex items-center mt-1 mr-3">
-                        <span className="px-2 py-1 text-xs bg-gray-100 rounded-md text-gray-700">
-                            {config.type || "Schema Type"}
-                        </span>
-                    </div>
+                <div className="flex items-center pb-2">
+                    <span
+                        className={`px-2 py-1 text-xs rounded-md text-white font-bold mr-2 ${getMethodColor(
+                            config.method
+                        )}`}
+                    >
+                        {config.method?.toUpperCase() || "METHOD"}
+                    </span>
+                    <span className="text-xl font-bold text-indigo-700">
+                        {config.name || "API name"}
+                    </span>
                 </div>
-                <p className="mt-0 text-sm text-gray-600">
-                    {config.description || "Schema Description"}
-                </p>
+                <div>
+                    <p className="m-0 text-sm text-gray-600">
+                        {config.description}
+                    </p>
+                    <p className="m-0 py-2 text-sm text-black font-semibold">
+                        URI : {config.uri}
+                    </p>
+                </div>
             </div>
 
             <div className="ml-8 overflow-hidden">
                 {fields && fields.length > 0 ? (
                     <div className="divide-y divide-gray-100">
-                        {fields.map((field: Field, index: number) => {
+                        {fields.map((field: Parameters, index: number) => {
                             if (
                                 field.name.trim() === "" &&
                                 field.type.trim() === "" &&
@@ -78,16 +103,23 @@ const DataSchemaComponent: React.FC<NodeViewProps> = ({ node, selected }) => {
                                     key={index}
                                     className="py-2 px-4 hover:bg-gray-50 transition-colors"
                                 >
-                                    <div className="flex justify-between items-center">
-                                        <span className="font-medium text-gray-800">
-                                            {field.name}
-                                        </span>
-                                        <span className="text-xs bg-gray-100 px-2 py-1 rounded text-gray-600">
+                                    <div className="flex justify-between items-center m-0 p-0">
+                                        <div className="flex items-center">
+                                            <span className="font-medium text-gray-800">
+                                                {field.name}
+                                            </span>
+                                            {field.required && (
+                                                <span className="text-2xl text-red-500 rounded">
+                                                    *
+                                                </span>
+                                            )}
+                                        </div>
+                                        <span className="text-xs bg-gray-100 px-1 py-1 rounded text-gray-600 mr-2">
                                             {field.type}
                                         </span>
                                     </div>
                                     {field.description && (
-                                        <p className="mt-0 text-sm text-gray-500">
+                                        <p className="m-0 p-0 text-sm text-gray-500">
                                             {field.description}
                                         </p>
                                     )}
@@ -105,4 +137,4 @@ const DataSchemaComponent: React.FC<NodeViewProps> = ({ node, selected }) => {
     );
 };
 
-export default DataSchemaComponent;
+export default APIinterfaceComponent;

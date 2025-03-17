@@ -2,6 +2,8 @@
 
 export { TopicExtension } from "./Topics/TopicExtension";
 export { DataSchemaExtension } from "./Templates/DataSchema/DataSchemaExtension";
+export { APIinterfaceExtension } from "./Templates/APIinterface/APIinterfaceExtension";
+
 export { Heading } from "./Heading";
 export { Link } from "./Link";
 export { StarterKit } from "@tiptap/starter-kit";

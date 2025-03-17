@@ -6,11 +6,12 @@ import {
     ConnectionEdge,
     GraphViewModel,
 } from "@/app/viewModels/GraphViewModel";
-import { DocumentViewModel, EditNode } from "@/app/viewModels/useDocument";
+import { DocumentViewModel } from "@/app/viewModels/useDocument";
 import { TextArea } from "@radix-ui/themes";
 import EditPanelHeader from "./EditPanelHeader";
 import EditPanelRelationship from "./EditPanelRelationship";
 import EditPanelFields from "./EditPanelFields";
+import { JsonObject } from "@/app/models/types/JsonObject";
 
 interface EditPanelProps {
     documentViewModel: DocumentViewModel;
@@ -25,7 +26,7 @@ const EditPanelView = ({
     const { searchBySourceId } = graphViewModel;
     const { updateEditNodeById, editNodes } = documentViewModel;
 
-    const [node, setNode] = useState<EditNode>();
+    const [node, setNode] = useState<JsonObject>();
     const [isMounted, setIsMounted] = useState(false);
     const [connectionEdges, setConnectionEdges] = useState<ConnectionEdge[]>(
         []
@@ -57,15 +58,6 @@ const EditPanelView = ({
         }
     }, [node, selectNode]);
 
-    const handleNodeNameChange = (
-        e: React.ChangeEvent<HTMLTextAreaElement>
-    ) => {
-        if (!node) return;
-        const updatedNode: EditNode = { ...node, name: e.target.value };
-        setNode(updatedNode);
-        updateEditNodeById(updatedNode.id, { name: updatedNode.name });
-    };
-
     const handleFieldChange = (
         e: React.ChangeEvent<HTMLTextAreaElement>,
         index: number,
@@ -79,9 +71,25 @@ const EditPanelView = ({
             [key]: e.target.value,
         };
 
-        const updatedNode: EditNode = { ...node, fields: newFields };
+        const updatedNode: JsonObject = { ...node, fields: newFields };
         setNode(updatedNode);
         updateEditNodeById(updatedNode.id, { fields: newFields });
+    };
+
+    const handleConfigChange = (
+        e: React.ChangeEvent<HTMLTextAreaElement>,
+        key: string
+    ) => {
+        if (!node) return;
+
+        const updatedConfig = {
+            ...node.config,
+            [key]: e.target.value,
+        };
+
+        const updatedNode: JsonObject = { ...node, config: updatedConfig };
+        setNode(updatedNode);
+        updateEditNodeById(updatedNode.id, { config: updatedConfig });
     };
 
     const handleAddField = () => {
@@ -89,7 +97,7 @@ const EditPanelView = ({
         const newFields = [...(node.fields ?? [])];
         newFields.push({ name: "", description: "", type: "" });
 
-        const updatedNode: EditNode = { ...node, fields: newFields };
+        const updatedNode: JsonObject = { ...node, fields: newFields };
         setNode(updatedNode);
         updateEditNodeById(updatedNode.id, { fields: newFields });
     };
@@ -99,7 +107,7 @@ const EditPanelView = ({
         const newFields = [...(node.fields ?? [])];
         newFields.splice(index, 1);
 
-        const updatedNode: EditNode = { ...node, fields: newFields };
+        const updatedNode: JsonObject = { ...node, fields: newFields };
         setNode(updatedNode);
         updateEditNodeById(updatedNode.id, { fields: newFields });
     };
@@ -126,18 +134,43 @@ const EditPanelView = ({
                             <span className="font-semibold">ID:</span>{" "}
                             {selectedNode}
                         </p>
-                        <label className="text-sm text-gray-500 block mb-1 pl-1">
-                            Node Name
-                        </label>
-                        <TextArea
-                            size="2"
-                            resize="none"
-                            radius="large"
-                            placeholder="Write something..."
-                            className="resize-none bg-white p-2 text-sm w-full"
-                            value={node?.name ?? ""}
-                            onChange={handleNodeNameChange}
-                        />
+                        {node?.config && Object.keys(node.config).length > 0 ? (
+                            <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                                {Object.entries(node.config).map(
+                                    ([key, value]) => (
+                                        <div
+                                            key={key}
+                                            className="flex flex-col space-y-1"
+                                        >
+                                            <label
+                                                className="text-sm text-gray-600 font-medium truncate"
+                                                title={key}
+                                            >
+                                                {key}
+                                            </label>
+                                            <TextArea
+                                                size="2"
+                                                resize="none"
+                                                radius="medium"
+                                                className="resize-none bg-white p-2 text-sm w-full border border-gray-300 rounded-md focus:ring focus:ring-indigo-200"
+                                                value={
+                                                    value !== undefined
+                                                        ? String(value)
+                                                        : ""
+                                                }
+                                                onChange={(e) =>
+                                                    handleConfigChange(e, key)
+                                                }
+                                            />
+                                        </div>
+                                    )
+                                )}
+                            </div>
+                        ) : (
+                            <p className="text-gray-500 text-sm">
+                                No config fields
+                            </p>
+                        )}
                     </div>
                     {node?.type && node?.type.startsWith("template") && (
                         <div className="bg-white border border-gray-200 rounded-lg p-4 mr-4 shadow">
