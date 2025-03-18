@@ -88,7 +88,7 @@ export const GROUPS: Group[] = [
                                     method: "GET",
                                     description:
                                         "This is a api interface description",
-                                    uri: "/api/v1/demo",
+                                    endPoint: "/api/v1/demo",
                                 },
                                 fields: [
                                     {

@@ -1,7 +1,7 @@
 import ExtensionKit from "@/extensions/ExtensionKit";
-import { EditorOptions, useEditor } from "@tiptap/react";
-import { JsonObject } from "@/app/models/types/JsonObject";
+import { Editor, EditorOptions, useEditor } from "@tiptap/react";
 import { Document } from "@/app/models/entity/Document";
+import { useCallback, useEffect, useRef } from "react";
 
 interface BlockEditorProps {
     document?: Document;
@@ -13,6 +13,22 @@ export const useBlockEditor = ({
     updateDocument,
     ...editorOptions
 }: BlockEditorProps & Partial<Omit<EditorOptions, "extensions">>) => {
+    const isInternalUpdate = useRef(false);
+    const onUpdate = useCallback(
+        ({ editor }: { editor: Editor }) => {
+            isInternalUpdate.current = true;
+            const updatedContent = editor.getJSON().content;
+            if (document && updatedContent) {
+                document.setAllContent(updatedContent);
+                updateDocument(document);
+            }
+            //next tick to avoid state update in render
+            setTimeout(() => {
+                isInternalUpdate.current = false;
+            }, 0);
+        },
+        [document, updateDocument]
+    );
     const editor = useEditor({
         ...editorOptions,
         autofocus: true,
@@ -26,11 +42,7 @@ export const useBlockEditor = ({
                 spellcheck: "false",
             },
         },
-        onUpdate({ editor }) {
-            const updatedContent = editor.getJSON().content as JsonObject[];
-            document?.setAllContent(updatedContent);
-            if (document) updateDocument(document);
-        },
+        onUpdate: onUpdate,
         onCreate({ editor }) {
             // Only set content if editor is empty or if document has content
             if (
@@ -47,6 +59,14 @@ export const useBlockEditor = ({
             }
         },
     });
+    useEffect(() => {
+        if (document && editor && !isInternalUpdate.current) {
+            editor.commands.setContent(
+                { type: "doc", content: document.getContent() },
+                false
+            );
+        }
+    }, [document, editor]);
 
     return { editor };
 };

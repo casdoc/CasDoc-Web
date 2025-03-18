@@ -1,8 +1,6 @@
 import { NodeViewWrapper } from "@tiptap/react";
 import { NodeViewProps } from "@tiptap/core";
 import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext";
-import { useEffect, useState } from "react";
-import { useDocContext } from "@/app/viewModels/context/DocContext";
 
 interface Field {
     name: string;
@@ -11,25 +9,9 @@ interface Field {
 }
 
 const DataSchemaComponent: React.FC<NodeViewProps> = ({ node, selected }) => {
-    const { id, config: initConfig, fields: initFields } = node.attrs;
+    const { id, config, fields } = node.attrs;
     const { selectedNode, selectNode } = useNodeSelection();
     const isSelected = selectedNode === id;
-    const [config, setConfig] = useState(initConfig || {});
-    const [fields, setFields] = useState<Field[]>(initFields || []);
-    const { document } = useDocContext();
-
-    useEffect(() => {
-        console.debug("document", document);
-        if (!document) return;
-        const topicData = document.getTopicById(id);
-        console.debug("topicData", topicData);
-        if (topicData && topicData.config !== config) {
-            setConfig(topicData.config);
-        }
-        if (topicData && topicData.fields !== fields) {
-            setFields(topicData.fields);
-        }
-    }, [document, id, config, fields]);
 
     const handleClick = () => {
         selectNode(isSelected ? null : id);

@@ -1,8 +1,6 @@
 import { NodeViewWrapper } from "@tiptap/react";
 import { NodeViewProps } from "@tiptap/core";
 import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext";
-import { useEffect, useState } from "react";
-import { useDocContext } from "@/app/viewModels/context/DocContext";
 
 interface Parameters {
     name: string;
@@ -12,25 +10,10 @@ interface Parameters {
 }
 
 const APIinterfaceComponent: React.FC<NodeViewProps> = ({ node, selected }) => {
-    const { id, config: initConfig, fields: initFields } = node.attrs;
+    const { id, config, fields } = node.attrs;
 
     const { selectedNode, selectNode } = useNodeSelection();
     const isSelected = selectedNode === id;
-    const [config, setConfig] = useState(initConfig || {});
-    const [fields, setFields] = useState<Parameters[]>(initFields || []);
-    const { document } = useDocContext();
-
-    useEffect(() => {
-        if (!document) return;
-        const topicData = document.getTopicById(id);
-        if (!topicData) return;
-        if (topicData.config !== config) {
-            setConfig(topicData.config);
-        }
-        if (topicData.fields !== fields) {
-            setFields(topicData.fields);
-        }
-    }, [document, id, fields, config]);
 
     const handleClick = () => {
         selectNode(isSelected ? null : id);
@@ -82,7 +65,7 @@ const APIinterfaceComponent: React.FC<NodeViewProps> = ({ node, selected }) => {
                         {config.description}
                     </p>
                     <p className="m-0 py-2 text-sm text-black font-semibold">
-                        URI : {config.uri}
+                        End Point : {config.endpoint}
                     </p>
                 </div>
             </div>
