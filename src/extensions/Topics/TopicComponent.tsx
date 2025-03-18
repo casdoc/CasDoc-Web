@@ -3,8 +3,8 @@ import { NodeViewWrapper } from "@tiptap/react";
 import { NodeViewProps } from "@tiptap/core";
 import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext";
 
-export const TopicComponent: React.FC<NodeViewProps> = ({ node, selected }) => {
-    const { id, name } = node.attrs;
+const TopicComponent: React.FC<NodeViewProps> = ({ node, selected }) => {
+    const { id, config } = node.attrs;
     const { selectedNode, selectNode } = useNodeSelection();
     const isSelected = selectedNode === id;
 
@@ -14,17 +14,26 @@ export const TopicComponent: React.FC<NodeViewProps> = ({ node, selected }) => {
 
     return (
         <NodeViewWrapper
-            className={`cursor-pointer hover:bg-gray-50 p-6 border-2 rounded-lg shadow-md  bg-white ${
-                isSelected && "border-indigo-500"
-            } ${!isSelected && selected && "border-gray-500"}
+            className={`cursor-pointer hover:bg-gray-50 rounded-lg border-2 px-4 py-2 bg-white ${
+                isSelected
+                    ? "border-blue-500"
+                    : selected
+                    ? "border-gray-500"
+                    : "border-white hover:border-gray-200"
+            }
             `}
             onClick={handleClick}
         >
-            <div className=" border-l-4 border-indigo-500 pl-4">
-                <h2 className="text-2xl font-bold text-indigo-700">
-                    {name || "Topic Name"}
+            <div className="border-l-4 border-slate-400 pl-3">
+                <h2 className="text-2xl font-bold text-black m-0 px-0 pb-1">
+                    {config.name || "ss"}
                 </h2>
+                <p className="m-0 p-0 text-sm text-gray-500 font-semibold">
+                    {config.description || "dfsd"}
+                </p>
             </div>
         </NodeViewWrapper>
     );
 };
+
+export default TopicComponent;

@@ -21,7 +21,7 @@ const GuidePopup = ({ onClose }: GuidePopupProps) => {
 
     const tabs: TabContent[] = [
         {
-            image: "/guideA.png",
+            image: "/guideA.webp",
             alt: "Guideline 1",
             tittle: "Type Slash!",
             description:
@@ -29,7 +29,7 @@ const GuidePopup = ({ onClose }: GuidePopupProps) => {
             layout: "left",
         },
         {
-            image: "/guideB.png",
+            image: "/guideB.webp",
             alt: "Guideline 2",
             tittle: "Connect Them!",
             description:

@@ -7,7 +7,10 @@ export const convertDataToNodes = (data: any) => {
     return data.map((item: any) => ({
         id: `${item.id}`,
         position: defaultPosition,
-        data: { label: item.label || "empty" },
+        data: {
+            label: item.label || "empty",
+            type: item.type,
+        },
         type: "custom",
         deletable: false,
     }));

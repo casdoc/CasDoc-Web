@@ -1,9 +1,9 @@
 import { Node, mergeAttributes } from "@tiptap/core";
 import { ReactNodeViewRenderer } from "@tiptap/react";
-import { TopicComponent } from "./TopicComponent";
 import { PluginKey, Plugin } from "@tiptap/pm/state";
 import { v4 as uuidv4 } from "uuid";
 import { Slice, Fragment, Node as PMNode } from "@tiptap/pm/model";
+import TopicComponent from "./TopicComponent";
 export const TopicExtension = Node.create({
     name: "topic",
 
@@ -20,8 +20,8 @@ export const TopicExtension = Node.create({
             id: {
                 default: "test-topic-1",
             },
-            name: {
-                default: "",
+            config: {
+                default: {},
             },
         };
     },

@@ -7,10 +7,10 @@ export const GROUPS: Group[] = [
         commands: [
             {
                 name: "topic",
-                label: "topic",
+                label: "Topic",
                 iconName: "SquareLibrary",
                 aliases: ["topic"],
-                description: "topic of data schema",
+                description: "topic component",
                 action: (editor) => {
                     editor
                         .chain()
@@ -20,7 +20,10 @@ export const GROUPS: Group[] = [
                             attrs: {
                                 documentId: "default-document",
                                 id: uuidv4(),
-                                name: "Data schema",
+                                config: {
+                                    name: "Topic",
+                                    description: "This is a topic description",
+                                },
                             },
                         })
                         .run();
@@ -37,7 +40,7 @@ export const GROUPS: Group[] = [
                 label: "Data Schema",
                 iconName: "SquareLibrary",
                 aliases: ["dataSchema"],
-                description: "Data shcema topic, hover to see tempaltes",
+                description: "data schema component of templates",
                 action: (editor) => {
                     editor
                         .chain()
@@ -45,26 +48,55 @@ export const GROUPS: Group[] = [
                         .insertContent({
                             type: "template-dataSchema",
                             attrs: {
-                                topicId: uuidv4(),
+                                topicId: "root",
                                 id: uuidv4(),
-                                name: "User",
-                                type: "Object",
-                                description: "使用者資料",
+                                config: {
+                                    name: "Schema",
+                                    type: "Object",
+                                    description:
+                                        "This is a data schema description",
+                                },
+                                fields: [
+                                    {
+                                        name: "field",
+                                        type: "default",
+                                        description: "default field",
+                                    },
+                                ],
+                            },
+                        })
+                        .run();
+                },
+            },
+            {
+                name: "apiInterface",
+                label: "API Interface",
+                iconName: "SquareLibrary",
+                aliases: ["apiInterface"],
+                description: "API interface component of templates",
+                action: (editor) => {
+                    editor
+                        .chain()
+                        .focus()
+                        .insertContent({
+                            type: "template-apiInterface",
+                            attrs: {
+                                topicId: "root",
+                                id: uuidv4(),
+                                config: {
+                                    name: "API name",
+                                    method: "GET",
+                                    description:
+                                        "This is a api interface description",
+                                    endPoint: "/api/v1/demo",
+                                },
                                 fields: [
                                     {
                                         name: "id",
-                                        type: "number",
-                                        description: "使用者 ID",
-                                    },
-                                    {
-                                        name: "username",
                                         type: "string",
-                                        description: "使用者名稱",
-                                    },
-                                    {
-                                        name: "email",
-                                        type: "string",
-                                        description: "電子郵件",
+                                        required: true,
+                                        description:
+                                            "Unique identifier for the resource",
                                     },
                                 ],
                             },
