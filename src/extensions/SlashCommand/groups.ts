@@ -19,7 +19,7 @@ export const GROUPS: Group[] = [
                             type: "topic",
                             attrs: {
                                 documentId: "default-document",
-                                id: "test-topic-1",
+                                id: uuidv4(),
                                 name: "Data schema",
                             },
                         })
@@ -45,7 +45,7 @@ export const GROUPS: Group[] = [
                         .insertContent({
                             type: "template-dataSchema",
                             attrs: {
-                                topicId: "test-topic-1",
+                                topicId: uuidv4(),
                                 id: uuidv4(),
                                 name: "User",
                                 type: "Object",
