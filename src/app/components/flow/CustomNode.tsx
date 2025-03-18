@@ -18,11 +18,13 @@ function CustomNode({ id, data }: any) {
         <button
             disabled={id === "root"}
             onClick={handleClick}
-            className={`${id === "root" && "cursor-not-allowed"}`}
+            className={`${
+                id === "root" ? "cursor-not-allowed" : "hover:opacity-70"
+            }`}
         >
             <div
                 className={`px-4 py-2 shadow-md rounded-md bg-white border-2  ${
-                    isSelected ? "border-indigo-500" : "border-stone-400"
+                    isSelected ? "border-blue-500" : "border-stone-400"
                 } ${
                     data.type.startsWith("topic")
                         ? "shadow-cyan-200"
@@ -37,6 +39,7 @@ function CustomNode({ id, data }: any) {
                     <Handle
                         id="left"
                         type="target"
+                        isConnectableStart={false}
                         position={Position.Left}
                         className="rounded-none h-5 border-0 !bg-gray-400"
                     />
@@ -45,6 +48,8 @@ function CustomNode({ id, data }: any) {
                     <Handle
                         id="right"
                         type="source"
+                        isConnectableStart={data.type.startsWith("template")}
+                        isConnectableEnd={data.type.startsWith("template")}
                         position={Position.Right}
                         className="rounded-none h-5 border-0 !bg-gray-400"
                     />
