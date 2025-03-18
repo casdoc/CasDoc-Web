@@ -2,6 +2,8 @@ import ExtensionKit from "@/extensions/ExtensionKit";
 import { Editor, EditorOptions, useEditor } from "@tiptap/react";
 import { Document } from "@/app/models/entity/Document";
 import { useCallback, useEffect, useRef } from "react";
+import { useNodeSelection } from "./context/NodeSelectionContext";
+import { Extension } from "@tiptap/core";
 
 interface BlockEditorProps {
     document?: Document;
@@ -14,6 +16,23 @@ export const useBlockEditor = ({
     ...editorOptions
 }: BlockEditorProps & Partial<Omit<EditorOptions, "extensions">>) => {
     const isInternalUpdate = useRef(false);
+    const { selectNode } = useNodeSelection();
+
+    const CustomCommandWithContext = Extension.create({
+        name: "customCommandWithContext",
+        addCommands() {
+            return {
+                toggleContextValue:
+                    () =>
+                    ({}) => {
+                        const { selection } = this.editor.state;
+                        selectNode(selection.node.attrs.id);
+                        return true;
+                    },
+            };
+        },
+    });
+
     const onUpdate = useCallback(
         ({ editor }: { editor: Editor }) => {
             isInternalUpdate.current = true;
@@ -33,7 +52,7 @@ export const useBlockEditor = ({
         ...editorOptions,
         autofocus: true,
         immediatelyRender: false,
-        extensions: [...ExtensionKit()],
+        extensions: [...ExtensionKit(), CustomCommandWithContext],
         editorProps: {
             attributes: {
                 autocomplete: "off",

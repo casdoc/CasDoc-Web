@@ -36,6 +36,19 @@ export const TopicExtension = Node.create({
         return ["topic", mergeAttributes(HTMLAttributes)];
     },
 
+    addKeyboardShortcuts() {
+        return {
+            "Mod-Enter": () => {
+                const { selection } = this.editor.state;
+                this.editor.commands.toggleContextValue();
+                if (selection.node && selection.node.type.name === this.name) {
+                    return true;
+                }
+                return false;
+            },
+        };
+    },
+
     addNodeView() {
         return ReactNodeViewRenderer(TopicComponent, {
             as: "div",

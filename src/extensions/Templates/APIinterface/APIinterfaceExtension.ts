@@ -43,6 +43,19 @@ export const APIinterfaceExtension = Node.create({
         return ["api-interface", mergeAttributes(HTMLAttributes)];
     },
 
+    addKeyboardShortcuts() {
+        return {
+            "Mod-Enter": () => {
+                const { selection } = this.editor.state;
+                this.editor.commands.toggleContextValue();
+                if (selection.node && selection.node.type.name === this.name) {
+                    return true;
+                }
+                return false;
+            },
+        };
+    },
+
     addNodeView() {
         return ReactNodeViewRenderer(APIinterfaceComponent);
     },
