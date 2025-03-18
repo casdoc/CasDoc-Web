@@ -19,7 +19,7 @@ export const TopicExtension = Node.create({
                 default: "test-topic-1",
             },
             config: {
-                defauilt: {},
+                default: {},
             },
         };
     },

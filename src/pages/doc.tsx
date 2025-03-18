@@ -6,16 +6,11 @@ import EditPanel from "@/app/components/editPanel/EditPanelView";
 import { NodeSelectionProvider } from "@/app/viewModels/context/NodeSelectionContext";
 import { useDocumentViewModel } from "@/app/viewModels/useDocument";
 import { useGraphViewModel } from "@/app/viewModels/GraphViewModel";
-import { DocProvider } from "@/app/viewModels/context/DocContext";
 
 export default function Doc() {
     const documentId = "default-document";
 
-    return (
-        <DocProvider>
-            <DocumentContent documentId={documentId} />
-        </DocProvider>
-    );
+    return <DocumentContent documentId={documentId} />;
 }
 
 function DocumentContent({ documentId }: { documentId: string }) {

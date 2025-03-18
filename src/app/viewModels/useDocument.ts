@@ -3,8 +3,6 @@ import { Document } from "@/app/models/entity/Document";
 import { DocumentService } from "@/app/models/services/DocumentService";
 import { DocumentType } from "@/app/models/enum/DocumentType";
 import { JsonObject } from "../models/types/JsonObject";
-import { useDocContext } from "./context/DocContext";
-
 export interface GraphNode {
     id: string;
     pid: string;
@@ -31,7 +29,6 @@ export function useDocumentViewModel(documentId: string): DocumentViewModel {
         },
     ]);
     const [editNodes, setEditNodes] = useState<Array<JsonObject>>([]);
-    const { bindDocument } = useDocContext();
 
     useEffect(() => {
         let doc = DocumentService.getDocumentById(documentId);
@@ -69,7 +66,6 @@ export function useDocumentViewModel(documentId: string): DocumentViewModel {
             ]);
             return;
         }
-        bindDocument(document);
         const firstChild = content[0];
 
         if (!firstChild || !firstChild?.content) {
@@ -109,7 +105,7 @@ export function useDocumentViewModel(documentId: string): DocumentViewModel {
             ...newGraphNodes,
         ]);
         setEditNodes(newEditNodes);
-    }, [document, bindDocument]);
+    }, [document]);
 
     const updateDocument = (document: Document) => {
         DocumentService.saveDocument(document);
