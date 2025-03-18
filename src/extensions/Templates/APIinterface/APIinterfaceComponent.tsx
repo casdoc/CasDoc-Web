@@ -57,7 +57,7 @@ const APIinterfaceComponent: React.FC<NodeViewProps> = ({ node, selected }) => {
         <NodeViewWrapper
             className={`ml-8 cursor-pointer hover:bg-gray-50 rounded-lg pt-2 border-2 bg-white ${
                 isSelected
-                    ? "border-indigo-500"
+                    ? "border-blue-500"
                     : selected
                     ? "border-gray-500"
                     : "border-white hover:border-gray-200"
@@ -73,7 +73,7 @@ const APIinterfaceComponent: React.FC<NodeViewProps> = ({ node, selected }) => {
                     >
                         {config.method?.toUpperCase() || "METHOD"}
                     </span>
-                    <span className="text-xl font-bold text-indigo-700">
+                    <span className="text-xl font-bold text-black">
                         {config.name || "API name"}
                     </span>
                 </div>

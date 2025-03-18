@@ -39,7 +39,7 @@ const DataSchemaComponent: React.FC<NodeViewProps> = ({ node, selected }) => {
         <NodeViewWrapper
             className={`ml-8 cursor-pointer hover:bg-gray-50 rounded-lg pt-2 border-2 bg-white ${
                 isSelected
-                    ? "border-indigo-500"
+                    ? "border-blue-500"
                     : selected
                     ? "border-gray-500"
                     : "border-white hover:border-gray-200"
@@ -48,7 +48,7 @@ const DataSchemaComponent: React.FC<NodeViewProps> = ({ node, selected }) => {
         >
             <div className="pl-4">
                 <div className="flex justify-between">
-                    <h2 className="text-xl font-bold text-indigo-700">
+                    <h2 className="text-xl font-bold text-black">
                         {config.name || "Schema Name"}
                     </h2>
                     <div className="flex items-center mt-1 mr-3">
