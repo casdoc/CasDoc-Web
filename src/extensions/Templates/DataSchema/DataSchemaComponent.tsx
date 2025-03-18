@@ -9,10 +9,10 @@ interface Field {
 }
 
 const DataSchemaComponent: React.FC<NodeViewProps> = ({ node, selected }) => {
-    const { id, config, fields } = node.attrs;
+    const { id, config } = node.attrs;
     const { selectedNode, selectNode } = useNodeSelection();
     const isSelected = selectedNode === id;
-
+    const fields = config?.fields || [];
     const handleClick = () => {
         selectNode(isSelected ? null : id);
     };

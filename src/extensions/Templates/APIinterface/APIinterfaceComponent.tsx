@@ -10,7 +10,8 @@ interface Parameters {
 }
 
 const APIinterfaceComponent: React.FC<NodeViewProps> = ({ node, selected }) => {
-    const { id, config, fields } = node.attrs;
+    const { id, config } = node.attrs;
+    const fields = config?.fields || [];
 
     const { selectedNode, selectNode } = useNodeSelection();
     const isSelected = selectedNode === id;
@@ -65,7 +66,7 @@ const APIinterfaceComponent: React.FC<NodeViewProps> = ({ node, selected }) => {
                         {config.description}
                     </p>
                     <p className="m-0 py-2 text-sm text-black font-semibold">
-                        End Point : {config.endpoint}
+                        End Point : {config.endPoint}
                     </p>
                 </div>
             </div>
