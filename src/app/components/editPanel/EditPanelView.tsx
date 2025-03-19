@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext";
 import {
     ConnectionEdge,
@@ -32,6 +32,60 @@ const EditPanelView = ({
         []
     );
 
+    const prevSelectState = useRef(selectedNode);
+    useEffect(() => {
+        console.log("current:", prevSelectState.current);
+        console.log("selectedNode", selectedNode);
+        const handleKeyDown = (event: KeyboardEvent) => {
+            event.preventDefault();
+            event.stopPropagation();
+            if (
+                (event.metaKey || event.ctrlKey) &&
+                event.key === "Enter" &&
+                prevSelectState.current === selectedNode
+            ) {
+                selectNode(null);
+            }
+            prevSelectState.current = selectedNode;
+        };
+
+        window.addEventListener("keydown", handleKeyDown);
+        return () => {
+            window.removeEventListener("keydown", handleKeyDown);
+        };
+    }, [selectNode, selectedNode]);
+
+    useEffect(() => {
+        const handleTabKey = (event: KeyboardEvent) => {
+            if (event.key === "Tab") {
+                event.preventDefault();
+                const textareas = Array.from(
+                    document.querySelectorAll("textarea")
+                );
+                const activeElement =
+                    document.activeElement as HTMLTextAreaElement;
+                const currentIndex = textareas.indexOf(activeElement);
+
+                if (currentIndex !== -1) {
+                    let nextIndex;
+                    if (event.shiftKey) {
+                        nextIndex =
+                            (currentIndex - 1 + textareas.length) %
+                            textareas.length;
+                    } else {
+                        nextIndex = (currentIndex + 1) % textareas.length;
+                    }
+                    (textareas[nextIndex] as HTMLTextAreaElement)?.focus();
+                }
+            }
+        };
+
+        window.addEventListener("keydown", handleTabKey);
+        return () => {
+            window.removeEventListener("keydown", handleTabKey);
+        };
+    }, []);
+
     const findNodeById = useCallback(
         (id: string) => {
             return editNodes.find((item) => String(item.id) === id);
@@ -51,6 +105,15 @@ const EditPanelView = ({
     useEffect(() => {
         setIsMounted(true);
     }, []);
+
+    useEffect(() => {
+        if (selectedNode) {
+            setTimeout(() => {
+                const firstTextarea = document.querySelector("textarea");
+                firstTextarea?.focus();
+            }, 0);
+        }
+    }, [selectedNode]);
 
     const handleFieldChange = (
         e: React.ChangeEvent<HTMLTextAreaElement>,

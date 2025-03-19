@@ -18,7 +18,6 @@ export const useBlockEditor = ({
 }: BlockEditorProps) => {
     const isInternalUpdate = useRef(false);
     const { selectedNode, selectNode } = useNodeSelection();
-    const selectedRef = useRef(selectedNode || null);
 
     console.log("in useBlockEditor, selectedNode:", selectedNode);
     const CustomCommandWithContext = Extension.create({
@@ -30,15 +29,8 @@ export const useBlockEditor = ({
                     ({}) => {
                         const { selection } = this.editor.state;
                         if (selection instanceof NodeSelection) {
-                            if (selectedRef.current) {
-                                selectedRef.current = null;
-                                selectNode(null);
-                            } else {
-                                selectedRef.current = selection.node.attrs.id;
-                                selectNode(selection.node.attrs.id);
-                            }
+                            selectNode(selection.node.attrs.id);
                         }
-
                         return true;
                     },
             };
