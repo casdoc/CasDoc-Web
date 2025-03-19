@@ -55,14 +55,14 @@ export const GROUPS: Group[] = [
                                     type: "Object",
                                     description:
                                         "This is a data schema description",
+                                    fields: [
+                                        {
+                                            name: "field",
+                                            type: "default",
+                                            description: "default field",
+                                        },
+                                    ],
                                 },
-                                fields: [
-                                    {
-                                        name: "field",
-                                        type: "default",
-                                        description: "default field",
-                                    },
-                                ],
                             },
                         })
                         .run();
@@ -89,16 +89,16 @@ export const GROUPS: Group[] = [
                                     description:
                                         "This is a api interface description",
                                     endPoint: "/api/v1/demo",
+                                    fields: [
+                                        {
+                                            name: "id",
+                                            type: "string",
+                                            required: true,
+                                            description:
+                                                "Unique identifier for the resource",
+                                        },
+                                    ],
                                 },
-                                fields: [
-                                    {
-                                        name: "id",
-                                        type: "string",
-                                        required: true,
-                                        description:
-                                            "Unique identifier for the resource",
-                                    },
-                                ],
                             },
                         })
                         .run();
