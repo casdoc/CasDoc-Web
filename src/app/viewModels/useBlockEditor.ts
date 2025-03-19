@@ -4,6 +4,7 @@ import { Document } from "@/app/models/entity/Document";
 import { useCallback, useEffect, useRef } from "react";
 import { useNodeSelection } from "./context/NodeSelectionContext";
 import { Extension } from "@tiptap/core";
+import { NodeSelection } from "@tiptap/pm/state";
 
 interface BlockEditorProps {
     document?: Document;
@@ -26,7 +27,10 @@ export const useBlockEditor = ({
                     () =>
                     ({}) => {
                         const { selection } = this.editor.state;
-                        selectNode(selection.node.attrs.id);
+                        if (selection instanceof NodeSelection) {
+                            selectNode(selection.node.attrs.id);
+                        }
+
                         return true;
                     },
             };

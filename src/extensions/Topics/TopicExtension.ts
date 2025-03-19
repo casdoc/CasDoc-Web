@@ -39,12 +39,8 @@ export const TopicExtension = Node.create({
     addKeyboardShortcuts() {
         return {
             "Mod-Enter": () => {
-                const { selection } = this.editor.state;
                 this.editor.commands.toggleContextValue();
-                if (selection.node && selection.node.type.name === this.name) {
-                    return true;
-                }
-                return false;
+                return true;
             },
         };
     },
