@@ -1,5 +1,5 @@
 import ExtensionKit from "@/extensions/ExtensionKit";
-import { Editor, EditorOptions, useEditor } from "@tiptap/react";
+import { Editor, useEditor } from "@tiptap/react";
 import { Document } from "@/app/models/entity/Document";
 import { useCallback, useEffect, useRef } from "react";
 import { useNodeSelection } from "./context/NodeSelectionContext";
@@ -15,10 +15,12 @@ export const useBlockEditor = ({
     document,
     updateDocument,
     ...editorOptions
-}: BlockEditorProps & Partial<Omit<EditorOptions, "extensions">>) => {
+}: BlockEditorProps) => {
     const isInternalUpdate = useRef(false);
-    const { selectNode } = useNodeSelection();
+    const { selectedNode, selectNode } = useNodeSelection();
+    const selectedRef = useRef(selectedNode || null);
 
+    console.log("in useBlockEditor, selectedNode:", selectedNode);
     const CustomCommandWithContext = Extension.create({
         name: "customCommandWithContext",
         addCommands() {
@@ -28,7 +30,13 @@ export const useBlockEditor = ({
                     ({}) => {
                         const { selection } = this.editor.state;
                         if (selection instanceof NodeSelection) {
-                            selectNode(selection.node.attrs.id);
+                            if (selectedRef.current) {
+                                selectedRef.current = null;
+                                selectNode(null);
+                            } else {
+                                selectedRef.current = selection.node.attrs.id;
+                                selectNode(selection.node.attrs.id);
+                            }
                         }
 
                         return true;
