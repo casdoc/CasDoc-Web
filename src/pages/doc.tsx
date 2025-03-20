@@ -6,10 +6,10 @@ import EditPanel from "@/app/components/editPanel/EditPanelView";
 import { NodeSelectionProvider } from "@/app/viewModels/context/NodeSelectionContext";
 import { useDocumentViewModel } from "@/app/viewModels/useDocument";
 import { useGraphViewModel } from "@/app/viewModels/GraphViewModel";
+import ChatPopup from "@/app/components/chat/ChatPopup";
 
 export default function Doc() {
     const documentId = "default-document";
-
     return <DocumentContent documentId={documentId} />;
 }
 
@@ -28,6 +28,7 @@ function DocumentContent({ documentId }: { documentId: string }) {
                     documentViewModel={documentViewModel}
                     graphViewModel={graphViewModel}
                 />
+                <ChatPopup />
             </div>
         </NodeSelectionProvider>
     );

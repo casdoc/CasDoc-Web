@@ -37,13 +37,13 @@ const EditPanelView = ({
         console.log("current:", prevSelectState.current);
         console.log("selectedNode", selectedNode);
         const handleKeyDown = (event: KeyboardEvent) => {
-            event.preventDefault();
             event.stopPropagation();
             if (
                 (event.metaKey || event.ctrlKey) &&
                 event.key === "Enter" &&
                 prevSelectState.current === selectedNode
             ) {
+                event.preventDefault();
                 selectNode(null);
             }
             prevSelectState.current = selectedNode;
