@@ -7,11 +7,12 @@ import {
     createPasteHandlerPlugin,
     createNodeTransformer,
 } from "../../ExtensionUtils";
-
 const topicDefaultConfig = {
-    name: "Schema",
-    type: "Object",
-    description: "This is a data schema description",
+    info: {
+        name: "Schema",
+        type: "Object",
+        description: "This is a data schema description",
+    },
     fields: [
         {
             name: "field",
@@ -66,10 +67,10 @@ export const DataSchemaExtension = Node.create({
         return [
             createPasteHandlerPlugin("template-dataSchema", (node) => {
                 const transformedNode = topicTransformer(node);
-                console.debug(
-                    "Processing topic node during paste:",
-                    transformedNode.attrs.config
-                );
+                // console.debug(
+                //     "Processing topic node during paste:",
+                //     transformedNode.attrs.config
+                // );
                 return transformedNode;
             }),
         ];
