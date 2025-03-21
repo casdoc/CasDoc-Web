@@ -64,16 +64,24 @@ const EditPanelView = ({
         key: "name" | "description" | "type"
     ) => {
         if (!node) return;
-        const newFields = [...(node.fields ?? [])];
+        const newFields = [...(node.config.fields ?? [])];
 
         newFields[index] = {
             ...newFields[index],
             [key]: e.target.value,
         };
+        const updatedConfig = {
+            ...node.config,
+            fields: newFields,
+        };
 
-        const updatedNode: JsonObject = { ...node, fields: newFields };
+        const updatedNode: JsonObject = {
+            ...node,
+            config: updatedConfig,
+        };
+
         setNode(updatedNode);
-        updateEditNodeById(updatedNode.id, { fields: newFields });
+        updateEditNodeById(updatedNode.id, { config: updatedConfig });
     };
 
     const handleConfigChange = (
@@ -82,34 +90,61 @@ const EditPanelView = ({
     ) => {
         if (!node) return;
 
-        const updatedConfig = {
-            ...node.config,
+        const updatedInfo = {
+            ...(node.config.info || {}),
             [key]: e.target.value,
         };
 
-        const updatedNode: JsonObject = { ...node, config: updatedConfig };
+        const updatedConfig = {
+            ...node.config,
+            info: updatedInfo,
+        };
+
+        const updatedNode: JsonObject = {
+            ...node,
+            config: updatedConfig,
+        };
+
         setNode(updatedNode);
         updateEditNodeById(updatedNode.id, { config: updatedConfig });
     };
 
     const handleAddField = () => {
         if (!node) return;
-        const newFields = [...(node.fields ?? [])];
+        const newFields = [...(node.config.fields ?? [])];
         newFields.push({ name: "", description: "", type: "" });
 
-        const updatedNode: JsonObject = { ...node, fields: newFields };
+        const updatedConfig = {
+            ...node.config,
+            fields: newFields,
+        };
+
+        const updatedNode: JsonObject = {
+            ...node,
+            config: updatedConfig,
+        };
+
         setNode(updatedNode);
-        updateEditNodeById(updatedNode.id, { fields: newFields });
+        updateEditNodeById(updatedNode.id, { config: updatedConfig });
     };
 
     const handleRemoveField = (index: number) => {
         if (!node) return;
-        const newFields = [...(node.fields ?? [])];
+        const newFields = [...(node.config.fields ?? [])];
         newFields.splice(index, 1);
 
-        const updatedNode: JsonObject = { ...node, fields: newFields };
+        const updatedConfig = {
+            ...node.config,
+            fields: newFields,
+        };
+
+        const updatedNode: JsonObject = {
+            ...node,
+            config: updatedConfig,
+        };
+
         setNode(updatedNode);
-        updateEditNodeById(updatedNode.id, { fields: newFields });
+        updateEditNodeById(updatedNode.id, { config: updatedConfig });
     };
 
     return (
@@ -134,9 +169,10 @@ const EditPanelView = ({
                             <span className="font-semibold">ID:</span>{" "}
                             {selectedNode}
                         </p>
-                        {node?.config && Object.keys(node.config).length > 0 ? (
+                        {node?.config.info &&
+                        Object.keys(node.config.info).length > 0 ? (
                             <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-                                {Object.entries(node.config).map(
+                                {Object.entries(node.config.info).map(
                                     ([key, value]) => (
                                         <div
                                             key={key}
@@ -177,9 +213,10 @@ const EditPanelView = ({
                             <h2 className="text-lg font-semibold mb-4">
                                 Fields
                             </h2>
-                            {node?.fields && node.fields.length > 0 ? (
+                            {node?.config.fields &&
+                            node.config.fields.length > 0 ? (
                                 <EditPanelFields
-                                    fields={node.fields}
+                                    fields={node.config.fields}
                                     handleFieldChange={handleFieldChange}
                                     handleRemoveField={handleRemoveField}
                                 />
