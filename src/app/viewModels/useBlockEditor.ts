@@ -5,7 +5,6 @@ import { useCallback, useEffect, useRef } from "react";
 import { NodeSelection } from "@tiptap/pm/state";
 import { useNodeSelection } from "./context/NodeSelectionContext";
 import { Extension } from "@tiptap/core";
-import { NodeSelection } from "@tiptap/pm/state";
 
 interface BlockEditorProps {
     document?: Document;
