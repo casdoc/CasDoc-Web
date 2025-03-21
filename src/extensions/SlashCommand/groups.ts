@@ -21,8 +21,11 @@ export const GROUPS: Group[] = [
                                 documentId: "default-document",
                                 id: uuidv4(),
                                 config: {
-                                    name: "Topic",
-                                    description: "This is a topic description",
+                                    info: {
+                                        name: "Topic",
+                                        description:
+                                            "This is a topic description",
+                                    },
                                 },
                             },
                         })
