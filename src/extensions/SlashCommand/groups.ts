@@ -51,10 +51,12 @@ export const GROUPS: Group[] = [
                                 topicId: "root",
                                 id: uuidv4(),
                                 config: {
-                                    name: "Schema",
-                                    type: "Object",
-                                    description:
-                                        "This is a data schema description",
+                                    info: {
+                                        name: "Schema",
+                                        type: "Object",
+                                        description:
+                                            "This is a data schema description",
+                                    },
                                     fields: [
                                         {
                                             name: "field",
@@ -84,11 +86,13 @@ export const GROUPS: Group[] = [
                                 topicId: "root",
                                 id: uuidv4(),
                                 config: {
-                                    name: "API name",
-                                    method: "GET",
-                                    description:
-                                        "This is a api interface description",
-                                    endPoint: "/api/v1/demo",
+                                    info: {
+                                        name: "API name",
+                                        method: "GET",
+                                        description:
+                                            "This is a api interface description",
+                                        endPoint: "/api/v1/demo",
+                                    },
                                     fields: [
                                         {
                                             name: "id",

@@ -9,10 +9,12 @@ import {
 } from "../../ExtensionUtils";
 
 const topicDefaultConfig = {
-    name: "API name",
-    method: "GET",
-    description: "This is a api interface description",
-    endPoint: "/api/v1/demo",
+    info: {
+        name: "API name",
+        method: "GET",
+        description: "This is a api interface description",
+        endPoint: "/api/v1/demo",
+    },
     fields: [
         {
             name: "id",
@@ -58,6 +60,7 @@ export const APIinterfaceExtension = Node.create({
     addNodeView() {
         return ReactNodeViewRenderer(APIinterfaceComponent);
     },
+
     addProseMirrorPlugins() {
         const pasteDefaultConfig = topicDefaultConfig;
         // Use the generic node transformer with your specific config
@@ -67,10 +70,10 @@ export const APIinterfaceExtension = Node.create({
         return [
             createPasteHandlerPlugin("template-apiInterface", (node) => {
                 const transformedNode = topicTransformer(node);
-                console.debug(
-                    "Processing topic node during paste:",
-                    transformedNode.attrs.config
-                );
+                // console.debug(
+                //     "Processing topic node during paste:",
+                //     transformedNode.attrs.config
+                // );
                 return transformedNode;
             }),
         ];
