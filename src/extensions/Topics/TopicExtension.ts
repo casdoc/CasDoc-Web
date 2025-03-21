@@ -1,6 +1,16 @@
 import { Node, mergeAttributes } from "@tiptap/core";
 import { ReactNodeViewRenderer } from "@tiptap/react";
 import TopicComponent from "./TopicComponent";
+import {
+    createConfigAttribute,
+    createPasteHandlerPlugin,
+    createNodeTransformer,
+} from "../ExtensionUtils";
+
+const topicDefaultConfig = {
+    name: "Data Schema",
+    description: "This is a data schema description",
+};
 
 export const TopicExtension = Node.create({
     name: "topic",
@@ -18,9 +28,8 @@ export const TopicExtension = Node.create({
             id: {
                 default: "test-topic-1",
             },
-            config: {
-                default: {},
-            },
+            // Update the renderHTML function in your config attribute
+            config: createConfigAttribute(topicDefaultConfig),
         };
     },
 
@@ -46,9 +55,27 @@ export const TopicExtension = Node.create({
     },
 
     addNodeView() {
-        return ReactNodeViewRenderer(TopicComponent, {
-            as: "div",
-            className: "topic-node-wrapper",
-        });
+        return ReactNodeViewRenderer(TopicComponent);
+    },
+
+    addProseMirrorPlugins() {
+        const pasteDefaultConfig = {
+            name: "Schema",
+            description: "This is a data schema description",
+        };
+        // Use the generic node transformer with your specific config
+        const topicTransformer = createNodeTransformer(pasteDefaultConfig);
+
+        // Use the reusable paste handler plugin
+        return [
+            createPasteHandlerPlugin("topic", (node) => {
+                const transformedNode = topicTransformer(node);
+                console.debug(
+                    "Processing topic node during paste:",
+                    transformedNode.attrs.config
+                );
+                return transformedNode;
+            }),
+        ];
     },
 });

@@ -2,6 +2,7 @@ import ExtensionKit from "@/extensions/ExtensionKit";
 import { Editor, useEditor } from "@tiptap/react";
 import { Document } from "@/app/models/entity/Document";
 import { useCallback, useEffect, useRef } from "react";
+import { NodeSelection } from "@tiptap/pm/state";
 import { useNodeSelection } from "./context/NodeSelectionContext";
 import { Extension } from "@tiptap/core";
 import { NodeSelection } from "@tiptap/pm/state";
@@ -89,6 +90,38 @@ export const useBlockEditor = ({
                 false
             );
         }
+    }, [document, editor]);
+
+    useEffect(() => {
+        if (!editor) return;
+
+        const handleCopy = (e: ClipboardEvent) => {
+            const { selection } = editor.state;
+            // console.debug("Selection type:", selection.constructor.name);
+            // Handle NodeSelection separately to ensure content is copied
+            if (selection instanceof NodeSelection) {
+                // console.debug("Selected node id:", selection.node.attrs.id);
+                // Prevent default to handle our own copy
+                e.preventDefault();
+                // Get HTML representation of the selected node
+                const fragment = selection.content();
+                const clipboardHTML =
+                    editor.view.serializeForClipboard(fragment).dom.innerHTML;
+                // console.debug("Clipboard data:", clipboardHTML);
+                if (e.clipboardData) {
+                    e.clipboardData.setData("text/html", clipboardHTML);
+                    e.clipboardData.setData(
+                        "text/plain",
+                        selection.node.textContent
+                    );
+                }
+            }
+        };
+
+        window.addEventListener("copy", handleCopy);
+        return () => {
+            window.removeEventListener("copy", handleCopy);
+        };
     }, [document, editor]);
 
     return { editor };

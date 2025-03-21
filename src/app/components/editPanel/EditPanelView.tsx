@@ -121,16 +121,24 @@ const EditPanelView = ({
         key: "name" | "description" | "type"
     ) => {
         if (!node) return;
-        const newFields = [...(node.fields ?? [])];
+        const newFields = [...(node.config.fields ?? [])];
 
         newFields[index] = {
             ...newFields[index],
             [key]: e.target.value,
         };
+        const updatedConfig = {
+            ...node.config,
+            fields: newFields,
+        };
 
-        const updatedNode: JsonObject = { ...node, fields: newFields };
+        const updatedNode: JsonObject = {
+            ...node,
+            config: updatedConfig,
+        };
+
         setNode(updatedNode);
-        updateEditNodeById(updatedNode.id, { fields: newFields });
+        updateEditNodeById(updatedNode.id, { config: updatedConfig });
     };
 
     const handleConfigChange = (
@@ -139,34 +147,61 @@ const EditPanelView = ({
     ) => {
         if (!node) return;
 
-        const updatedConfig = {
-            ...node.config,
+        const updatedInfo = {
+            ...(node.config.info || {}),
             [key]: e.target.value,
         };
 
-        const updatedNode: JsonObject = { ...node, config: updatedConfig };
+        const updatedConfig = {
+            ...node.config,
+            info: updatedInfo,
+        };
+
+        const updatedNode: JsonObject = {
+            ...node,
+            config: updatedConfig,
+        };
+
         setNode(updatedNode);
         updateEditNodeById(updatedNode.id, { config: updatedConfig });
     };
 
     const handleAddField = () => {
         if (!node) return;
-        const newFields = [...(node.fields ?? [])];
+        const newFields = [...(node.config.fields ?? [])];
         newFields.push({ name: "", description: "", type: "" });
 
-        const updatedNode: JsonObject = { ...node, fields: newFields };
+        const updatedConfig = {
+            ...node.config,
+            fields: newFields,
+        };
+
+        const updatedNode: JsonObject = {
+            ...node,
+            config: updatedConfig,
+        };
+
         setNode(updatedNode);
-        updateEditNodeById(updatedNode.id, { fields: newFields });
+        updateEditNodeById(updatedNode.id, { config: updatedConfig });
     };
 
     const handleRemoveField = (index: number) => {
         if (!node) return;
-        const newFields = [...(node.fields ?? [])];
+        const newFields = [...(node.config.fields ?? [])];
         newFields.splice(index, 1);
 
-        const updatedNode: JsonObject = { ...node, fields: newFields };
+        const updatedConfig = {
+            ...node.config,
+            fields: newFields,
+        };
+
+        const updatedNode: JsonObject = {
+            ...node,
+            config: updatedConfig,
+        };
+
         setNode(updatedNode);
-        updateEditNodeById(updatedNode.id, { fields: newFields });
+        updateEditNodeById(updatedNode.id, { config: updatedConfig });
     };
 
     return (
@@ -182,19 +217,62 @@ const EditPanelView = ({
             <EditPanelHeader onClose={() => selectNode(null)} />
             {selectedNode ? (
                 <div className="mt-4 flex flex-col h-full space-y-4 overflow-auto pb-32">
-                    <EditPanelInfo
-                        selectedNode={selectedNode}
-                        config={node?.config}
-                        handleConfigChange={handleConfigChange}
-                    />
+                    <div className="bg-white border border-gray-200 rounded-lg p-4 mr-4 shadow">
+                        <h2 className="text-lg font-semibold mb-4">
+                            Basic Info
+                        </h2>
+                        <p className="text-sm text-gray-500 mb-4">
+                            <span className="font-semibold">ID:</span>{" "}
+                            {selectedNode}
+                        </p>
+                        {node?.config.info &&
+                        Object.keys(node.config.info).length > 0 ? (
+                            <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                                {Object.entries(node.config.info).map(
+                                    ([key, value]) => (
+                                        <div
+                                            key={key}
+                                            className="flex flex-col space-y-1"
+                                        >
+                                            <label
+                                                className="text-sm text-gray-600 font-medium truncate"
+                                                title={key}
+                                            >
+                                                {key}
+                                            </label>
+                                            <TextArea
+                                                size="2"
+                                                resize="none"
+                                                radius="medium"
+                                                className="resize-none bg-white p-2 text-sm w-full border border-gray-300 rounded-md focus:ring focus:ring-indigo-200"
+                                                value={
+                                                    value !== undefined
+                                                        ? String(value)
+                                                        : ""
+                                                }
+                                                onChange={(e) =>
+                                                    handleConfigChange(e, key)
+                                                }
+                                            />
+                                        </div>
+                                    )
+                                )}
+                            </div>
+                        ) : (
+                            <p className="text-gray-500 text-sm">
+                                No config fields
+                            </p>
+                        )}
+                    </div>
                     {node?.type && node?.type.startsWith("template") && (
                         <div className="bg-white border border-gray-200 rounded-lg p-4 mr-4 shadow">
                             <h2 className="text-lg font-semibold mb-4">
                                 Fields
                             </h2>
-                            {node?.fields && node.fields.length > 0 ? (
+                            {node?.config.fields &&
+                            node.config.fields.length > 0 ? (
                                 <EditPanelFields
-                                    fields={node.fields}
+                                    fields={node.config.fields}
                                     handleFieldChange={handleFieldChange}
                                     handleRemoveField={handleRemoveField}
                                 />

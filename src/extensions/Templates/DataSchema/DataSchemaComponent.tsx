@@ -9,10 +9,11 @@ interface Field {
 }
 
 const DataSchemaComponent: React.FC<NodeViewProps> = ({ node, selected }) => {
-    const { id, config, fields } = node.attrs;
+    const { id, config } = node.attrs;
     const { selectedNode, selectNode } = useNodeSelection();
     const isSelected = selectedNode === id;
-
+    const fields = config?.fields || [];
+    const info = config?.info || {};
     const handleClick = () => {
         selectNode(isSelected ? null : id);
     };
@@ -31,16 +32,16 @@ const DataSchemaComponent: React.FC<NodeViewProps> = ({ node, selected }) => {
             <div className="pl-4">
                 <div className="flex justify-between">
                     <h2 className="text-xl font-bold text-black">
-                        {config.name || "Schema Name"}
+                        {info.name || "Schema Name"}
                     </h2>
                     <div className="flex items-center mt-1 mr-3">
                         <span className="px-2 py-1 text-xs bg-gray-100 rounded-md text-gray-700">
-                            {config.type || "Schema Type"}
+                            {info.type || "Schema Type"}
                         </span>
                     </div>
                 </div>
                 <p className="mt-0 text-sm text-gray-600">
-                    {config.description || "Schema Description"}
+                    {info.description || "Schema Description"}
                 </p>
             </div>
 
@@ -56,17 +57,16 @@ const DataSchemaComponent: React.FC<NodeViewProps> = ({ node, selected }) => {
                                 return;
                             }
                             return (
-                                <div
-                                    key={index}
-                                    className="py-2 px-4 hover:bg-gray-50 transition-colors"
-                                >
+                                <div key={index} className="py-2 px-4">
                                     <div className="flex justify-between items-center">
                                         <span className="font-medium text-gray-800">
                                             {field.name}
                                         </span>
-                                        <span className="text-xs bg-gray-100 px-2 py-1 rounded text-gray-600">
-                                            {field.type}
-                                        </span>
+                                        {field.type && (
+                                            <span className="text-xs bg-gray-100 px-2 py-1 rounded text-gray-600">
+                                                {field.type}
+                                            </span>
+                                        )}
                                     </div>
                                     {field.description && (
                                         <p className="mt-0 text-sm text-gray-500">
