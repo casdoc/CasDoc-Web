@@ -8,7 +8,7 @@ export const convertDataToNodes = (data: any) => {
         id: `${item.id}`,
         position: defaultPosition,
         data: {
-            label: item.label || "empty",
+            label: item.label || "unknown",
             type: item.type,
         },
         type: "custom",

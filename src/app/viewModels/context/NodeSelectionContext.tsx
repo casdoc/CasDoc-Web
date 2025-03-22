@@ -5,9 +5,13 @@ interface NodeSelectionContextType {
     selectNode: (id: string | null) => void;
 }
 
-const NodeSelectionContext = createContext<
-    NodeSelectionContextType | undefined
->(undefined);
+const defaultContext: NodeSelectionContextType = {
+    selectedNode: null,
+    selectNode: () => {},
+};
+
+const NodeSelectionContext =
+    createContext<NodeSelectionContextType>(defaultContext);
 
 export const NodeSelectionProvider = ({
     children,

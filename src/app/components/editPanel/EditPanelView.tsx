@@ -1,17 +1,18 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext";
 import {
     ConnectionEdge,
     GraphViewModel,
 } from "@/app/viewModels/GraphViewModel";
 import { DocumentViewModel } from "@/app/viewModels/useDocument";
-import { TextArea } from "@radix-ui/themes";
 import EditPanelHeader from "./EditPanelHeader";
 import EditPanelRelationship from "./EditPanelRelationship";
 import EditPanelFields from "./EditPanelFields";
 import { JsonObject } from "@/app/models/types/JsonObject";
+import EditPanelInfo from "./EditPanelInfo";
+import EditPanelCmdHint from "./EditPanelCmdHint";
 
 interface EditPanelProps {
     documentViewModel: DocumentViewModel;
@@ -31,6 +32,72 @@ const EditPanelView = ({
     const [connectionEdges, setConnectionEdges] = useState<ConnectionEdge[]>(
         []
     );
+
+    const prevSelectState = useRef(selectedNode);
+    console.debug(
+        "prevSelectState",
+        prevSelectState,
+        "selectedNode",
+        selectedNode
+    );
+    useEffect(() => {
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (
+                ((event.metaKey || event.ctrlKey) && event.key === "Enter") ||
+                event.key === "Escape"
+            ) {
+                if (selectedNode) {
+                    // Only prevent default if we're actually closing the panel
+                    event.preventDefault();
+                    console.debug("Closing panel with keyboard shortcut");
+                    selectNode(null);
+                }
+            }
+            prevSelectState.current = selectedNode;
+        };
+
+        window.addEventListener("keydown", handleKeyDown);
+        return () => {
+            console.debug("");
+            window.removeEventListener("keydown", handleKeyDown);
+        };
+    }, [selectNode, selectedNode]);
+
+    useEffect(() => {
+        const handleTabKey = (event: KeyboardEvent) => {
+            if (event.key === "Tab") {
+                event.preventDefault();
+                const textareas = Array.from(
+                    document.querySelectorAll("textarea")
+                );
+                const activeElement =
+                    document.activeElement as HTMLTextAreaElement;
+                const currentIndex = textareas.indexOf(activeElement);
+
+                if (currentIndex !== -1) {
+                    let nextIndex;
+                    if (event.shiftKey) {
+                        nextIndex =
+                            (currentIndex - 1 + textareas.length) %
+                            textareas.length;
+                    } else {
+                        nextIndex = (currentIndex + 1) % textareas.length;
+                    }
+                    const nextTextarea = textareas[
+                        nextIndex
+                    ] as HTMLTextAreaElement;
+                    nextTextarea.focus();
+                    const length = nextTextarea.value.length;
+                    nextTextarea.setSelectionRange(length, length);
+                }
+            }
+        };
+
+        window.addEventListener("keydown", handleTabKey);
+        return () => {
+            window.removeEventListener("keydown", handleTabKey);
+        };
+    }, []);
 
     const findNodeById = useCallback(
         (id: string) => {
@@ -53,36 +120,48 @@ const EditPanelView = ({
     }, []);
 
     useEffect(() => {
-        if (!node) {
-            selectNode(null);
+        if (selectedNode) {
+            setTimeout(() => {
+                const firstTextarea = document.querySelector(
+                    "textarea"
+                ) as HTMLTextAreaElement | null;
+                if (firstTextarea) {
+                    firstTextarea.focus();
+                    const length = firstTextarea.value.length;
+                    firstTextarea.setSelectionRange(length, length);
+                }
+            }, 0);
         }
-    }, [node, selectNode]);
+    }, [selectedNode]);
 
-    const handleFieldChange = (
-        e: React.ChangeEvent<HTMLTextAreaElement>,
-        index: number,
-        key: "name" | "description" | "type"
-    ) => {
-        if (!node) return;
-        const newFields = [...(node.config.fields ?? [])];
+    const handleFieldChange = useCallback(
+        (
+            e: React.ChangeEvent<HTMLTextAreaElement>,
+            index: number,
+            key: "name" | "description" | "type"
+        ) => {
+            if (!node) return;
+            const newFields = [...(node.config.fields ?? [])];
 
-        newFields[index] = {
-            ...newFields[index],
-            [key]: e.target.value,
-        };
-        const updatedConfig = {
-            ...node.config,
-            fields: newFields,
-        };
+            newFields[index] = {
+                ...newFields[index],
+                [key]: e.target.value,
+            };
+            const updatedConfig = {
+                ...node.config,
+                fields: newFields,
+            };
 
-        const updatedNode: JsonObject = {
-            ...node,
-            config: updatedConfig,
-        };
+            const updatedNode: JsonObject = {
+                ...node,
+                config: updatedConfig,
+            };
 
-        setNode(updatedNode);
-        updateEditNodeById(updatedNode.id, { config: updatedConfig });
-    };
+            setNode(updatedNode);
+            updateEditNodeById(updatedNode.id, { config: updatedConfig });
+        },
+        [node, updateEditNodeById]
+    );
 
     const handleConfigChange = (
         e: React.ChangeEvent<HTMLTextAreaElement>,
@@ -158,56 +237,13 @@ const EditPanelView = ({
             }`}
         >
             <EditPanelHeader onClose={() => selectNode(null)} />
-
             {selectedNode ? (
-                <div className="mt-4 flex flex-col h-full space-y-4 overflow-auto pb-32">
-                    <div className="bg-white border border-gray-200 rounded-lg p-4 mr-4 shadow">
-                        <h2 className="text-lg font-semibold mb-4">
-                            Basic Info
-                        </h2>
-                        <p className="text-sm text-gray-500 mb-4">
-                            <span className="font-semibold">ID:</span>{" "}
-                            {selectedNode}
-                        </p>
-                        {node?.config.info &&
-                        Object.keys(node.config.info).length > 0 ? (
-                            <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-                                {Object.entries(node.config.info).map(
-                                    ([key, value]) => (
-                                        <div
-                                            key={key}
-                                            className="flex flex-col space-y-1"
-                                        >
-                                            <label
-                                                className="text-sm text-gray-600 font-medium truncate"
-                                                title={key}
-                                            >
-                                                {key}
-                                            </label>
-                                            <TextArea
-                                                size="2"
-                                                resize="none"
-                                                radius="medium"
-                                                className="resize-none bg-white p-2 text-sm w-full border border-gray-300 rounded-md focus:ring focus:ring-indigo-200"
-                                                value={
-                                                    value !== undefined
-                                                        ? String(value)
-                                                        : ""
-                                                }
-                                                onChange={(e) =>
-                                                    handleConfigChange(e, key)
-                                                }
-                                            />
-                                        </div>
-                                    )
-                                )}
-                            </div>
-                        ) : (
-                            <p className="text-gray-500 text-sm">
-                                No config fields
-                            </p>
-                        )}
-                    </div>
+                <div className="mt-4 flex flex-col h-full space-y-4 overflow-auto">
+                    <EditPanelInfo
+                        selectedNode={selectedNode}
+                        info={node?.config.info}
+                        handleConfigChange={handleConfigChange}
+                    />
                     {node?.type && node?.type.startsWith("template") && (
                         <div className="bg-white border border-gray-200 rounded-lg p-4 mr-4 shadow">
                             <h2 className="text-lg font-semibold mb-4">
@@ -233,15 +269,11 @@ const EditPanelView = ({
                             </button>
                         </div>
                     )}
-                    <div className="bg-white border border-gray-200 rounded-lg p-4 mr-4 shadow">
-                        <h2 className="text-lg font-semibold mb-4">
-                            Relationships
-                        </h2>
-                        <EditPanelRelationship
-                            connectionEdges={connectionEdges}
-                            findNodeById={findNodeById}
-                        />
-                    </div>
+                    <EditPanelRelationship
+                        connectionEdges={connectionEdges}
+                        findNodeById={findNodeById}
+                    />
+                    <EditPanelCmdHint />
                 </div>
             ) : (
                 <p className="text-gray-500 mt-4">No node selected</p>

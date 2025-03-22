@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Document } from "@/app/models/entity/Document";
 import { DocumentService } from "@/app/models/services/DocumentService";
 import { DocumentType } from "@/app/models/enum/DocumentType";
 import { JsonObject } from "../models/types/JsonObject";
+
 export interface GraphNode {
     id: string;
     pid: string;
@@ -107,13 +108,13 @@ export function useDocumentViewModel(documentId: string): DocumentViewModel {
         setEditNodes(newEditNodes);
     }, [document]);
 
-    const updateDocument = (document: Document) => {
+    const updateDocument = useCallback((document: Document) => {
         DocumentService.saveDocument(document);
         const doc = DocumentService.getDocumentById(document.id);
         if (doc) {
             setDocument(doc);
         }
-    };
+    }, []);
 
     const updateEditNodeById = (
         nodeId: string,
@@ -164,7 +165,7 @@ export function useDocumentViewModel(documentId: string): DocumentViewModel {
             return {
                 id: content.attrs.id,
                 pid: "root",
-                label: content.attrs.config.name,
+                label: content.attrs.config?.info.name || "",
                 type: content.type,
             };
         } else if (content.type.startsWith("template")) {
