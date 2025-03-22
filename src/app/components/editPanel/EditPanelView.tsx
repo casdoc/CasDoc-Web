@@ -34,23 +34,31 @@ const EditPanelView = ({
     );
 
     const prevSelectState = useRef(selectedNode);
+    console.debug(
+        "prevSelectState",
+        prevSelectState,
+        "selectedNode",
+        selectedNode
+    );
     useEffect(() => {
-        console.log("current:", prevSelectState.current);
-        console.log("selectedNode", selectedNode);
         const handleKeyDown = (event: KeyboardEvent) => {
-            event.stopPropagation();
             if (
-                event.key === "Escape" &&
-                prevSelectState.current === selectedNode
+                ((event.metaKey || event.ctrlKey) && event.key === "Enter") ||
+                event.key === "Escape"
             ) {
-                event.preventDefault();
-                selectNode(null);
+                if (selectedNode) {
+                    // Only prevent default if we're actually closing the panel
+                    event.preventDefault();
+                    console.debug("Closing panel with keyboard shortcut");
+                    selectNode(null);
+                }
             }
             prevSelectState.current = selectedNode;
         };
 
         window.addEventListener("keydown", handleKeyDown);
         return () => {
+            console.debug("");
             window.removeEventListener("keydown", handleKeyDown);
         };
     }, [selectNode, selectedNode]);
