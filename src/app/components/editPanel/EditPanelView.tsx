@@ -83,7 +83,12 @@ const EditPanelView = ({
                     } else {
                         nextIndex = (currentIndex + 1) % textareas.length;
                     }
-                    (textareas[nextIndex] as HTMLTextAreaElement)?.focus();
+                    const nextTextarea = textareas[
+                        nextIndex
+                    ] as HTMLTextAreaElement;
+                    nextTextarea.focus();
+                    const length = nextTextarea.value.length;
+                    nextTextarea.setSelectionRange(length, length);
                 }
             }
         };
@@ -117,8 +122,14 @@ const EditPanelView = ({
     useEffect(() => {
         if (selectedNode) {
             setTimeout(() => {
-                const firstTextarea = document.querySelector("textarea");
-                firstTextarea?.focus();
+                const firstTextarea = document.querySelector(
+                    "textarea"
+                ) as HTMLTextAreaElement | null;
+                if (firstTextarea) {
+                    firstTextarea.focus();
+                    const length = firstTextarea.value.length;
+                    firstTextarea.setSelectionRange(length, length);
+                }
             }, 0);
         }
     }, [selectedNode]);
