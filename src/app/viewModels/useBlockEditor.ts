@@ -4,7 +4,6 @@ import { Document } from "@/app/models/entity/Document";
 import { useCallback, useEffect, useRef } from "react";
 import { NodeSelection } from "@tiptap/pm/state";
 import { useNodeSelection } from "./context/NodeSelectionContext";
-import { Extension } from "@tiptap/core";
 
 interface BlockEditorProps {
     document?: Document;
@@ -17,25 +16,7 @@ export const useBlockEditor = ({
     ...editorOptions
 }: BlockEditorProps) => {
     const isInternalUpdate = useRef(false);
-    const { selectedNode, selectNode } = useNodeSelection();
-
-    console.log("in useBlockEditor, selectedNode:", selectedNode);
-    const CustomCommandWithContext = Extension.create({
-        name: "customCommandWithContext",
-        addCommands() {
-            return {
-                toggleContextValue:
-                    () =>
-                    ({}) => {
-                        const { selection } = this.editor.state;
-                        if (selection instanceof NodeSelection) {
-                            selectNode(selection.node.attrs.id);
-                        }
-                        return true;
-                    },
-            };
-        },
-    });
+    const { selectNode } = useNodeSelection();
 
     const onUpdate = useCallback(
         ({ editor }: { editor: Editor }) => {
@@ -56,7 +37,7 @@ export const useBlockEditor = ({
         ...editorOptions,
         autofocus: true,
         immediatelyRender: false,
-        extensions: [...ExtensionKit(), CustomCommandWithContext],
+        extensions: [...ExtensionKit()],
         editorProps: {
             attributes: {
                 autocomplete: "off",
@@ -122,6 +103,24 @@ export const useBlockEditor = ({
             window.removeEventListener("copy", handleCopy);
         };
     }, [document, editor]);
+
+    useEffect(() => {
+        if (!editor) return;
+
+        // Add listener for node selection events from extensions
+        const handleNodeSelection = (event: Event) => {
+            console.debug("Node selection event:", event);
+            const customEvent = event as CustomEvent;
+            if (customEvent.detail && customEvent.detail.id) {
+                selectNode(customEvent.detail.id);
+            }
+        };
+
+        window.addEventListener("node-selection", handleNodeSelection);
+        return () => {
+            window.removeEventListener("node-selection", handleNodeSelection);
+        };
+    }, [editor, selectNode]);
 
     return { editor };
 };

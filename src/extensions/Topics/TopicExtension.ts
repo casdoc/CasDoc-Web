@@ -6,6 +6,7 @@ import {
     createPasteHandlerPlugin,
     createNodeTransformer,
 } from "../ExtensionUtils";
+import { NodeSelection } from "@tiptap/pm/state";
 
 const topicDefaultConfig = {
     name: "Data Schema",
@@ -48,7 +49,21 @@ export const TopicExtension = Node.create({
     addKeyboardShortcuts() {
         return {
             "Mod-Enter": () => {
-                this.editor.commands.toggleContextValue();
+                // Handle node selection directly instead of using the command
+                const { state } = this.editor;
+                const { selection } = state;
+
+                // Import needed at the top of the file
+                if (
+                    selection instanceof NodeSelection &&
+                    selection.node.attrs.id
+                ) {
+                    // Dispatch custom event that useBlockEditor can listen for
+                    const event = new CustomEvent("node-selection", {
+                        detail: { id: selection.node.attrs.id },
+                    });
+                    window.dispatchEvent(event);
+                }
                 return true;
             },
         };
