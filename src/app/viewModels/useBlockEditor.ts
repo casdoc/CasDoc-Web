@@ -2,9 +2,8 @@ import ExtensionKit from "@/extensions/ExtensionKit";
 import { Editor, useEditor } from "@tiptap/react";
 import { Document } from "@/app/models/entity/Document";
 import { useCallback, useEffect, useRef } from "react";
-import { useNodeSelection } from "./context/NodeSelectionContext";
-import { Extension } from "@tiptap/core";
 import { NodeSelection } from "@tiptap/pm/state";
+import { useNodeSelection } from "./context/NodeSelectionContext";
 
 interface BlockEditorProps {
     document?: Document;
@@ -17,25 +16,7 @@ export const useBlockEditor = ({
     ...editorOptions
 }: BlockEditorProps) => {
     const isInternalUpdate = useRef(false);
-    const { selectedNode, selectNode } = useNodeSelection();
-
-    console.log("in useBlockEditor, selectedNode:", selectedNode);
-    const CustomCommandWithContext = Extension.create({
-        name: "customCommandWithContext",
-        addCommands() {
-            return {
-                toggleContextValue:
-                    () =>
-                    ({}) => {
-                        const { selection } = this.editor.state;
-                        if (selection instanceof NodeSelection) {
-                            selectNode(selection.node.attrs.id);
-                        }
-                        return true;
-                    },
-            };
-        },
-    });
+    const { selectNode } = useNodeSelection();
 
     const onUpdate = useCallback(
         ({ editor }: { editor: Editor }) => {
@@ -56,7 +37,7 @@ export const useBlockEditor = ({
         ...editorOptions,
         autofocus: true,
         immediatelyRender: false,
-        extensions: [...ExtensionKit(), CustomCommandWithContext],
+        extensions: [...ExtensionKit()],
         editorProps: {
             attributes: {
                 autocomplete: "off",
@@ -90,6 +71,56 @@ export const useBlockEditor = ({
             );
         }
     }, [document, editor]);
+
+    useEffect(() => {
+        if (!editor) return;
+
+        const handleCopy = (e: ClipboardEvent) => {
+            const { selection } = editor.state;
+            // console.debug("Selection type:", selection.constructor.name);
+            // Handle NodeSelection separately to ensure content is copied
+            if (selection instanceof NodeSelection) {
+                // console.debug("Selected node id:", selection.node.attrs.id);
+                // Prevent default to handle our own copy
+                e.preventDefault();
+                // Get HTML representation of the selected node
+                const fragment = selection.content();
+                const clipboardHTML =
+                    editor.view.serializeForClipboard(fragment).dom.innerHTML;
+                // console.debug("Clipboard data:", clipboardHTML);
+                if (e.clipboardData) {
+                    e.clipboardData.setData("text/html", clipboardHTML);
+                    e.clipboardData.setData(
+                        "text/plain",
+                        selection.node.textContent
+                    );
+                }
+            }
+        };
+
+        window.addEventListener("copy", handleCopy);
+        return () => {
+            window.removeEventListener("copy", handleCopy);
+        };
+    }, [document, editor]);
+
+    useEffect(() => {
+        if (!editor) return;
+
+        // Add listener for node selection events from extensions
+        const handleNodeSelection = (event: Event) => {
+            console.debug("Node selection event:", event);
+            const customEvent = event as CustomEvent;
+            if (customEvent.detail && customEvent.detail.id) {
+                selectNode(customEvent.detail.id);
+            }
+        };
+
+        window.addEventListener("node-selection", handleNodeSelection);
+        return () => {
+            window.removeEventListener("node-selection", handleNodeSelection);
+        };
+    }, [editor, selectNode]);
 
     return { editor };
 };

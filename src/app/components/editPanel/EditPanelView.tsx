@@ -12,6 +12,7 @@ import EditPanelRelationship from "./EditPanelRelationship";
 import EditPanelFields from "./EditPanelFields";
 import { JsonObject } from "@/app/models/types/JsonObject";
 import EditPanelInfo from "./EditPanelInfo";
+import EditPanelCmdHint from "./EditPanelCmdHint";
 
 interface EditPanelProps {
     documentViewModel: DocumentViewModel;
@@ -33,24 +34,31 @@ const EditPanelView = ({
     );
 
     const prevSelectState = useRef(selectedNode);
+    console.debug(
+        "prevSelectState",
+        prevSelectState,
+        "selectedNode",
+        selectedNode
+    );
     useEffect(() => {
-        console.log("current:", prevSelectState.current);
-        console.log("selectedNode", selectedNode);
         const handleKeyDown = (event: KeyboardEvent) => {
-            event.stopPropagation();
             if (
-                (event.metaKey || event.ctrlKey) &&
-                event.key === "Enter" &&
-                prevSelectState.current === selectedNode
+                ((event.metaKey || event.ctrlKey) && event.key === "Enter") ||
+                event.key === "Escape"
             ) {
-                event.preventDefault();
-                selectNode(null);
+                if (selectedNode) {
+                    // Only prevent default if we're actually closing the panel
+                    event.preventDefault();
+                    console.debug("Closing panel with keyboard shortcut");
+                    selectNode(null);
+                }
             }
             prevSelectState.current = selectedNode;
         };
 
         window.addEventListener("keydown", handleKeyDown);
         return () => {
+            console.debug("");
             window.removeEventListener("keydown", handleKeyDown);
         };
     }, [selectNode, selectedNode]);
@@ -75,7 +83,12 @@ const EditPanelView = ({
                     } else {
                         nextIndex = (currentIndex + 1) % textareas.length;
                     }
-                    (textareas[nextIndex] as HTMLTextAreaElement)?.focus();
+                    const nextTextarea = textareas[
+                        nextIndex
+                    ] as HTMLTextAreaElement;
+                    nextTextarea.focus();
+                    const length = nextTextarea.value.length;
+                    nextTextarea.setSelectionRange(length, length);
                 }
             }
         };
@@ -109,29 +122,46 @@ const EditPanelView = ({
     useEffect(() => {
         if (selectedNode) {
             setTimeout(() => {
-                const firstTextarea = document.querySelector("textarea");
-                firstTextarea?.focus();
+                const firstTextarea = document.querySelector(
+                    "textarea"
+                ) as HTMLTextAreaElement | null;
+                if (firstTextarea) {
+                    firstTextarea.focus();
+                    const length = firstTextarea.value.length;
+                    firstTextarea.setSelectionRange(length, length);
+                }
             }, 0);
         }
     }, [selectedNode]);
 
-    const handleFieldChange = (
-        e: React.ChangeEvent<HTMLTextAreaElement>,
-        index: number,
-        key: "name" | "description" | "type"
-    ) => {
-        if (!node) return;
-        const newFields = [...(node.fields ?? [])];
+    const handleFieldChange = useCallback(
+        (
+            e: React.ChangeEvent<HTMLTextAreaElement>,
+            index: number,
+            key: "name" | "description" | "type"
+        ) => {
+            if (!node) return;
+            const newFields = [...(node.config.fields ?? [])];
 
-        newFields[index] = {
-            ...newFields[index],
-            [key]: e.target.value,
-        };
+            newFields[index] = {
+                ...newFields[index],
+                [key]: e.target.value,
+            };
+            const updatedConfig = {
+                ...node.config,
+                fields: newFields,
+            };
 
-        const updatedNode: JsonObject = { ...node, fields: newFields };
-        setNode(updatedNode);
-        updateEditNodeById(updatedNode.id, { fields: newFields });
-    };
+            const updatedNode: JsonObject = {
+                ...node,
+                config: updatedConfig,
+            };
+
+            setNode(updatedNode);
+            updateEditNodeById(updatedNode.id, { config: updatedConfig });
+        },
+        [node, updateEditNodeById]
+    );
 
     const handleConfigChange = (
         e: React.ChangeEvent<HTMLTextAreaElement>,
@@ -139,34 +169,61 @@ const EditPanelView = ({
     ) => {
         if (!node) return;
 
-        const updatedConfig = {
-            ...node.config,
+        const updatedInfo = {
+            ...(node.config.info || {}),
             [key]: e.target.value,
         };
 
-        const updatedNode: JsonObject = { ...node, config: updatedConfig };
+        const updatedConfig = {
+            ...node.config,
+            info: updatedInfo,
+        };
+
+        const updatedNode: JsonObject = {
+            ...node,
+            config: updatedConfig,
+        };
+
         setNode(updatedNode);
         updateEditNodeById(updatedNode.id, { config: updatedConfig });
     };
 
     const handleAddField = () => {
         if (!node) return;
-        const newFields = [...(node.fields ?? [])];
+        const newFields = [...(node.config.fields ?? [])];
         newFields.push({ name: "", description: "", type: "" });
 
-        const updatedNode: JsonObject = { ...node, fields: newFields };
+        const updatedConfig = {
+            ...node.config,
+            fields: newFields,
+        };
+
+        const updatedNode: JsonObject = {
+            ...node,
+            config: updatedConfig,
+        };
+
         setNode(updatedNode);
-        updateEditNodeById(updatedNode.id, { fields: newFields });
+        updateEditNodeById(updatedNode.id, { config: updatedConfig });
     };
 
     const handleRemoveField = (index: number) => {
         if (!node) return;
-        const newFields = [...(node.fields ?? [])];
+        const newFields = [...(node.config.fields ?? [])];
         newFields.splice(index, 1);
 
-        const updatedNode: JsonObject = { ...node, fields: newFields };
+        const updatedConfig = {
+            ...node.config,
+            fields: newFields,
+        };
+
+        const updatedNode: JsonObject = {
+            ...node,
+            config: updatedConfig,
+        };
+
         setNode(updatedNode);
-        updateEditNodeById(updatedNode.id, { fields: newFields });
+        updateEditNodeById(updatedNode.id, { config: updatedConfig });
     };
 
     return (
@@ -181,10 +238,10 @@ const EditPanelView = ({
         >
             <EditPanelHeader onClose={() => selectNode(null)} />
             {selectedNode ? (
-                <div className="mt-4 flex flex-col h-full space-y-4 overflow-auto pb-32">
+                <div className="mt-4 flex flex-col h-full space-y-4 overflow-auto">
                     <EditPanelInfo
                         selectedNode={selectedNode}
-                        config={node?.config}
+                        info={node?.config.info}
                         handleConfigChange={handleConfigChange}
                     />
                     {node?.type && node?.type.startsWith("template") && (
@@ -192,9 +249,10 @@ const EditPanelView = ({
                             <h2 className="text-lg font-semibold mb-4">
                                 Fields
                             </h2>
-                            {node?.fields && node.fields.length > 0 ? (
+                            {node?.config.fields &&
+                            node.config.fields.length > 0 ? (
                                 <EditPanelFields
-                                    fields={node.fields}
+                                    fields={node.config.fields}
                                     handleFieldChange={handleFieldChange}
                                     handleRemoveField={handleRemoveField}
                                 />
@@ -211,15 +269,11 @@ const EditPanelView = ({
                             </button>
                         </div>
                     )}
-                    <div className="bg-white border border-gray-200 rounded-lg p-4 mr-4 shadow">
-                        <h2 className="text-lg font-semibold mb-4">
-                            Relationships
-                        </h2>
-                        <EditPanelRelationship
-                            connectionEdges={connectionEdges}
-                            findNodeById={findNodeById}
-                        />
-                    </div>
+                    <EditPanelRelationship
+                        connectionEdges={connectionEdges}
+                        findNodeById={findNodeById}
+                    />
+                    <EditPanelCmdHint />
                 </div>
             ) : (
                 <p className="text-gray-500 mt-4">No node selected</p>

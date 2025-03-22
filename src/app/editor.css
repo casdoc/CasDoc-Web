@@ -8,6 +8,13 @@
         @apply first:mt-0 last:mb-0;
     }
 
+    &:focus,
+    &:focus-visible,
+    &:focus-within {
+        outline: none !important;
+        -webkit-tap-highlight-color: transparent;
+    }
+
     & > * + * {
         margin-top: 0.75em;
     }

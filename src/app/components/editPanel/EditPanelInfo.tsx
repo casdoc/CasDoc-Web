@@ -3,7 +3,7 @@ import { TextArea } from "@radix-ui/themes";
 interface EditPanelInfoProps {
     selectedNode: string;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    config: any;
+    info: any;
     handleConfigChange: (
         e: React.ChangeEvent<HTMLTextAreaElement>,
         key: string
@@ -12,7 +12,7 @@ interface EditPanelInfoProps {
 
 const EditPanelInfo = ({
     selectedNode,
-    config,
+    info,
     handleConfigChange,
 }: EditPanelInfoProps) => {
     return (
@@ -21,9 +21,9 @@ const EditPanelInfo = ({
             <p className="text-sm text-gray-500 mb-4">
                 <span className="font-semibold">ID:</span> {selectedNode}
             </p>
-            {config && Object.keys(config).length > 0 ? (
+            {info && Object.keys(info).length > 0 ? (
                 <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-                    {Object.entries(config).map(([key, value]) => (
+                    {Object.entries(info).map(([key, value]) => (
                         <div key={key} className="flex flex-col space-y-1">
                             <label
                                 className="text-sm text-gray-600 font-medium truncate"

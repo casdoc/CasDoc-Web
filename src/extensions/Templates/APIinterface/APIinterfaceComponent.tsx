@@ -10,7 +10,9 @@ interface Parameters {
 }
 
 const APIinterfaceComponent: React.FC<NodeViewProps> = ({ node, selected }) => {
-    const { id, config, fields } = node.attrs;
+    const { id, config } = node.attrs;
+    const info = config?.info || {};
+    const fields = config?.fields || [];
 
     const { selectedNode, selectNode } = useNodeSelection();
     const isSelected = selectedNode === id;
@@ -51,21 +53,21 @@ const APIinterfaceComponent: React.FC<NodeViewProps> = ({ node, selected }) => {
                 <div className="flex items-center pb-2">
                     <span
                         className={`px-2 py-1 text-xs rounded-md text-white font-bold mr-2 ${getMethodColor(
-                            config.method
+                            info.method
                         )}`}
                     >
-                        {config.method?.toUpperCase() || "METHOD"}
+                        {info.method?.toUpperCase() || "METHOD"}
                     </span>
                     <span className="text-xl font-bold text-black">
-                        {config.name || "API name"}
+                        {info.name || "API name"}
                     </span>
                 </div>
                 <div>
                     <p className="m-0 text-sm text-gray-600">
-                        {config.description}
+                        {info.description}
                     </p>
                     <p className="m-0 py-2 text-sm text-black font-semibold">
-                        End Point : {config.endpoint}
+                        End Point : {info.endPoint}
                     </p>
                 </div>
             </div>
@@ -82,10 +84,7 @@ const APIinterfaceComponent: React.FC<NodeViewProps> = ({ node, selected }) => {
                                 return;
                             }
                             return (
-                                <div
-                                    key={index}
-                                    className="py-2 px-4 hover:bg-gray-50 transition-colors"
-                                >
+                                <div key={index} className="py-2 px-4">
                                     <div className="flex justify-between items-center m-0 p-0">
                                         <div className="flex items-center">
                                             <span className="font-medium text-gray-800">
@@ -97,9 +96,12 @@ const APIinterfaceComponent: React.FC<NodeViewProps> = ({ node, selected }) => {
                                                 </span>
                                             )}
                                         </div>
-                                        <span className="text-xs bg-gray-100 px-1 py-1 rounded text-gray-600 mr-2">
-                                            {field.type}
-                                        </span>
+
+                                        {field.type && (
+                                            <span className="text-xs bg-gray-100 px-1 py-1 rounded text-gray-600 mr-2">
+                                                {field.type}
+                                            </span>
+                                        )}
                                     </div>
                                     {field.description && (
                                         <p className="m-0 p-0 text-sm text-gray-500">
@@ -116,6 +118,7 @@ const APIinterfaceComponent: React.FC<NodeViewProps> = ({ node, selected }) => {
                     </div>
                 )}
             </div>
+            <div data-node-view-content />
         </NodeViewWrapper>
     );
 };

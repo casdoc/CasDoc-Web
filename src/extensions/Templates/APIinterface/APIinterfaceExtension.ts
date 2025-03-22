@@ -2,7 +2,29 @@ import { Node, mergeAttributes } from "@tiptap/core";
 import { ReactNodeViewRenderer } from "@tiptap/react";
 import APIinterfaceComponent from "./APIinterfaceComponent";
 import { v4 as uuidv4 } from "uuid";
+import {
+    createConfigAttribute,
+    createPasteHandlerPlugin,
+    createNodeTransformer,
+} from "../../ExtensionUtils";
+import { NodeSelection } from "@tiptap/pm/state";
 
+const topicDefaultConfig = {
+    info: {
+        name: "API name",
+        method: "GET",
+        description: "This is a api interface description",
+        endPoint: "/api/v1/demo",
+    },
+    fields: [
+        {
+            name: "id",
+            type: "string",
+            required: true,
+            description: "Unique identifier for the resource",
+        },
+    ],
+};
 export const APIinterfaceExtension = Node.create({
     name: "template-apiInterface",
 
@@ -20,14 +42,7 @@ export const APIinterfaceExtension = Node.create({
             id: {
                 default: uuidv4(),
             },
-            config: {
-                default: {
-                    name: "",
-                },
-            },
-            fields: {
-                default: [],
-            },
+            config: createConfigAttribute(topicDefaultConfig),
         };
     },
 
@@ -46,7 +61,21 @@ export const APIinterfaceExtension = Node.create({
     addKeyboardShortcuts() {
         return {
             "Mod-Enter": () => {
-                this.editor.commands.toggleContextValue();
+                // Handle node selection directly instead of using the command
+                const { state } = this.editor;
+                const { selection } = state;
+
+                // Import needed at the top of the file
+                if (
+                    selection instanceof NodeSelection &&
+                    selection.node.attrs.id
+                ) {
+                    // Dispatch custom event that useBlockEditor can listen for
+                    const event = new CustomEvent("node-selection", {
+                        detail: { id: selection.node.attrs.id },
+                    });
+                    window.dispatchEvent(event);
+                }
                 return true;
             },
         };
@@ -54,5 +83,23 @@ export const APIinterfaceExtension = Node.create({
 
     addNodeView() {
         return ReactNodeViewRenderer(APIinterfaceComponent);
+    },
+
+    addProseMirrorPlugins() {
+        const pasteDefaultConfig = topicDefaultConfig;
+        // Use the generic node transformer with your specific config
+        const topicTransformer = createNodeTransformer(pasteDefaultConfig);
+
+        // Use the reusable paste handler plugin
+        return [
+            createPasteHandlerPlugin("template-apiInterface", (node) => {
+                const transformedNode = topicTransformer(node);
+                // console.debug(
+                //     "Processing topic node during paste:",
+                //     transformedNode.attrs.config
+                // );
+                return transformedNode;
+            }),
+        ];
     },
 });
