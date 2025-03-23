@@ -28,3 +28,4 @@ export { TableCell } from "@tiptap/extension-table-cell";
 export { TableHeader } from "@tiptap/extension-table-header";
 export { TableRow } from "@tiptap/extension-table-row";
 export { SlashCommand } from "./SlashCommand";
+export { AtCommand } from "./SlashCommand/AtCommand";
