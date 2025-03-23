@@ -3,6 +3,7 @@ import { Document } from "@/app/models/entity/Document";
 import { DocumentService } from "@/app/models/services/DocumentService";
 import { DocumentType } from "@/app/models/enum/DocumentType";
 import { JsonObject } from "../models/types/JsonObject";
+import defaultContent from "../models/default-value/defaultContent";
 
 export interface GraphNode {
     id: string;
@@ -42,7 +43,7 @@ export function useDocumentViewModel(documentId: string): DocumentViewModel {
                 "default-project",
                 "Untitled Document",
                 "No description",
-                []
+                defaultContent
             );
             DocumentService.saveDocument(emptyDoc);
             doc = emptyDoc;

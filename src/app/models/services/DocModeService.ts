@@ -6,7 +6,7 @@ export const DocModeService = {
     getDocMode(): DocMode {
         if (typeof window === "undefined") return DocMode.Edit;
         const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
-        return stored ? JSON.parse(stored) : DocMode.Edit;
+        return stored ? JSON.parse(stored) : DocMode.Split;
     },
     setDocMode(mode: DocMode): void {
         if (typeof window !== "undefined") {
