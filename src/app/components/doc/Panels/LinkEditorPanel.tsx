@@ -1,4 +1,4 @@
-import { Button } from "@/app/components/doc/ui/Button";
+import { Button } from "@/components/ui/button";
 import { Icon } from "@/app/components/doc/ui/Icon";
 import { Surface } from "@/app/components/doc/ui/Surface";
 import { Toggle } from "@/app/components/doc/ui/Toggle";
@@ -81,8 +81,8 @@ const LinkEditorPanel = ({
                     />
                 </label>
                 <Button
-                    variant="primary"
-                    buttonSize="small"
+                    variant="ghost"
+                    size="sm"
                     type="submit"
                     disabled={!state.isValidUrl}
                 >

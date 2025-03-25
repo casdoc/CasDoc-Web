@@ -20,7 +20,7 @@ import {
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 
-import { ZoomSlider } from "./zoom-slider/zoom-slider";
+import { ZoomSlider } from "./zoom-slider";
 import { getLayoutedElements } from "./utils/getLayoutedElements";
 import {
     connectConnectionEdges,
