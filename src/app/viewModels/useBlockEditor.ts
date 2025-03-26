@@ -22,6 +22,7 @@ export const useBlockEditor = ({
         ({ editor }: { editor: Editor }) => {
             isInternalUpdate.current = true;
             const updatedContent = editor.getJSON().content;
+            console.debug("Updating document content");
             if (document && updatedContent) {
                 document.setAllContent(updatedContent);
                 updateDocument(document);

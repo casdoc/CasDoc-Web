@@ -111,6 +111,29 @@ export const GROUPS: Group[] = [
                         .run();
                 },
             },
+            {
+                name: "mermaid",
+                label: "Mermaid",
+                iconName: "SquareLibrary",
+                aliases: ["mermaid"],
+                description: "mermaid component of templates",
+                action: (editor) => {
+                    editor
+                        .chain()
+                        .focus()
+                        .insertContent({
+                            type: "mermaid",
+                            attrs: {
+                                topicId: "root",
+                                id: uuidv4(),
+                                config: {
+                                    content: "",
+                                },
+                            },
+                        })
+                        .run();
+                },
+            },
         ],
     },
     {
