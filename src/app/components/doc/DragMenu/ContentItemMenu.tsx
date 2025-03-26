@@ -6,7 +6,6 @@ import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
-    DropdownMenuTrigger,
     DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 // import * as Popover from "@radix-ui/react-popover";
@@ -40,7 +39,6 @@ export const ContentItemMenu = ({
             editor.commands.setMeta("lockDragHandle", false);
         }
     }, [editor, menuOpen]);
-
     return (
         <DragHandle
             pluginKey="ContentItemMenu"
@@ -53,12 +51,10 @@ export const ContentItemMenu = ({
         >
             {isEditable ? (
                 <div className="flex items-center">
+                    <Toolbar.Button>
+                        <Icon name="GripVertical" />
+                    </Toolbar.Button>
                     <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
-                        <DropdownMenuTrigger asChild>
-                            <Toolbar.Button>
-                                <Icon name="GripVertical" />
-                            </Toolbar.Button>
-                        </DropdownMenuTrigger>
                         <DropdownMenuContent align="start" sideOffset={8}>
                             <DropdownMenuItem
                                 onClick={actions.resetTextFormatting}
