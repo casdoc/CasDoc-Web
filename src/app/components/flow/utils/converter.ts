@@ -30,6 +30,7 @@ export const convertDataToStructuralEdges = (data: any) => {
                 arrowHeadType: MarkerType.ArrowClosed,
                 type: "default",
                 deletable: false,
+                selectable: false,
             });
         }
     }
@@ -48,7 +49,7 @@ export const connectConnectionEdges = (connectionEdges: any) => {
                 source: `${connectionEdges[i].source}`,
                 target: `${connectionEdges[i].target}`,
                 arrowHeadType: MarkerType.ArrowClosed,
-                type: "smoothstep",
+                type: "custom",
                 targetHandle: Position.Right,
             });
         }
