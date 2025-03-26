@@ -43,6 +43,8 @@
     "@tiptap/starter-kit": "^2.11.5",
     "@tiptap/suggestion": "^2.11.5",
     "@types/mdx": "^2.0.13",
+    "@uiw/codemirror-extensions-langs": "^4.23.10",
+    "@uiw/react-codemirror": "^4.23.10",
     "@xyflow/react": "^12.4.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
