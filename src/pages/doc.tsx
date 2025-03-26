@@ -18,7 +18,7 @@ function DocumentContent({ documentId }: { documentId: string }) {
     const graphViewModel = useGraphViewModel();
 
     return (
-        <NodeSelectionProvider>
+        <NodeSelectionProvider graphViewModel={graphViewModel}>
             <div className="min-w-fit h-screen flex flex-col items-center bg-gray-100 text-black">
                 <DocView
                     documentViewModel={documentViewModel}
