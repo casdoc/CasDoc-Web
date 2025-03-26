@@ -1,5 +1,5 @@
 import React from "react";
-import { EdgeProps, getSmoothStepPath } from "@xyflow/react";
+import { BaseEdge, EdgeProps, getSmoothStepPath } from "@xyflow/react";
 
 const CustomEdge: React.FC<EdgeProps> = (props) => {
     const {
@@ -24,33 +24,27 @@ const CustomEdge: React.FC<EdgeProps> = (props) => {
     });
 
     const edgeColor = selected ? "#ff66cc" : "#BEBEBE";
-
+    console.log(edgePath);
     return (
         <>
+            <BaseEdge
+                id={id}
+                path={edgePath}
+                style={{ ...style, stroke: edgeColor, strokeWidth: 2 }}
+                markerEnd={`url(#${id}-arrow)`}
+            />
             <defs>
                 <marker
                     id={`${id}-arrow`}
-                    markerWidth="6"
-                    markerHeight="6"
-                    refX="5.3"
+                    markerWidth="30"
+                    markerHeight="30"
+                    refX="5"
                     refY="3"
                     orient="auto"
-                    markerUnits="strokeWidth"
                 >
                     <path d="M0,0 L0,6 L6,3 Z" fill={edgeColor} />
                 </marker>
             </defs>
-            <path
-                id={id}
-                className="react-flow__edge-path"
-                d={edgePath}
-                style={{
-                    ...style,
-                    stroke: edgeColor,
-                    strokeWidth: 2,
-                }}
-                markerEnd={`url(#${id}-arrow)`}
-            />
         </>
     );
 };
