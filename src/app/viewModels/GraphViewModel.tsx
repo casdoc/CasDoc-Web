@@ -4,7 +4,8 @@ import { GraphService } from "../models/services/GraphService";
 export interface GraphViewModel {
     fetchConnectionEdges: () => void;
     updConnectionEdges: (edge: ConnectionEdge) => void;
-    searchBySourceId: (sourceId: string) => ConnectionEdge[];
+    searchTarget: (sourceId: string) => ConnectionEdge[];
+    searchSource: (sourceId: string) => ConnectionEdge[];
     removeConnectionEdge: (edge: ConnectionEdge) => void;
 }
 
@@ -41,10 +42,12 @@ export function useGraphViewModel(): GraphViewModel {
         });
     }, []);
 
-    const searchBySourceId = (sourceId: string): ConnectionEdge[] => {
-        return connectionEdges.filter(
-            (edge) => edge.source === sourceId.toString()
-        );
+    const searchTarget = (id: string): ConnectionEdge[] => {
+        return connectionEdges.filter((edge) => edge.source === id.toString());
+    };
+
+    const searchSource = (id: string): ConnectionEdge[] => {
+        return connectionEdges.filter((edge) => edge.target === id.toString());
     };
 
     const removeConnectionEdge = useCallback((edge: ConnectionEdge) => {
@@ -60,7 +63,8 @@ export function useGraphViewModel(): GraphViewModel {
     return {
         fetchConnectionEdges,
         updConnectionEdges,
-        searchBySourceId,
+        searchTarget,
+        searchSource,
         removeConnectionEdge,
     };
 }

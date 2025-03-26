@@ -24,7 +24,7 @@ const EditPanelView = ({
     graphViewModel,
 }: EditPanelProps) => {
     const { selectedNode, selectNode } = useNodeSelection();
-    const { searchBySourceId } = graphViewModel;
+    const { searchTarget } = graphViewModel;
     const { updateEditNodeById, editNodes } = documentViewModel;
 
     const [node, setNode] = useState<JsonObject>();
@@ -110,10 +110,10 @@ const EditPanelView = ({
         if (selectedNode) {
             const item = findNodeById(String(selectedNode));
             setNode(item);
-            const edges = searchBySourceId(selectedNode);
+            const edges = searchTarget(selectedNode);
             setConnectionEdges(edges);
         }
-    }, [findNodeById, searchBySourceId, selectedNode]);
+    }, [findNodeById, searchTarget, selectedNode]);
 
     useEffect(() => {
         setIsMounted(true);

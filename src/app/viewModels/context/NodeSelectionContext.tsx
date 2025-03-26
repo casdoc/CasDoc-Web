@@ -1,16 +1,13 @@
 import { createContext, useContext, useState } from "react";
-import { GraphViewModel } from "@/app/viewModels/GraphViewModel";
 
 interface NodeSelectionContextType {
     selectedNode: string | null;
     selectNode: (id: string | null) => void;
-    graphViewModel: GraphViewModel;
 }
 
 const defaultContext: NodeSelectionContextType = {
     selectedNode: null,
     selectNode: () => {},
-    graphViewModel: {} as GraphViewModel,
 };
 
 const NodeSelectionContext =
@@ -18,10 +15,8 @@ const NodeSelectionContext =
 
 export const NodeSelectionProvider = ({
     children,
-    graphViewModel,
 }: {
     children: React.ReactNode;
-    graphViewModel: GraphViewModel;
 }) => {
     const [selectedNode, setSelectedNode] = useState<string | null>(null);
 
@@ -30,9 +25,7 @@ export const NodeSelectionProvider = ({
     };
 
     return (
-        <NodeSelectionContext.Provider
-            value={{ selectedNode, selectNode, graphViewModel }}
-        >
+        <NodeSelectionContext.Provider value={{ selectedNode, selectNode }}>
             {children}
         </NodeSelectionContext.Provider>
     );

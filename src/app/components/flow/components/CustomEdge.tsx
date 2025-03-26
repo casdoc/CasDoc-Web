@@ -1,5 +1,6 @@
 import React from "react";
 import { BaseEdge, EdgeProps, getSmoothStepPath } from "@xyflow/react";
+import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext";
 
 const CustomEdge: React.FC<EdgeProps> = (props) => {
     const {
@@ -12,7 +13,11 @@ const CustomEdge: React.FC<EdgeProps> = (props) => {
         targetPosition,
         style = {},
         selected,
+        target,
+        source,
     } = props;
+
+    const { selectedNode } = useNodeSelection();
 
     const [edgePath] = getSmoothStepPath({
         sourceX,
@@ -23,8 +28,11 @@ const CustomEdge: React.FC<EdgeProps> = (props) => {
         targetPosition,
     });
 
-    const edgeColor = selected ? "#ff66cc" : "#BEBEBE";
-    console.log(edgePath);
+    const edgeColor =
+        selected || selectedNode === target || selectedNode === source
+            ? "#ff66cc"
+            : "#BEBEBE";
+
     return (
         <>
             <BaseEdge
