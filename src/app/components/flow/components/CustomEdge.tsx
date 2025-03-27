@@ -17,7 +17,7 @@ const CustomEdge: React.FC<EdgeProps> = (props) => {
         source,
     } = props;
 
-    const { selectedNode } = useNodeSelection();
+    const { selectedNode, showTarget, showSource } = useNodeSelection();
 
     const [edgePath] = getSmoothStepPath({
         sourceX,
@@ -29,8 +29,10 @@ const CustomEdge: React.FC<EdgeProps> = (props) => {
     });
 
     const edgeColor =
-        selected || selectedNode === target || selectedNode === source
-            ? "#ff66cc"
+        selected ||
+        (selectedNode === target && showTarget) ||
+        (selectedNode === source && showSource)
+            ? "#FF79BC"
             : "#BEBEBE";
 
     return (
