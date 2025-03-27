@@ -6,6 +6,8 @@ import EditPanel from "@/app/components/editPanel/EditPanelView";
 import { NodeSelectionProvider } from "@/app/viewModels/context/NodeSelectionContext";
 import { useDocumentViewModel } from "@/app/viewModels/useDocument";
 import { useGraphViewModel } from "@/app/viewModels/GraphViewModel";
+import { useEffect } from "react";
+import mermaid from "mermaid";
 
 export default function Doc() {
     const documentId = "default-document";
@@ -16,6 +18,12 @@ export default function Doc() {
 function DocumentContent({ documentId }: { documentId: string }) {
     const documentViewModel = useDocumentViewModel(documentId);
     const graphViewModel = useGraphViewModel();
+    useEffect(() => {
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: "neutral",
+        });
+    }, []);
 
     return (
         <NodeSelectionProvider>

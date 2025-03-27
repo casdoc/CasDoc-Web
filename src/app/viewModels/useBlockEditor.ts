@@ -22,7 +22,7 @@ export const useBlockEditor = ({
         ({ editor }: { editor: Editor }) => {
             isInternalUpdate.current = true;
             const updatedContent = editor.getJSON().content;
-            console.debug("Updating document content");
+
             if (document && updatedContent) {
                 document.setAllContent(updatedContent);
                 updateDocument(document);
@@ -110,7 +110,6 @@ export const useBlockEditor = ({
 
         // Add listener for node selection events from extensions
         const handleNodeSelection = (event: Event) => {
-            console.debug("Node selection event:", event);
             const customEvent = event as CustomEvent;
             if (customEvent.detail && customEvent.detail.id) {
                 selectNode(customEvent.detail.id);

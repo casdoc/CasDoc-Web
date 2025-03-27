@@ -22,7 +22,7 @@ export const MermaidExtension = Node.create({
 
     group: "block",
 
-    atom: false,
+    atom: true,
     isolating: true,
     selectable: true,
 
