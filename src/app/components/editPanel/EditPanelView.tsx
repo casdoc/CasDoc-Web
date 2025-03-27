@@ -24,14 +24,13 @@ const EditPanelView = ({
     graphViewModel,
 }: EditPanelProps) => {
     const { selectedNode, selectNode } = useNodeSelection();
-    const { searchTarget } = graphViewModel;
+    const { searchTarget, searchSource } = graphViewModel;
     const { updateEditNodeById, editNodes } = documentViewModel;
 
     const [node, setNode] = useState<JsonObject>();
     const [isMounted, setIsMounted] = useState(false);
-    const [connectionEdges, setConnectionEdges] = useState<ConnectionEdge[]>(
-        []
-    );
+    const [targetEdges, setTargetEdges] = useState<ConnectionEdge[]>([]);
+    const [sourceEdges, setSourceEdges] = useState<ConnectionEdge[]>([]);
 
     const prevSelectState = useRef(selectedNode);
     console.debug(
@@ -110,10 +109,12 @@ const EditPanelView = ({
         if (selectedNode) {
             const item = findNodeById(String(selectedNode));
             setNode(item);
-            const edges = searchTarget(selectedNode);
-            setConnectionEdges(edges);
+            const _targetEdges = searchTarget(selectedNode);
+            setTargetEdges(_targetEdges);
+            const _sourceEdges = searchSource(selectedNode);
+            setSourceEdges(_sourceEdges);
         }
-    }, [findNodeById, searchTarget, selectedNode]);
+    }, [findNodeById, searchTarget, searchSource, selectedNode]);
 
     useEffect(() => {
         setIsMounted(true);
@@ -228,7 +229,7 @@ const EditPanelView = ({
 
     return (
         <div
-            className={`fixed top-0 right-0 pt-20 h-screen w-1/3 bg-gray-50 shadow-lg p-4 border-l border-gray-300 transform transition-transform duration-500 ${
+            className={`fixed top-0 right-0 py-20 h-screen w-1/3 bg-gray-50 shadow-lg p-4 border-l border-gray-300 transform transition-transform duration-500 ${
                 isMounted
                     ? selectedNode
                         ? "translate-x-0"
@@ -245,34 +246,37 @@ const EditPanelView = ({
                         handleConfigChange={handleConfigChange}
                     />
                     {node?.type && node?.type.startsWith("template") && (
-                        <div className="bg-white border border-gray-200 rounded-lg p-4 mr-4 shadow">
-                            <h2 className="text-lg font-semibold mb-4">
-                                Fields
-                            </h2>
-                            {node?.config.fields &&
-                            node.config.fields.length > 0 ? (
-                                <EditPanelFields
-                                    fields={node.config.fields}
-                                    handleFieldChange={handleFieldChange}
-                                    handleRemoveField={handleRemoveField}
-                                />
-                            ) : (
-                                <p className="text-gray-400 text-sm">
-                                    No fields available.
-                                </p>
-                            )}
-                            <button
-                                className="mt-6 px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600"
-                                onClick={handleAddField}
-                            >
-                                + Add Field
-                            </button>
-                        </div>
+                        <>
+                            <div className="bg-white border border-gray-200 rounded-lg p-4 mr-4 shadow">
+                                <h2 className="text-lg font-semibold mb-4">
+                                    Fields
+                                </h2>
+                                {node?.config.fields &&
+                                node.config.fields.length > 0 ? (
+                                    <EditPanelFields
+                                        fields={node.config.fields}
+                                        handleFieldChange={handleFieldChange}
+                                        handleRemoveField={handleRemoveField}
+                                    />
+                                ) : (
+                                    <p className="text-gray-400 text-sm">
+                                        No fields available.
+                                    </p>
+                                )}
+                                <button
+                                    className="mt-6 px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600"
+                                    onClick={handleAddField}
+                                >
+                                    + Add Field
+                                </button>
+                            </div>
+                            <EditPanelRelationship
+                                targetEdges={targetEdges}
+                                sourceEdges={sourceEdges}
+                                findNodeById={findNodeById}
+                            />
+                        </>
                     )}
-                    <EditPanelRelationship
-                        connectionEdges={connectionEdges}
-                        findNodeById={findNodeById}
-                    />
                     <EditPanelCmdHint />
                 </div>
             ) : (
