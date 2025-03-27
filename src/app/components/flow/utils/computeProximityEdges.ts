@@ -18,7 +18,7 @@ export const computeProximityEdges = (
                 source: parent.id,
                 target: nodes[i].id,
                 arrowHeadType: MarkerType.ArrowClosed,
-                type: "smoothstep",
+                type: "custom",
             });
         }
     }

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Toast from "@/app/components/flow/Toast";
+import Toast from "@/app/components/flow/components/Toast";
 
 const ToastManager = () => {
     const [message, setMessage] = useState("");
