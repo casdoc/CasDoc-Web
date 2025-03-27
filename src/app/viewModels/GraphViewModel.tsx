@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect } from "react";
 import { GraphService } from "../models/services/GraphService";
 
 export interface GraphViewModel {
-    fetchConnectionEdges: () => void;
+    connectionEdges: ConnectionEdge[];
     updConnectionEdges: (edge: ConnectionEdge) => void;
     searchTarget: (sourceId: string) => ConnectionEdge[];
     searchSource: (sourceId: string) => ConnectionEdge[];
@@ -19,15 +19,10 @@ export function useGraphViewModel(): GraphViewModel {
         []
     );
 
-    const fetchConnectionEdges = useCallback(() => {
+    useEffect(() => {
         const localEdges = GraphService.getEdges();
         setConnectionEdges(localEdges);
-        return localEdges;
     }, []);
-
-    useEffect(() => {
-        fetchConnectionEdges();
-    }, [fetchConnectionEdges]);
 
     const updConnectionEdges = useCallback((edge: ConnectionEdge) => {
         setConnectionEdges((prevEdges) => {
@@ -61,7 +56,7 @@ export function useGraphViewModel(): GraphViewModel {
     }, []);
 
     return {
-        fetchConnectionEdges,
+        connectionEdges,
         updConnectionEdges,
         searchTarget,
         searchSource,

@@ -30,8 +30,8 @@ const CustomEdge: React.FC<EdgeProps> = (props) => {
 
     const edgeColor =
         selected ||
-        (selectedNode === target && showTarget) ||
-        (selectedNode === source && showSource)
+        (selectedNode === source && showTarget) ||
+        (selectedNode === target && showSource)
             ? "#FF79BC"
             : "#BEBEBE";
 

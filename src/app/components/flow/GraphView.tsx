@@ -67,7 +67,7 @@ const GraphView = ({ docMode, graphNodes, graphViewModel }: GraphViewProps) => {
     const nodeWidth = 242;
     const nodeHeight = 12;
 
-    const { fetchConnectionEdges, updConnectionEdges, removeConnectionEdge } =
+    const { connectionEdges, updConnectionEdges, removeConnectionEdge } =
         graphViewModel;
     const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
@@ -82,7 +82,6 @@ const GraphView = ({ docMode, graphNodes, graphViewModel }: GraphViewProps) => {
             return;
         }
 
-        const connectionEdges = fetchConnectionEdges();
         const newNodes = convertDataToNodes(graphNodes);
         const newStructuralEdges = convertDataToStructuralEdges(graphNodes);
 
@@ -97,7 +96,7 @@ const GraphView = ({ docMode, graphNodes, graphViewModel }: GraphViewProps) => {
         const tmpConnectionEdges = connectConnectionEdges(connectionEdges);
         setNodes(layoutedNodes);
         setEdges([...newStructuralEdges, ...tmpConnectionEdges]);
-    }, [graphNodes, fetchConnectionEdges, setNodes, setEdges]);
+    }, [graphNodes, connectionEdges, setNodes, setEdges]);
 
     useEffect(() => {
         fitView({ duration: 500 });
