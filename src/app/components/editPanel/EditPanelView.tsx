@@ -24,7 +24,7 @@ const EditPanelView = ({
     graphViewModel,
 }: EditPanelProps) => {
     const { selectedNode, selectNode } = useNodeSelection();
-    const { searchTarget, searchSource } = graphViewModel;
+    const { searchTarget, searchSource, removeConnectionEdge } = graphViewModel;
     const { updateEditNodeById, editNodes } = documentViewModel;
 
     const [node, setNode] = useState<JsonObject>();
@@ -274,6 +274,7 @@ const EditPanelView = ({
                                 targetEdges={targetEdges}
                                 sourceEdges={sourceEdges}
                                 findNodeById={findNodeById}
+                                removeEdge={removeConnectionEdge}
                             />
                         </>
                     )}
