@@ -1,3 +1,4 @@
+import { mermaidDefaultConfig } from "../Templates/Mermaid/MermaidExtension";
 import { Group } from "./types";
 import { v4 as uuidv4 } from "uuid";
 export const GROUPS: Group[] = [
@@ -127,7 +128,7 @@ export const GROUPS: Group[] = [
                                 topicId: "root",
                                 id: uuidv4(),
                                 config: {
-                                    content: "",
+                                    ...mermaidDefaultConfig,
                                 },
                             },
                         })

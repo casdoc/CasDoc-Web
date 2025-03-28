@@ -1,6 +1,5 @@
 import { Node, mergeAttributes } from "@tiptap/core";
 import { ReactNodeViewRenderer } from "@tiptap/react";
-import APIinterfaceComponent from "./MermaidComponent";
 import { v4 as uuidv4 } from "uuid";
 import {
     createConfigAttribute,
@@ -8,15 +7,74 @@ import {
     createNodeTransformer,
 } from "../../ExtensionUtils";
 import { NodeSelection } from "@tiptap/pm/state";
+import MermaidComponent from "./MermaidComponent";
+export const mermaidDefaultConfig = {
+    content: `%% Mermaid Template - Delete or modify this template to create your own diagram
+%% This template demonstrates the most common Mermaid diagram types.
+%% Uncomment the section you want to use and delete the rest.
 
-const topicDefaultConfig = {
-    content: `graph TD
-      A[start] --> B{Yes/No}
-      B -->|Yes| C[Do something]
-      B -->|No| D[End]
-    `,
+%% FLOWCHART - Visualize processes, decisions and workflows
+%% flowchart TD
+%%    Start --> Process
+%%    Process --> Decision{Condition?}
+%%    Decision -->|Yes| Success
+%%    Decision -->|No| Failure
+%%    Success --> End
+%%    Failure --> Process
+
+%% SEQUENCE DIAGRAM - Show interactions between systems over time
+sequenceDiagram
+    participant User
+    participant System
+    User->>System: Request data
+    activate System
+    System-->>User: Return response
+    deactivate System
+    Note over User,System: Simple interaction flow
+
+%% STATE DIAGRAM - Display state transitions within a system
+%% stateDiagram-v2
+%%    [*] --> Idle
+%%    Idle --> Processing: Start
+%%    Processing --> Success: Complete
+%%    Processing --> Error: Fail
+%%    Success --> [*]
+%%    Error --> Idle: Retry
+
+%% CLASS DIAGRAM - Illustrate object-oriented structures
+%% classDiagram
+%%    class Entity {
+%%        +String id
+%%        +DateTime created
+%%        +update()
+%%    }
+%%    class User {
+%%        +String name
+%%        +String email
+%%        +login()
+%%    }
+%%    Entity <|-- User
+
+%% GANTT CHART - Project scheduling and timeline visualization
+%% gantt
+%%    title Project Timeline
+%%    dateFormat YYYY-MM-DD
+%%    section Planning
+%%    Requirements: 2023-01-01, 7d
+%%    Design: after Requirements, 10d
+%%    section Implementation
+%%    Development: after Design, 14d
+%%    Testing: after Development, 7d
+
+%% PIE CHART - Simple proportional data visualization
+%% pie title Distribution
+%%    "Category A" : 45
+%%    "Category B" : 30
+%%    "Category C" : 25
+
+%% For more diagram types and syntax, visit: https://mermaid.js.org/
+`,
 };
-
 export const MermaidExtension = Node.create({
     name: "mermaid",
 
@@ -34,7 +92,7 @@ export const MermaidExtension = Node.create({
             id: {
                 default: uuidv4(),
             },
-            config: createConfigAttribute(topicDefaultConfig),
+            config: createConfigAttribute(mermaidDefaultConfig),
         };
     },
 
@@ -74,11 +132,11 @@ export const MermaidExtension = Node.create({
     },
 
     addNodeView() {
-        return ReactNodeViewRenderer(APIinterfaceComponent);
+        return ReactNodeViewRenderer(MermaidComponent);
     },
 
     addProseMirrorPlugins() {
-        const pasteDefaultConfig = topicDefaultConfig;
+        const pasteDefaultConfig = mermaidDefaultConfig;
         // Use the generic node transformer with your specific config
         const topicTransformer = createNodeTransformer(pasteDefaultConfig);
 

@@ -44,7 +44,6 @@ const MermaidEditor: React.FC<MermaidEditorProps> = ({
 
     // debounced render
     useEffect(() => {
-        console.debug("initial code", initialCode);
         const timer = setTimeout(async () => {
             try {
                 if (!initialCode) {
