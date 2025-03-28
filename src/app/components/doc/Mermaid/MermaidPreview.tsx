@@ -2,9 +2,15 @@ import { useRef, useEffect, useState } from "react";
 
 interface MermaidPreviewProps {
     renderedSvg: string;
+    minScale?: number;
+    maxScale?: number;
 }
 
-function MermaidPreview({ renderedSvg }: MermaidPreviewProps) {
+function MermaidPreview({
+    renderedSvg,
+    minScale = 0.5,
+    maxScale = 5.0,
+}: MermaidPreviewProps) {
     const containerRef = useRef<HTMLDivElement>(null);
     const innerRef = useRef<HTMLDivElement>(null);
     const scaleRef = useRef(1);
@@ -25,8 +31,11 @@ function MermaidPreview({ renderedSvg }: MermaidPreviewProps) {
         const handleWheel = (e: WheelEvent) => {
             e.stopPropagation();
             const delta = e.deltaY > 0 ? 0.9 : 1.1;
-            scaleRef.current *= delta;
-            applyTransform();
+            const newScale = scaleRef.current * delta;
+            if (newScale >= minScale && newScale <= maxScale) {
+                scaleRef.current = newScale;
+                applyTransform();
+            }
         };
 
         const handleMouseDown = (e: MouseEvent) => {
