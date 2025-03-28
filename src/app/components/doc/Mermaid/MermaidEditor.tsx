@@ -3,7 +3,7 @@ import mermaid from "mermaid";
 import MermaidPreview from "./MermaidPreview";
 import MermaidOptions from "./MermaidOptions";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Copy, Maximize2, Minimize2 } from "lucide-react";
+import { CheckCheck, Copy, Maximize2, Minimize2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { v4 as uuidv4 } from "uuid";
 import { Button } from "@/components/ui/button";
@@ -32,15 +32,16 @@ const MermaidEditor: React.FC<MermaidEditorProps> = ({
     onCodeUpdate,
 }) => {
     const diagramId = useRef(`mermaid-diagram-${uuidv4()}`);
+    const previewRef = useRef<HTMLDivElement>(null);
+    const onCodeUpdateRef = useRef(onCodeUpdate);
+    const [error, setError] = useState("");
+    const [leftWidth, setLeftWidth] = useState(50);
+    const [renderedSvg, setRenderedSvg] = useState("");
+    const [isPanelOpen, setIsPanelOpen] = useState(false);
+    const [copySuccess, setCopySuccess] = useState(false);
     const [viewMode, setViewMode] = useState<"code" | "split" | "preview">(
         "split"
     );
-    const [renderedSvg, setRenderedSvg] = useState("");
-    const [error, setError] = useState("");
-    const [isPanelOpen, setIsPanelOpen] = useState(false);
-    const previewRef = useRef<HTMLDivElement>(null);
-    const onCodeUpdateRef = useRef(onCodeUpdate);
-    const [leftWidth, setLeftWidth] = useState(50);
 
     // debounced render
     useEffect(() => {
@@ -81,7 +82,12 @@ const MermaidEditor: React.FC<MermaidEditorProps> = ({
     const handleCopyCode = useCallback(
         (e: React.MouseEvent) => {
             stopPropagation(e);
-            navigator.clipboard.writeText(initialCode);
+            navigator.clipboard.writeText(initialCode).then(() => {
+                setCopySuccess(true);
+                setTimeout(() => {
+                    setCopySuccess(false);
+                }, 2000); // Reset after 2 seconds
+            });
         },
         [initialCode]
     );
@@ -153,11 +159,14 @@ const MermaidEditor: React.FC<MermaidEditorProps> = ({
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="h-9 w-9 text-[#32363e] hover:bg-slate-50 "
                         onClick={handleCopyCode}
-                        title="copy code"
+                        title={copySuccess ? "Copied!" : "Copy code"}
                     >
-                        <Copy className="h-4 w-4" />
+                        {copySuccess ? (
+                            <CheckCheck className="h-4 w-4 text-green-500" />
+                        ) : (
+                            <Copy className="h-4 w-4" />
+                        )}
                     </Button>
                     <Button
                         variant="ghost"
@@ -238,9 +247,15 @@ const MermaidEditor: React.FC<MermaidEditorProps> = ({
                                     variant="ghost"
                                     size="icon"
                                     onClick={handleCopyCode}
-                                    title="copy code"
+                                    title={
+                                        copySuccess ? "Copied!" : "Copy code"
+                                    }
                                 >
-                                    <Copy className="h-4 w-4" />
+                                    {copySuccess ? (
+                                        <CheckCheck className="h-4 w-4 text-green-500" />
+                                    ) : (
+                                        <Copy className="h-4 w-4" />
+                                    )}
                                 </Button>
                                 <DialogClose onClick={stopPropagation}>
                                     <div className="hover:bg-accent h-8 px-2 py-2 rounded-md flex justify-center items-center">
