@@ -25,6 +25,7 @@ import {
     DataSchemaExtension,
     TopicExtension,
     APIinterfaceExtension,
+    MermaidExtension,
 } from ".";
 
 export const ExtensionKit = () => [
@@ -74,6 +75,7 @@ export const ExtensionKit = () => [
     DataSchemaExtension,
     TopicExtension,
     APIinterfaceExtension,
+    MermaidExtension,
 ];
 
 export default ExtensionKit;

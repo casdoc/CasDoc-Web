@@ -1,8 +1,10 @@
 import React, { ButtonHTMLAttributes, HTMLProps, forwardRef } from "react";
 
 import { Surface } from "./Surface";
-import { Button, ButtonProps } from "./Button";
+// import { Button, ButtonProps } from "./Button";
+import { Button, type ButtonProps } from "@/components/ui/button";
 import Tooltip from "./Tooltip";
+import { cn } from "@/lib/utils";
 
 export type ToolbarWrapperProps = {
     shouldShowContent?: boolean;
@@ -60,7 +62,7 @@ export type ToolbarButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
     activeClassname?: string;
     tooltip?: string;
     tooltipShortcut?: string[];
-    buttonSize?: ButtonProps["buttonSize"];
+    size?: ButtonProps["size"];
     variant?: ButtonProps["variant"];
 };
 
@@ -68,26 +70,28 @@ const ToolbarButton = forwardRef<HTMLButtonElement, ToolbarButtonProps>(
     (
         {
             children,
-            buttonSize = "icon",
+            size = "icon",
             variant = "ghost",
             className,
             tooltip,
             tooltipShortcut,
+            active,
             activeClassname,
             ...rest
         },
         ref
     ) => {
-        const buttonClass = `gap-1 min-w-[2rem] px-2 w-auto ${
-            className || ""
-        }`.trim();
+        const buttonClass = cn(
+            "gap-1 min-w-[2rem] px-2 w-auto",
+            active && activeClassname,
+            className
+        );
 
         const content = (
             <Button
-                activeClassname={activeClassname}
                 className={buttonClass}
                 variant={variant}
-                buttonSize={buttonSize}
+                size={size}
                 ref={ref}
                 {...rest}
             >

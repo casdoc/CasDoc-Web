@@ -2,10 +2,15 @@ import { Icon } from "@/app/components/doc/ui/Icon";
 import { Toolbar } from "@/app/components/doc/ui/Toolbar";
 import DragHandle from "@tiptap-pro/extension-drag-handle-react";
 import { Editor } from "@tiptap/react";
-
-import * as Popover from "@radix-ui/react-popover";
-import { Surface } from "@/app/components/doc/ui/Surface";
-import { DropdownButton } from "@/app/components/doc/ui/Dropdown";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
+// import * as Popover from "@radix-ui/react-popover";
+// import { Surface } from "@/app/components/doc/ui/Surface";
+// import { DropdownButton } from "@/app/components/doc/ui/Dropdown";
 import useContentItemActions from "./hooks/useContentItemActions";
 import { useData } from "./hooks/useData";
 import { useEffect, useState } from "react";
@@ -34,7 +39,6 @@ export const ContentItemMenu = ({
             editor.commands.setMeta("lockDragHandle", false);
         }
     }, [editor, menuOpen]);
-
     return (
         <DragHandle
             pluginKey="ContentItemMenu"
@@ -47,55 +51,37 @@ export const ContentItemMenu = ({
         >
             {isEditable ? (
                 <div className="flex items-center">
-                    <Popover.Root open={menuOpen} onOpenChange={setMenuOpen}>
-                        <Popover.Trigger asChild>
-                            <Toolbar.Button>
-                                <Icon name="GripVertical" />
-                            </Toolbar.Button>
-                        </Popover.Trigger>
-                        <Popover.Content
-                            side="bottom"
-                            align="start"
-                            sideOffset={8}
-                        >
-                            <Surface className="p-2 flex flex-col min-w-[16rem]">
-                                <Popover.Close asChild>
-                                    <DropdownButton
-                                        onClick={actions.resetTextFormatting}
-                                    >
-                                        <Icon name="RemoveFormatting" />
-                                        Clear formatting
-                                    </DropdownButton>
-                                </Popover.Close>
-                                <Popover.Close asChild>
-                                    <DropdownButton
-                                        onClick={actions.copyNodeToClipboard}
-                                    >
-                                        <Icon name="Clipboard" />
-                                        Copy to clipboard
-                                    </DropdownButton>
-                                </Popover.Close>
-                                <Popover.Close asChild>
-                                    <DropdownButton
-                                        onClick={actions.duplicateNode}
-                                    >
-                                        <Icon name="Copy" />
-                                        Duplicate
-                                    </DropdownButton>
-                                </Popover.Close>
-                                <Toolbar.Divider horizontal />
-                                <Popover.Close asChild>
-                                    <DropdownButton
-                                        onClick={actions.deleteNode}
-                                        className="text-red-500 bg-red-500 dark:text-red-500 hover:bg-red-500 dark:hover:text-red-500 dark:hover:bg-red-500 bg-opacity-10 hover:bg-opacity-20 dark:hover:bg-opacity-20"
-                                    >
-                                        <Icon name="Trash2" />
-                                        Delete
-                                    </DropdownButton>
-                                </Popover.Close>
-                            </Surface>
-                        </Popover.Content>
-                    </Popover.Root>
+                    <Toolbar.Button>
+                        <Icon name="GripVertical" />
+                    </Toolbar.Button>
+                    <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
+                        <DropdownMenuContent align="start" sideOffset={8}>
+                            <DropdownMenuItem
+                                onClick={actions.resetTextFormatting}
+                            >
+                                <Icon name="RemoveFormatting" />
+                                Clear formatting
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                onClick={actions.copyNodeToClipboard}
+                            >
+                                <Icon name="Clipboard" />
+                                Copy to clipboard
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={actions.duplicateNode}>
+                                <Icon name="Copy" />
+                                Duplicate
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                                onClick={actions.deleteNode}
+                                className="text-red-500 hover:text-red-600 dark:text-red-500 dark:hover:text-red-400 focus:text-red-600 dark:focus:text-red-400"
+                            >
+                                <Icon name="Trash2" />
+                                Delete
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                 </div>
             ) : null}
         </DragHandle>

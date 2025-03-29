@@ -1,3 +1,4 @@
+import { mermaidDefaultConfig } from "../Templates/Mermaid/MermaidExtension";
 import { Group } from "./types";
 import { v4 as uuidv4 } from "uuid";
 export const GROUPS: Group[] = [
@@ -105,6 +106,29 @@ export const GROUPS: Group[] = [
                                                 "Unique identifier for the resource",
                                         },
                                     ],
+                                },
+                            },
+                        })
+                        .run();
+                },
+            },
+            {
+                name: "mermaid",
+                label: "Mermaid",
+                iconName: "SquareLibrary",
+                aliases: ["mermaid"],
+                description: "mermaid component of templates",
+                action: (editor) => {
+                    editor
+                        .chain()
+                        .focus()
+                        .insertContent({
+                            type: "mermaid",
+                            attrs: {
+                                topicId: "root",
+                                id: uuidv4(),
+                                config: {
+                                    ...mermaidDefaultConfig,
                                 },
                             },
                         })

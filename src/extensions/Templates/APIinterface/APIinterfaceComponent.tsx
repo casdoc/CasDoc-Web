@@ -118,7 +118,6 @@ const APIinterfaceComponent: React.FC<NodeViewProps> = ({ node, selected }) => {
                     </div>
                 )}
             </div>
-            <div data-node-view-content />
         </NodeViewWrapper>
     );
 };
