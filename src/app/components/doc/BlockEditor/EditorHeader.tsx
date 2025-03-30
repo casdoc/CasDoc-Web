@@ -6,6 +6,12 @@ import DocMode from "@/app/models/enum/DocMode";
 import LogoButton from "@/app/components/LogoButton";
 import GuideButton from "@/app/components/guide/GuideButton";
 import { Button } from "@/components/ui/button";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface EditorHeaderProps {
     mode: DocMode;
@@ -24,27 +30,75 @@ const EditorHeader = ({ mode, setDocMode }: EditorHeaderProps) => {
             <div className="flex flex-row gap-x-1.5 items-center">
                 <div className="flex items-center gap-x-1.5">
                     <LogoButton />
-                    <Button
-                        size="icon"
-                        variant={mode === DocMode.Edit ? "secondary" : "ghost"}
-                        onClick={() => handleChangeView(DocMode.Edit)}
-                    >
-                        <Icon name="FilePenLine" />
-                    </Button>
-                    <Button
-                        size="icon"
-                        variant={mode === DocMode.Graph ? "secondary" : "ghost"}
-                        onClick={() => handleChangeView(DocMode.Graph)}
-                    >
-                        <Icon name="FolderTree" />
-                    </Button>
-                    <Button
-                        size="icon"
-                        variant={mode === DocMode.Split ? "secondary" : "ghost"}
-                        onClick={() => handleChangeView(DocMode.Split)}
-                    >
-                        <Icon name="SquareSplitHorizontal" />
-                    </Button>
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button
+                                    size="icon"
+                                    variant={
+                                        mode === DocMode.Edit
+                                            ? "secondary"
+                                            : "ghost"
+                                    }
+                                    onClick={() =>
+                                        handleChangeView(DocMode.Edit)
+                                    }
+                                >
+                                    <Icon name="FilePenLine" />
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>Editor mode</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button
+                                    size="icon"
+                                    variant={
+                                        mode === DocMode.Graph
+                                            ? "secondary"
+                                            : "ghost"
+                                    }
+                                    onClick={() =>
+                                        handleChangeView(DocMode.Graph)
+                                    }
+                                >
+                                    <Icon name="FolderTree" />
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>Project Graph mode</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button
+                                    size="icon"
+                                    variant={
+                                        mode === DocMode.Split
+                                            ? "secondary"
+                                            : "ghost"
+                                    }
+                                    onClick={() =>
+                                        handleChangeView(DocMode.Split)
+                                    }
+                                >
+                                    <Icon name="SquareSplitHorizontal" />
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>Split View mode</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+
                     <div className="absolute top-4 right-4">
                         <GuideButton />
                     </div>
