@@ -15,6 +15,7 @@ import {
 
 import ImportDialog from "../Dialog/ImportDialog";
 import { Editor } from "@tiptap/core";
+import ExportPopover from "../Popover/ExportPopover";
 
 interface EditorHeaderProps {
     mode: DocMode;
@@ -113,7 +114,18 @@ const EditorHeader = ({ mode, setDocMode, editor }: EditorHeaderProps) => {
                         </TooltipContent>
                     </Tooltip>
                 </TooltipProvider>
-
+                <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <div>
+                                <ExportPopover editor={editor} />
+                            </div>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>Export content</p>
+                        </TooltipContent>
+                    </Tooltip>
+                </TooltipProvider>
                 <TooltipProvider>
                     <Tooltip>
                         <TooltipTrigger asChild>
