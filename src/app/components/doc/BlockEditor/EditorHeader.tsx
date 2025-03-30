@@ -101,8 +101,31 @@ const EditorHeader = ({ mode, setDocMode, editor }: EditorHeaderProps) => {
 
             {/* Right side with import button and guide button */}
             <div className="flex items-center gap-x-4">
-                <ImportDialog editor={editor} />
-                <GuideButton />
+                <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <div>
+                                <ImportDialog editor={editor} />
+                            </div>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>Import content</p>
+                        </TooltipContent>
+                    </Tooltip>
+                </TooltipProvider>
+
+                <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <div className="flex items-center justify-center">
+                                <GuideButton />
+                            </div>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>Help guide</p>
+                        </TooltipContent>
+                    </Tooltip>
+                </TooltipProvider>
             </div>
         </div>
     );
