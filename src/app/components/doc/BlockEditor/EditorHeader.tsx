@@ -15,6 +15,7 @@ import {
 import {
     Dialog,
     DialogContent,
+    DialogDescription,
     DialogHeader,
     DialogTitle,
     DialogTrigger,
@@ -127,6 +128,10 @@ const EditorHeader = ({ mode, setDocMode }: EditorHeaderProps) => {
                     <DialogContent>
                         <DialogHeader>
                             <DialogTitle>Import Content</DialogTitle>
+                            <DialogDescription>
+                                Select an import method to add content to your
+                                document.
+                            </DialogDescription>
                         </DialogHeader>
                         <div className="flex flex-col gap-y-2 pt-2">
                             <Button
