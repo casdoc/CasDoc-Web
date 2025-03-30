@@ -2,7 +2,6 @@ import { Icon } from "@/app/components/doc/ui/Icon";
 import { Toolbar } from "@/app/components/doc/ui/Toolbar";
 import DragHandle from "@tiptap-pro/extension-drag-handle-react";
 import { Editor } from "@tiptap/react";
-
 import * as Popover from "@radix-ui/react-popover";
 import { Surface } from "@/app/components/doc/ui/Surface";
 import { DropdownButton } from "@/app/components/doc/ui/Dropdown";
@@ -34,7 +33,6 @@ export const ContentItemMenu = ({
             editor.commands.setMeta("lockDragHandle", false);
         }
     }, [editor, menuOpen]);
-
     return (
         <DragHandle
             pluginKey="ContentItemMenu"
@@ -87,7 +85,7 @@ export const ContentItemMenu = ({
                                 <Popover.Close asChild>
                                     <DropdownButton
                                         onClick={actions.deleteNode}
-                                        className="text-red-500 bg-red-500 dark:text-red-500 hover:bg-red-500 dark:hover:text-red-500 dark:hover:bg-red-500 bg-opacity-10 hover:bg-opacity-20 dark:hover:bg-opacity-20"
+                                        className="text-red-500 dark:text-red-500 hover:bg-neutral-100 dark:hover:text-red-500 dark:hover:bg-red-500 hover:text-red-600 dark:hover:bg-opacity-20"
                                     >
                                         <Icon name="Trash2" />
                                         Delete

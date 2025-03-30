@@ -3,9 +3,9 @@ import { Maximize, Minus, Plus } from "lucide-react";
 
 import { Panel, useViewport, useReactFlow, PanelProps } from "@xyflow/react";
 
-import { Slider } from "./slider";
-import { Button } from "./button";
-import { cn } from "./lib/utils";
+import { Slider } from "@/components/ui/slider";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export const ZoomSlider = forwardRef<
     HTMLDivElement,

@@ -128,13 +128,7 @@ export const SlashCommand = Extension.create({
                     }));
 
                     const withoutEmptyGroups = withFilteredCommands.filter(
-                        (group) => {
-                            if (group.commands.length > 0) {
-                                return true;
-                            }
-
-                            return false;
-                        }
+                        (group) => group.commands.length > 0
                     );
 
                     const withEnabledSettings = withoutEmptyGroups.map(
@@ -301,7 +295,7 @@ export const SlashCommand = Extension.create({
                                 popup?.[0].show();
                             }
 
-                            return component.ref?.onKeyDown(props);
+                            return component?.ref?.onKeyDown(props);
                         },
 
                         onExit(props) {
@@ -313,7 +307,22 @@ export const SlashCommand = Extension.create({
                                     scrollHandler
                                 );
                             }
-                            component.destroy();
+                            if (component) {
+                                // Remove the element from the DOM if it exists
+                                if (
+                                    component.element &&
+                                    component.element.parentNode
+                                ) {
+                                    component.element.parentNode.removeChild(
+                                        component.element
+                                    );
+                                }
+
+                                // Call destroy method if it exists
+                                if (typeof component.destroy === "function") {
+                                    component.destroy();
+                                }
+                            }
                         },
                     };
                 },

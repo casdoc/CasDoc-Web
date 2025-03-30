@@ -1,6 +1,9 @@
 import typography from "@tailwindcss/typography";
-import animate from "tailwindcss-animate";
 import type { Config } from "tailwindcss";
+import tailwindcssRadix from "tailwindcss-radix";
+import { createRequire } from "module";
+const require = createRequire(import.meta.url);
+const animate = require("tailwindcss-animate");
 /** @type {import('tailwindcss').Config} */
 
 export default {
@@ -12,8 +15,8 @@ export default {
         "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
         "./src/extensions/**/*.{js,ts,jsx,tsx,mdx}",
     ],
-    safelist: ["ProseMirror"], //ensure that the ProseMirror class is not purged
-    plugins: [typography, animate],
+    plugins: [typography, animate, tailwindcssRadix],
+
     theme: {
         extend: {
             colors: {

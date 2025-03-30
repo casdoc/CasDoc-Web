@@ -3,6 +3,8 @@
 export { TopicExtension } from "./Topics/TopicExtension";
 export { DataSchemaExtension } from "./Templates/DataSchema/DataSchemaExtension";
 export { APIinterfaceExtension } from "./Templates/APIinterface/APIinterfaceExtension";
+export { MermaidExtension } from "./Templates/Mermaid/MermaidExtension";
+export { MarkdownPasteExtension } from "./MarkdownPasteExtension";
 
 export { Heading } from "./Heading";
 export { Link } from "./Link";

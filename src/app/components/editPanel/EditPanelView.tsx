@@ -33,12 +33,7 @@ const EditPanelView = ({
     const [sourceEdges, setSourceEdges] = useState<ConnectionEdge[]>([]);
 
     const prevSelectState = useRef(selectedNode);
-    console.debug(
-        "prevSelectState",
-        prevSelectState,
-        "selectedNode",
-        selectedNode
-    );
+
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
             if (
@@ -48,7 +43,6 @@ const EditPanelView = ({
                 if (selectedNode) {
                     // Only prevent default if we're actually closing the panel
                     event.preventDefault();
-                    console.debug("Closing panel with keyboard shortcut");
                     selectNode(null);
                 }
             }
@@ -57,7 +51,6 @@ const EditPanelView = ({
 
         window.addEventListener("keydown", handleKeyDown);
         return () => {
-            console.debug("");
             window.removeEventListener("keydown", handleKeyDown);
         };
     }, [selectNode, selectedNode]);
