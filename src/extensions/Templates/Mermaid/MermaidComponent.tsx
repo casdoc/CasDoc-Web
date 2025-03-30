@@ -17,6 +17,8 @@ const MermaidComponent: React.FC<NodeViewProps> = ({
 
     const handleContainerClick = useCallback(
         (e: React.MouseEvent) => {
+            e.stopPropagation();
+            e.preventDefault();
             if (
                 (e.nativeEvent as MouseEvent & { __handledByEditor?: boolean })
                     .__handledByEditor
