@@ -3,7 +3,7 @@ import { Plugin } from "prosemirror-state";
 import { DOMParser as ProseMirrorDOMParser } from "prosemirror-model";
 import markdownit from "markdown-it";
 
-export const MarkdownPaste = Extension.create({
+export const MarkdownPasteExtension = Extension.create({
     name: "markdownPaste",
 
     addProseMirrorPlugins() {

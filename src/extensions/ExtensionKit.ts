@@ -26,7 +26,7 @@ import {
     TopicExtension,
     APIinterfaceExtension,
     MermaidExtension,
-    MarkdownPaste,
+    MarkdownPasteExtension,
 } from ".";
 
 export const ExtensionKit = () => [
@@ -77,7 +77,7 @@ export const ExtensionKit = () => [
     TopicExtension,
     APIinterfaceExtension,
     MermaidExtension,
-    MarkdownPaste,
+    MarkdownPasteExtension,
 ];
 
 export default ExtensionKit;
