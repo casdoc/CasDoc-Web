@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import { Icon } from "@/app/components/doc/ui/Icon";
 import DocMode from "@/app/models/enum/DocMode";
 import LogoButton from "@/app/components/LogoButton";
@@ -12,23 +12,17 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip";
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog";
+
+import ImportDialog from "../Dialog/ImportDialog";
+import { Editor } from "@tiptap/core";
 
 interface EditorHeaderProps {
     mode: DocMode;
     setDocMode: (newMode: DocMode) => void;
+    editor: Editor;
 }
 
-const EditorHeader = ({ mode, setDocMode }: EditorHeaderProps) => {
-    const [importDialogOpen, setImportDialogOpen] = useState(false);
-
+const EditorHeader = ({ mode, setDocMode, editor }: EditorHeaderProps) => {
     const handleChangeView = useCallback(
         (newMode: DocMode) => {
             setDocMode(newMode);
@@ -107,44 +101,7 @@ const EditorHeader = ({ mode, setDocMode }: EditorHeaderProps) => {
 
             {/* Right side with import button and guide button */}
             <div className="flex items-center gap-x-4">
-                <Dialog
-                    open={importDialogOpen}
-                    onOpenChange={setImportDialogOpen}
-                >
-                    <TooltipProvider>
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <DialogTrigger asChild>
-                                    <Button size="icon" variant="default">
-                                        <Icon name="FileUp" />
-                                    </Button>
-                                </DialogTrigger>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                                <p>Import</p>
-                            </TooltipContent>
-                        </Tooltip>
-                    </TooltipProvider>
-                    <DialogContent>
-                        <DialogHeader>
-                            <DialogTitle>Import Content</DialogTitle>
-                            <DialogDescription>
-                                Select an import method to add content to your
-                                document.
-                            </DialogDescription>
-                        </DialogHeader>
-                        <div className="flex flex-col gap-y-2 pt-2">
-                            <Button
-                                className="justify-start"
-                                variant="outline"
-                                onClick={() => {}}
-                            >
-                                <Icon name="FileText" className="mr-2" />
-                                Import from Markdown
-                            </Button>
-                        </div>
-                    </DialogContent>
-                </Dialog>
+                <ImportDialog editor={editor} />
                 <GuideButton />
             </div>
         </div>
