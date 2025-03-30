@@ -31,7 +31,11 @@ const ImportDialog = ({ editor }: ImportDialogProps) => {
 
         const extension = file.name.split(".").pop()?.toLowerCase();
         if (extension !== "md" && extension !== "txt") {
-            alert("Please choose Markdown (.md) or Text(.txt) file");
+            toast({
+                title: "Invalid File Format",
+                description: "Please choose Markdown (.md) or Text (.txt) file",
+                variant: "destructive",
+            });
             return;
         }
 
