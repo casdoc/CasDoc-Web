@@ -17,7 +17,7 @@ export const useBlockEditor = ({
 }: BlockEditorProps) => {
     const isInternalUpdate = useRef(false);
     const { selectNode } = useNodeSelection();
-
+    const prevDocumentId = useRef<string | null>(null);
     const onUpdate = useCallback(
         ({ editor }: { editor: Editor }) => {
             isInternalUpdate.current = true;
@@ -58,13 +58,43 @@ export const useBlockEditor = ({
                     { type: "doc", content: document?.getContent() },
                     false
                 );
+                // Save initial document ID
+                if (document) {
+                    prevDocumentId.current = document.id;
+                }
             } else {
                 // Explicitly set an empty heading
                 editor.commands.setNode("heading", { level: 1 });
             }
         },
     });
+
+    // Enhanced effect to handle document changes
     useEffect(() => {
+        if (!editor || !document) return;
+
+        // Skip if this is an update triggered by the editor itself
+        if (isInternalUpdate.current) return;
+
+        const currentDocId = document.id;
+
+        // Only update content if document ID has changed
+        if (currentDocId !== prevDocumentId.current) {
+            // Need to use setTimeout to ensure the clear completes first
+            setTimeout(() => {
+                editor.commands.clearContent();
+                editor.commands.setContent(
+                    { type: "doc", content: document.getContent() },
+                    false
+                );
+                prevDocumentId.current = currentDocId;
+            }, 0);
+        }
+    }, [editor, document?.id, document]);
+
+    useEffect(() => {
+        const currentDocId = document?.id;
+        if (currentDocId !== prevDocumentId.current) return;
         if (document && editor && !isInternalUpdate.current) {
             editor.commands.setContent(
                 { type: "doc", content: document.getContent() },
