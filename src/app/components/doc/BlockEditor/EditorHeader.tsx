@@ -30,7 +30,7 @@ const EditorHeader = ({ mode, setDocMode }: EditorHeaderProps) => {
                         tooltip={"Editor mode"}
                         onClick={() => handleChangeView(DocMode.Edit)}
                         active={mode === DocMode.Edit}
-                    >   
+                    >
                         <Icon name={"FilePenLine"} />
                     </Toolbar.Button>
                     <Toolbar.Button

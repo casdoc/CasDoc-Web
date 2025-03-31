@@ -8,6 +8,7 @@ import { DocumentViewModel } from "@/app/viewModels/useDocument";
 import { GraphViewModel } from "@/app/viewModels/GraphViewModel";
 import { ReactFlowProvider } from "@xyflow/react";
 import { useState, useEffect, useRef } from "react";
+import { useSidebar } from "@/components/ui/sidebar";
 
 interface DocViewProps {
     documentViewModel: DocumentViewModel;
@@ -20,6 +21,7 @@ const DocView = ({ documentViewModel, graphViewModel }: DocViewProps) => {
     const { editor } = useBlockEditor({ document, updateDocument });
     const [splitWidth, setSplitWidth] = useState(50);
     const isResizing = useRef(false);
+    const { open: sidebarOpen } = useSidebar();
 
     useEffect(() => {
         const handleMouseMove = (e: MouseEvent) => {
@@ -48,7 +50,10 @@ const DocView = ({ documentViewModel, graphViewModel }: DocViewProps) => {
     }
 
     return (
-        <div className="relative flex flex-col flex-1 h-dvh w-dvw bg-white">
+        <div
+            className={`relative flex flex-col flex-1 h-dvh w-dvw bg-white transition-all duration-500
+                ${sidebarOpen ? "ml-64" : "ml-0"}`}
+        >
             <EditorHeader mode={mode as DocMode} setDocMode={setDocMode} />
             <div className="flex flex-row overflow-y-auto h-full">
                 <div

@@ -8,7 +8,7 @@ import { useDocumentViewModel } from "@/app/viewModels/useDocument";
 import { useGraphViewModel } from "@/app/viewModels/GraphViewModel";
 import { useEffect } from "react";
 import mermaid from "mermaid";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import AppSidebar from "@/app/components/sidebar/AppSidebar";
 
 export default function Doc() {
@@ -32,14 +32,14 @@ function DocumentContent({ documentId }: { documentId: string }) {
             <SidebarProvider>
                 <div className="min-w-fit h-screen flex flex-col items-center bg-gray-100 text-black">
                     <AppSidebar />
-                    {/* <DocView
+                    <DocView
                         documentViewModel={documentViewModel}
                         graphViewModel={graphViewModel}
                     />
                     <EditPanel
                         documentViewModel={documentViewModel}
                         graphViewModel={graphViewModel}
-                    /> */}
+                    />
                 </div>
             </SidebarProvider>
         </NodeSelectionProvider>
