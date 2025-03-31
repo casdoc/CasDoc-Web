@@ -5,7 +5,8 @@ import EditPanel from "@/app/components/editPanel/EditPanelView";
 import { NodeSelectionProvider } from "@/app/viewModels/context/NodeSelectionContext";
 import { useDocumentViewModel } from "@/app/viewModels/useDocument";
 import { useGraphViewModel } from "@/app/viewModels/GraphViewModel";
-
+import { SidebarProvider } from "@/components/ui/sidebar";
+import AppSidebar from "@/app/components/sidebar/AppSidebar";
 interface DocumentContentProps {
     documentId: string;
 }
@@ -16,16 +17,19 @@ export default function DocumentContent({ documentId }: DocumentContentProps) {
 
     return (
         <NodeSelectionProvider>
-            <div className="min-w-fit h-screen flex flex-col items-center bg-gray-100 text-black">
-                <DocView
-                    documentViewModel={documentViewModel}
-                    graphViewModel={graphViewModel}
-                />
-                <EditPanel
-                    documentViewModel={documentViewModel}
-                    graphViewModel={graphViewModel}
-                />
-            </div>
+            <SidebarProvider>
+                <div className="min-w-fit h-screen flex flex-col items-center bg-gray-100 text-black">
+                    <AppSidebar />
+                    <DocView
+                        documentViewModel={documentViewModel}
+                        graphViewModel={graphViewModel}
+                    />
+                    <EditPanel
+                        documentViewModel={documentViewModel}
+                        graphViewModel={graphViewModel}
+                    />
+                </div>
+            </SidebarProvider>
         </NodeSelectionProvider>
     );
 }
