@@ -9,6 +9,9 @@ import {
 import { NodeSelection } from "@tiptap/pm/state";
 import MermaidComponent from "./MermaidComponent";
 export const mermaidDefaultConfig = {
+    info: {
+        name: "Mermaid",
+    },
     content: `%% Mermaid Template - Delete or modify this template to create your own diagram
 %% This template demonstrates the most common Mermaid diagram types.
 %% Uncomment the section you want to use and delete the rest.
