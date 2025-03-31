@@ -75,13 +75,15 @@ const DocView = ({ documentViewModel, graphViewModel }: DocViewProps) => {
                     ></div>
                 )}
                 <div
-                    className={`${mode === DocMode.Split ? "h-full" : ""} ${
-                        mode === DocMode.Graph ? "w-full h-full" : ""
-                    } ${
-                        mode !== DocMode.Split && mode !== DocMode.Graph
-                            ? "hidden"
-                            : ""
-                    }`}
+                    className={`
+                        ${mode === DocMode.Split ? "h-full" : ""}
+                        ${mode === DocMode.Graph ? "w-full h-full" : ""}
+                        ${
+                            mode !== DocMode.Split && mode !== DocMode.Graph
+                                ? "hidden"
+                                : ""
+                        }
+                    `}
                     style={{
                         width:
                             mode === DocMode.Split
