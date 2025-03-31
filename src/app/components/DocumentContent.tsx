@@ -18,8 +18,8 @@ export default function DocumentContent({ documentId }: DocumentContentProps) {
     return (
         <NodeSelectionProvider>
             <SidebarProvider>
-                <div className="min-w-fit h-screen flex flex-col items-center bg-gray-100 text-black">
-                    <AppSidebar />
+                <AppSidebar />
+                <div className="h-dvh w-dvw flex flex-col items-center bg-gray-100 text-black">
                     <DocView
                         documentViewModel={documentViewModel}
                         graphViewModel={graphViewModel}

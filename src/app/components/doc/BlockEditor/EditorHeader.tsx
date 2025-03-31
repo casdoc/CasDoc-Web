@@ -33,12 +33,19 @@ const EditorHeader = ({ mode, setDocMode, editor }: EditorHeaderProps) => {
     );
 
     return (
-        <div className="flex flex-row items-center justify-between flex-none py-2 pl-6 pr-3 text-black bg-white border-b border-neutral-200 dark:bg-black dark:text-white dark:border-neutral-800 z-50">
+        <div className="flex flex-row items-center justify-between flex-none py-2 px-3 text-black bg-white border-b border-neutral-200 dark:bg-black dark:text-white dark:border-neutral-800 z-50">
             {/* Left side with logo and mode buttons */}
             <div className="flex items-center gap-x-1.5">
-                <SidebarTrigger />
                 {/* <LogoButton /> */}
                 <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <SidebarTrigger />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>Sidebar</p>
+                        </TooltipContent>
+                    </Tooltip>
                     <Tooltip>
                         <TooltipTrigger asChild>
                             <Button
@@ -57,9 +64,7 @@ const EditorHeader = ({ mode, setDocMode, editor }: EditorHeaderProps) => {
                             <p>Editor mode</p>
                         </TooltipContent>
                     </Tooltip>
-                </TooltipProvider>
 
-                <TooltipProvider>
                     <Tooltip>
                         <TooltipTrigger asChild>
                             <Button
@@ -78,9 +83,7 @@ const EditorHeader = ({ mode, setDocMode, editor }: EditorHeaderProps) => {
                             <p>Project Graph mode</p>
                         </TooltipContent>
                     </Tooltip>
-                </TooltipProvider>
 
-                <TooltipProvider>
                     <Tooltip>
                         <TooltipTrigger asChild>
                             <Button
@@ -115,8 +118,7 @@ const EditorHeader = ({ mode, setDocMode, editor }: EditorHeaderProps) => {
                             <p>Import content</p>
                         </TooltipContent>
                     </Tooltip>
-                </TooltipProvider>
-                <TooltipProvider>
+
                     <Tooltip>
                         <TooltipTrigger asChild>
                             <div>
@@ -127,8 +129,7 @@ const EditorHeader = ({ mode, setDocMode, editor }: EditorHeaderProps) => {
                             <p>Export content</p>
                         </TooltipContent>
                     </Tooltip>
-                </TooltipProvider>
-                <TooltipProvider>
+
                     <Tooltip>
                         <TooltipTrigger asChild>
                             <div className="flex items-center justify-center">

@@ -51,8 +51,8 @@ const DocView = ({ documentViewModel, graphViewModel }: DocViewProps) => {
 
     return (
         <div
-            className={`relative flex flex-col flex-1 h-dvh w-dvw bg-white transition-all duration-500
-                ${sidebarOpen ? "ml-64" : "ml-0"}`}
+            className={`relative flex flex-col flex-1 h-dvh w-full bg-white transition-all duration-500
+               `}
         >
             <EditorHeader
                 mode={mode as DocMode}
