@@ -24,10 +24,12 @@ import {
 } from "@/components/ui/select";
 
 interface MermaidEditorProps {
+    name?: string;
     initialCode: string;
     onCodeUpdate?: (code: string) => void;
 }
 const MermaidEditor: React.FC<MermaidEditorProps> = ({
+    name,
     initialCode,
     onCodeUpdate,
 }) => {
@@ -135,9 +137,7 @@ const MermaidEditor: React.FC<MermaidEditorProps> = ({
             {/* top navigation */}
             <div className="flex flex-wrap justify-between items-center mb-6">
                 <div className="flex items-center gap-3 pr-1">
-                    <span className="font-bold text-gray-800 pr-4">
-                        Mermaid
-                    </span>
+                    <span className="font-bold text-gray-800 pr-4">{name}</span>
                     <Select
                         value={viewMode}
                         onValueChange={handleViewModeChange}

@@ -2,20 +2,19 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Editor } from "@tiptap/react";
+import { useToast } from "@/hooks/use-toast";
+import { Clapperboard, FileDown } from "lucide-react";
 import {
     Popover,
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
-
-import { Editor } from "@tiptap/react";
-import { useToast } from "@/hooks/use-toast";
 import {
-    MarkdownSerializer,
-    defaultMarkdownSerializer,
-} from "prosemirror-markdown";
-import { Clapperboard, FileDown } from "lucide-react";
-
+    getMarkdown,
+    downloadMarkdown,
+    copyMarkdownToClipboard,
+} from "@/lib/markdownExport";
 const ExportPopover = ({ editor }: { editor: Editor }) => {
     const { toast } = useToast();
     const [isExporting, setIsExporting] = useState(false);
@@ -24,55 +23,8 @@ const ExportPopover = ({ editor }: { editor: Editor }) => {
         if (!editor) return;
         setIsExporting(true);
         try {
-            // Create custom serializer functions for each node type
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            type NodeSerializer = (state: any, node: any) => void;
-            const nodes: { [key: string]: NodeSerializer } = {
-                ...defaultMarkdownSerializer.nodes,
-                // Custom serializer for topic node
-                topic: (state, node) => {
-                    const { config } = node.attrs;
-                    const name = config?.info?.name || "Unknown";
-                    const description = config?.info?.description || "";
-
-                    // state.write(`:::topic\n`);
-                    state.write(`## Name: ${name}\n`);
-                    state.write(`Description: ${description}\n`);
-                    // state.write(`:::\n\n`);
-                },
-            };
-
-            // Add fallback serializers for any node types not handled
-            Object.keys(editor.schema.nodes).forEach((nodeName) => {
-                if (!nodes[nodeName]) {
-                    nodes[nodeName] = (state, node) => {
-                        // Default fallback just renders content
-                        if (node.content) {
-                            state.renderContent(node);
-                        }
-                    };
-                }
-            });
-
-            // Create serializer with our custom nodes and default marks
-            const serializer = new MarkdownSerializer(
-                nodes,
-                defaultMarkdownSerializer.marks
-            );
-            const markdown = serializer.serialize(editor.state.doc);
-
-            // Create blob and download
-            const blob = new Blob([markdown], {
-                type: "text/markdown;charset=utf-8",
-            });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = "document.md";
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
+            const markdown = getMarkdown(editor);
+            downloadMarkdown(markdown);
 
             toast({
                 title: "Export Successful",
@@ -85,49 +37,18 @@ const ExportPopover = ({ editor }: { editor: Editor }) => {
                 description: "Error exporting document as Markdown",
                 variant: "destructive",
             });
+        } finally {
+            setIsExporting(false);
         }
-        setIsExporting(false);
     };
 
     const handleCopyMarkdown = async () => {
         if (!editor) return;
         setIsExporting(true);
+
         try {
-            // Similar serialization as above
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            type NodeSerializer = (state: any, node: any) => void;
-            const nodes: { [key: string]: NodeSerializer } = {
-                ...defaultMarkdownSerializer.nodes,
-                topic: (state, node) => {
-                    const { config } = node.attrs;
-                    const name = config?.info?.name || "Unknown";
-                    const description = config?.info?.description || "";
-
-                    state.write(`:::topic\n`);
-                    state.write(`Name: ${name}\n`);
-                    state.write(`Description: ${description}\n`);
-                    state.write(`:::\n\n`);
-                },
-            };
-
-            Object.keys(editor.schema.nodes).forEach((nodeName) => {
-                if (!nodes[nodeName]) {
-                    nodes[nodeName] = (state, node) => {
-                        if (node.content) {
-                            state.renderContent(node);
-                        }
-                    };
-                }
-            });
-
-            const serializer = new MarkdownSerializer(
-                nodes,
-                defaultMarkdownSerializer.marks
-            );
-            const markdown = serializer.serialize(editor.state.doc);
-
-            // Copy to clipboard instead of downloading
-            await navigator.clipboard.writeText(markdown);
+            const markdown = getMarkdown(editor);
+            await copyMarkdownToClipboard(markdown);
 
             toast({
                 title: "Copied to Clipboard",
@@ -140,8 +61,9 @@ const ExportPopover = ({ editor }: { editor: Editor }) => {
                 description: "Error copying Markdown to clipboard",
                 variant: "destructive",
             });
+        } finally {
+            setIsExporting(false);
         }
-        setIsExporting(false);
     };
 
     return (
@@ -151,7 +73,12 @@ const ExportPopover = ({ editor }: { editor: Editor }) => {
                     <FileDown />
                 </Button>
             </PopoverTrigger>
-            <PopoverContent className="p-4">
+            <PopoverContent
+                className="p-4"
+                align="end"
+                alignOffset={-5}
+                sideOffset={5}
+            >
                 <div className="flex flex-col gap-y-2">
                     <Button
                         className="justify-start"

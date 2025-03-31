@@ -115,7 +115,7 @@ const EditorHeader = ({ mode, setDocMode, editor }: EditorHeaderProps) => {
                             </div>
                         </TooltipTrigger>
                         <TooltipContent>
-                            <p>Import content</p>
+                            <p>Import</p>
                         </TooltipContent>
                     </Tooltip>
 
@@ -126,7 +126,7 @@ const EditorHeader = ({ mode, setDocMode, editor }: EditorHeaderProps) => {
                             </div>
                         </TooltipTrigger>
                         <TooltipContent>
-                            <p>Export content</p>
+                            <p>Export</p>
                         </TooltipContent>
                     </Tooltip>
 
@@ -137,7 +137,7 @@ const EditorHeader = ({ mode, setDocMode, editor }: EditorHeaderProps) => {
                             </div>
                         </TooltipTrigger>
                         <TooltipContent>
-                            <p>Help guide</p>
+                            <p>Guide</p>
                         </TooltipContent>
                     </Tooltip>
                 </TooltipProvider>

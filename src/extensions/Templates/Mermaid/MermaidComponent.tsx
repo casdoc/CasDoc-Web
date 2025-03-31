@@ -11,6 +11,7 @@ const MermaidComponent: React.FC<NodeViewProps> = ({
 }) => {
     const { id, config } = node.attrs;
     const mermaidCode = config?.content || "";
+    const name = config?.info?.name || "Mermaid";
     const { selectedNode, selectNode } = useNodeSelection();
     const isSelected = selectedNode === id;
     const isUpdatingRef = useRef(false);
@@ -59,6 +60,7 @@ const MermaidComponent: React.FC<NodeViewProps> = ({
         >
             <div className="h-full ">
                 <MermaidEditor
+                    name={name}
                     initialCode={mermaidCode}
                     onCodeUpdate={handleCodeUpdate}
                 />
