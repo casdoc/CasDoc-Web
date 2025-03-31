@@ -1,9 +1,8 @@
 "use client";
 
 import { useCallback } from "react";
-import { Icon } from "@/app/components/doc/ui/Icon";
 import DocMode from "@/app/models/enum/DocMode";
-import LogoButton from "@/app/components/LogoButton";
+// import LogoButton from "@/app/components/LogoButton";
 import GuideButton from "@/app/components/guide/GuideButton";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
@@ -17,6 +16,7 @@ import {
 import ImportDialog from "../Dialog/ImportDialog";
 import { Editor } from "@tiptap/core";
 import ExportPopover from "../Popover/ExportPopover";
+import { FilePenLine, FolderTree, SquareSplitHorizontal } from "lucide-react";
 
 interface EditorHeaderProps {
     mode: DocMode;
@@ -37,7 +37,7 @@ const EditorHeader = ({ mode, setDocMode, editor }: EditorHeaderProps) => {
             {/* Left side with logo and mode buttons */}
             <div className="flex items-center gap-x-1.5">
                 <SidebarTrigger />
-                <LogoButton />
+                {/* <LogoButton /> */}
                 <TooltipProvider>
                     <Tooltip>
                         <TooltipTrigger asChild>
@@ -50,7 +50,7 @@ const EditorHeader = ({ mode, setDocMode, editor }: EditorHeaderProps) => {
                                 }
                                 onClick={() => handleChangeView(DocMode.Edit)}
                             >
-                                <Icon name="FilePenLine" />
+                                <FilePenLine />
                             </Button>
                         </TooltipTrigger>
                         <TooltipContent>
@@ -71,7 +71,7 @@ const EditorHeader = ({ mode, setDocMode, editor }: EditorHeaderProps) => {
                                 }
                                 onClick={() => handleChangeView(DocMode.Graph)}
                             >
-                                <Icon name="FolderTree" />
+                                <FolderTree />
                             </Button>
                         </TooltipTrigger>
                         <TooltipContent>
@@ -92,7 +92,7 @@ const EditorHeader = ({ mode, setDocMode, editor }: EditorHeaderProps) => {
                                 }
                                 onClick={() => handleChangeView(DocMode.Split)}
                             >
-                                <Icon name="SquareSplitHorizontal" />
+                                <SquareSplitHorizontal />
                             </Button>
                         </TooltipTrigger>
                         <TooltipContent>
