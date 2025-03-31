@@ -18,10 +18,8 @@ export const createMarkdownSerializer = (editor: Editor) => {
             const name = config?.info?.name || "Unknown";
             const description = config?.info?.description || "";
 
-            state.write(`:::topic\n`);
-            state.write(`Name: ${name}\n`);
-            state.write(`Description: ${description}\n`);
-            state.write(`:::\n\n`);
+            state.write(`## ${name}\n`);
+            state.write(`### Description\n ${description}\n`);
         },
         // Custom serializer for API interface node
         "template-apiInterface": (state, node) => {
@@ -149,6 +147,23 @@ export const createMarkdownSerializer = (editor: Editor) => {
                     state.write(`\n`);
                 }
             }
+
+            // Add a separator
+            state.write(`---\n\n`);
+        },
+
+        "template-mermaid": (state, node) => {
+            const { config } = node.attrs;
+            const name = config?.info?.name || "Mermaid Diagram";
+            const mermaidCode = config?.content || "";
+
+            // Write diagram name as a heading
+            state.write(`### ${name}\n\n`);
+
+            // Write mermaid code in a fenced code block
+            state.write("```mermaid\n");
+            state.write(`${mermaidCode}\n`);
+            state.write("```\n\n");
 
             // Add a separator
             state.write(`---\n\n`);
