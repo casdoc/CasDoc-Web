@@ -69,7 +69,7 @@ const ImportDialog = ({ editor }: ImportDialogProps) => {
         navigator.clipboard.writeText(content);
         console.debug("Copied Markdown content:", content);
         toast({
-            title: "copied",
+            title: "Copied",
             description: "Markdown content copied to clipboard",
         });
     };
