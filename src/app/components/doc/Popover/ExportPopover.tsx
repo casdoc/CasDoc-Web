@@ -146,11 +146,16 @@ const ExportPopover = ({ editor }: { editor: Editor }) => {
     return (
         <Popover>
             <PopoverTrigger asChild>
-                <Button size="icon" variant="ghost">
-                    <Icon name="FileDown" />
+                <Button size="icon" variant="outline">
+                    <Icon name="Download" />
                 </Button>
             </PopoverTrigger>
-            <PopoverContent className="p-4">
+            <PopoverContent
+                className="p-4"
+                align="end"
+                alignOffset={-5}
+                sideOffset={5}
+            >
                 <div className="flex flex-col gap-y-2">
                     <Button
                         className="justify-start"

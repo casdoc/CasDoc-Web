@@ -21,7 +21,7 @@ const GuideButton = () => {
                 onClick={handleOpen}
                 className="hover:opacity-50 hover:rotate-180 duration-300 bg-none"
             >
-                <FaRegCompass size={30} />
+                <FaRegCompass size={20} />
             </button>
             {isOpen && <GuidePopup onClose={handleClose} />}
         </>

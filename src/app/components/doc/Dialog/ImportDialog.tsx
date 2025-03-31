@@ -93,7 +93,7 @@ const ImportDialog = ({ editor }: ImportDialogProps) => {
     return (
         <Dialog open={importDialogOpen} onOpenChange={setImportDialogOpen}>
             <DialogTrigger asChild>
-                <Button size="icon" variant="default">
+                <Button size="icon" variant="outline">
                     <Icon name="FileUp" />
                 </Button>
             </DialogTrigger>
