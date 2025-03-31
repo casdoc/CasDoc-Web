@@ -41,21 +41,23 @@ const ProjectMenu = ({ name, onDelete }: ProjectMenuProps) => {
 
     return (
         <SidebarMenuItem key={name}>
-            <SidebarMenuButton asChild className="hover:bg-gray-200">
-                <a href="#">
+            <SidebarMenuButton asChild className="hover:bg-neutral-200">
+                <div>
                     <Folder />
                     <span>{name}</span>
-                </a>
+                </div>
             </SidebarMenuButton>
             <SidebarMenuAction>
-                <Plus onClick={handleAddDocument} />
-                <DropDownMenu
-                    dropdownItems={dropdownItems}
-                    onClick={handleMenuClick}
-                />
+                <div className="flex flex-row items-center gap-2 pr-7">
+                    <Plus onClick={handleAddDocument} size={16} />
+                    <DropDownMenu
+                        dropdownItems={dropdownItems}
+                        onClick={handleMenuClick}
+                    />
+                </div>
             </SidebarMenuAction>
 
-            <SidebarMenuSub className="w-full pr-1">
+            <SidebarMenuSub>
                 {documents.map((doc) => (
                     <DocMenu
                         key={doc}

@@ -24,15 +24,17 @@ const DocMenu = ({ name, onDelete }: DocMenuProps) => {
 
     return (
         <SidebarMenuSubItem>
-            <SidebarMenuSubButton asChild className="hover:bg-gray-200">
-                <a href="#">
-                    <File />
-                    <span>{name}</span>
+            <SidebarMenuSubButton asChild className="hover:bg-neutral-200">
+                <div className="flex flex-row justify-between w-full">
+                    <div className="flex flex-row items-center gap-2">
+                        <File size={16} />
+                        <span>{name}</span>
+                    </div>
                     <DropDownMenu
                         dropdownItems={dropdownItems}
                         onClick={handleMenuClick}
                     />
-                </a>
+                </div>
             </SidebarMenuSubButton>
         </SidebarMenuSubItem>
     );

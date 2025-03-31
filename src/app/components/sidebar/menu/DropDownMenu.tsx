@@ -15,7 +15,7 @@ const DropDownMenu = ({ dropdownItems, onClick }: DropDownMenuProps) => {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <MoreHorizontal className="ml-auto" />
+                <MoreHorizontal size={16} className="hover:cursor-pointer" />
             </DropdownMenuTrigger>
             <DropdownMenuContent side="right" align="start">
                 {dropdownItems.map((item) => (
