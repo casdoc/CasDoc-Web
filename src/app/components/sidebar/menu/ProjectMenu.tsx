@@ -28,7 +28,7 @@ const ProjectMenu = ({
         createDocument,
         deleteProject,
         renameProject,
-        selectProject,
+        // selectProject,
         currentProjectDocuments,
     } = useProjectContext();
 
