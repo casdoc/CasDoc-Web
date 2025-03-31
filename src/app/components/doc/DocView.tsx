@@ -50,17 +50,21 @@ const DocView = ({ documentViewModel, graphViewModel }: DocViewProps) => {
     }
 
     return (
-        <div
-            className={`relative flex flex-col flex-1 h-dvh w-dvw bg-white transition-all duration-500
-                ${sidebarOpen ? "ml-64" : "ml-0"}`}
-        >
-            <EditorHeader mode={mode as DocMode} setDocMode={setDocMode} />
+        <div className="relative flex flex-col flex-1 h-dvh w-dvw bg-white">
+            <EditorHeader
+                mode={mode as DocMode}
+                setDocMode={setDocMode}
+                editor={editor}
+            />
             <div className="flex flex-row overflow-y-auto h-full">
                 <div
                     className={`overflow-y-auto ${
                         mode === DocMode.Edit ? "w-full" : ""
                     } ${mode === DocMode.Graph ? "hidden" : ""}`}
-                    style={{ width: mode === DocMode.Split ? `${splitWidth}%` : "100%" }}
+                    style={{
+                        width:
+                            mode === DocMode.Split ? `${splitWidth}%` : "100%",
+                    }}
                 >
                     <BlockEditor editor={editor} title={document.getTitle()} />
                 </div>
@@ -73,14 +77,21 @@ const DocView = ({ documentViewModel, graphViewModel }: DocViewProps) => {
                     ></div>
                 )}
                 <div
-                    className={`${
-                        mode === DocMode.Split ? "h-full" : ""
-                    } ${mode === DocMode.Graph ? "w-full h-full" : ""} ${
-                        mode !== DocMode.Split && mode !== DocMode.Graph
-                            ? "hidden"
-                            : ""
-                    }`}
-                    style={{ width: mode === DocMode.Split ? `${100 - splitWidth}%` : "100%" }}
+                    className={`
+                        ${mode === DocMode.Split ? "h-full" : ""}
+                        ${mode === DocMode.Graph ? "w-full h-full" : ""}
+                        ${
+                            mode !== DocMode.Split && mode !== DocMode.Graph
+                                ? "hidden"
+                                : ""
+                        }
+                    `}
+                    style={{
+                        width:
+                            mode === DocMode.Split
+                                ? `${100 - splitWidth}%`
+                                : "100%",
+                    }}
                 >
                     <ReactFlowProvider>
                         <GraphView

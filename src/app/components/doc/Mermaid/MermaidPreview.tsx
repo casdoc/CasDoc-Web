@@ -95,7 +95,7 @@ function MermaidPreview({
             document.removeEventListener("keydown", handleKeyDown);
             document.removeEventListener("keyup", handleKeyUp);
         };
-    }, []);
+    }, [maxScale, minScale]);
 
     // when renderedSvg changes, apply transform
     useEffect(() => {

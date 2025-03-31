@@ -173,7 +173,7 @@ export function useDocumentViewModel(documentId: string): DocumentViewModel {
             return {
                 id: content.attrs.id,
                 pid: lastTopicId || content.attrs.topicId,
-                label: content.attrs.config?.info.name || "",
+                label: content.attrs.config?.info?.name || "",
                 type: content.type,
             };
         }
