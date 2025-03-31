@@ -8,11 +8,11 @@ import ProjectGroup from "./group/ProjectGroup";
 
 const AppSidebar = () => (
     <Sidebar>
-        <SidebarHeader />
-        <SidebarContent>
+        {/* <SidebarHeader /> */}
+        <SidebarContent className="bg-neutral-50">
             <ProjectGroup />
         </SidebarContent>
-        <SidebarFooter />
+        {/* <SidebarFooter /> */}
     </Sidebar>
 );
 

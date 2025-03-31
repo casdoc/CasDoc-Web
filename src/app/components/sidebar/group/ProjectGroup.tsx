@@ -22,7 +22,7 @@ const ProjectGroup = () => {
 
     return (
         <SidebarGroup>
-            <SidebarGroupLabel className="text-gray-400 text-sm">
+            <SidebarGroupLabel className="text-gray-400 text-sm ">
                 My Projects
             </SidebarGroupLabel>
             <SidebarGroupAction>
