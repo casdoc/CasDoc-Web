@@ -1,8 +1,8 @@
 import {
     Sidebar,
-    SidebarHeader,
+    // SidebarHeader,
     SidebarContent,
-    SidebarFooter,
+    // SidebarFooter,
 } from "@/components/ui/sidebar";
 import ProjectGroup from "./group/ProjectGroup";
 

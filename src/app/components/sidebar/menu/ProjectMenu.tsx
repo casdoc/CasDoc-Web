@@ -25,25 +25,26 @@ const ProjectMenu = ({
     isSelected = false,
 }: ProjectMenuProps) => {
     const {
-        getDocumentsForProject,
         createDocument,
         deleteProject,
         renameProject,
         selectProject,
+        currentProjectDocuments,
     } = useProjectContext();
 
+    // Use the documents directly from the context when this project is selected
     const [documents, setDocuments] = useState<Document[]>([]);
+
     useEffect(() => {
         if (isSelected) {
-            setDocuments(getDocumentsForProject(projectId));
+            setDocuments(currentProjectDocuments);
         }
-    }, [isSelected, projectId, getDocumentsForProject]);
+    }, [isSelected, currentProjectDocuments]);
 
     const handleAddDocument = (e: React.MouseEvent) => {
         e.stopPropagation();
         const newDocName = `Document ${documents.length + 1}`;
         createDocument(projectId, newDocName);
-        setDocuments(getDocumentsForProject(projectId));
     };
 
     const handleMenuClick = (action: string) => {
@@ -58,14 +59,14 @@ const ProjectMenu = ({
     };
 
     const handleProjectClick = () => {
-        selectProject(projectId);
+        // selectProject(projectId);
     };
 
     return (
-        <SidebarMenuItem key={name}>
+        <SidebarMenuItem key={projectId}>
             <SidebarMenuButton
                 asChild
-                className="hover:bg-neutral-200"
+                // className={`hover:bg-neutral-200`}
                 onClick={handleProjectClick}
             >
                 <div>

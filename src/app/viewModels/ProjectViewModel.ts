@@ -11,7 +11,8 @@ export interface ProjectViewModel {
     projects: Project[];
     selectedProjectId: string | null;
     selectedDocumentId: string | null;
-
+    // State to track documents for the current project
+    currentProjectDocuments: Document[];
     // Project actions
     createProject: (name: string) => void;
     deleteProject: (projectId: string) => void;
@@ -34,7 +35,9 @@ export function useProjectViewModel(): ProjectViewModel {
     const [selectedDocumentId, setSelectedDocumentId] = useState<string | null>(
         null
     );
-
+    const [currentProjectDocuments, setCurrentProjectDocuments] = useState<
+        Document[]
+    >([]);
     // Load projects from localStorage
     useEffect(() => {
         const loadedProjects = ProjectService.getAllProjects();
@@ -85,7 +88,23 @@ export function useProjectViewModel(): ProjectViewModel {
             }
         }
     }, [selectedProjectId]);
+    // Load documents for the selected project
+    useEffect(() => {
+        if (selectedProjectId) {
+            const docs =
+                ProjectService.getDocumentsByProjectId(selectedProjectId);
+            setCurrentProjectDocuments(docs);
 
+            // Select the first document if none is selected or if the selected document is not in this project
+            if (
+                (!selectedDocumentId ||
+                    !docs.some((doc) => doc.id === selectedDocumentId)) &&
+                docs.length > 0
+            ) {
+                setSelectedDocumentId(docs[0].id);
+            }
+        }
+    }, [selectedProjectId, selectedDocumentId]);
     // Project Actions
     const createProject = useCallback((name: string) => {
         const newProject = new Project(
@@ -107,38 +126,31 @@ export function useProjectViewModel(): ProjectViewModel {
     }, []);
 
     const deleteProject = useCallback(
-        (projectId: string) => {
-            ProjectService.deleteProject(projectId);
+        (documentId: string) => {
+            const docToDelete = DocumentService.getDocumentById(documentId);
+            if (!docToDelete) return;
 
-            // Update local state
-            setProjects((prevProjects) =>
-                prevProjects.filter((proj) => proj.id !== projectId)
+            DocumentService.deleteDocument(documentId);
+
+            // Update local state for currentProjectDocuments
+            setCurrentProjectDocuments((prev) =>
+                prev.filter((doc) => doc.id !== documentId)
             );
 
-            // If the deleted project was selected, select another one
-            if (selectedProjectId === projectId) {
-                const remainingProjects = projects.filter(
-                    (p) => p.id !== projectId
+            // If the deleted document was selected, select another one
+            if (selectedDocumentId === documentId) {
+                const projectDocs = currentProjectDocuments.filter(
+                    (doc) => doc.id !== documentId
                 );
-                if (remainingProjects.length > 0) {
-                    setSelectedProjectId(remainingProjects[0].id);
 
-                    // Get documents for the newly selected project
-                    const projectDocs = ProjectService.getDocumentsByProjectId(
-                        remainingProjects[0].id
-                    );
-                    if (projectDocs.length > 0) {
-                        setSelectedDocumentId(projectDocs[0].id);
-                    } else {
-                        setSelectedDocumentId(null);
-                    }
+                if (projectDocs.length > 0) {
+                    setSelectedDocumentId(projectDocs[0].id);
                 } else {
-                    setSelectedProjectId(null);
                     setSelectedDocumentId(null);
                 }
             }
         },
-        [projects, selectedProjectId]
+        [currentProjectDocuments, selectedDocumentId]
     );
 
     const renameProject = useCallback((projectId: string, newName: string) => {
@@ -233,6 +245,7 @@ export function useProjectViewModel(): ProjectViewModel {
         projects,
         selectedProjectId,
         selectedDocumentId,
+        currentProjectDocuments,
         createProject,
         deleteProject,
         renameProject,
