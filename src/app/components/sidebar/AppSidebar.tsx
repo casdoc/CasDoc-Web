@@ -7,7 +7,7 @@ import {
 import ProjectGroup from "./group/ProjectGroup";
 
 const AppSidebar = () => (
-    <Sidebar side="left" variant="sidebar" collapsible="offcanvas">
+    <Sidebar>
         <SidebarHeader />
         <SidebarContent>
             <ProjectGroup />

@@ -1,6 +1,5 @@
 import ProjectMenu from "../menu/ProjectMenu";
 import DropDownMenu from "../menu/DropDownMenu";
-import { useState } from "react";
 import { Plus } from "lucide-react";
 import {
     SidebarGroup,
@@ -9,21 +8,16 @@ import {
     SidebarGroupLabel,
     SidebarMenu,
 } from "@/components/ui/sidebar";
+import { useProjectContext } from "@/app/viewModels/context/ProjectContext";
 
 const dropdownItems = ["Order"];
 
 const ProjectGroup = () => {
-    const [projects, setProjects] = useState<string[]>([]);
-    const [projectCount, setProjectCount] = useState(1);
+    const { projects, createProject, selectedProjectId } = useProjectContext();
 
     const handleAddProject = () => {
-        const newProject = `Project ${projectCount}`;
-        setProjectCount(projectCount + 1);
-        setProjects([...projects, newProject]);
-    };
-
-    const handleDeleteProject = (projectName: string) => {
-        setProjects(projects.filter((project) => project !== projectName));
+        const projectName = `Project ${projects.length + 1}`;
+        createProject(projectName);
     };
 
     return (
@@ -41,9 +35,10 @@ const ProjectGroup = () => {
                 <SidebarMenu>
                     {projects.map((project) => (
                         <ProjectMenu
-                            key={project}
-                            name={project}
-                            onDelete={handleDeleteProject}
+                            key={project.id}
+                            name={project.name}
+                            projectId={project.id}
+                            isSelected={project.id === selectedProjectId}
                         />
                     ))}
                 </SidebarMenu>

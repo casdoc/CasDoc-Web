@@ -1,6 +1,6 @@
 import DocMenu from "./DocMenu";
 import DropDownMenu from "./DropDownMenu";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Folder, Plus } from "lucide-react";
 import {
     SidebarMenuItem,
@@ -8,40 +8,66 @@ import {
     SidebarMenuAction,
     SidebarMenuSub,
 } from "@/components/ui/sidebar";
+import { useProjectContext } from "@/app/viewModels/context/ProjectContext";
+import { Document } from "@/app/models/entity/Document";
 
 const dropdownItems = ["Rename", "Delete"];
 
 interface ProjectMenuProps {
     name: string;
-    onDelete?: (name: string) => void;
+    projectId: string;
+    isSelected?: boolean;
 }
 
-const ProjectMenu = ({ name, onDelete }: ProjectMenuProps) => {
-    const [documents, setDocuments] = useState<string[]>([]);
-    const [documentCount, setDocumentCount] = useState(1);
+const ProjectMenu = ({
+    name,
+    projectId,
+    isSelected = false,
+}: ProjectMenuProps) => {
+    const {
+        getDocumentsForProject,
+        createDocument,
+        deleteProject,
+        renameProject,
+        selectProject,
+    } = useProjectContext();
 
-    const handleAddDocument = () => {
-        const newDocument = `Document ${documentCount}`;
-        setDocumentCount(documentCount + 1);
-        setDocuments([...documents, newDocument]);
-    };
+    const [documents, setDocuments] = useState<Document[]>([]);
+    useEffect(() => {
+        if (isSelected) {
+            setDocuments(getDocumentsForProject(projectId));
+        }
+    }, [isSelected, projectId, getDocumentsForProject]);
 
-    const handleDeleteDocument = (docName: string) => {
-        setDocuments(documents.filter((doc) => doc !== docName));
+    const handleAddDocument = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        const newDocName = `Document ${documents.length + 1}`;
+        createDocument(projectId, newDocName);
+        setDocuments(getDocumentsForProject(projectId));
     };
 
     const handleMenuClick = (action: string) => {
-        if (action === "Delete" && onDelete) {
-            // Handle delete action
-            onDelete(name);
+        if (action === "Delete") {
+            deleteProject(projectId);
         } else if (action === "Rename") {
-            // Handle rename action
+            const newName = prompt("Enter new project name:", name);
+            if (newName && newName.trim() !== "") {
+                renameProject(projectId, newName);
+            }
         }
+    };
+
+    const handleProjectClick = () => {
+        selectProject(projectId);
     };
 
     return (
         <SidebarMenuItem key={name}>
-            <SidebarMenuButton asChild className="hover:bg-neutral-200">
+            <SidebarMenuButton
+                asChild
+                className="hover:bg-neutral-200"
+                onClick={handleProjectClick}
+            >
                 <div>
                     <Folder />
                     <span>{name}</span>
@@ -60,9 +86,9 @@ const ProjectMenu = ({ name, onDelete }: ProjectMenuProps) => {
             <SidebarMenuSub>
                 {documents.map((doc) => (
                     <DocMenu
-                        key={doc}
-                        name={doc}
-                        onDelete={handleDeleteDocument}
+                        key={doc.id}
+                        name={doc.getTitle()}
+                        documentId={doc.id}
                     />
                 ))}
             </SidebarMenuSub>

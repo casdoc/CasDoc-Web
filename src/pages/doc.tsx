@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 import "@/app/globals.css";
+import { ProjectProvider } from "@/app/viewModels/context/ProjectContext";
 
 const DocumentContent = dynamic(
     () => import("@/app/components/DocumentContent"),
@@ -11,7 +12,9 @@ const DocumentContent = dynamic(
 );
 
 export default function Doc() {
-    const documentId = "default-document";
-
-    return <DocumentContent documentId={documentId} />;
+    return (
+        <ProjectProvider>
+            <DocumentContent />
+        </ProjectProvider>
+    );
 }
