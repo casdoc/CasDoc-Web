@@ -8,17 +8,21 @@ import { MoreHorizontal } from "lucide-react";
 
 interface DropDownMenuProps {
     dropdownItems: string[];
+    onClick?: (item: string) => void;
 }
 
-const DropDownMenu = ({ dropdownItems }: DropDownMenuProps) => {
+const DropDownMenu = ({ dropdownItems, onClick }: DropDownMenuProps) => {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <MoreHorizontal className="ml-auto" />
             </DropdownMenuTrigger>
-            <DropdownMenuContent side="bottom" align="start">
+            <DropdownMenuContent side="right" align="start">
                 {dropdownItems.map((item) => (
-                    <DropdownMenuItem key={item}>
+                    <DropdownMenuItem
+                        key={item}
+                        onClick={() => onClick?.(item)}
+                    >
                         <span>{item}</span>
                     </DropdownMenuItem>
                 ))}

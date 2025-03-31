@@ -10,12 +10,20 @@ import {
     SidebarMenu,
 } from "@/components/ui/sidebar";
 
+const dropdownItems = ["Order"];
+
 const ProjectGroup = () => {
     const [projects, setProjects] = useState<string[]>([]);
+    const [projectCount, setProjectCount] = useState(1);
 
     const handleAddProject = () => {
-        const newProject = `Project ${projects.length + 1}`;
+        const newProject = `Project ${projectCount}`;
+        setProjectCount(projectCount + 1);
         setProjects([...projects, newProject]);
+    };
+
+    const handleDeleteProject = (projectName: string) => {
+        setProjects(projects.filter((project) => project !== projectName));
     };
 
     return (
@@ -24,13 +32,17 @@ const ProjectGroup = () => {
                 My Projects
             </SidebarGroupLabel>
             <SidebarGroupAction>
-                <DropDownMenu dropdownItems={["Order"]} />
                 <Plus onClick={handleAddProject} />
+                <DropDownMenu dropdownItems={dropdownItems} />
             </SidebarGroupAction>
             <SidebarGroupContent>
                 <SidebarMenu>
                     {projects.map((project) => (
-                        <ProjectMenu key={project} name={project} />
+                        <ProjectMenu
+                            key={project}
+                            name={project}
+                            onDelete={handleDeleteProject}
+                        />
                     ))}
                 </SidebarMenu>
             </SidebarGroupContent>

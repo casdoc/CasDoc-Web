@@ -9,34 +9,59 @@ import {
     SidebarMenuSub,
 } from "@/components/ui/sidebar";
 
+const dropdownItems = ["Rename", "Delete"];
+
 interface ProjectMenuProps {
     name: string;
+    onDelete?: (name: string) => void;
 }
 
-const ProjectMenu = ({ name }: ProjectMenuProps) => {
+const ProjectMenu = ({ name, onDelete }: ProjectMenuProps) => {
     const [documents, setDocuments] = useState<string[]>([]);
+    const [documentCount, setDocumentCount] = useState(1);
 
     const handleAddDocument = () => {
-        const newDocument = `Document ${documents.length + 1}`;
+        const newDocument = `Document ${documentCount}`;
+        setDocumentCount(documentCount + 1);
         setDocuments([...documents, newDocument]);
+    };
+
+    const handleDeleteDocument = (docName: string) => {
+        setDocuments(documents.filter((doc) => doc !== docName));
+    };
+
+    const handleMenuClick = (action: string) => {
+        if (action === "Delete" && onDelete) {
+            // Handle delete action
+            onDelete(name);
+        } else if (action === "Rename") {
+            // Handle rename action
+        }
     };
 
     return (
         <SidebarMenuItem key={name}>
-            <SidebarMenuButton asChild>
+            <SidebarMenuButton asChild className="hover:bg-gray-200">
                 <a href="#">
                     <Folder />
                     <span>{name}</span>
                 </a>
             </SidebarMenuButton>
             <SidebarMenuAction>
-                <DropDownMenu dropdownItems={["Rename", "Delete"]} />
                 <Plus onClick={handleAddDocument} />
+                <DropDownMenu
+                    dropdownItems={dropdownItems}
+                    onClick={handleMenuClick}
+                />
             </SidebarMenuAction>
 
-            <SidebarMenuSub>
+            <SidebarMenuSub className="w-full pr-1">
                 {documents.map((doc) => (
-                    <DocMenu key={doc} name={doc} />
+                    <DocMenu
+                        key={doc}
+                        name={doc}
+                        onDelete={handleDeleteDocument}
+                    />
                 ))}
             </SidebarMenuSub>
         </SidebarMenuItem>
