@@ -12,7 +12,15 @@ const topicDefaultConfig = {
     name: "Data Schema",
     description: "This is a data schema description",
 };
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const serializeTopicToMarkdown = (state: any, node: any) => {
+    const { config } = node.attrs;
+    const name = config?.info?.name || "Unknown";
+    const description = config?.info?.description || "";
 
+    state.write(`## ${name}\n`);
+    state.write(`### Description\n ${description}\n`);
+};
 export const TopicExtension = Node.create({
     name: "topic",
 

@@ -78,6 +78,25 @@ sequenceDiagram
 %% For more diagram types and syntax, visit: https://mermaid.js.org/
 `,
 };
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const serializeMermaidToMarkdown = (state: any, node: any) => {
+    const { config } = node.attrs;
+    const name = config?.info?.name || "Mermaid Diagram";
+    const mermaidCode = config?.content || "";
+
+    // Write diagram name as a heading
+    state.write(`### ${name}\n\n`);
+
+    // Write mermaid code in a fenced code block
+    state.write("```mermaid\n");
+    state.write(`${mermaidCode}\n`);
+    state.write("```\n\n");
+
+    // Add a separator
+    state.write(`---\n\n`);
+};
+
 export const MermaidExtension = Node.create({
     name: "template-mermaid",
 
