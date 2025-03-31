@@ -19,7 +19,7 @@ export const serializeTopicToMarkdown = (state: any, node: any) => {
     const description = config?.info?.description || "";
 
     state.write(`## ${name}\n`);
-    state.write(`### Description\n ${description}\n`);
+    state.write(`${description}\n`);
 };
 export const TopicExtension = Node.create({
     name: "topic",
