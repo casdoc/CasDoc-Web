@@ -161,6 +161,8 @@ const GraphView = ({ docMode, graphNodes, graphViewModel }: GraphViewProps) => {
         }
     }, [selectedNode, setCenter, store, fitView]);
 
+    if (docMode === DocMode.Edit) return;
+
     return (
         <div className="w-full h-full bg-white relative">
             <ReactFlow
