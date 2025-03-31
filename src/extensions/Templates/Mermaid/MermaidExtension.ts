@@ -76,7 +76,7 @@ sequenceDiagram
 `,
 };
 export const MermaidExtension = Node.create({
-    name: "mermaid",
+    name: "template-mermaid",
 
     group: "block",
 
@@ -142,7 +142,7 @@ export const MermaidExtension = Node.create({
 
         // Use the reusable paste handler plugin
         return [
-            createPasteHandlerPlugin("mermaid", (node) => {
+            createPasteHandlerPlugin("template-mermaid", (node) => {
                 const transformedNode = topicTransformer(node);
                 // console.debug(
                 //     "Processing topic node during paste:",
