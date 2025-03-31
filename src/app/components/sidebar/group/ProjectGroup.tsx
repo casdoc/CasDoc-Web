@@ -32,7 +32,7 @@ const ProjectGroup = () => {
                 My Projects
             </SidebarGroupLabel>
             <SidebarGroupAction>
-                <div className="flex flex-row items-center gap-2 pr-7">
+                <div className="flex flex-row items-center gap-2 mr-7">
                     <Plus onClick={handleAddProject} size={16} />
                     <DropDownMenu dropdownItems={dropdownItems} />
                 </div>

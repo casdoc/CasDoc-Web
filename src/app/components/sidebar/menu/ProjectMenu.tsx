@@ -45,17 +45,17 @@ const ProjectMenu = ({ name, onDelete }: ProjectMenuProps) => {
                 <div>
                     <Folder />
                     <span>{name}</span>
+                    <SidebarMenuAction>
+                        <div className="flex flex-row items-center gap-2 mr-7">
+                            <Plus onClick={handleAddDocument} size={16} />
+                            <DropDownMenu
+                                dropdownItems={dropdownItems}
+                                onClick={handleMenuClick}
+                            />
+                        </div>
+                    </SidebarMenuAction>
                 </div>
             </SidebarMenuButton>
-            <SidebarMenuAction>
-                <div className="flex flex-row items-center gap-2 pr-7">
-                    <Plus onClick={handleAddDocument} size={16} />
-                    <DropDownMenu
-                        dropdownItems={dropdownItems}
-                        onClick={handleMenuClick}
-                    />
-                </div>
-            </SidebarMenuAction>
 
             <SidebarMenuSub>
                 {documents.map((doc) => (
