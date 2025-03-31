@@ -5,7 +5,6 @@ import { Folder, Plus } from "lucide-react";
 import {
     SidebarMenuItem,
     SidebarMenuButton,
-    SidebarMenuAction,
     SidebarMenuSub,
 } from "@/components/ui/sidebar";
 
@@ -45,17 +44,21 @@ const ProjectMenu = ({ name, onDelete }: ProjectMenuProps) => {
                 <a href="#">
                     <Folder />
                     <span>{name}</span>
+                    <div className="ml-auto flex items-center gap-1">
+                        <Plus
+                            onClick={handleAddDocument}
+                            className="hover:bg-gray-300 rounded-md w-6 h-6 p-1"
+                        />
+                        <DropDownMenu
+                            dropdownItems={dropdownItems}
+                            onClick={handleMenuClick}
+                        />
+                    </div>
                 </a>
             </SidebarMenuButton>
-            <SidebarMenuAction>
-                <Plus onClick={handleAddDocument} />
-                <DropDownMenu
-                    dropdownItems={dropdownItems}
-                    onClick={handleMenuClick}
-                />
-            </SidebarMenuAction>
+            {/* <SidebarMenuAction></SidebarMenuAction> */}
 
-            <SidebarMenuSub className="w-full pr-1">
+            <SidebarMenuSub>
                 {documents.map((doc) => (
                     <DocMenu
                         key={doc}

@@ -28,10 +28,12 @@ const DocMenu = ({ name, onDelete }: DocMenuProps) => {
                 <a href="#">
                     <File />
                     <span>{name}</span>
+                    <div className="ml-auto flex items-center gap-1">
                     <DropDownMenu
                         dropdownItems={dropdownItems}
                         onClick={handleMenuClick}
                     />
+                    </div>
                 </a>
             </SidebarMenuSubButton>
         </SidebarMenuSubItem>

@@ -4,7 +4,6 @@ import { useState } from "react";
 import { Plus } from "lucide-react";
 import {
     SidebarGroup,
-    SidebarGroupAction,
     SidebarGroupContent,
     SidebarGroupLabel,
     SidebarMenu,
@@ -28,13 +27,17 @@ const ProjectGroup = () => {
 
     return (
         <SidebarGroup>
-            <SidebarGroupLabel className="text-gray-400 text-sm">
+            <SidebarGroupLabel className="text-gray-400 text-sm border-b border-gray-200 rounded-none">
                 My Projects
+                <div className="ml-auto flex items-center gap-1 text-black">
+                    <Plus
+                        onClick={handleAddProject}
+                        className="hover:bg-gray-300 rounded-md w-6 h-6 p-1"
+                    />
+                    <DropDownMenu dropdownItems={dropdownItems} />
+                </div>
             </SidebarGroupLabel>
-            <SidebarGroupAction>
-                <Plus onClick={handleAddProject} />
-                <DropDownMenu dropdownItems={dropdownItems} />
-            </SidebarGroupAction>
+
             <SidebarGroupContent>
                 <SidebarMenu>
                     {projects.map((project) => (
