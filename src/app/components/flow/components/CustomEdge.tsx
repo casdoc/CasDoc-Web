@@ -1,8 +1,13 @@
 import React from "react";
-import { BaseEdge, EdgeProps, getSmoothStepPath } from "@xyflow/react";
+import {
+    BaseEdge,
+    EdgeLabelRenderer,
+    EdgeProps,
+    getSmoothStepPath,
+} from "@xyflow/react";
 import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext";
 
-const CustomEdge: React.FC<EdgeProps> = (props) => {
+const CustomEdge = (props: EdgeProps) => {
     const {
         id,
         sourceX,
@@ -19,7 +24,7 @@ const CustomEdge: React.FC<EdgeProps> = (props) => {
 
     const { selectedNode, showTarget, showSource } = useNodeSelection();
 
-    const [edgePath] = getSmoothStepPath({
+    const [edgePath, labelX, labelY] = getSmoothStepPath({
         sourceX,
         sourceY,
         sourcePosition,
@@ -27,13 +32,15 @@ const CustomEdge: React.FC<EdgeProps> = (props) => {
         targetY,
         targetPosition,
     });
+    const pinkColor = "#FF79BC";
+    const grayColor = "#BEBEBE";
 
     const edgeColor =
         selected ||
         (selectedNode === source && showTarget) ||
         (selectedNode === target && showSource)
-            ? "#FF79BC"
-            : "#BEBEBE";
+            ? pinkColor
+            : grayColor;
 
     return (
         <>
@@ -43,6 +50,16 @@ const CustomEdge: React.FC<EdgeProps> = (props) => {
                 style={{ ...style, stroke: edgeColor, strokeWidth: 2 }}
                 markerEnd={`url(#${id}-arrow)`}
             />
+            <EdgeLabelRenderer>
+                <div
+                    className="absolute text-sm font-semibold"
+                    style={{
+                        transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`,
+                    }}
+                >
+                    default
+                </div>
+            </EdgeLabelRenderer>
             <defs>
                 <marker
                     id={`${id}-arrow`}

@@ -9,7 +9,7 @@ interface Parameters {
     description: string;
 }
 
-const APIinterfaceComponent: React.FC<NodeViewProps> = ({ node, selected }) => {
+const APIinterfaceComponent = ({ node, selected }: NodeViewProps) => {
     const { id, config } = node.attrs;
     const info = config?.info || {};
     const fields = config?.fields || [];

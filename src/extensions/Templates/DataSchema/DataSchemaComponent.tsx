@@ -8,7 +8,7 @@ interface Field {
     description: string;
 }
 
-const DataSchemaComponent: React.FC<NodeViewProps> = ({ node, selected }) => {
+const DataSchemaComponent = ({ node, selected }: NodeViewProps) => {
     const { id, config } = node.attrs;
     const { selectedNode, selectNode } = useNodeSelection();
     const isSelected = selectedNode === id;
