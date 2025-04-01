@@ -1,15 +1,16 @@
 import DocMenu from "./DocMenu";
 import DropDownMenu from "./DropDownMenu";
 import { useEffect, useState } from "react";
-import { Folder, Plus } from "lucide-react";
+import { ChevronDown, Folder, Plus } from "lucide-react";
 import {
     SidebarMenuItem,
     SidebarMenuButton,
-    SidebarMenuAction,
     SidebarMenuSub,
 } from "@/components/ui/sidebar";
 import { useProjectContext } from "@/app/viewModels/context/ProjectContext";
 import { Document } from "@/app/models/entity/Document";
+import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
+import { CollapsibleTrigger } from "@radix-ui/react-collapsible";
 
 const dropdownItems = ["Rename", "Delete"];
 
@@ -33,6 +34,7 @@ const ProjectMenu = ({
     } = useProjectContext();
 
     // Use the documents directly from the context when this project is selected
+    const [isOpen, setIsOpen] = useState(true);
     const [documents, setDocuments] = useState<Document[]>([]);
 
     useEffect(() => {
@@ -58,42 +60,42 @@ const ProjectMenu = ({
         }
     };
 
-    const handleProjectClick = () => {
-        // selectProject(projectId);
-    };
-
     return (
-        <SidebarMenuItem key={projectId}>
-            <SidebarMenuButton
-                asChild
-                // className={`hover:bg-neutral-200`}
-                onClick={handleProjectClick}
-            >
-                <div>
-                    <Folder />
-                    <span>{name}</span>
-                    <SidebarMenuAction>
-                        <div className="flex flex-row items-center gap-2 mr-7">
-                            <Plus onClick={handleAddDocument} size={16} />
-                            <DropDownMenu
-                                dropdownItems={dropdownItems}
-                                onClick={handleMenuClick}
-                            />
-                        </div>
-                    </SidebarMenuAction>
-                </div>
-            </SidebarMenuButton>
+        <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+            <SidebarMenuItem key={name}>
+                <CollapsibleTrigger asChild className="w-full group/chevron">
+                    <SidebarMenuButton asChild className=" hover:bg-gray-200">
+                        <div>
+                            <Folder />
+                            <span className="flex items-center gap-1">
+                                {name}
+                                <ChevronDown className="w-4 h-4 opacity-0 group-hover/chevron:opacity-100 transition-all duration-200 group-data-[state=open]/chevron:rotate-180" />
+                            </span>
 
-            <SidebarMenuSub>
-                {documents.map((doc) => (
-                    <DocMenu
-                        key={doc.id}
-                        name={doc.getTitle()}
-                        documentId={doc.id}
-                    />
-                ))}
-            </SidebarMenuSub>
-        </SidebarMenuItem>
+                            <div className="flex flex-row items-center gap-2 mr-7">
+                                <Plus onClick={handleAddDocument} size={16} />
+                                <DropDownMenu
+                                    dropdownItems={dropdownItems}
+                                    onClick={handleMenuClick}
+                                />
+                            </div>
+                        </div>
+                    </SidebarMenuButton>
+                </CollapsibleTrigger>
+
+                <CollapsibleContent>
+                    <SidebarMenuSub>
+                        {documents.map((doc) => (
+                            <DocMenu
+                                key={doc.id}
+                                name={doc.getTitle()}
+                                documentId={doc.id}
+                            />
+                        ))}
+                    </SidebarMenuSub>
+                </CollapsibleContent>
+            </SidebarMenuItem>
+        </Collapsible>
     );
 };
 
