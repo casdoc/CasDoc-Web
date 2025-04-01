@@ -1,11 +1,11 @@
 import { NodeViewWrapper } from "@tiptap/react";
 import { NodeViewProps } from "@tiptap/core";
 import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext";
+import { useCallback } from "react";
 
 interface Field {
-    role: string;
-    type: string;
-    description: string;
+    acceptance: string;
+    done: string;
 }
 
 const UserStoryComponent = ({ node, selected }: NodeViewProps) => {
@@ -18,6 +18,28 @@ const UserStoryComponent = ({ node, selected }: NodeViewProps) => {
         selectNode(isSelected ? null : id);
     };
 
+    const calculatePriorityStyle = useCallback((priority: number) => {
+        const color =
+            priority === 1
+                ? "green"
+                : priority === 2
+                ? "yellow"
+                : priority === 3
+                ? "orange"
+                : priority === 4
+                ? "red"
+                : priority === 5
+                ? "purple"
+                : "gray";
+        const style = `bg-${color}-100 text-${color}-800 border-${color}-300`;
+        return style;
+    }, []);
+
+    const isTaskDone = useCallback((status: string) => {
+        const str = status.trim().toLowerCase();
+        return str === "true" || str === "yes" || str === "ok";
+    }, []);
+
     return (
         <NodeViewWrapper
             className={`ml-8 cursor-pointer hover:bg-gray-50 rounded-lg pt-2 border-2 bg-white ${
@@ -29,59 +51,79 @@ const UserStoryComponent = ({ node, selected }: NodeViewProps) => {
             }`}
             onClick={handleClick}
         >
-            <div className="pl-4">
-                <div className="flex justify-between">
-                    <h2 className="text-xl font-bold text-black">
-                        {info.name || "Schema Name"}
-                    </h2>
-                    <div className="flex items-center mt-1 mr-3">
-                        <span className="px-2 py-1 text-xs bg-gray-100 rounded-md text-gray-700">
-                            {info.type || "Schema Type"}
-                        </span>
+            <div className="px-3 py-1 border-b rounded-sm">
+                <div className="flex justify-between items-start">
+                    <div>
+                        {info.serial.trim() !== "" && (
+                            <p className="text-xs font-medium text-gray-500 mb-1">
+                                {info.serial}
+                            </p>
+                        )}
+                        <h2 className="text-xl font-bold text-gray-900 mt-0">
+                            {info.name || "New Story"}
+                        </h2>
+                        <div className="flex flex-wrap items-center gap-2 my-1">
+                            {info.tag.trim() !== "" && (
+                                <span className="text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded border border-blue-300">
+                                    {info.tag}
+                                </span>
+                            )}
+                            {info.priority.trim() !== "" && (
+                                <span
+                                    className={`text-xs px-2 py-1 rounded font-medium border ${calculatePriorityStyle(
+                                        parseInt(info.priority)
+                                    )}`}
+                                >
+                                    P{info.priority}
+                                </span>
+                            )}
+                        </div>
                     </div>
                 </div>
-                <p className="mt-0 text-sm text-gray-600">
-                    {info.description || "Schema Description"}
-                </p>
             </div>
-
-            <div className="ml-8 overflow-hidden">
-                {fields && fields.length > 0 ? (
-                    <div className="divide-y divide-gray-100">
-                        {fields.map((field: Field, index: number) => {
-                            if (
-                                field.role.trim() === "" &&
-                                field.type.trim() === "" &&
-                                field.description.trim() === ""
-                            ) {
-                                return;
-                            }
-                            return (
-                                <div key={index} className="py-2 px-4">
-                                    <div className="flex justify-between items-center">
-                                        <span className="font-medium text-gray-800">
-                                            {field.role}
-                                        </span>
-                                        {field.type && (
-                                            <span className="text-xs bg-gray-100 px-2 py-1 rounded text-gray-600">
-                                                {field.type}
-                                            </span>
-                                        )}
-                                    </div>
-                                    {field.description && (
-                                        <p className="mt-0 text-sm text-gray-500">
-                                            {field.description}
-                                        </p>
-                                    )}
-                                </div>
-                            );
-                        })}
-                    </div>
-                ) : (
-                    <div className="p-4 text-center text-gray-400">
-                        No fields yet
-                    </div>
-                )}
+            <div className="px-4 py-3 space-y-2">
+                <div>
+                    <h3 className="text-sm font-semibold text-gray-600 uppercase tracking-wide">
+                        Role
+                    </h3>
+                    <p className="text-sm text-gray-700 mt-1 mb-4">
+                        {info.role}
+                    </p>
+                </div>
+                <div>
+                    <h3 className="text-sm font-semibold text-gray-600 uppercase tracking-wide">
+                        Feature
+                    </h3>
+                    <p className="text-sm text-gray-700 mt-1 mb-4">
+                        {info.feature}
+                    </p>
+                </div>
+                <div>
+                    <h3 className="text-sm font-semibold text-gray-600 uppercase tracking-wide">
+                        Acceptance Criteria
+                    </h3>
+                    <ul className="divide-y divide-gray-100 mt-1">
+                        {fields.map((field: Field, index: number) => (
+                            <li key={index} className="flex items-start py-2">
+                                <input
+                                    type="checkbox"
+                                    checked={isTaskDone(field.done)}
+                                    readOnly
+                                    className="mt-1 mr-2"
+                                />
+                                <span
+                                    className={`text-sm ${
+                                        isTaskDone(field.done)
+                                            ? "line-through text-gray-400"
+                                            : "text-gray-800"
+                                    }`}
+                                >
+                                    {field.acceptance}
+                                </span>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
             </div>
         </NodeViewWrapper>
     );

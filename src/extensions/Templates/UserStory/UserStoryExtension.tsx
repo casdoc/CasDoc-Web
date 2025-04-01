@@ -1,6 +1,6 @@
 import { Node, mergeAttributes } from "@tiptap/core";
 import { ReactNodeViewRenderer } from "@tiptap/react";
-import DataSchemaComponent from "./UserStoryComponent";
+import UserStoryComponent from "./UserStoryComponent";
 import { v4 as uuidv4 } from "uuid";
 import {
     createConfigAttribute,
@@ -17,17 +17,15 @@ const topicDefaultConfig = {
             serial: "story-01",
             priority: "2",
             tag: "login",
+            role: "As a registered user, I would like to log in to the system.",
+            feature:
+                "Log in by entering your username and password to access my personal information and services.",
         },
         fields: [
             {
-                role: "As a registered user, I would like to log in to the system.",
-                feature:
-                    "Log in by entering your username and password to access my personal information and services.",
-                acceptance: [
+                acceptance:
                     "The user can successfully log in after entering the correct account and password",
-                    "When you enter an incorrect password, a 'Wrong account or password' message will be displayed",
-                    "After entering the wrong password 5 times in a row, the account is locked.",
-                ],
+                done: false,
             },
         ],
     },
@@ -92,7 +90,7 @@ export const UserStoryExtension = Node.create({
     },
 
     addNodeView() {
-        return ReactNodeViewRenderer(DataSchemaComponent);
+        return ReactNodeViewRenderer(UserStoryComponent);
     },
     addProseMirrorPlugins() {
         const pasteDefaultConfig = topicDefaultConfig;

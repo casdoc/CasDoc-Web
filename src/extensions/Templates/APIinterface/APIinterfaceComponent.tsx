@@ -22,7 +22,7 @@ const APIinterfaceComponent = ({ node, selected }: NodeViewProps) => {
     };
 
     const getMethodColor = (method?: string): string => {
-        switch (method?.toUpperCase()) {
+        switch (method?.trim().toUpperCase()) {
             case "GET":
                 return "bg-green-500";
             case "POST":
