@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
     BaseEdge,
     EdgeLabelRenderer,
     EdgeProps,
     getSmoothStepPath,
+    useReactFlow,
 } from "@xyflow/react";
 import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext";
 
@@ -16,13 +17,14 @@ const CustomEdge = (props: EdgeProps) => {
         targetY,
         sourcePosition,
         targetPosition,
-        style = {},
         selected,
         target,
         source,
+        label,
     } = props;
 
     const { selectedNode, showTarget, showSource } = useNodeSelection();
+    const { updateEdge } = useReactFlow();
 
     const [edgePath, labelX, labelY] = getSmoothStepPath({
         sourceX,
@@ -42,12 +44,18 @@ const CustomEdge = (props: EdgeProps) => {
             ? pinkColor
             : grayColor;
 
+    useEffect(() => {
+        updateEdge(id, {
+            animated: edgeColor === pinkColor,
+        });
+    }, [edgeColor, updateEdge, id]);
+
     return (
         <>
             <BaseEdge
                 id={id}
                 path={edgePath}
-                style={{ ...style, stroke: edgeColor, strokeWidth: 2 }}
+                style={{ stroke: edgeColor, strokeWidth: 2 }}
                 markerEnd={`url(#${id}-arrow)`}
             />
             <EdgeLabelRenderer>
@@ -57,7 +65,7 @@ const CustomEdge = (props: EdgeProps) => {
                         transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`,
                     }}
                 >
-                    default
+                    {label}
                 </div>
             </EdgeLabelRenderer>
             <defs>

@@ -12,6 +12,7 @@ export interface GraphViewModel {
 export interface ConnectionEdge {
     source: string;
     target: string;
+    label?: string;
 }
 
 export function useGraphViewModel(): GraphViewModel {
