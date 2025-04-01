@@ -138,6 +138,46 @@ export const GROUPS: Group[] = [
                         .run();
                 },
             },
+            {
+                name: "userStory",
+                label: "User Story",
+                iconName: "SquareLibrary",
+                aliases: ["userStory"],
+                description: "User Story component of templates",
+                action: (editor) => {
+                    editor
+                        .chain()
+                        .focus()
+                        .insertContent({
+                            type: "template-userStory",
+                            attrs: {
+                                topicId: "root",
+                                id: uuidv4(),
+                                config: {
+                                    info: {
+                                        name: "User Login",
+                                        serial: "story-01",
+                                        priority: "2",
+                                        tag: "login",
+                                    },
+                                    fields: [
+                                        {
+                                            role: "As a registered user, I would like to log in to the system.",
+                                            feature:
+                                                "Log in by entering your username and password to access my personal information and services.",
+                                            acceptance: [
+                                                "The user can successfully log in after entering the correct account and password",
+                                                "When you enter an incorrect password, a 'Wrong account or password' message will be displayed",
+                                                "After entering the wrong password 5 times in a row, the account is locked.",
+                                            ],
+                                        },
+                                    ],
+                                },
+                            },
+                        })
+                        .run();
+                },
+            },
         ],
     },
     {
