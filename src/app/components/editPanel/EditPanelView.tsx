@@ -131,56 +131,59 @@ const EditPanelView = ({
     const handleFieldChange = useCallback(
         (
             e: React.ChangeEvent<HTMLTextAreaElement>,
-            index: number,
-            key: "name" | "description" | "type"
+            key: string,
+            index?: number
         ) => {
             if (!node) return;
-            const newFields = [...(node.config.fields ?? [])];
-
-            newFields[index] = {
-                ...newFields[index],
-                [key]: e.target.value,
-            };
-            const updatedConfig = {
-                ...node.config,
-                fields: newFields,
-            };
-
+            const updatedConfig = { ...node.config };
+            if (index !== undefined) {
+                const newFields = [...(node.config.fields ?? [])];
+                newFields[index] = {
+                    ...newFields[index],
+                    [key]: e.target.value,
+                };
+                updatedConfig.fields = newFields;
+            } else {
+                const updatedInfo = {
+                    ...(node.config.info || {}),
+                    [key]: e.target.value,
+                };
+                updatedConfig.info = updatedInfo;
+            }
             const updatedNode: JsonObject = {
                 ...node,
                 config: updatedConfig,
             };
-
             setNode(updatedNode);
             updateEditNodeById(updatedNode.id, { config: updatedConfig });
         },
         [node, updateEditNodeById]
     );
 
-    const handleConfigChange = (
-        e: React.ChangeEvent<HTMLTextAreaElement>,
-        key: string
-    ) => {
-        if (!node) return;
+    // const handleConfigChange = (
+    //     e: React.ChangeEvent<HTMLTextAreaElement>,
+    //     key: string
+    // ) => {
+    //     if (!node) return;
 
-        const updatedInfo = {
-            ...(node.config.info || {}),
-            [key]: e.target.value,
-        };
+    //     const updatedInfo = {
+    //         ...(node.config.info || {}),
+    //         [key]: e.target.value,
+    //     };
 
-        const updatedConfig = {
-            ...node.config,
-            info: updatedInfo,
-        };
+    //     const updatedConfig = {
+    //         ...node.config,
+    //         info: updatedInfo,
+    //     };
 
-        const updatedNode: JsonObject = {
-            ...node,
-            config: updatedConfig,
-        };
+    //     const updatedNode: JsonObject = {
+    //         ...node,
+    //         config: updatedConfig,
+    //     };
 
-        setNode(updatedNode);
-        updateEditNodeById(updatedNode.id, { config: updatedConfig });
-    };
+    //     setNode(updatedNode);
+    //     updateEditNodeById(updatedNode.id, { config: updatedConfig });
+    // };
 
     const handleAddField = () => {
         if (!node) return;
@@ -236,7 +239,7 @@ const EditPanelView = ({
                     <EditPanelInfo
                         selectedNode={selectedNode}
                         info={node?.config.info}
-                        handleConfigChange={handleConfigChange}
+                        handleConfigChange={handleFieldChange}
                     />
                     {node?.type && node?.type.startsWith("template") && (
                         <>
