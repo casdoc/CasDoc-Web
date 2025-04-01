@@ -45,8 +45,8 @@ const ProjectMenu = ({
 
     const handleAddDocument = (e: React.MouseEvent) => {
         e.stopPropagation();
-        const newDocName = `Document ${documents.length + 1}`;
-        createDocument(projectId, newDocName);
+        createDocument(projectId, "Untitled Document");
+        setIsOpen(true);
     };
 
     const handleMenuClick = (action: string) => {

@@ -19,13 +19,12 @@ const dropdownItems = ["Order"];
 
 const ProjectGroup = () => {
     const { projects, createProject, selectedProjectId } = useProjectContext();
-
-    const handleAddProject = () => {
-        const projectName = `Project ${projects.length + 1}`;
-        createProject(projectName);
-    };
-
     const [isOpen, setIsOpen] = useState(true);
+    const handleAddProject = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        createProject("Untitled Project");
+        setIsOpen(true);
+    };
 
     return (
         <Collapsible open={isOpen} onOpenChange={setIsOpen}>
