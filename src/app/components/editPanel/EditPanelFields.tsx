@@ -25,7 +25,9 @@ const EditPanelFields = ({
                         <div
                             key={key}
                             className={`ml-2 ${
-                                key === "description" ? "w-full" : ""
+                                key === "description" || key === "acceptance"
+                                    ? "w-full"
+                                    : ""
                             }`}
                         >
                             <label className="text-xs text-gray-500 block mb-1">

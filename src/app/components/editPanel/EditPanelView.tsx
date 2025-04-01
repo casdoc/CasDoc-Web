@@ -160,35 +160,15 @@ const EditPanelView = ({
         [node, updateEditNodeById]
     );
 
-    // const handleConfigChange = (
-    //     e: React.ChangeEvent<HTMLTextAreaElement>,
-    //     key: string
-    // ) => {
-    //     if (!node) return;
-
-    //     const updatedInfo = {
-    //         ...(node.config.info || {}),
-    //         [key]: e.target.value,
-    //     };
-
-    //     const updatedConfig = {
-    //         ...node.config,
-    //         info: updatedInfo,
-    //     };
-
-    //     const updatedNode: JsonObject = {
-    //         ...node,
-    //         config: updatedConfig,
-    //     };
-
-    //     setNode(updatedNode);
-    //     updateEditNodeById(updatedNode.id, { config: updatedConfig });
-    // };
-
     const handleAddField = () => {
         if (!node) return;
         const newFields = [...(node.config.fields ?? [])];
-        newFields.push({ name: "", description: "", type: "" });
+        const keys = Object.keys(newFields[0] || {});
+        const newItem = keys.reduce((acc, key) => {
+            acc[key] = "";
+            return acc;
+        }, {} as Record<string, string>);
+        newFields.push(newItem);
 
         const updatedConfig = {
             ...node.config,
