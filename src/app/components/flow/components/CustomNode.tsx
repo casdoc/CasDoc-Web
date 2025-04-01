@@ -33,7 +33,9 @@ function CustomNode({ id, data }: any) {
                         : ""
                 }`}
             >
-                <div className="flex">{data.label}</div>
+                <div className="max-w-44 overflow-hidden whitespace-nowrap truncate">
+                    {data.label}
+                </div>
 
                 {!connection.inProgress && (
                     <Handle
