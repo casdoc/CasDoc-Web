@@ -42,20 +42,20 @@ const DocMenu = ({ name, documentId }: DocMenuProps) => {
         <SidebarMenuSubItem>
             <SidebarMenuSubButton
                 asChild
-                className={`hover:bg-neutral-200 ${
+                className={`hover:bg-gray-200 ${
                     isSelected ? "bg-gray-200" : ""
                 }`}
                 onClick={handleDocumentClick}
             >
-                <div className="flex flex-row justify-between w-full">
-                    <div className="flex flex-row items-center gap-2">
-                        <File size={16} />
-                        <span>{name}</span>
+                <div>
+                    <File />
+                    <span className="truncate">{name}</span>
+                    <div className="ml-auto flex items-center gap-1">
+                        <DropDownMenu
+                            dropdownItems={dropdownItems}
+                            onClick={handleMenuClick}
+                        />
                     </div>
-                    <DropDownMenu
-                        dropdownItems={dropdownItems}
-                        onClick={handleMenuClick}
-                    />
                 </div>
             </SidebarMenuSubButton>
         </SidebarMenuSubItem>

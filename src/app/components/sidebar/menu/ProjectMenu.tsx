@@ -70,7 +70,7 @@ const ProjectMenu = ({
                     >
                         <div>
                             <Folder />
-                            <span className="flex items-center gap-1">
+                            <span className="flex items-center gap-1 truncate">
                                 {name}
                                 <ChevronDown className="w-4 h-4 opacity-0 group-hover/chevron:opacity-100 transition-all duration-200 group-data-[state=open]/chevron:rotate-180" />
                             </span>
@@ -78,7 +78,7 @@ const ProjectMenu = ({
                             <div className="ml-auto flex items-center gap-1">
                                 <Plus
                                     onClick={handleAddDocument}
-                                    className="hover:bg-gray-300 hover:cursor-pointer rounded-md w-6 h-6 p-1"
+                                    className="hover:bg-gray-300 rounded-md w-6 h-6 p-1"
                                 />
                                 <DropDownMenu
                                     dropdownItems={dropdownItems}
