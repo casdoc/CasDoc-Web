@@ -2,7 +2,7 @@ import { NodeViewWrapper } from "@tiptap/react";
 import { NodeViewProps } from "@tiptap/core";
 import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext";
 
-interface Parameters {
+export interface APIinterfaceParameter {
     name: string;
     type: string;
     required: boolean;
@@ -75,42 +75,44 @@ const APIinterfaceComponent = ({ node, selected }: NodeViewProps) => {
             <div className="ml-8 overflow-hidden">
                 {fields && fields.length > 0 ? (
                     <div className="divide-y divide-gray-100">
-                        {fields.map((field: Parameters, index: number) => {
-                            if (
-                                field.name.trim() === "" &&
-                                field.type.trim() === "" &&
-                                field.description.trim() === ""
-                            ) {
-                                return;
-                            }
-                            return (
-                                <div key={index} className="py-2 px-4">
-                                    <div className="flex justify-between items-center m-0 p-0">
-                                        <div className="flex items-center">
-                                            <span className="font-medium text-gray-800">
-                                                {field.name}
-                                            </span>
-                                            {field.required && (
-                                                <span className="text-2xl text-red-500 rounded">
-                                                    *
+                        {fields.map(
+                            (field: APIinterfaceParameter, index: number) => {
+                                if (
+                                    field.name.trim() === "" &&
+                                    field.type.trim() === "" &&
+                                    field.description.trim() === ""
+                                ) {
+                                    return;
+                                }
+                                return (
+                                    <div key={index} className="py-2 px-4">
+                                        <div className="flex justify-between items-center m-0 p-0">
+                                            <div className="flex items-center">
+                                                <span className="font-medium text-gray-800">
+                                                    {field.name}
+                                                </span>
+                                                {field.required && (
+                                                    <span className="text-2xl text-red-500 rounded">
+                                                        *
+                                                    </span>
+                                                )}
+                                            </div>
+
+                                            {field.type && (
+                                                <span className="text-xs bg-gray-100 px-1 py-1 rounded text-gray-600 mr-2">
+                                                    {field.type}
                                                 </span>
                                             )}
                                         </div>
-
-                                        {field.type && (
-                                            <span className="text-xs bg-gray-100 px-1 py-1 rounded text-gray-600 mr-2">
-                                                {field.type}
-                                            </span>
+                                        {field.description && (
+                                            <p className="m-0 p-0 text-sm text-gray-500">
+                                                {field.description}
+                                            </p>
                                         )}
                                     </div>
-                                    {field.description && (
-                                        <p className="m-0 p-0 text-sm text-gray-500">
-                                            {field.description}
-                                        </p>
-                                    )}
-                                </div>
-                            );
-                        })}
+                                );
+                            }
+                        )}
                     </div>
                 ) : (
                     <div className="p-4 text-center text-gray-400">

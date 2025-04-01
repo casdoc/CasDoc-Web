@@ -2,7 +2,7 @@ import { NodeViewWrapper } from "@tiptap/react";
 import { NodeViewProps } from "@tiptap/core";
 import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext";
 
-interface Field {
+export interface DataSchemaField {
     name: string;
     type: string;
     description: string;
@@ -48,7 +48,7 @@ const DataSchemaComponent = ({ node, selected }: NodeViewProps) => {
             <div className="ml-8 overflow-hidden">
                 {fields && fields.length > 0 ? (
                     <div className="divide-y divide-gray-100">
-                        {fields.map((field: Field, index: number) => {
+                        {fields.map((field: DataSchemaField, index: number) => {
                             if (
                                 field.name.trim() === "" &&
                                 field.type.trim() === "" &&

@@ -221,8 +221,9 @@ const EditPanelView = ({
                         info={node?.config.info}
                         handleConfigChange={handleFieldChange}
                     />
-                    {node?.type && node?.type.startsWith("template") && (
-                        <>
+                    {node?.type &&
+                        node?.type.startsWith("template") &&
+                        node?.config.fields && (
                             <div className="bg-white border border-gray-200 rounded-lg p-4 mr-4 shadow">
                                 <h2 className="text-lg font-semibold mb-4">
                                     Fields
