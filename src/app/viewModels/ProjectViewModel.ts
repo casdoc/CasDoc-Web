@@ -41,7 +41,6 @@ export const useProjectViewModel = (): ProjectViewModel => {
 
     // Load projects from localStorage and set default content
     useEffect(() => {
-        localStorage.clear();
         const loadedProjects = ProjectService.getAllProjects();
         setProjects(loadedProjects);
 
