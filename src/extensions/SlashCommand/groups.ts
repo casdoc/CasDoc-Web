@@ -176,6 +176,42 @@ export const GROUPS: Group[] = [
                         .run();
                 },
             },
+            {
+                name: "testCase",
+                label: "Test Case",
+                iconName: "SquareLibrary",
+                aliases: ["testCase"],
+                description: "Standard test case component",
+                action: (editor) => {
+                    editor
+                        .chain()
+                        .focus()
+                        .insertContent({
+                            type: "template-testCase",
+                            attrs: {
+                                topicId: "root",
+                                id: uuidv4(),
+                                config: {
+                                    info: {
+                                        name: "Test Login Functionality",
+                                        serial: "test-01",
+                                        description:
+                                            "Ensure user can log in with correct credentials",
+                                        expectedResult:
+                                            "User is successfully redirected to dashboard after login",
+                                    },
+                                    fields: [
+                                        {
+                                            step: "Enter valid username and password",
+                                            done: false,
+                                        },
+                                    ],
+                                },
+                            },
+                        })
+                        .run();
+                },
+            },
         ],
     },
     {
