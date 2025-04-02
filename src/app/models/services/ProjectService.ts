@@ -46,22 +46,20 @@ export class ProjectService {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
     }
 
+    static getDocumentsByProjectId(projectId: string): Document[] {
+        return DocumentService.getAllDocuments().filter(
+            (doc) => doc.getProjectId() === projectId
+        );
+    }
+
     static deleteProject(id: string): void {
         if (typeof window === "undefined") return;
         // Delete all documents associated with this project
-        const docsToDelete = DocumentService.getAllDocuments().filter(
-            (doc) => doc.getProjectId() === id
-        );
+        const docsToDelete = this.getDocumentsByProjectId(id);
         docsToDelete.forEach((doc) => DocumentService.deleteDocument(doc.id));
 
         // Delete the project
         const projects = this.getAllProjects().filter((proj) => proj.id !== id);
         localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
-    }
-
-    static getDocumentsByProjectId(projectId: string): Document[] {
-        return DocumentService.getAllDocuments().filter(
-            (doc) => doc.getProjectId() === projectId
-        );
     }
 }
