@@ -8,10 +8,14 @@ import { MoreHorizontal } from "lucide-react";
 
 interface DropDownMenuProps {
     dropdownItems: string[];
-    onClick?: (item: string) => void;
+    onClick?: (item: string, e: React.MouseEvent) => void;
 }
 
 const DropDownMenu = ({ dropdownItems, onClick }: DropDownMenuProps) => {
+    const handleItemClick = (item: string, e: React.MouseEvent) => {
+        e.stopPropagation();
+        onClick?.(item, e);
+    };
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -21,7 +25,7 @@ const DropDownMenu = ({ dropdownItems, onClick }: DropDownMenuProps) => {
                 {dropdownItems.map((item) => (
                     <DropdownMenuItem
                         key={item}
-                        onClick={() => onClick?.(item)}
+                        onClick={(e) => handleItemClick(item, e)}
                     >
                         <span>{item}</span>
                     </DropdownMenuItem>

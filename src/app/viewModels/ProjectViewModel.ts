@@ -35,6 +35,10 @@ export const useProjectViewModel = (): ProjectViewModel => {
         null
     );
 
+    useEffect(() => {
+        console.log("document", selectedDocumentId);
+    }, [selectedDocumentId]);
+
     // Load projects from localStorage and set default content
     useEffect(() => {
         localStorage.clear();
@@ -141,9 +145,13 @@ export const useProjectViewModel = (): ProjectViewModel => {
         setSelectedDocumentId(newDocument.id);
     }, []);
 
-    const deleteDocument = useCallback((documentId: string) => {
-        DocumentService.deleteDocument(documentId);
-    }, []);
+    const deleteDocument = useCallback(
+        (documentId: string) => {
+            DocumentService.deleteDocument(documentId);
+            if (selectedDocumentId === documentId) setSelectedDocumentId(null);
+        },
+        [selectedDocumentId]
+    );
 
     const renameDocument = useCallback(
         (documentId: string, newName: string) => {

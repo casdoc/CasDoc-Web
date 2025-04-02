@@ -37,7 +37,9 @@ const ProjectMenu = ({ name, projectId }: ProjectMenuProps) => {
         setIsOpen(true);
     };
 
-    const handleMenuClick = (action: string) => {
+    const handleMenuClick = (action: string, e: React.MouseEvent) => {
+        e.stopPropagation();
+
         if (action === "Delete") {
             deleteProject(projectId);
         } else if (action === "Rename") {
@@ -50,7 +52,7 @@ const ProjectMenu = ({ name, projectId }: ProjectMenuProps) => {
 
     return (
         <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-            <SidebarMenuItem key={name}>
+            <SidebarMenuItem>
                 <CollapsibleTrigger asChild className="w-full group/chevron">
                     <SidebarMenuButton
                         asChild

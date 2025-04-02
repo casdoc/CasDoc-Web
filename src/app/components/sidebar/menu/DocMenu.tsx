@@ -23,7 +23,10 @@ const DocMenu = ({ name, documentId }: DocMenuProps) => {
 
     const isSelected = selectedDocumentId === documentId;
 
-    const handleMenuClick = (action: string) => {
+    const handleMenuClick = (action: string, e: React.MouseEvent) => {
+        e.stopPropagation();
+
+        console.log(action);
         if (action === "Delete") {
             deleteDocument(documentId);
         } else if (action === "Rename") {
