@@ -11,15 +11,12 @@ const dropdownItems = ["Rename", "Delete"];
 interface DocMenuProps {
     name: string;
     documentId: string;
+    onDelete: (documentId: string) => void;
 }
 
-const DocMenu = ({ name, documentId }: DocMenuProps) => {
-    const {
-        selectedDocumentId,
-        deleteDocument,
-        renameDocument,
-        selectDocument,
-    } = useProjectContext();
+const DocMenu = ({ name, documentId, onDelete }: DocMenuProps) => {
+    const { selectedDocumentId, renameDocument, selectDocument } =
+        useProjectContext();
 
     const isSelected = selectedDocumentId === documentId;
 
@@ -28,7 +25,7 @@ const DocMenu = ({ name, documentId }: DocMenuProps) => {
 
         console.log(action);
         if (action === "Delete") {
-            deleteDocument(documentId);
+            onDelete(documentId);
         } else if (action === "Rename") {
             const newName = prompt("Enter new document name:", name);
             if (newName && newName.trim() !== "") {
