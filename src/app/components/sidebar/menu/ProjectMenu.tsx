@@ -1,6 +1,6 @@
 import DocMenu from "./DocMenu";
 import DropDownMenu from "./DropDownMenu";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ChevronDown, Folder, Plus } from "lucide-react";
 import {
     SidebarMenuItem,
@@ -8,7 +8,6 @@ import {
     SidebarMenuSub,
 } from "@/components/ui/sidebar";
 import { useProjectContext } from "@/app/viewModels/context/ProjectContext";
-import { Document } from "@/app/models/entity/Document";
 import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
 import { CollapsibleTrigger } from "@radix-ui/react-collapsible";
 
@@ -20,28 +19,17 @@ interface ProjectMenuProps {
     isSelected?: boolean;
 }
 
-const ProjectMenu = ({
-    name,
-    projectId,
-    isSelected = false,
-}: ProjectMenuProps) => {
+const ProjectMenu = ({ name, projectId }: ProjectMenuProps) => {
     const {
-        createDocument,
         deleteProject,
         renameProject,
-        // selectProject,
-        currentProjectDocuments,
+        selectProject,
+        getDocumentsByProjectId,
+        createDocument,
     } = useProjectContext();
 
-    // Use the documents directly from the context when this project is selected
+    const documents = getDocumentsByProjectId(projectId);
     const [isOpen, setIsOpen] = useState(true);
-    const [documents, setDocuments] = useState<Document[]>([]);
-
-    useEffect(() => {
-        if (isSelected) {
-            setDocuments(currentProjectDocuments);
-        }
-    }, [isSelected, currentProjectDocuments]);
 
     const handleAddDocument = (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -67,6 +55,7 @@ const ProjectMenu = ({
                     <SidebarMenuButton
                         asChild
                         className=" hover:bg-gray-200 hover:cursor-pointer"
+                        onClick={() => selectProject(projectId)}
                     >
                         <div>
                             <Folder />

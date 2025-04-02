@@ -11,8 +11,6 @@ export interface ProjectViewModel {
     projects: Project[];
     selectedProjectId: string | null;
     selectedDocumentId: string | null;
-    // State to track documents for the current project
-    currentProjectDocuments: Document[];
 
     // Project actions
     createProject: (name: string) => void;
@@ -21,7 +19,7 @@ export interface ProjectViewModel {
     selectProject: (projectId: string) => void;
 
     // Document actions
-    getDocumentsForProject: (projectId: string) => Document[];
+    getDocumentsByProjectId: (projectId: string) => Document[];
     createDocument: (projectId: string, name: string) => void;
     deleteDocument: (documentId: string) => void;
     renameDocument: (documentId: string, newName: string) => void;
@@ -36,9 +34,6 @@ export const useProjectViewModel = (): ProjectViewModel => {
     const [selectedDocumentId, setSelectedDocumentId] = useState<string | null>(
         null
     );
-    const [currentProjectDocuments, setCurrentProjectDocuments] = useState<
-        Document[]
-    >([]);
 
     // Load projects from localStorage and set default content
     useEffect(() => {
@@ -71,18 +66,12 @@ export const useProjectViewModel = (): ProjectViewModel => {
             DocumentService.saveDocument(defaultDoc);
 
             setProjects([defaultProject]);
-            setCurrentProjectDocuments([defaultDoc]);
         }
     }, []);
 
     // Load documents for the selected project
     useEffect(() => {
         setSelectedDocumentId(null);
-        setCurrentProjectDocuments(
-            selectedProjectId
-                ? ProjectService.getDocumentsByProjectId(selectedProjectId)
-                : []
-        );
     }, [selectedProjectId]);
 
     // Project Actions
@@ -133,7 +122,7 @@ export const useProjectViewModel = (): ProjectViewModel => {
     }, []);
 
     // Document Actions
-    const getDocumentsForProject = useCallback(
+    const getDocumentsByProjectId = useCallback(
         (projectId: string): Document[] => {
             return ProjectService.getDocumentsByProjectId(projectId);
         },
@@ -153,8 +142,6 @@ export const useProjectViewModel = (): ProjectViewModel => {
         );
         DocumentService.saveDocument(newDocument);
 
-        // Update local state
-        setCurrentProjectDocuments((prevDocs) => [...prevDocs, newDocument]);
         // Select the new document
         setSelectedDocumentId(newDocument.id);
     }, []);
@@ -182,12 +169,11 @@ export const useProjectViewModel = (): ProjectViewModel => {
         projects,
         selectedProjectId,
         selectedDocumentId,
-        currentProjectDocuments,
         createProject,
         deleteProject,
         renameProject,
         selectProject,
-        getDocumentsForProject,
+        getDocumentsByProjectId,
         createDocument,
         deleteDocument,
         renameDocument,

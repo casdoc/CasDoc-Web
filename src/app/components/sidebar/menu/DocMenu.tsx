@@ -34,10 +34,6 @@ const DocMenu = ({ name, documentId }: DocMenuProps) => {
         }
     };
 
-    const handleDocumentClick = () => {
-        selectDocument(documentId);
-    };
-
     return (
         <SidebarMenuSubItem>
             <SidebarMenuSubButton
@@ -45,7 +41,7 @@ const DocMenu = ({ name, documentId }: DocMenuProps) => {
                 className={`hover:bg-gray-200 ${
                     isSelected ? "bg-gray-200" : ""
                 }`}
-                onClick={handleDocumentClick}
+                onClick={() => selectDocument(documentId)}
             >
                 <div>
                     <File />
