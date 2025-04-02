@@ -8,6 +8,7 @@ interface EditPanelRelationshipProps {
     sourceEdges: ConnectionEdge[];
     findNodeById: (id: string) => JsonObject | undefined;
     removeEdge: (edge: ConnectionEdge) => void;
+    updLabel: (edge: ConnectionEdge, content: string) => void;
 }
 
 const EditPanelRelationship = ({
@@ -15,6 +16,7 @@ const EditPanelRelationship = ({
     sourceEdges,
     findNodeById,
     removeEdge,
+    updLabel,
 }: EditPanelRelationshipProps) => {
     const { showTarget, toggleShowTarget, showSource, toggleShowSource } =
         useNodeSelection();
@@ -31,6 +33,7 @@ const EditPanelRelationship = ({
                 show={showTarget}
                 toggleShow={toggleShowTarget}
                 removeEdge={removeEdge}
+                updLabel={updLabel}
             />
             <RelationshipSection
                 title="Source From:"
@@ -41,6 +44,7 @@ const EditPanelRelationship = ({
                 show={showSource}
                 toggleShow={toggleShowSource}
                 removeEdge={removeEdge}
+                updLabel={updLabel}
             />
         </div>
     );
