@@ -94,7 +94,7 @@ const ProjectMenu = ({ name, projectId }: ProjectMenuProps) => {
                 </CollapsibleTrigger>
 
                 <CollapsibleContent>
-                    <SidebarMenuSub>
+                    <SidebarMenuSub className="w-11/12">
                         {documents.map((doc) => (
                             <DocMenu
                                 key={doc.id}
