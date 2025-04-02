@@ -35,6 +35,7 @@ const UserStoryComponent = ({ node, selected }: NodeViewProps) => {
     }, []);
 
     const isTaskDone = useCallback((status: string) => {
+        if (!status) return false;
         const str = status.trim().toLowerCase();
         return str === "true" || str === "yes" || str === "ok";
     }, []);
