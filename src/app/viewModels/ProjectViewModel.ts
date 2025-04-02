@@ -69,11 +69,6 @@ export const useProjectViewModel = (): ProjectViewModel => {
         }
     }, []);
 
-    // Load documents for the selected project
-    useEffect(() => {
-        setSelectedDocumentId(null);
-    }, [selectedProjectId]);
-
     // Project Actions
     const createProject = useCallback((name: string) => {
         const newProject = new Project(
