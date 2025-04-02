@@ -32,6 +32,9 @@ const EditPanelView = ({
     const [isMounted, setIsMounted] = useState(false);
     const [targetEdges, setTargetEdges] = useState<ConnectionEdge[]>([]);
     const [sourceEdges, setSourceEdges] = useState<ConnectionEdge[]>([]);
+    const [activeSection, setActiveSection] = useState<
+        "info" | "fields" | "relations"
+    >("info");
 
     const prevSelectState = useRef(selectedNode);
 
@@ -214,15 +217,22 @@ const EditPanelView = ({
                     : "translate-x-full"
             }`}
         >
-            <EditPanelHeader onClose={() => selectNode(null)} />
+            <EditPanelHeader
+                onClose={() => selectNode(null)}
+                section={activeSection}
+                onSectionChange={setActiveSection}
+            />
             {selectedNode ? (
                 <div className="mt-4 flex flex-col h-full space-y-4 overflow-auto">
-                    <EditPanelInfo
-                        selectedNode={selectedNode}
-                        info={node?.config.info}
-                        handleConfigChange={handleFieldChange}
-                    />
-                    {node?.type &&
+                    {activeSection === "info" && (
+                        <EditPanelInfo
+                            selectedNode={selectedNode}
+                            info={node?.config.info}
+                            handleConfigChange={handleFieldChange}
+                        />
+                    )}
+                    {activeSection === "fields" &&
+                        node?.type &&
                         node?.type.startsWith("template") &&
                         node?.config.fields && (
                             <>
@@ -254,15 +264,17 @@ const EditPanelView = ({
                                         + Add Field
                                     </button>
                                 </div>
-                                <EditPanelRelationship
-                                    targetEdges={targetEdges}
-                                    sourceEdges={sourceEdges}
-                                    findNodeById={findNodeById}
-                                    removeEdge={removeConnectionEdge}
-                                    updLabel={updateLabel}
-                                />
                             </>
                         )}
+                    {activeSection === "relations" && (
+                        <EditPanelRelationship
+                            targetEdges={targetEdges}
+                            sourceEdges={sourceEdges}
+                            findNodeById={findNodeById}
+                            removeEdge={removeConnectionEdge}
+                            updLabel={updateLabel}
+                        />
+                    )}
                     <EditPanelCmdHint />
                 </div>
             ) : (
