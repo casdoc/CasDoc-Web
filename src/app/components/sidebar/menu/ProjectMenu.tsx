@@ -74,7 +74,7 @@ const ProjectMenu = ({ name, projectId }: ProjectMenuProps) => {
                     >
                         <div>
                             <Folder />
-                            <span className="flex items-center gap-1 truncate">
+                            <span className="flex items-center gap-1 truncate select-none">
                                 {name}
                                 <ChevronDown className="w-4 h-4 opacity-0 group-hover/chevron:opacity-100 transition-all duration-200 group-data-[state=open]/chevron:rotate-180" />
                             </span>

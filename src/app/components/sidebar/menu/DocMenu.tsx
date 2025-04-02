@@ -45,7 +45,7 @@ const DocMenu = ({ name, documentId, onDelete }: DocMenuProps) => {
             >
                 <div>
                     <File />
-                    <span className="truncate">{name}</span>
+                    <span className="truncate select-none">{name}</span>
                     <div className="ml-auto flex items-center gap-1">
                         <DropDownMenu
                             dropdownItems={dropdownItems}
