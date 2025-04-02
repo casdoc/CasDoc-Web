@@ -51,6 +51,7 @@ export const connectConnectionEdges = (connectionEdges: any) => {
                 arrowHeadType: MarkerType.ArrowClosed,
                 type: "custom",
                 targetHandle: Position.Right,
+                label: connectionEdges[i].label,
             });
         }
     }
