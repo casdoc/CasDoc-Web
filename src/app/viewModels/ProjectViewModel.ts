@@ -44,33 +44,36 @@ export function useProjectViewModel(): ProjectViewModel {
 
         // Create a default project if none exists
         if (loadedProjects.length === 0) {
-            const defaultProject = new Project(
-                uuidv4(),
-                new Date(),
-                new Date(),
-                "My First Project",
-                "Default project"
-            );
+            // const defaultProject = new Project(
+            //     uuidv4(),
+            //     new Date(),
+            //     new Date(),
+            //     "My First Project",
+            //     "Default project"
+            // );
 
-            ProjectService.saveProject(defaultProject);
+            // ProjectService.saveProject(defaultProject);
 
-            // Create a default document
-            const defaultDoc = new Document(
-                uuidv4(),
-                new Date(),
-                new Date(),
-                DocumentType.SRD,
-                defaultProject.id,
-                "Untitled Document",
-                "No description",
-                defaultContent
-            );
+            // // Create a default document
+            // const defaultDoc = new Document(
+            //     uuidv4(),
+            //     new Date(),
+            //     new Date(),
+            //     DocumentType.SRD,
+            //     defaultProject.id,
+            //     "Untitled Document",
+            //     "No description",
+            //     defaultContent
+            // );
 
-            DocumentService.saveDocument(defaultDoc);
+            // DocumentService.saveDocument(defaultDoc);
 
-            setProjects([defaultProject]);
-            setSelectedProjectId(defaultProject.id);
-            setSelectedDocumentId(defaultDoc.id);
+            // setProjects([defaultProject]);
+            // setSelectedProjectId(defaultProject.id);
+            // setSelectedDocumentId(defaultDoc.id);
+            setProjects([]);
+            setSelectedProjectId(null);
+            setSelectedDocumentId(null);
         } else {
             setProjects(loadedProjects);
 
