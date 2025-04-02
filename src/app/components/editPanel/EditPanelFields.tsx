@@ -4,6 +4,7 @@ import { FaRegTrashAlt } from "react-icons/fa";
 
 interface EditPanelFieldsProps {
     fields: Array<JsonObject>;
+    fieldKey: string;
     handleFieldChange: (
         e: React.ChangeEvent<HTMLTextAreaElement>,
         key: string,
@@ -14,6 +15,7 @@ interface EditPanelFieldsProps {
 
 const EditPanelFields = ({
     fields,
+    fieldKey,
     handleFieldChange,
     handleRemoveField,
 }: EditPanelFieldsProps) => {
@@ -24,11 +26,7 @@ const EditPanelFields = ({
                     {Object.entries(field).map(([key, value]) => (
                         <div
                             key={key}
-                            className={`ml-2 ${
-                                key === "description" || key === "acceptance"
-                                    ? "w-full"
-                                    : ""
-                            }`}
+                            className={`ml-2 ${key === fieldKey && "w-full"}`}
                         >
                             <label className="text-xs text-gray-500 block mb-1">
                                 {key.charAt(0).toUpperCase() + key.slice(1)}

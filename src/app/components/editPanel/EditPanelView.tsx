@@ -233,6 +233,7 @@ const EditPanelView = ({
                                     node.config.fields.length > 0 ? (
                                         <EditPanelFields
                                             fields={node.config.fields}
+                                            fieldKey={node.config.fieldKey}
                                             handleFieldChange={
                                                 handleFieldChange
                                             }
