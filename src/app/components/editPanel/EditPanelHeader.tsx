@@ -1,20 +1,26 @@
 import React from "react";
 
 interface EditPanelHeaderProps {
+    type: string;
     onClose: () => void;
-    section: "info" | "fields" | "relations";
-    onSectionChange: (section: "info" | "fields" | "relations") => void;
+    section: string;
+    onSectionChange: (section: string) => void;
 }
 
 const EditPanelHeader = ({
     onClose,
     section,
     onSectionChange,
+    type,
 }: EditPanelHeaderProps) => {
-    const tabs: { key: "info" | "fields" | "relations"; label: string }[] = [
+    const tabs: { key: string; label: string }[] = [
         { key: "info", label: "Info" },
-        { key: "fields", label: "Fields" },
-        { key: "relations", label: "Relations" },
+        ...(type.startsWith("template")
+            ? [
+                  { key: "fields", label: "Fields" },
+                  { key: "relations", label: "Relations" },
+              ]
+            : []),
     ];
 
     return (

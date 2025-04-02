@@ -32,9 +32,7 @@ const EditPanelView = ({
     const [isMounted, setIsMounted] = useState(false);
     const [targetEdges, setTargetEdges] = useState<ConnectionEdge[]>([]);
     const [sourceEdges, setSourceEdges] = useState<ConnectionEdge[]>([]);
-    const [activeSection, setActiveSection] = useState<
-        "info" | "fields" | "relations"
-    >("info");
+    const [activeSection, setActiveSection] = useState<string>("info");
 
     const prevSelectState = useRef(selectedNode);
 
@@ -218,6 +216,7 @@ const EditPanelView = ({
             }`}
         >
             <EditPanelHeader
+                type={node?.type || ""}
                 onClose={() => selectNode(null)}
                 section={activeSection}
                 onSectionChange={setActiveSection}
