@@ -30,7 +30,7 @@ const ProjectGroup = () => {
         <Collapsible open={isOpen} onOpenChange={setIsOpen}>
             <SidebarGroup>
                 <CollapsibleTrigger className="hover:bg-gray-200 rounded-md group/chevron">
-                    <SidebarGroupLabel className=" text-gray-400 hover:text-black text-sm border-b border-gray-200 rounded-none">
+                    <SidebarGroupLabel className=" text-gray-400 hover:text-black text-sm border-b border-gray-200 rounded-none py-5 my-1">
                         <div className="flex items-center gap-1">
                             My Projects
                             <ChevronDown className="w-4 h-4 opacity-0 group-hover/chevron:opacity-100 transition-all duration-200 group-data-[state=open]/chevron:rotate-180" />
