@@ -81,7 +81,7 @@ const TestCaseComponent = ({ node, selected }: NodeViewProps) => {
                                             : "text-gray-800"
                                     }`}
                                 >
-                                    {field.step}
+                                    {index + 1}. {field.step}
                                 </span>
                             </li>
                         ))}

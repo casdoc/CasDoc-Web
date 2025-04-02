@@ -26,6 +26,7 @@ const topicDefaultConfig = {
             description: "Unique identifier for the resource",
         },
     ],
+    fieldKey: "description",
 };
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const serializeAPIinterfaceToMarkdown = (state: any, node: any) => {

@@ -25,6 +25,7 @@ const topicDefaultConfig = {
                 done: false,
             },
         ],
+        fieldKey: "step",
     },
 };
 

@@ -68,6 +68,7 @@ export const GROUPS: Group[] = [
                                             description: "default field",
                                         },
                                     ],
+                                    fieldKey: "description",
                                 },
                             },
                         })
@@ -106,6 +107,7 @@ export const GROUPS: Group[] = [
                                                 "Unique identifier for the resource",
                                         },
                                     ],
+                                    fieldKey: "description",
                                 },
                             },
                         })
@@ -170,6 +172,7 @@ export const GROUPS: Group[] = [
                                             done: false,
                                         },
                                     ],
+                                    fieldKey: "acceptance",
                                 },
                             },
                         })
@@ -206,6 +209,7 @@ export const GROUPS: Group[] = [
                                             done: false,
                                         },
                                     ],
+                                    fieldKey: "step",
                                 },
                             },
                         })

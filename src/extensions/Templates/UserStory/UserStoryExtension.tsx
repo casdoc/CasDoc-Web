@@ -28,6 +28,7 @@ const topicDefaultConfig = {
                 done: false,
             },
         ],
+        fieldKey: "acceptance",
     },
 };
 
