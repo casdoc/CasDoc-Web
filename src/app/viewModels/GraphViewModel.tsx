@@ -7,6 +7,7 @@ export interface GraphViewModel {
     searchTarget: (sourceId: string) => ConnectionEdge[];
     searchSource: (sourceId: string) => ConnectionEdge[];
     removeConnectionEdge: (edge: ConnectionEdge) => void;
+    updateLabel: (edge: ConnectionEdge, content: string) => void;
 }
 
 export interface ConnectionEdge {
@@ -56,11 +57,25 @@ export function useGraphViewModel(): GraphViewModel {
         });
     }, []);
 
+    const updateLabel = (edge: ConnectionEdge, content: string) => {
+        setConnectionEdges((prevEdges) => {
+            const newEdges = prevEdges.map((e) => {
+                if (e.source === edge.source || e.target === edge.target) {
+                    return { ...e, label: content };
+                }
+                return e;
+            });
+            GraphService.setEdges(newEdges);
+            return newEdges;
+        });
+    };
+
     return {
         connectionEdges,
         updConnectionEdges,
         searchTarget,
         searchSource,
         removeConnectionEdge,
+        updateLabel,
     };
 }
