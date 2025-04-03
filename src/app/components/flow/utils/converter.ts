@@ -1,8 +1,9 @@
 import { ConnectionEdge } from "@/app/viewModels/GraphViewModel";
 import { GraphNode } from "@/app/viewModels/useDocument";
-import { Edge, MarkerType, Node, Position } from "@xyflow/react";
+import { Edge, Node, Position } from "@xyflow/react";
 
 export const convertDataToNodes = (data: GraphNode[]): Node[] => {
+    if (data.length === 0) return [];
     const defaultPosition = { x: 0, y: 0 };
     return data.map((item: GraphNode) => ({
         id: `${item.id}`,
@@ -19,22 +20,25 @@ export const convertDataToNodes = (data: GraphNode[]): Node[] => {
 export const convertDataToStructuralEdges = (
     graphNodes: GraphNode[]
 ): Edge[] => {
-    return graphNodes.map((node) => {
-        return {
-            id: `e-${node.pid}-${node.id}`,
-            source: `${node.pid}`,
-            target: `${node.id}`,
-            arrowHeadType: MarkerType.ArrowClosed,
-            type: "default",
-            deletable: false,
-            selectable: false,
-        };
-    });
+    if (graphNodes.length === 0) return [];
+    return graphNodes
+        .filter((node) => node.id !== "root")
+        .map((node) => {
+            return {
+                id: `e-${node.pid}-${node.id}`,
+                source: `${node.pid}`,
+                target: `${node.id}`,
+                type: "default",
+                deletable: false,
+                selectable: false,
+            };
+        });
 };
 
 export const connectConnectionEdges = (
     connectionEdges: ConnectionEdge[]
 ): Edge[] => {
+    if (connectionEdges.length === 0) return [];
     return connectionEdges.map((e) => {
         return {
             id: `e-${e.source}-${e.target}`,
@@ -43,6 +47,7 @@ export const connectConnectionEdges = (
             type: "custom",
             targetHandle: Position.Right,
             label: e.label,
+            data: { bidirectional: e.bidirectional },
         };
     });
 };
