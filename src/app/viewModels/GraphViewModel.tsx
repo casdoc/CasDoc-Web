@@ -70,18 +70,22 @@ export function useGraphViewModel(): GraphViewModel {
     const searchSource = (id: string): ConnectionEdge[] => {
         return connectionEdges.filter(
             (edge) =>
-                edge.source === id ||
-                (edge.target === id && edge.data?.bidirectional)
+                edge.target === id ||
+                (edge.source === id && edge.data?.bidirectional)
         );
     };
 
     const removeConnectionEdge = useCallback((edge: ConnectionEdge) => {
         setConnectionEdges((prevEdges) => {
-            const newEdges = prevEdges.filter(
-                (e) => !(e.source === edge.source && e.target === edge.target)
-            );
-            GraphService.setEdges(newEdges);
-            return newEdges;
+            if (!edge.data?.bidirectional) {
+                const newEdges = prevEdges.filter(
+                    (e) =>
+                        !(e.source === edge.source && e.target === edge.target)
+                );
+                GraphService.setEdges(newEdges);
+                return newEdges;
+            }
+            return prevEdges;
         });
     }, []);
 
