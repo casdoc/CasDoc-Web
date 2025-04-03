@@ -33,7 +33,25 @@ export function useGraphViewModel(): GraphViewModel {
             const exists = prevEdges.some(
                 (e) => e.source === edge.source && e.target === edge.target
             );
+            const reversedExists = prevEdges.some(
+                (e) => e.source === edge.target && e.target === edge.source
+            );
+
             if (exists) return prevEdges;
+
+            if (reversedExists) {
+                const newEdges = prevEdges.map((e) => {
+                    if (e.source === edge.target && e.target === edge.source) {
+                        return {
+                            ...e,
+                            data: { ...e.data, bidirectional: true },
+                        };
+                    }
+                    return e;
+                });
+                GraphService.setEdges(newEdges);
+                return newEdges;
+            }
 
             const newEdges = [...prevEdges, edge];
             GraphService.setEdges(newEdges);
@@ -42,11 +60,19 @@ export function useGraphViewModel(): GraphViewModel {
     }, []);
 
     const searchTarget = (id: string): ConnectionEdge[] => {
-        return connectionEdges.filter((edge) => edge.source === id.toString());
+        return connectionEdges.filter(
+            (edge) =>
+                edge.source === id ||
+                (edge.target === id && edge.data?.bidirectional)
+        );
     };
 
     const searchSource = (id: string): ConnectionEdge[] => {
-        return connectionEdges.filter((edge) => edge.target === id.toString());
+        return connectionEdges.filter(
+            (edge) =>
+                edge.source === id ||
+                (edge.target === id && edge.data?.bidirectional)
+        );
     };
 
     const removeConnectionEdge = useCallback((edge: ConnectionEdge) => {
