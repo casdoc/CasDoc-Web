@@ -85,7 +85,7 @@ const GraphView = ({ docMode, graphNodes, graphViewModel }: GraphViewProps) => {
         const newNodes = convertDataToNodes(graphNodes);
         const newStructuralEdges = convertDataToStructuralEdges(graphNodes);
 
-        const { nodes: layoutedNodes } = getLayoutedElements(
+        const { layoutedNodes } = getLayoutedElements(
             newNodes,
             newStructuralEdges,
             "LR",
@@ -107,6 +107,7 @@ const GraphView = ({ docMode, graphNodes, graphViewModel }: GraphViewProps) => {
             const connectionEdge = {
                 source: params.source,
                 target: params.target,
+                bidirectional: false,
             };
             updConnectionEdges(connectionEdge);
             setEdges((eds) => addEdge(params, eds));
@@ -127,6 +128,7 @@ const GraphView = ({ docMode, graphNodes, graphViewModel }: GraphViewProps) => {
                 removeConnectionEdge({
                     source: params[0].source,
                     target: params[0].target,
+                    bidirectional: false,
                 });
             }
         },

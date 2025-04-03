@@ -14,6 +14,7 @@ export interface ConnectionEdge {
     source: string;
     target: string;
     label?: string;
+    bidirectional: boolean;
 }
 
 export function useGraphViewModel(): GraphViewModel {
