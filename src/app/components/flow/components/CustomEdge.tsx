@@ -21,6 +21,7 @@ const CustomEdge = (props: EdgeProps) => {
         target,
         source,
         label,
+        data,
     } = props;
 
     const { selectedNode, showTarget, showSource } = useNodeSelection();
@@ -50,12 +51,17 @@ const CustomEdge = (props: EdgeProps) => {
         });
     }, [edgeColor, updateEdge, id]);
 
+    console.log("bidirectional:", data?.bidirectional);
+
     return (
         <>
             <BaseEdge
                 id={id}
                 path={edgePath}
                 style={{ stroke: edgeColor, strokeWidth: 2 }}
+                markerStart={
+                    data?.bidirectional ? `url(#${id}-start-arrow)` : undefined
+                }
                 markerEnd={`url(#${id}-arrow)`}
             />
             <EdgeLabelRenderer>
@@ -73,9 +79,19 @@ const CustomEdge = (props: EdgeProps) => {
                     id={`${id}-arrow`}
                     markerWidth="30"
                     markerHeight="30"
-                    refX="5"
+                    refX="5.2"
                     refY="3"
                     orient="auto"
+                >
+                    <path d="M0,0 L0,6 L6,3 Z" fill={edgeColor} />
+                </marker>
+                <marker
+                    id={`${id}-start-arrow`}
+                    markerWidth="30"
+                    markerHeight="30"
+                    refX="5.2"
+                    refY="3"
+                    orient="auto-start-reverse"
                 >
                     <path d="M0,0 L0,6 L6,3 Z" fill={edgeColor} />
                 </marker>
