@@ -40,8 +40,10 @@ const CustomEdge = (props: EdgeProps) => {
 
     const edgeColor =
         selected ||
-        (selectedNode === source && showTarget) ||
-        (selectedNode === target && showSource)
+        (selectedNode === source &&
+            (showTarget || (showSource && data?.bidirectional))) ||
+        (selectedNode === target &&
+            (showSource || (showTarget && data?.bidirectional)))
             ? pinkColor
             : grayColor;
 
@@ -50,8 +52,6 @@ const CustomEdge = (props: EdgeProps) => {
             animated: edgeColor === pinkColor,
         });
     }, [edgeColor, updateEdge, id]);
-
-    console.log("bidirectional:", data?.bidirectional);
 
     return (
         <>
