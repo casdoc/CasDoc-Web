@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 import { GraphService } from "../models/services/GraphService";
+import { JsonObject } from "../models/types/JsonObject";
 
 export interface GraphViewModel {
     connectionEdges: ConnectionEdge[];
@@ -14,7 +15,7 @@ export interface ConnectionEdge {
     source: string;
     target: string;
     label?: string;
-    bidirectional: boolean;
+    data: JsonObject;
 }
 
 export function useGraphViewModel(): GraphViewModel {

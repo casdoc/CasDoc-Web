@@ -47,7 +47,7 @@ export const connectConnectionEdges = (
             type: "custom",
             targetHandle: Position.Right,
             label: e.label,
-            data: { bidirectional: e.bidirectional },
+            data: { bidirectional: e.data.bidirectional },
         };
     });
 };

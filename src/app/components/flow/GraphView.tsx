@@ -107,7 +107,7 @@ const GraphView = ({ docMode, graphNodes, graphViewModel }: GraphViewProps) => {
             const connectionEdge = {
                 source: params.source,
                 target: params.target,
-                bidirectional: false,
+                data: { bidirectional: false },
             };
             updConnectionEdges(connectionEdge);
             setEdges((eds) => addEdge(params, eds));
@@ -128,7 +128,7 @@ const GraphView = ({ docMode, graphNodes, graphViewModel }: GraphViewProps) => {
                 removeConnectionEdge({
                     source: params[0].source,
                     target: params[0].target,
-                    bidirectional: false,
+                    data: { bidirectional: false },
                 });
             }
         },
