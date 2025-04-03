@@ -8,6 +8,7 @@ import {
     SidebarGroupLabel,
     SidebarMenu,
 } from "@/components/ui/sidebar";
+import { useProjectContext } from "@/app/viewModels/context/ProjectContext";
 import {
     Collapsible,
     CollapsibleContent,
@@ -17,27 +18,19 @@ import {
 const dropdownItems = ["Order"];
 
 const ProjectGroup = () => {
-    const [projects, setProjects] = useState<string[]>([]);
-    const [projectCount, setProjectCount] = useState(1);
+    const { projects, createProject, selectedProjectId } = useProjectContext();
     const [isOpen, setIsOpen] = useState(true);
-
     const handleAddProject = (e: React.MouseEvent) => {
         e.stopPropagation();
-        const newProject = `Project ${projectCount}`;
-        setProjectCount(projectCount + 1);
-        setProjects([...projects, newProject]);
+        createProject("Untitled Project");
         setIsOpen(true);
-    };
-
-    const handleDeleteProject = (projectName: string) => {
-        setProjects(projects.filter((project) => project !== projectName));
     };
 
     return (
         <Collapsible open={isOpen} onOpenChange={setIsOpen}>
             <SidebarGroup>
                 <CollapsibleTrigger className="hover:bg-gray-200 rounded-md group/chevron">
-                    <SidebarGroupLabel className=" text-gray-400 hover:text-black text-sm border-b border-gray-200 rounded-none">
+                    <SidebarGroupLabel className=" text-gray-400 hover:text-black text-sm border-b border-gray-200 rounded-none py-5 my-1">
                         <div className="flex items-center gap-1">
                             My Projects
                             <ChevronDown className="w-4 h-4 opacity-0 group-hover/chevron:opacity-100 transition-all duration-200 group-data-[state=open]/chevron:rotate-180" />
@@ -57,9 +50,12 @@ const ProjectGroup = () => {
                         <SidebarMenu>
                             {projects.map((project) => (
                                 <ProjectMenu
-                                    key={project}
-                                    name={project}
-                                    onDelete={handleDeleteProject}
+                                    key={project.id}
+                                    name={project.name}
+                                    projectId={project.id}
+                                    isSelected={
+                                        project.id === selectedProjectId
+                                    }
                                 />
                             ))}
                         </SidebarMenu>

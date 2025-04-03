@@ -3,6 +3,7 @@ import { AppProps } from "next/app";
 import NextTopLoader from "nextjs-toploader";
 import { Theme } from "@radix-ui/themes";
 import "@/app/globals.css";
+import { Toaster } from "@/components/ui/toaster";
 
 function MyApp({ Component, pageProps }: AppProps) {
     return (
@@ -27,6 +28,7 @@ function MyApp({ Component, pageProps }: AppProps) {
             </Head>
             <NextTopLoader showSpinner={false} />
             <Component {...pageProps} />
+            <Toaster />
         </Theme>
     );
 }

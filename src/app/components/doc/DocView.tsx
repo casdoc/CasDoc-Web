@@ -8,7 +8,6 @@ import { DocumentViewModel } from "@/app/viewModels/useDocument";
 import { GraphViewModel } from "@/app/viewModels/GraphViewModel";
 import { ReactFlowProvider } from "@xyflow/react";
 import { useState, useEffect, useRef } from "react";
-import { useSidebar } from "@/components/ui/sidebar";
 
 interface DocViewProps {
     documentViewModel: DocumentViewModel;
@@ -21,7 +20,6 @@ const DocView = ({ documentViewModel, graphViewModel }: DocViewProps) => {
     const { editor } = useBlockEditor({ document, updateDocument });
     const [splitWidth, setSplitWidth] = useState(50);
     const isResizing = useRef(false);
-    const { open: sidebarOpen } = useSidebar();
 
     useEffect(() => {
         const handleMouseMove = (e: MouseEvent) => {
@@ -51,16 +49,23 @@ const DocView = ({ documentViewModel, graphViewModel }: DocViewProps) => {
 
     return (
         <div
-            className={`relative flex flex-col flex-1 h-dvh w-dvw bg-white transition-all duration-500
-                ${sidebarOpen ? "ml-64" : "ml-0"}`}
+            className={`relative flex flex-col flex-1 h-dvh w-full bg-white transition-all duration-500
+               `}
         >
-            <EditorHeader mode={mode as DocMode} setDocMode={setDocMode} />
+            <EditorHeader
+                mode={mode as DocMode}
+                setDocMode={setDocMode}
+                editor={editor}
+            />
             <div className="flex flex-row overflow-y-auto h-full">
                 <div
                     className={`overflow-y-auto ${
                         mode === DocMode.Edit ? "w-full" : ""
                     } ${mode === DocMode.Graph ? "hidden" : ""}`}
-                    style={{ width: mode === DocMode.Split ? `${splitWidth}%` : "100%" }}
+                    style={{
+                        width:
+                            mode === DocMode.Split ? `${splitWidth}%` : "100%",
+                    }}
                 >
                     <BlockEditor editor={editor} title={document.getTitle()} />
                 </div>
@@ -73,14 +78,21 @@ const DocView = ({ documentViewModel, graphViewModel }: DocViewProps) => {
                     ></div>
                 )}
                 <div
-                    className={`${
-                        mode === DocMode.Split ? "h-full" : ""
-                    } ${mode === DocMode.Graph ? "w-full h-full" : ""} ${
-                        mode !== DocMode.Split && mode !== DocMode.Graph
-                            ? "hidden"
-                            : ""
-                    }`}
-                    style={{ width: mode === DocMode.Split ? `${100 - splitWidth}%` : "100%" }}
+                    className={`
+                        ${mode === DocMode.Split ? "h-full" : ""}
+                        ${mode === DocMode.Graph ? "w-full h-full" : ""}
+                        ${
+                            mode !== DocMode.Split && mode !== DocMode.Graph
+                                ? "hidden"
+                                : ""
+                        }
+                    `}
+                    style={{
+                        width:
+                            mode === DocMode.Split
+                                ? `${100 - splitWidth}%`
+                                : "100%",
+                    }}
                 >
                     <ReactFlowProvider>
                         <GraphView

@@ -123,12 +123,15 @@ export const GROUPS: Group[] = [
                         .chain()
                         .focus()
                         .insertContent({
-                            type: "mermaid",
+                            type: "template-mermaid",
                             attrs: {
                                 topicId: "root",
                                 id: uuidv4(),
                                 config: {
                                     ...mermaidDefaultConfig,
+                                    info: {
+                                        name: "Mermaid",
+                                    },
                                 },
                             },
                         })

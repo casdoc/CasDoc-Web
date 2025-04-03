@@ -22,7 +22,13 @@ const EditPanelInfo = ({
                 <span className="font-semibold">ID:</span> {selectedNode}
             </p>
             {info && Object.keys(info).length > 0 ? (
-                <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                <div
+                    className={`grid ${
+                        Object.keys(info).length > 1
+                            ? "grid-cols-2"
+                            : "grid-cols-1"
+                    } gap-x-4 gap-y-2`}
+                >
                     {Object.entries(info).map(([key, value]) => (
                         <div key={key} className="flex flex-col space-y-1">
                             <label

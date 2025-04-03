@@ -9,6 +9,9 @@ import {
 import { NodeSelection } from "@tiptap/pm/state";
 import MermaidComponent from "./MermaidComponent";
 export const mermaidDefaultConfig = {
+    info: {
+        name: "Mermaid",
+    },
     content: `%% Mermaid Template - Delete or modify this template to create your own diagram
 %% This template demonstrates the most common Mermaid diagram types.
 %% Uncomment the section you want to use and delete the rest.
@@ -75,8 +78,27 @@ sequenceDiagram
 %% For more diagram types and syntax, visit: https://mermaid.js.org/
 `,
 };
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const serializeMermaidToMarkdown = (state: any, node: any) => {
+    const { config } = node.attrs;
+    const name = config?.info?.name || "Mermaid Diagram";
+    const mermaidCode = config?.content || "";
+
+    // Write diagram name as a heading
+    state.write(`### ${name}\n\n`);
+
+    // Write mermaid code in a fenced code block
+    state.write("```mermaid\n");
+    state.write(`${mermaidCode}\n`);
+    state.write("```\n\n");
+
+    // Add a separator
+    state.write(`---\n\n`);
+};
+
 export const MermaidExtension = Node.create({
-    name: "mermaid",
+    name: "template-mermaid",
 
     group: "block",
 
@@ -142,7 +164,7 @@ export const MermaidExtension = Node.create({
 
         // Use the reusable paste handler plugin
         return [
-            createPasteHandlerPlugin("mermaid", (node) => {
+            createPasteHandlerPlugin("template-mermaid", (node) => {
                 const transformedNode = topicTransformer(node);
                 // console.debug(
                 //     "Processing topic node during paste:",

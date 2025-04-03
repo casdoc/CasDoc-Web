@@ -1,12 +1,13 @@
 import DocMenu from "./DocMenu";
 import DropDownMenu from "./DropDownMenu";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ChevronDown, Folder, Plus } from "lucide-react";
 import {
     SidebarMenuItem,
     SidebarMenuButton,
     SidebarMenuSub,
 } from "@/components/ui/sidebar";
+import { useProjectContext } from "@/app/viewModels/context/ProjectContext";
 import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
 import { CollapsibleTrigger } from "@radix-ui/react-collapsible";
 
@@ -14,43 +15,66 @@ const dropdownItems = ["Rename", "Delete"];
 
 interface ProjectMenuProps {
     name: string;
-    onDelete?: (name: string) => void;
+    projectId: string;
+    isSelected?: boolean;
 }
 
-const ProjectMenu = ({ name, onDelete }: ProjectMenuProps) => {
-    const [documents, setDocuments] = useState<string[]>([]);
-    const [documentCount, setDocumentCount] = useState(1);
+const ProjectMenu = ({ name, projectId }: ProjectMenuProps) => {
+    const {
+        deleteProject,
+        renameProject,
+        selectProject,
+        getDocumentsByProjectId,
+        createDocument,
+        deleteDocument,
+    } = useProjectContext();
+
+    const [documents, setDocuments] = useState(
+        getDocumentsByProjectId(projectId)
+    );
     const [isOpen, setIsOpen] = useState(true);
+
+    useEffect(() => {
+        setDocuments(getDocumentsByProjectId(projectId));
+    }, [projectId, getDocumentsByProjectId]);
 
     const handleAddDocument = (e: React.MouseEvent) => {
         e.stopPropagation();
-        const newDocument = `Document ${documentCount}`;
-        setDocumentCount(documentCount + 1);
-        setDocuments([...documents, newDocument]);
+        createDocument(projectId, "Untitled Document");
         setIsOpen(true);
+        setDocuments(getDocumentsByProjectId(projectId));
     };
 
-    const handleDeleteDocument = (docName: string) => {
-        setDocuments(documents.filter((doc) => doc !== docName));
-    };
+    const handleMenuClick = (action: string, e: React.MouseEvent) => {
+        e.stopPropagation();
 
-    const handleMenuClick = (action: string) => {
-        if (action === "Delete" && onDelete) {
-            // Handle delete action
-            onDelete(name);
+        if (action === "Delete") {
+            deleteProject(projectId);
         } else if (action === "Rename") {
-            // Handle rename action
+            const newName = prompt("Enter new project name:", name);
+            if (newName && newName.trim() !== "") {
+                renameProject(projectId, newName);
+            }
         }
+    };
+
+    const handleDeleteDocument = (documentId: string) => {
+        deleteDocument(documentId);
+        setDocuments(getDocumentsByProjectId(projectId));
     };
 
     return (
         <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-            <SidebarMenuItem key={name}>
+            <SidebarMenuItem>
                 <CollapsibleTrigger asChild className="w-full group/chevron">
-                    <SidebarMenuButton asChild className=" hover:bg-gray-200">
-                        <a href="#">
+                    <SidebarMenuButton
+                        asChild
+                        className=" hover:bg-gray-200 hover:cursor-pointer"
+                        onClick={() => selectProject(projectId)}
+                    >
+                        <div>
                             <Folder />
-                            <span className="flex items-center gap-1">
+                            <span className="flex items-center gap-1 truncate select-none">
                                 {name}
                                 <ChevronDown className="w-4 h-4 opacity-0 group-hover/chevron:opacity-100 transition-all duration-200 group-data-[state=open]/chevron:rotate-180" />
                             </span>
@@ -65,16 +89,17 @@ const ProjectMenu = ({ name, onDelete }: ProjectMenuProps) => {
                                     onClick={handleMenuClick}
                                 />
                             </div>
-                        </a>
+                        </div>
                     </SidebarMenuButton>
                 </CollapsibleTrigger>
 
                 <CollapsibleContent>
-                    <SidebarMenuSub>
+                    <SidebarMenuSub className="w-11/12">
                         {documents.map((doc) => (
                             <DocMenu
-                                key={doc}
-                                name={doc}
+                                key={doc.id}
+                                name={doc.getTitle()}
+                                documentId={doc.id}
                                 onDelete={handleDeleteDocument}
                             />
                         ))}

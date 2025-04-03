@@ -1,18 +1,18 @@
 import {
     Sidebar,
-    SidebarHeader,
+    // SidebarHeader,
     SidebarContent,
-    SidebarFooter,
+    // SidebarFooter,
 } from "@/components/ui/sidebar";
 import ProjectGroup from "./group/ProjectGroup";
 
 const AppSidebar = () => (
-    <Sidebar className="duration-500 ease-in-out">
-        <SidebarHeader></SidebarHeader>
-        <SidebarContent>
+    <Sidebar>
+        {/* <SidebarHeader /> */}
+        <SidebarContent className="bg-neutral-50">
             <ProjectGroup />
         </SidebarContent>
-        <SidebarFooter></SidebarFooter>
+        {/* <SidebarFooter /> */}
     </Sidebar>
 );
 

@@ -237,31 +237,33 @@ const EditPanelView = ({
                         info={node?.config.info}
                         handleConfigChange={handleConfigChange}
                     />
-                    {node?.type && node?.type.startsWith("template") && (
-                        <div className="bg-white border border-gray-200 rounded-lg p-4 mr-4 shadow">
-                            <h2 className="text-lg font-semibold mb-4">
-                                Fields
-                            </h2>
-                            {node?.config.fields &&
-                            node.config.fields.length > 0 ? (
-                                <EditPanelFields
-                                    fields={node.config.fields}
-                                    handleFieldChange={handleFieldChange}
-                                    handleRemoveField={handleRemoveField}
-                                />
-                            ) : (
-                                <p className="text-gray-400 text-sm">
-                                    No fields available.
-                                </p>
-                            )}
-                            <button
-                                className="mt-6 px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600"
-                                onClick={handleAddField}
-                            >
-                                + Add Field
-                            </button>
-                        </div>
-                    )}
+                    {node?.type &&
+                        node?.type.startsWith("template") &&
+                        node?.config.fields && (
+                            <div className="bg-white border border-gray-200 rounded-lg p-4 mr-4 shadow">
+                                <h2 className="text-lg font-semibold mb-4">
+                                    Fields
+                                </h2>
+                                {node?.config.fields &&
+                                node.config.fields.length > 0 ? (
+                                    <EditPanelFields
+                                        fields={node.config.fields}
+                                        handleFieldChange={handleFieldChange}
+                                        handleRemoveField={handleRemoveField}
+                                    />
+                                ) : (
+                                    <p className="text-gray-400 text-sm">
+                                        No fields available.
+                                    </p>
+                                )}
+                                <button
+                                    className="mt-6 px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600"
+                                    onClick={handleAddField}
+                                >
+                                    + Add Field
+                                </button>
+                            </div>
+                        )}
                     <EditPanelRelationship
                         connectionEdges={connectionEdges}
                         findNodeById={findNodeById}
