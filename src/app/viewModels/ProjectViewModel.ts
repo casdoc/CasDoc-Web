@@ -11,8 +11,7 @@ export interface ProjectViewModel {
     projects: Project[];
     selectedProjectId: string | null;
     selectedDocumentId: string | null;
-    // State to track documents for the current project
-    currentProjectDocuments: Document[];
+
     // Project actions
     createProject: (name: string) => void;
     deleteProject: (projectId: string) => void;
@@ -20,14 +19,14 @@ export interface ProjectViewModel {
     selectProject: (projectId: string) => void;
 
     // Document actions
-    getDocumentsForProject: (projectId: string) => Document[];
+    getDocumentsByProjectId: (projectId: string) => Document[];
     createDocument: (projectId: string, name: string) => void;
     deleteDocument: (documentId: string) => void;
     renameDocument: (documentId: string, newName: string) => void;
     selectDocument: (documentId: string) => void;
 }
 
-export function useProjectViewModel(): ProjectViewModel {
+export const useProjectViewModel = (): ProjectViewModel => {
     const [projects, setProjects] = useState<Project[]>([]);
     const [selectedProjectId, setSelectedProjectId] = useState<string | null>(
         null
@@ -35,79 +34,44 @@ export function useProjectViewModel(): ProjectViewModel {
     const [selectedDocumentId, setSelectedDocumentId] = useState<string | null>(
         null
     );
-    const [currentProjectDocuments, setCurrentProjectDocuments] = useState<
-        Document[]
-    >([]);
-    // Load projects from localStorage
+
+    useEffect(() => {
+        console.log("document", selectedDocumentId);
+    }, [selectedDocumentId]);
+
+    // Load projects from localStorage and set default content
     useEffect(() => {
         const loadedProjects = ProjectService.getAllProjects();
+        setProjects(loadedProjects);
 
-        // Create a default project if none exists
+        // Set default content
         if (loadedProjects.length === 0) {
-            // const defaultProject = new Project(
-            //     uuidv4(),
-            //     new Date(),
-            //     new Date(),
-            //     "My First Project",
-            //     "Default project"
-            // );
+            const defaultProject = new Project(
+                uuidv4(),
+                new Date(),
+                new Date(),
+                "My First Project",
+                "Default project"
+            );
+            ProjectService.saveProject(defaultProject);
 
-            // ProjectService.saveProject(defaultProject);
+            // Create a default document
+            const defaultDoc = new Document(
+                uuidv4(),
+                new Date(),
+                new Date(),
+                DocumentType.SRD,
+                defaultProject.id,
+                "Untitled Document",
+                "No description",
+                defaultContent
+            );
+            DocumentService.saveDocument(defaultDoc);
 
-            // // Create a default document
-            // const defaultDoc = new Document(
-            //     uuidv4(),
-            //     new Date(),
-            //     new Date(),
-            //     DocumentType.SRD,
-            //     defaultProject.id,
-            //     "Untitled Document",
-            //     "No description",
-            //     defaultContent
-            // );
-
-            // DocumentService.saveDocument(defaultDoc);
-
-            // setProjects([defaultProject]);
-            // setSelectedProjectId(defaultProject.id);
-            // setSelectedDocumentId(defaultDoc.id);
-            setProjects([]);
-            setSelectedProjectId(null);
-            setSelectedDocumentId(null);
-        } else {
-            setProjects(loadedProjects);
-
-            // If there are projects, select the first one
-            if (loadedProjects.length > 0 && !selectedProjectId) {
-                setSelectedProjectId(loadedProjects[0].id);
-
-                // Get documents for the first project
-                const projectDocs = ProjectService.getDocumentsByProjectId(
-                    loadedProjects[0].id
-                );
-                if (projectDocs.length > 0) {
-                    setSelectedDocumentId(projectDocs[0].id);
-                }
-            }
+            setProjects([defaultProject]);
         }
-    }, [selectedProjectId]);
-    // Load documents for the selected project
-    useEffect(() => {
-        if (selectedProjectId) {
-            const docs =
-                ProjectService.getDocumentsByProjectId(selectedProjectId);
-            setCurrentProjectDocuments(docs);
+    }, []);
 
-            // Select the first document if none is selected or if the selected document is not in this project
-            if (
-                (!selectedDocumentId ||
-                    !docs.some((doc) => doc.id === selectedDocumentId)) &&
-                docs.length > 0
-            ) {
-                setSelectedDocumentId(docs[0].id);
-            }
-        }
-    }, [selectedProjectId, selectedDocumentId]);
     // Project Actions
     const createProject = useCallback((name: string) => {
         const newProject = new Project(
@@ -117,43 +81,25 @@ export function useProjectViewModel(): ProjectViewModel {
             name,
             "No description"
         );
-
         ProjectService.saveProject(newProject);
 
         // Update local state
         setProjects((prevProjects) => [...prevProjects, newProject]);
-
         // Select the new project
         setSelectedProjectId(newProject.id);
-        setSelectedDocumentId(null);
     }, []);
 
     const deleteProject = useCallback(
-        (documentId: string) => {
-            const docToDelete = DocumentService.getDocumentById(documentId);
-            if (!docToDelete) return;
+        (projectId: string) => {
+            if (selectedProjectId === projectId) setSelectedProjectId(null);
+            ProjectService.deleteProject(projectId);
 
-            DocumentService.deleteDocument(documentId);
-
-            // Update local state for currentProjectDocuments
-            setCurrentProjectDocuments((prev) =>
-                prev.filter((doc) => doc.id !== documentId)
+            // Update local state
+            setProjects((prevProjects) =>
+                prevProjects.filter((proj) => proj.id !== projectId)
             );
-
-            // If the deleted document was selected, select another one
-            if (selectedDocumentId === documentId) {
-                const projectDocs = currentProjectDocuments.filter(
-                    (doc) => doc.id !== documentId
-                );
-
-                if (projectDocs.length > 0) {
-                    setSelectedDocumentId(projectDocs[0].id);
-                } else {
-                    setSelectedDocumentId(null);
-                }
-            }
         },
-        [currentProjectDocuments, selectedDocumentId]
+        [selectedProjectId]
     );
 
     const renameProject = useCallback((projectId: string, newName: string) => {
@@ -171,18 +117,10 @@ export function useProjectViewModel(): ProjectViewModel {
 
     const selectProject = useCallback((projectId: string) => {
         setSelectedProjectId(projectId);
-
-        // Get documents for the selected project
-        const projectDocs = ProjectService.getDocumentsByProjectId(projectId);
-        if (projectDocs.length > 0) {
-            setSelectedDocumentId(projectDocs[0].id);
-        } else {
-            setSelectedDocumentId(null);
-        }
     }, []);
 
     // Document Actions
-    const getDocumentsForProject = useCallback(
+    const getDocumentsByProjectId = useCallback(
         (projectId: string): Document[] => {
             return ProjectService.getDocumentsByProjectId(projectId);
         },
@@ -200,7 +138,6 @@ export function useProjectViewModel(): ProjectViewModel {
             "No description",
             []
         );
-
         DocumentService.saveDocument(newDocument);
 
         // Select the new document
@@ -209,22 +146,8 @@ export function useProjectViewModel(): ProjectViewModel {
 
     const deleteDocument = useCallback(
         (documentId: string) => {
-            const docToDelete = DocumentService.getDocumentById(documentId);
-            if (!docToDelete) return;
-
             DocumentService.deleteDocument(documentId);
-
-            // If the deleted document was selected, select another one
-            if (selectedDocumentId === documentId) {
-                const projectDocs = ProjectService.getDocumentsByProjectId(
-                    docToDelete.getProjectId()
-                );
-                if (projectDocs.length > 0) {
-                    setSelectedDocumentId(projectDocs[0].id);
-                } else {
-                    setSelectedDocumentId(null);
-                }
-            }
+            if (selectedDocumentId === documentId) setSelectedDocumentId(null);
         },
         [selectedDocumentId]
     );
@@ -248,15 +171,14 @@ export function useProjectViewModel(): ProjectViewModel {
         projects,
         selectedProjectId,
         selectedDocumentId,
-        currentProjectDocuments,
         createProject,
         deleteProject,
         renameProject,
         selectProject,
-        getDocumentsForProject,
+        getDocumentsByProjectId,
         createDocument,
         deleteDocument,
         renameDocument,
         selectDocument,
     };
-}
+};
