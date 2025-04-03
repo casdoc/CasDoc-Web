@@ -75,7 +75,8 @@ export function useGraphViewModel(): GraphViewModel {
         );
     };
 
-    const removeConnectionEdge = useCallback((edge: ConnectionEdge) => {
+    const removeConnectionEdge = (edge: ConnectionEdge) => {
+        console.log(edge);
         setConnectionEdges((prevEdges) => {
             if (!edge.data?.bidirectional) {
                 const newEdges = prevEdges.filter(
@@ -85,9 +86,22 @@ export function useGraphViewModel(): GraphViewModel {
                 GraphService.setEdges(newEdges);
                 return newEdges;
             }
+            const newEdges = prevEdges.map((e) => {
+                if (
+                    (e.target === edge.target && e.source === edge.source) ||
+                    (e.target === edge.source && e.source === edge.target)
+                ) {
+                    return {
+                        ...e,
+                        data: { ...e.data, bidirectional: false },
+                    };
+                }
+                return e;
+            });
+            GraphService.setEdges(newEdges);
             return prevEdges;
         });
-    }, []);
+    };
 
     const updateLabel = (edge: ConnectionEdge, content: string) => {
         setConnectionEdges((prevEdges) => {
