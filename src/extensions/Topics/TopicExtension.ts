@@ -59,8 +59,8 @@ export const TopicExtension = Node.create({
         return ReactNodeViewRenderer(TopicComponent);
     },
 
-    onTransaction({ editor }) {
-        setupNodeEventHandlers(editor, this.name, this.storage);
+    onCreate() {
+        setupNodeEventHandlers(this.editor, this.name, this.storage);
     },
 
     onDestroy() {

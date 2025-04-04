@@ -76,7 +76,7 @@ const TopicComponent: React.FC<NodeViewProps> = ({
                     ? "border-blue-500"
                     : selected
                     ? "border-gray-500 "
-                    : "border-white hover:border-gray-20 "
+                    : "border-white hover:border-gray-200"
             }
             `}
             onClick={handleClick}

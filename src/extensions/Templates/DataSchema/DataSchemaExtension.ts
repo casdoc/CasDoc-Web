@@ -122,8 +122,8 @@ export const DataSchemaExtension = Node.create({
         return ["data-schema", mergeAttributes(HTMLAttributes)];
     },
 
-    onTransaction({ editor }) {
-        setupNodeEventHandlers(editor, this.name, this.storage);
+    onCreate() {
+        setupNodeEventHandlers(this.editor, this.name, this.storage);
     },
 
     onDestroy() {
