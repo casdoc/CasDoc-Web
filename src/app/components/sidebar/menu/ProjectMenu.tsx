@@ -10,7 +10,6 @@ import {
 import { useProjectContext } from "@/app/viewModels/context/ProjectContext";
 import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
 import { CollapsibleTrigger } from "@radix-ui/react-collapsible";
-import { DialogTrigger } from "@/components/ui/dialog";
 
 const dropdownItems = ["Edit", "Delete"];
 
@@ -81,13 +80,10 @@ const ProjectMenu = ({ name, projectId }: ProjectMenuProps) => {
                             </span>
 
                             <div className="ml-auto flex items-center gap-1">
-                                <DialogTrigger asChild>
-                                    <Plus
-                                        onClick={handleAddDocument}
-                                        className="hover:bg-gray-300 rounded-md w-6 h-6 p-1"
-                                    />
-                                </DialogTrigger>
-
+                                <Plus
+                                    onClick={handleAddDocument}
+                                    className="hover:bg-gray-300 rounded-md w-6 h-6 p-1"
+                                />
                                 <DropDownMenu
                                     dropdownItems={dropdownItems}
                                     onClick={handleMenuClick}
@@ -102,7 +98,9 @@ const ProjectMenu = ({ name, projectId }: ProjectMenuProps) => {
                         {documents.filter(Boolean).map((doc) => (
                             <div key={doc.id}>
                                 <DocMenu
-                                    doc={doc}
+                                    projectId={projectId}
+                                    documentId={doc.getId()}
+                                    title={doc.getTitle()}
                                     onDelete={handleDeleteDocument}
                                 />
                             </div>

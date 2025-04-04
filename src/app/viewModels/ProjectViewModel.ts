@@ -48,10 +48,6 @@ export const useProjectViewModel = (): ProjectViewModel => {
         null
     );
 
-    useEffect(() => {
-        console.log("document", selectedDocumentId);
-    }, [selectedDocumentId]);
-
     // Load projects from localStorage and set default content
     useEffect(() => {
         const loadedProjects = ProjectService.getAllProjects();
