@@ -1,6 +1,6 @@
 import React, { memo } from "react";
 import { Handle, Position, useConnection } from "@xyflow/react";
-import { useNodeSelection } from "../../viewModels/context/NodeSelectionContext";
+import { useNodeSelection } from "../../../viewModels/context/NodeSelectionContext";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function CustomNode({ id, data }: any) {
@@ -33,7 +33,9 @@ function CustomNode({ id, data }: any) {
                         : ""
                 }`}
             >
-                <div className="flex">{data.label}</div>
+                <div className="max-w-44 overflow-hidden whitespace-nowrap truncate">
+                    {data.label}
+                </div>
 
                 {!connection.inProgress && (
                     <Handle
