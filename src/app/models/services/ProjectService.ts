@@ -49,7 +49,7 @@ export class ProjectService {
 
     static getDocumentsByProjectId(projectId: string): Document[] {
         return DocumentService.getAllDocuments().filter(
-            (doc) => doc.getProjectId() === projectId
+            (doc) => doc.projectId === projectId
         );
     }
 
@@ -61,7 +61,7 @@ export class ProjectService {
             const project = projects[index];
             project.name = update.name;
             project.description = update.description;
-            project.updatedAt = new Date();
+            project._updatedAt = new Date();
             localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
         }
     }

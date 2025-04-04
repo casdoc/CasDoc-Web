@@ -54,10 +54,10 @@ export class DocumentService {
         const index = documents.findIndex((doc) => doc.id === documentId);
         if (index !== -1) {
             const document = documents[index];
-            document.setTitle(update.title);
-            document.setDescription(update.description);
-            document.setType(update.type);
-            document.updatedAt = new Date();
+            document.title = update.title;
+            document.description = update.description;
+            document.type = update.type;
+            document._updatedAt = new Date();
             localStorage.setItem(STORAGE_KEY, JSON.stringify(documents));
         }
     }
