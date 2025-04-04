@@ -20,6 +20,7 @@ const ProjectEditDialog = () => {
     } = useProjectContext();
     const handleEditProject = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        console.log(project);
         if (!project) return;
 
         const formData = new FormData(e.currentTarget);
