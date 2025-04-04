@@ -7,6 +7,7 @@ import {
     createNodeTransformer,
 } from "../ExtensionUtils";
 import { NodeSelection } from "@tiptap/pm/state";
+import { v4 as uuidv4 } from "uuid";
 
 const topicDefaultConfig = {
     name: "Data Schema",
@@ -79,6 +80,52 @@ export const TopicExtension = Node.create({
 
     addNodeView() {
         return ReactNodeViewRenderer(TopicComponent);
+    },
+
+    onTransaction({ editor }) {
+        // Set up event listeners for node actions when extension is initialized
+        if (!this.storage.hasInitializedListeners) {
+            // Handle node copy event
+            window.addEventListener("node-copy", (event: Event) => {
+                const customEvent = event as CustomEvent;
+                const { pos } = customEvent.detail;
+
+                // Find the node by position
+                const node = editor.state.doc.nodeAt(pos);
+                if (node && node.type.name === this.name) {
+                    // Create a duplicate node with new ID
+                    const newNode = node.type.create(
+                        {
+                            ...node.attrs,
+                            id: uuidv4(), // Generate a new ID
+                        },
+                        node.content
+                    );
+
+                    // Insert after the current node
+                    editor.commands.insertContentAt(
+                        pos + node.nodeSize,
+                        newNode
+                    );
+                }
+            });
+
+            // Handle node delete event
+            window.addEventListener("node-delete", (event: Event) => {
+                const customEvent = event as CustomEvent;
+                const { pos } = customEvent.detail;
+
+                const node = editor.state.doc.nodeAt(pos);
+                if (node) {
+                    editor.commands.deleteRange({
+                        from: pos,
+                        to: pos + node.nodeSize,
+                    });
+                }
+            });
+
+            this.storage.hasInitializedListeners = true;
+        }
     },
 
     addProseMirrorPlugins() {
