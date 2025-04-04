@@ -1,14 +1,18 @@
 import dagre from "@dagrejs/dagre";
+import { Edge, Node } from "@xyflow/react";
+
+interface LayoutedElementReturn {
+    layoutedNodes: Node[];
+    structuralEdges: Edge[];
+}
 
 export const getLayoutedElements = (
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    nodes: any[],
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    structuralEdges: any[],
+    nodes: Node[],
+    structuralEdges: Edge[],
     direction = "LR",
     nodeWidth: number,
     nodeHeight: number
-) => {
+): LayoutedElementReturn => {
     const dagreGraph = new dagre.graphlib.Graph();
     dagreGraph.setDefaultEdgeLabel(() => ({}));
     const isHorizontal = direction === "LR";
@@ -35,7 +39,7 @@ export const getLayoutedElements = (
                 y: nodeWithPosition.y - nodeHeight / 2,
             },
         };
-    });
+    }) as Node[];
 
-    return { nodes: layoutedNodes, structuralEdges };
+    return { layoutedNodes, structuralEdges };
 };

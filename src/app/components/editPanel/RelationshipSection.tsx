@@ -33,10 +33,7 @@ const RelationshipSection = ({
     const { selectNode } = useNodeSelection();
 
     const handleRemove = (edge: ConnectionEdge) => {
-        removeEdge({
-            source: edge.source,
-            target: edge.target,
-        });
+        removeEdge(edge);
     };
 
     return (
@@ -56,7 +53,7 @@ const RelationshipSection = ({
             </div>
             {edges.length > 0 ? (
                 edges.map((edge) => {
-                    const node = findNodeById(edge.target);
+                    const node = findNodeById(nodeIdGetter(edge));
                     if (!node || node.config.info.name.trim() === "")
                         return null;
                     return (
