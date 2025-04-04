@@ -16,7 +16,6 @@ const TopicComponent: React.FC<NodeViewProps> = ({
     const [bubbleOpen, setBubbleOpen] = useState(false);
 
     const handleEdit = useCallback(() => {
-        console.debug("Edit handler triggered for node:", id);
         const event = new CustomEvent("global-node-select", {
             detail: { id },
         });
@@ -72,12 +71,12 @@ const TopicComponent: React.FC<NodeViewProps> = ({
 
     return (
         <NodeViewWrapper
-            className={`cursor-pointer hover:bg-gray-50 rounded-lg border-2 px-1 py-2 bg-white relative select-none ${
+            className={`cursor-pointer hover:bg-gray-50 rounded-lg border-2 px-1 py-2 bg-white relative  ${
                 isSelected
                     ? "border-blue-500"
                     : selected
-                    ? "border-gray-500"
-                    : "border-white hover:border-gray-200"
+                    ? "border-gray-500 "
+                    : "border-white hover:border-gray-20 "
             }
             `}
             onClick={handleClick}
@@ -90,11 +89,11 @@ const TopicComponent: React.FC<NodeViewProps> = ({
                 onEdit={handleEdit}
             />
 
-            <div className="border-l-4 border-slate-400 pl-3 select-none">
-                <h2 className="text-2xl font-bold text-black m-0 px-0 pb-1 select-none">
+            <div className="border-l-4 border-slate-400 pl-3 ">
+                <h2 className="text-2xl font-bold text-black m-0 px-0 pb-1">
                     {config.info.name || "Unknown"}
                 </h2>
-                <p className="m-0 p-0 text-sm text-gray-500 font-semibold select-none">
+                <p className="m-0 p-0 text-sm text-gray-500 font-semibold ">
                     {config.info.description}
                 </p>
             </div>

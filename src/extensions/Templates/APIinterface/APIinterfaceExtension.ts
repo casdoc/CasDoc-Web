@@ -8,6 +8,8 @@ import {
     createConfigAttribute,
     createPasteHandlerPlugin,
     createNodeTransformer,
+    setupNodeEventHandlers,
+    cleanupNodeEventHandlers,
 } from "../../ExtensionUtils";
 import { NodeSelection } from "@tiptap/pm/state";
 
@@ -170,5 +172,13 @@ export const APIinterfaceExtension = Node.create({
                 return transformedNode;
             }),
         ];
+    },
+
+    onTransaction({ editor }) {
+        setupNodeEventHandlers(editor, this.name, this.storage);
+    },
+
+    onDestroy() {
+        cleanupNodeEventHandlers(this.storage);
     },
 });
