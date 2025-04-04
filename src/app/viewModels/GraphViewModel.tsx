@@ -113,7 +113,7 @@ export function useGraphViewModel(): GraphViewModel {
                 return e;
             });
             GraphService.setEdges(newEdges);
-            return prevEdges;
+            return newEdges;
         });
     };
 
