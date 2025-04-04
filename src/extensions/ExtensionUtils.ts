@@ -151,15 +151,26 @@ export function createNodeTransformer(defaultConfig: any) {
  * @param extensionName Name of the extension these handlers are for
  * @param storageRef A reference to the extension's storage to track initialization
  */
-export function setupNodeEventHandlers(
+export const setupNodeEventHandlers = (
     editor: Editor,
     extensionName: string,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     storageRef: Record<string, any>
-) {
+) => {
     if (storageRef.hasInitializedListeners) {
         return;
     }
+    // Handle node delete event
+    const handleNodeDelete = (event: Event) => {
+        if (storageRef.isDeleting) return;
+        const customEvent = event as CustomEvent;
+        const { pos, id } = customEvent.detail;
+        const node = editor.state.doc.nodeAt(pos);
+        if (!node || node.attrs.id !== id) {
+            return;
+        }
+        editor.chain().setNodeSelection(pos).deleteSelection().run();
+    };
 
     // Handle node copy event
     const handleNodeCopy = (event: Event) => {
@@ -182,21 +193,6 @@ export function setupNodeEventHandlers(
             editor.commands.insertContentAt(pos + node.nodeSize, newNode);
         }
     };
-
-    // Handle node delete event
-    const handleNodeDelete = (event: Event) => {
-        const customEvent = event as CustomEvent;
-        const { pos } = customEvent.detail;
-
-        const node = editor.state.doc.nodeAt(pos);
-        if (node) {
-            editor.commands.deleteRange({
-                from: pos,
-                to: pos + node.nodeSize,
-            });
-        }
-    };
-
     // Set up the event listeners
     window.addEventListener("node-copy", handleNodeCopy);
     window.addEventListener("node-delete", handleNodeDelete);
@@ -208,7 +204,7 @@ export function setupNodeEventHandlers(
     };
 
     storageRef.hasInitializedListeners = true;
-}
+};
 
 /**
  * Removes event listeners that were set up by setupNodeEventHandlers
