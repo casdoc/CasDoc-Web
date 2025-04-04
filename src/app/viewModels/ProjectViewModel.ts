@@ -164,6 +164,8 @@ export const useProjectViewModel = (): ProjectViewModel => {
     const openEditProjectDialog = useCallback((projectId: string) => {
         const project = ProjectService.getProjectById(projectId);
         if (project) setEditingProject(project);
+        console.log(projectId);
+        console.log(project);
     }, []);
     const openEditDocumentDialog = useCallback((documentId: string) => {
         const document = DocumentService.getDocumentById(documentId);

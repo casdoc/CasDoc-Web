@@ -22,11 +22,11 @@ interface ProjectMenuProps {
 const ProjectMenu = ({ name, projectId }: ProjectMenuProps) => {
     const {
         deleteProject,
-        renameProject,
         selectProject,
         getDocumentsByProjectId,
         createDocument,
         deleteDocument,
+        openEditProjectDialog,
     } = useProjectContext();
 
     const [documents, setDocuments] = useState(
@@ -51,10 +51,7 @@ const ProjectMenu = ({ name, projectId }: ProjectMenuProps) => {
         if (action === "Delete") {
             deleteProject(projectId);
         } else if (action === "Edit") {
-            const newName = prompt("Enter new project name:", name);
-            if (newName && newName.trim() !== "") {
-                renameProject(projectId, newName);
-            }
+            openEditProjectDialog(projectId);
         }
     };
 
@@ -95,15 +92,14 @@ const ProjectMenu = ({ name, projectId }: ProjectMenuProps) => {
 
                 <CollapsibleContent>
                     <SidebarMenuSub className="w-11/12">
-                        {documents.filter(Boolean).map((doc) => (
-                            <div key={doc.id}>
-                                <DocMenu
-                                    projectId={projectId}
-                                    documentId={doc.getId()}
-                                    title={doc.getTitle()}
-                                    onDelete={handleDeleteDocument}
-                                />
-                            </div>
+                        {documents.filter(Boolean).map((doc, index) => (
+                            <DocMenu
+                                key={index}
+                                projectId={projectId}
+                                documentId={doc.id}
+                                title={doc.title}
+                                onDelete={handleDeleteDocument}
+                            />
                         ))}
                     </SidebarMenuSub>
                 </CollapsibleContent>

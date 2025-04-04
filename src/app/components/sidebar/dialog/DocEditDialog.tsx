@@ -29,7 +29,7 @@ const DocEditDialog = () => {
         closeEditDocumentDialog,
     } = useProjectContext();
     const [type, setType] = useState<DocumentType>(
-        doc?.getType() ?? DocumentType.SRD
+        doc?.type ?? DocumentType.SRD
     );
     const handleEditDocument = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -49,7 +49,7 @@ const DocEditDialog = () => {
             type,
         };
         console.log("Updated Document:", updatedDocument);
-        editDocument(doc.getId(), updatedDocument);
+        editDocument(doc.id, updatedDocument);
         closeEditDocumentDialog();
     };
 
@@ -71,9 +71,7 @@ const DocEditDialog = () => {
                             </Label>
                             <Input
                                 name="title"
-                                defaultValue={
-                                    doc?.getTitle() ?? "Untitled Document"
-                                }
+                                defaultValue={doc?.title ?? "Untitled Document"}
                                 placeholder="Enter document title"
                                 className="col-span-3"
                             />
@@ -84,7 +82,7 @@ const DocEditDialog = () => {
                             </Label>
                             <Input
                                 name="description"
-                                defaultValue={doc?.getDescription() ?? ""}
+                                defaultValue={doc?.description ?? ""}
                                 placeholder="Enter document description"
                                 className="col-span-3"
                             />

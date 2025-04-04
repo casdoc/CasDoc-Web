@@ -18,8 +18,8 @@ export class ProjectService {
                         proj.id,
                         new Date(proj.createdAt),
                         new Date(proj.updatedAt),
-                        proj._name,
-                        proj._description
+                        proj.name,
+                        proj.description
                     )
             );
         } catch (error) {

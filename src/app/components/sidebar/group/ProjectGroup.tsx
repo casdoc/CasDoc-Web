@@ -48,9 +48,9 @@ const ProjectGroup = () => {
                 <CollapsibleContent>
                     <SidebarGroupContent>
                         <SidebarMenu>
-                            {projects.map((project) => (
+                            {projects.filter(Boolean).map((project, index) => (
                                 <ProjectMenu
-                                    key={project.id}
+                                    key={index}
                                     name={project.name}
                                     projectId={project.id}
                                     isSelected={
