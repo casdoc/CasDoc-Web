@@ -128,7 +128,7 @@ const EditPanelView = ({
                 }
             }, 0);
         }
-    }, [selectedNode]);
+    }, [selectedNode, activeSection]);
 
     const handleFieldChange = useCallback(
         (
