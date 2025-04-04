@@ -5,6 +5,8 @@ export { DataSchemaExtension } from "./Templates/DataSchema/DataSchemaExtension"
 export { APIinterfaceExtension } from "./Templates/APIinterface/APIinterfaceExtension";
 export { MermaidExtension } from "./Templates/Mermaid/MermaidExtension";
 export { MarkdownPasteExtension } from "./MarkdownPasteExtension";
+export { UserStoryExtension } from "./Templates/UserStory/UserStoryExtension";
+export { TestCaseExtension } from "./Templates/TestCase/TestCaseExtension";
 
 export { Heading } from "./Heading";
 export { Link } from "./Link";

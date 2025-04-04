@@ -23,6 +23,7 @@ const topicDefaultConfig = {
             description: "default field",
         },
     ],
+    fieldKey: "description",
 };
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const serializeDataSchemaToMarkdown = (state: any, node: any) => {

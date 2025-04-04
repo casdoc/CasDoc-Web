@@ -4,16 +4,18 @@ import { FaRegTrashAlt } from "react-icons/fa";
 
 interface EditPanelFieldsProps {
     fields: Array<JsonObject>;
+    fieldKey: string;
     handleFieldChange: (
         e: React.ChangeEvent<HTMLTextAreaElement>,
-        index: number,
-        key: "name" | "description" | "type"
+        key: string,
+        index: number
     ) => void;
     handleRemoveField: (index: number) => void;
 }
 
 const EditPanelFields = ({
     fields,
+    fieldKey,
     handleFieldChange,
     handleRemoveField,
 }: EditPanelFieldsProps) => {
@@ -21,54 +23,27 @@ const EditPanelFields = ({
         <div className="flex flex-col space-y-4">
             {fields.map((field, index) => (
                 <div key={index} className="flex justify-around bg-white">
-                    <div>
-                        <label className="text-xs text-gray-500 block mb-1">
-                            Field Name
-                        </label>
-                        <TextArea
-                            size="2"
-                            resize="none"
-                            radius="large"
-                            placeholder="Name of field"
-                            className="bg-white"
-                            value={field.name}
-                            onChange={(e) =>
-                                handleFieldChange(e, index, "name")
-                            }
-                        />
-                    </div>
-                    <div className="ml-2 w-full">
-                        <label className="text-xs text-gray-500 block mb-1">
-                            Description
-                        </label>
-                        <TextArea
-                            size="2"
-                            resize="none"
-                            radius="large"
-                            placeholder="Write something..."
-                            className="bg-white"
-                            value={field.description}
-                            onChange={(e) =>
-                                handleFieldChange(e, index, "description")
-                            }
-                        />
-                    </div>
-                    <div className="ml-2">
-                        <label className="text-xs text-gray-500 block mb-1">
-                            Type
-                        </label>
-                        <TextArea
-                            size="2"
-                            resize="none"
-                            radius="large"
-                            placeholder="Type of field"
-                            className="bg-white"
-                            value={field.type}
-                            onChange={(e) =>
-                                handleFieldChange(e, index, "type")
-                            }
-                        />
-                    </div>
+                    {Object.entries(field).map(([key, value]) => (
+                        <div
+                            key={key}
+                            className={`ml-2 ${key === fieldKey && "w-full"}`}
+                        >
+                            <label className="text-xs text-gray-500 block mb-1">
+                                {key.charAt(0).toUpperCase() + key.slice(1)}
+                            </label>
+                            <TextArea
+                                size="2"
+                                resize="none"
+                                radius="large"
+                                placeholder={`Enter ${key}`}
+                                className="bg-white"
+                                value={value}
+                                onChange={(e) =>
+                                    handleFieldChange(e, key, index)
+                                }
+                            />
+                        </div>
+                    ))}
                     <div className="flex items-center ml-3 pt-2">
                         <button
                             className="text-xs text-red-500 hover:underline"

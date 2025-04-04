@@ -11,12 +11,12 @@ export interface APIinterfaceParameter {
     description: string;
 }
 
-const APIinterfaceComponent: React.FC<NodeViewProps> = ({
+const APIinterfaceComponent = ({
     node,
     selected,
     editor,
     getPos,
-}) => {
+}: NodeViewProps) => {
     const { id, config } = node.attrs;
     const info = config?.info || {};
     const fields = config?.fields || [];
@@ -52,6 +52,7 @@ const APIinterfaceComponent: React.FC<NodeViewProps> = ({
     }, [handleEdit, id, selected]);
 
     const handleClick = (): void => {
+        if (window.getSelection()?.toString()) return;
         setBubbleOpen(!bubbleOpen);
     };
 
@@ -79,7 +80,7 @@ const APIinterfaceComponent: React.FC<NodeViewProps> = ({
     };
 
     const getMethodColor = (method?: string): string => {
-        switch (method?.toUpperCase()) {
+        switch (method?.trim().toUpperCase()) {
             case "GET":
                 return "bg-green-500";
             case "POST":
@@ -97,13 +98,14 @@ const APIinterfaceComponent: React.FC<NodeViewProps> = ({
 
     return (
         <NodeViewWrapper
-            className={`ml-8 cursor-pointer hover:bg-gray-50 rounded-lg pt-2 border-2 relative bg-white ${
+            className={`ml-8 group cursor-pointer hover:bg-gray-50 rounded-lg pt-2 border-2 relative bg-white ${
                 isSelected
                     ? "border-blue-500"
                     : selected
                     ? "border-gray-500"
                     : "border-white hover:border-gray-200"
-            }`}
+            } ${selected ? "select-none" : ""}`}
+            onMouseDown={(e: React.MouseEvent) => e.stopPropagation()}
             onClick={handleClick}
         >
             <NodeBubbleBar
@@ -122,15 +124,15 @@ const APIinterfaceComponent: React.FC<NodeViewProps> = ({
                     >
                         {info.method?.toUpperCase() || "METHOD"}
                     </span>
-                    <span className="text-xl font-bold text-black">
+                    <span className="text-xl font-bold text-black group-hover:cursor-text">
                         {info.name || "API name"}
                     </span>
                 </div>
                 <div>
-                    <p className="m-0 text-sm text-gray-600">
+                    <p className="m-0 text-sm text-gray-600 group-hover:cursor-text">
                         {info.description}
                     </p>
-                    <p className="m-0 py-2 text-sm text-black font-semibold">
+                    <p className="m-0 py-2 text-sm text-black font-semibold group-hover:cursor-text">
                         End Point : {info.endPoint}
                     </p>
                 </div>
@@ -152,7 +154,7 @@ const APIinterfaceComponent: React.FC<NodeViewProps> = ({
                                     <div key={index} className="py-2 px-4">
                                         <div className="flex justify-between items-center m-0 p-0">
                                             <div className="flex items-center">
-                                                <span className="font-medium text-gray-800">
+                                                <span className="font-medium text-gray-800 group-hover:cursor-text">
                                                     {field.name}
                                                 </span>
                                                 {field.required && (
@@ -163,13 +165,13 @@ const APIinterfaceComponent: React.FC<NodeViewProps> = ({
                                             </div>
 
                                             {field.type && (
-                                                <span className="text-xs bg-gray-100 px-1 py-1 rounded text-gray-600 mr-2">
+                                                <span className="text-xs bg-gray-100 px-1 py-1 rounded text-gray-600 mr-2 group-hover:cursor-text">
                                                     {field.type}
                                                 </span>
                                             )}
                                         </div>
                                         {field.description && (
-                                            <p className="m-0 p-0 text-sm text-gray-500">
+                                            <p className="m-0 p-0 text-sm text-gray-500 group-hover:cursor-text">
                                                 {field.description}
                                             </p>
                                         )}

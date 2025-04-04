@@ -108,7 +108,7 @@ const MermaidComponent: React.FC<NodeViewProps> = ({
                     : selected
                     ? "border-gray-500"
                     : "border-white hover:border-gray-200"
-            }`}
+            } ${selected ? "select-none" : ""}`}
             onClick={handleContainerClick}
         >
             <NodeBubbleBar
