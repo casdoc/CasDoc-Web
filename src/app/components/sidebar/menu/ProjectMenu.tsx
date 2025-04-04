@@ -27,6 +27,7 @@ const ProjectMenu = ({ name, projectId }: ProjectMenuProps) => {
         createDocument,
         deleteDocument,
         openEditProjectDialog,
+        openEditDocumentDialog,
     } = useProjectContext();
 
     const [documents, setDocuments] = useState(
@@ -40,7 +41,8 @@ const ProjectMenu = ({ name, projectId }: ProjectMenuProps) => {
 
     const handleAddDocument = (e: React.MouseEvent) => {
         e.stopPropagation();
-        createDocument(projectId, "Untitled Document");
+        const documentId = createDocument(projectId, "Untitled Document");
+        openEditDocumentDialog(documentId);
         setIsOpen(true);
         setDocuments(getDocumentsByProjectId(projectId));
     };

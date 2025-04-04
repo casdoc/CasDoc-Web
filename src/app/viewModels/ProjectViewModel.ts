@@ -17,14 +17,14 @@ export interface ProjectViewModel {
     editingDocument: Document | null;
 
     // Project actions
-    createProject: (name: string) => void;
+    createProject: (name: string) => string;
     deleteProject: (projectId: string) => void;
     editProject: (projectId: string, update: ProjectUpdate) => void;
     selectProject: (projectId: string) => void;
 
     // Document actions
     getDocumentsByProjectId: (projectId: string) => Document[];
-    createDocument: (projectId: string, name: string) => void;
+    createDocument: (projectId: string, name: string) => string;
     deleteDocument: (documentId: string) => void;
     editDocument: (documentId: string, update: DocumentUpdate) => void;
     selectDocument: (documentId: string) => void;
@@ -83,7 +83,7 @@ export const useProjectViewModel = (): ProjectViewModel => {
     }, []);
 
     // Project Actions
-    const createProject = useCallback((name: string) => {
+    const createProject = useCallback((name: string) : string => {
         const newProject = new Project(
             uuidv4(),
             new Date(),
@@ -97,6 +97,7 @@ export const useProjectViewModel = (): ProjectViewModel => {
         setProjects((prevProjects) => [...prevProjects, newProject]);
         // Select the new project
         setSelectedProjectId(newProject.id);
+        return newProject.id;
     }, []);
     const deleteProject = useCallback(
         (projectId: string) => {
@@ -127,22 +128,26 @@ export const useProjectViewModel = (): ProjectViewModel => {
         },
         []
     );
-    const createDocument = useCallback((projectId: string, name: string) => {
-        const newDocument = new Document(
-            uuidv4(),
-            new Date(),
-            new Date(),
-            DocumentType.SRD,
-            projectId,
-            name,
-            "No description",
-            []
-        );
-        DocumentService.saveDocument(newDocument);
+    const createDocument = useCallback(
+        (projectId: string, name: string): string => {
+            const newDocument = new Document(
+                uuidv4(),
+                new Date(),
+                new Date(),
+                DocumentType.SRD,
+                projectId,
+                name,
+                "No description",
+                []
+            );
+            DocumentService.saveDocument(newDocument);
 
-        // Select the new document
-        setSelectedDocumentId(newDocument.id);
-    }, []);
+            // Select the new document
+            setSelectedDocumentId(newDocument.id);
+            return newDocument.id;
+        },
+        []
+    );
     const deleteDocument = useCallback(
         (documentId: string) => {
             DocumentService.deleteDocument(documentId);
