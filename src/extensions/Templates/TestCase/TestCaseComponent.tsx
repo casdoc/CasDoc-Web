@@ -50,7 +50,7 @@ const TestCaseComponent = ({
                     : selected
                     ? "border-gray-500"
                     : "border-white hover:border-gray-200"
-            }`}
+            } ${selected ? "select-none" : ""}`}
             onClick={handleClick}
         >
             <div className="px-3 py-1 border-b rounded-sm">
