@@ -1,4 +1,5 @@
 import { Document } from "@/app/models/entity/Document";
+import { DocumentUpdate } from "@/app/models/types/DocumentUpdate";
 
 const STORAGE_KEY = "DOCUMENTS";
 
@@ -45,6 +46,20 @@ export class DocumentService {
         }
 
         localStorage.setItem(STORAGE_KEY, JSON.stringify(documents));
+    }
+
+    static updateDocument(documentId: string, update: DocumentUpdate): void {
+        if (typeof window === "undefined") return;
+        const documents = this.getAllDocuments();
+        const index = documents.findIndex((doc) => doc.id === documentId);
+        if (index !== -1) {
+            const document = documents[index];
+            document.setTitle(update.title);
+            document.setDescription(update.description);
+            document.setType(update.documentType);
+            document.updatedAt = new Date();
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(documents));
+        }
     }
 
     static deleteDocument(id: string): void {
