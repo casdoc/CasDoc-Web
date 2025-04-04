@@ -67,7 +67,7 @@ const DocView = ({ documentViewModel, graphViewModel }: DocViewProps) => {
                             mode === DocMode.Split ? `${splitWidth}%` : "100%",
                     }}
                 >
-                    <BlockEditor editor={editor} title={document.getTitle()} />
+                    <BlockEditor editor={editor} title={document.title} />
                 </div>
                 {mode === DocMode.Split && (
                     <div

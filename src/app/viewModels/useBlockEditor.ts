@@ -24,7 +24,7 @@ export const useBlockEditor = ({
             const updatedContent = editor.getJSON().content;
 
             if (document && updatedContent) {
-                document.setAllContent(updatedContent);
+                document.content = updatedContent;
                 updateDocument(document);
             }
             //next tick to avoid state update in render
@@ -50,12 +50,9 @@ export const useBlockEditor = ({
         onUpdate: onUpdate,
         onCreate({ editor }) {
             // Only set content if editor is empty or if document has content
-            if (
-                !editor.isEmpty ||
-                (document && document.getContent().length > 0)
-            ) {
+            if (!editor.isEmpty || (document && document.content.length > 0)) {
                 editor.commands.setContent(
-                    { type: "doc", content: document?.getContent() },
+                    { type: "doc", content: document?.content },
                     false
                 );
                 // Save initial document ID
@@ -84,7 +81,7 @@ export const useBlockEditor = ({
             setTimeout(() => {
                 editor.commands.clearContent();
                 editor.commands.setContent(
-                    { type: "doc", content: document.getContent() },
+                    { type: "doc", content: document.content },
                     false
                 );
                 prevDocumentId.current = currentDocId;
@@ -97,7 +94,7 @@ export const useBlockEditor = ({
         if (currentDocId !== prevDocumentId.current) return;
         if (document && editor && !isInternalUpdate.current) {
             editor.commands.setContent(
-                { type: "doc", content: document.getContent() },
+                { type: "doc", content: document.content },
                 false
             );
         }
