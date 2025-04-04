@@ -27,6 +27,10 @@ export class Document extends BaseEntity {
         this._content = content;
     }
 
+    getId(): string {
+        return this.id;
+    }
+
     getType(): DocumentType {
         return this._type;
     }

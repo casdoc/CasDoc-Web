@@ -22,7 +22,7 @@ export interface ProjectViewModel {
     getDocumentsByProjectId: (projectId: string) => Document[];
     createDocument: (projectId: string, name: string) => void;
     deleteDocument: (documentId: string) => void;
-    renameDocument: (documentId: string, newName: string) => void;
+    editDocument: (document: Document) => void;
     selectDocument: (documentId: string) => void;
 }
 
@@ -152,16 +152,9 @@ export const useProjectViewModel = (): ProjectViewModel => {
         [selectedDocumentId]
     );
 
-    const renameDocument = useCallback(
-        (documentId: string, newName: string) => {
-            const document = DocumentService.getDocumentById(documentId);
-            if (!document) return;
-
-            document.setTitle(newName);
-            DocumentService.saveDocument(document);
-        },
-        []
-    );
+    const editDocument = useCallback((newDocument: Document) => {
+        DocumentService.saveDocument(newDocument);
+    }, []);
 
     const selectDocument = useCallback((documentId: string) => {
         setSelectedDocumentId(documentId);
@@ -178,7 +171,7 @@ export const useProjectViewModel = (): ProjectViewModel => {
         getDocumentsByProjectId,
         createDocument,
         deleteDocument,
-        renameDocument,
+        editDocument,
         selectDocument,
     };
 };
