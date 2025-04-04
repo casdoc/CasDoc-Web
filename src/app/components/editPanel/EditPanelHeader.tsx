@@ -31,7 +31,7 @@ const EditPanelHeader = ({
                     <button
                         key={tab.key}
                         onClick={() => onSectionChange(tab.key)}
-                        className={`text-sm px-3 py-1 rounded transition-all ${
+                        className={`text-sm px-3 py-1 rounded ${
                             section === tab.key
                                 ? "bg-blue-400 text-white font-medium shadow-sm"
                                 : "text-gray-600 hover:text-black"
