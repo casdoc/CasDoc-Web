@@ -9,7 +9,6 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import AppSidebar from "@/app/components/sidebar/AppSidebar";
 import { useProjectContext } from "@/app/viewModels/context/ProjectContext";
 import { Dialog } from "@/components/ui/dialog";
-import EditDialog from "./sidebar/EditDialog";
 
 interface DocumentContentProps {
     documentId?: string;
@@ -29,7 +28,6 @@ export default function DocumentContent({ documentId }: DocumentContentProps) {
             <SidebarProvider>
                 <Dialog>
                     <AppSidebar />
-                    <EditDialog />
                     <div className="h-dvh w-dvw flex flex-col items-center bg-gray-100 text-black">
                         <DocView
                             documentViewModel={documentViewModel}

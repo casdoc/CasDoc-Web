@@ -12,7 +12,7 @@ import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
 import { CollapsibleTrigger } from "@radix-ui/react-collapsible";
 import { DialogTrigger } from "@/components/ui/dialog";
 
-const dropdownItems = ["Rename", "Delete"];
+const dropdownItems = ["Edit", "Delete"];
 
 interface ProjectMenuProps {
     name: string;
@@ -51,7 +51,7 @@ const ProjectMenu = ({ name, projectId }: ProjectMenuProps) => {
 
         if (action === "Delete") {
             deleteProject(projectId);
-        } else if (action === "Rename") {
+        } else if (action === "Edit") {
             const newName = prompt("Enter new project name:", name);
             if (newName && newName.trim() !== "") {
                 renameProject(projectId, newName);
@@ -99,13 +99,13 @@ const ProjectMenu = ({ name, projectId }: ProjectMenuProps) => {
 
                 <CollapsibleContent>
                     <SidebarMenuSub className="w-11/12">
-                        {documents.map((doc) => (
-                            <DocMenu
-                                key={doc.id}
-                                name={doc.getTitle()}
-                                documentId={doc.id}
-                                onDelete={handleDeleteDocument}
-                            />
+                        {documents.filter(Boolean).map((doc) => (
+                            <div key={doc.id}>
+                                <DocMenu
+                                    doc={doc}
+                                    onDelete={handleDeleteDocument}
+                                />
+                            </div>
                         ))}
                     </SidebarMenuSub>
                 </CollapsibleContent>
