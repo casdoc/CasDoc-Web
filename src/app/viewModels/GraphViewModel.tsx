@@ -60,19 +60,33 @@ export function useGraphViewModel(): GraphViewModel {
     }, []);
 
     const searchTarget = (id: string): ConnectionEdge[] => {
-        return connectionEdges.filter(
-            (edge) =>
-                edge.source === id ||
-                (edge.target === id && edge.data?.bidirectional)
-        );
+        return connectionEdges
+            .filter(
+                (e) =>
+                    e.source === id ||
+                    (e.target === id && e.data?.bidirectional)
+            )
+            .map((e) => {
+                if (e.target === id && e.data?.bidirectional) {
+                    return { ...e, source: e.target, target: e.source };
+                }
+                return e;
+            });
     };
 
     const searchSource = (id: string): ConnectionEdge[] => {
-        return connectionEdges.filter(
-            (edge) =>
-                edge.target === id ||
-                (edge.source === id && edge.data?.bidirectional)
-        );
+        return connectionEdges
+            .filter(
+                (e) =>
+                    e.target === id ||
+                    (e.source === id && e.data?.bidirectional)
+            )
+            .map((e) => {
+                if (e.source === id && e.data?.bidirectional) {
+                    return { ...e, source: e.target, target: e.source };
+                }
+                return e;
+            });
     };
 
     const removeConnectionEdge = (edge: ConnectionEdge) => {
