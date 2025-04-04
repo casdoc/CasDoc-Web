@@ -1,6 +1,7 @@
 import { Plugin, PluginKey } from "@tiptap/pm/state";
 import { Slice, Fragment, Node as PMNode } from "@tiptap/pm/model";
 import { v4 as uuidv4 } from "uuid";
+import { Editor } from "@tiptap/core";
 
 /**
  * Creates a reusable config attribute definition for extensions
@@ -142,4 +143,86 @@ export function createNodeTransformer(defaultConfig: any) {
             node.content
         );
     };
+}
+
+/**
+ * Sets up common event listeners for node operations
+ * @param editor Tiptap editor instance
+ * @param extensionName Name of the extension these handlers are for
+ * @param storageRef A reference to the extension's storage to track initialization
+ */
+export function setupNodeEventHandlers(
+    editor: Editor,
+    extensionName: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    storageRef: Record<string, any>
+) {
+    if (storageRef.hasInitializedListeners) {
+        return;
+    }
+
+    // Handle node copy event
+    const handleNodeCopy = (event: Event) => {
+        const customEvent = event as CustomEvent;
+        const { pos } = customEvent.detail;
+
+        // Find the node by position
+        const node = editor.state.doc.nodeAt(pos);
+        if (node && node.type.name === extensionName) {
+            // Create a duplicate node with new ID
+            const newNode = node.type.create(
+                {
+                    ...node.attrs,
+                    id: uuidv4(), // Generate a new ID
+                },
+                node.content
+            );
+
+            // Insert after the current node
+            editor.commands.insertContentAt(pos + node.nodeSize, newNode);
+        }
+    };
+
+    // Handle node delete event
+    const handleNodeDelete = (event: Event) => {
+        const customEvent = event as CustomEvent;
+        const { pos } = customEvent.detail;
+
+        const node = editor.state.doc.nodeAt(pos);
+        if (node) {
+            editor.commands.deleteRange({
+                from: pos,
+                to: pos + node.nodeSize,
+            });
+        }
+    };
+
+    // Set up the event listeners
+    window.addEventListener("node-copy", handleNodeCopy);
+    window.addEventListener("node-delete", handleNodeDelete);
+
+    // Store the handlers so they can be removed if needed
+    storageRef.eventHandlers = {
+        copy: handleNodeCopy,
+        delete: handleNodeDelete,
+    };
+
+    storageRef.hasInitializedListeners = true;
+}
+
+/**
+ * Removes event listeners that were set up by setupNodeEventHandlers
+ * @param storageRef A reference to the extension's storage
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function cleanupNodeEventHandlers(storageRef: Record<string, any>) {
+    if (storageRef.eventHandlers) {
+        window.removeEventListener("node-copy", storageRef.eventHandlers.copy);
+        window.removeEventListener(
+            "node-delete",
+            storageRef.eventHandlers.delete
+        );
+
+        storageRef.eventHandlers = null;
+    }
 }

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { NodeViewWrapper } from "@tiptap/react";
 import { NodeViewProps } from "@tiptap/core";
 import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext";
@@ -11,9 +11,37 @@ const TopicComponent: React.FC<NodeViewProps> = ({
     getPos,
 }) => {
     const { id, config } = node.attrs;
-    const { selectedNode, selectNode } = useNodeSelection();
+    const { selectedNode } = useNodeSelection();
     const isSelected = selectedNode === id;
     const [bubbleOpen, setBubbleOpen] = useState(false);
+
+    const handleEdit = useCallback(() => {
+        console.debug("Edit handler triggered for node:", id);
+        const event = new CustomEvent("global-node-select", {
+            detail: { id },
+        });
+        window.dispatchEvent(event);
+    }, [id]);
+    // Add a direct keyboard event handler
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            // Check if this is Ctrl+Enter (or Cmd+Enter on Mac)
+            const isMod = e.ctrlKey || e.metaKey;
+            if (isMod && e.key === "Enter") {
+                // Only handle if this node is selected
+                if (selected) {
+                    handleEdit();
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+            }
+        };
+        if (!selected) document.removeEventListener("keydown", handleKeyDown);
+        else document.addEventListener("keydown", handleKeyDown);
+        return () => {
+            document.removeEventListener("keydown", handleKeyDown);
+        };
+    }, [handleEdit, id, selected]);
 
     const handleClick = (): void => {
         setBubbleOpen(!bubbleOpen);
@@ -42,13 +70,9 @@ const TopicComponent: React.FC<NodeViewProps> = ({
         }
     };
 
-    const handleEdit = () => {
-        selectNode(id);
-    };
-
     return (
         <NodeViewWrapper
-            className={`cursor-pointer hover:bg-gray-50 rounded-lg border-2 pl-1 py-2 bg-white relative select-none ${
+            className={`cursor-pointer hover:bg-gray-50 rounded-lg border-2 px-1 py-2 bg-white relative select-none ${
                 isSelected
                     ? "border-blue-500"
                     : selected
