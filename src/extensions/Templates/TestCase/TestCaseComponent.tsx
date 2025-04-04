@@ -19,6 +19,7 @@ const TestCaseComponent = ({
     const fields = config?.fields || [];
     const info = config?.info || {};
     const handleClick = () => {
+        if (window.getSelection()?.toString()) return;
         selectNode(isSelected ? null : id);
     };
 
@@ -44,26 +45,27 @@ const TestCaseComponent = ({
 
     return (
         <NodeViewWrapper
-            className={`ml-8 cursor-pointer hover:bg-gray-50 rounded-lg pt-2 border-2 bg-white ${
+            className={`ml-8 group cursor-pointer hover:bg-gray-50 rounded-lg pt-2 border-2 bg-white ${
                 isSelected
                     ? "border-blue-500"
                     : selected
                     ? "border-gray-500"
                     : "border-white hover:border-gray-200"
             } ${selected ? "select-none" : ""}`}
+            onMouseDown={(e: React.MouseEvent) => e.stopPropagation()}
             onClick={handleClick}
         >
             <div className="px-3 py-1 border-b rounded-sm">
                 <div className="flex justify-between items-start">
                     <div>
-                        <p className="text-xs font-medium text-gray-500 mb-1">
+                        <p className="text-xs font-medium text-gray-500 mb-1 group-hover:cursor-text">
                             {info.serial}
                         </p>
-                        <h2 className="text-xl font-bold text-gray-900 mt-0">
+                        <h2 className="text-xl font-bold text-gray-900 mt-0 group-hover:cursor-text">
                             {info.name || "New Test Case"}
                         </h2>
                         {info.description && (
-                            <p className="text-sm text-gray-600 mt-1">
+                            <p className="text-sm text-gray-600 mt-1 group-hover:cursor-text">
                                 {info.description}
                             </p>
                         )}
@@ -72,15 +74,15 @@ const TestCaseComponent = ({
             </div>
             <div className="px-4 py-3 space-y-2">
                 <div>
-                    <h3 className="text-sm font-semibold text-gray-600 uppercase tracking-wide">
+                    <h3 className="text-sm font-semibold text-gray-600 uppercase tracking-wide group-hover:cursor-text">
                         Expected Result
                     </h3>
-                    <p className="text-sm text-gray-700 mt-1 mb-4">
+                    <p className="text-sm text-gray-700 mt-1 mb-4 group-hover:cursor-text">
                         {info.expectedResult}
                     </p>
                 </div>
                 <div>
-                    <h3 className="text-sm font-semibold text-gray-600 uppercase tracking-wide">
+                    <h3 className="text-sm font-semibold text-gray-600 uppercase tracking-wide group-hover:cursor-text">
                         Steps
                     </h3>
                     <ul className="divide-y divide-gray-100 mt-1">
@@ -98,7 +100,7 @@ const TestCaseComponent = ({
                                         isTaskDone(field.done)
                                             ? "line-through text-gray-400"
                                             : "text-gray-800"
-                                    }`}
+                                    } group-hover:cursor-text`}
                                 >
                                     {index + 1}. {field.step}
                                 </span>
