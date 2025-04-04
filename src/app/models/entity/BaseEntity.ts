@@ -1,11 +1,15 @@
 export class BaseEntity {
-    id: string;
-    createdAt: Date;
-    updatedAt: Date;
+    _id: string;
+    _createdAt: Date;
+    _updatedAt: Date;
 
     constructor(id: string, createdAt: Date, updatedAt: Date) {
-        this.id = id;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+        this._id = id;
+        this._createdAt = createdAt;
+        this._updatedAt = updatedAt;
+    }
+
+    get id(): string {
+        return this._id;
     }
 }
