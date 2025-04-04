@@ -8,14 +8,33 @@ interface Field {
     done: string;
 }
 
-const UserStoryComponent = ({ node, selected }: NodeViewProps) => {
+const UserStoryComponent = ({
+    node,
+    selected,
+    updateAttributes,
+}: NodeViewProps) => {
     const { id, config } = node.attrs;
     const { selectedNode, selectNode } = useNodeSelection();
     const isSelected = selectedNode === id;
     const fields = config?.fields || [];
     const info = config?.info || {};
+
     const handleClick = () => {
         selectNode(isSelected ? null : id);
+    };
+
+    const toggleCheckbox = () => {
+        const updatedFields = fields.map((field: Field) => ({
+            ...field,
+            done: isTaskDone(field.done) ? "false" : "true",
+        }));
+
+        updateAttributes({
+            config: {
+                ...config,
+                fields: updatedFields,
+            },
+        });
     };
 
     const calculatePriorityStyle = useCallback((priority: number) => {
@@ -108,7 +127,8 @@ const UserStoryComponent = ({ node, selected }: NodeViewProps) => {
                                 <input
                                     type="checkbox"
                                     checked={isTaskDone(field.done)}
-                                    readOnly
+                                    onClick={(e) => e.stopPropagation()}
+                                    onChange={toggleCheckbox}
                                     className="mt-1 mr-2"
                                 />
                                 <span

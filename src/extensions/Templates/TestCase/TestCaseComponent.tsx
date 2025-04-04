@@ -8,7 +8,11 @@ interface Field {
     done: string;
 }
 
-const TestCaseComponent = ({ node, selected }: NodeViewProps) => {
+const TestCaseComponent = ({
+    node,
+    selected,
+    updateAttributes,
+}: NodeViewProps) => {
     const { id, config } = node.attrs;
     const { selectedNode, selectNode } = useNodeSelection();
     const isSelected = selectedNode === id;
@@ -23,6 +27,20 @@ const TestCaseComponent = ({ node, selected }: NodeViewProps) => {
         const str = status.trim().toLowerCase();
         return str === "true" || str === "yes" || str === "ok";
     }, []);
+
+    const toggleCheckbox = () => {
+        const updatedFields = fields.map((field: Field) => ({
+            ...field,
+            done: isTaskDone(field.done) ? "false" : "true",
+        }));
+
+        updateAttributes({
+            config: {
+                ...config,
+                fields: updatedFields,
+            },
+        });
+    };
 
     return (
         <NodeViewWrapper
@@ -71,7 +89,8 @@ const TestCaseComponent = ({ node, selected }: NodeViewProps) => {
                                 <input
                                     type="checkbox"
                                     checked={isTaskDone(field.done)}
-                                    readOnly
+                                    onClick={(e) => e.stopPropagation()}
+                                    onChange={toggleCheckbox}
                                     className="mt-1 mr-2"
                                 />
                                 <span
