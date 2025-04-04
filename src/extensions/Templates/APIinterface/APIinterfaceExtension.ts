@@ -129,7 +129,6 @@ export const APIinterfaceExtension = Node.create({
     },
 
     onCreate() {
-        console.debug("APIinterfaceExtension onTransaction");
         setupNodeEventHandlers(this.editor, this.name, this.storage);
     },
 
