@@ -7,6 +7,7 @@ import { serializeTopicToMarkdown } from "@/extensions/Topics/TopicExtension";
 import { serializeAPIinterfaceToMarkdown } from "@/extensions/Templates/APIinterface/APIinterfaceExtension";
 import { serializeDataSchemaToMarkdown } from "@/extensions/Templates/DataSchema/DataSchemaExtension";
 import { serializeMermaidToMarkdown } from "@/extensions/Templates/Mermaid/MermaidExtension";
+import { serializeTestCaseToMarkdown } from "@/extensions/Templates/TestCase/TestCaseExtension";
 
 // Creates a markdown serializer with custom node handling
 export const createMarkdownSerializer = (editor: Editor) => {
@@ -19,6 +20,7 @@ export const createMarkdownSerializer = (editor: Editor) => {
         "template-apiInterface": serializeAPIinterfaceToMarkdown,
         "template-dataSchema": serializeDataSchemaToMarkdown,
         "template-mermaid": serializeMermaidToMarkdown,
+        "template-testCase": serializeTestCaseToMarkdown,
     };
 
     // Add fallback serializers for any node types not handled

@@ -29,6 +29,46 @@ const topicDefaultConfig = {
     },
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const serializeTestCaseToMarkdown = (state: any, node: any) => {
+    const { config } = node.attrs;
+    const info = config?.info || {};
+    const fields = config?.fields || [];
+
+    // Header
+    state.write(`### ${info.name || "Test Case"}\n\n`);
+
+    // Description
+    if (info.description) {
+        state.write(`${info.description}\n\n`);
+    }
+
+    // Expected Result
+    if (info.expectedResult) {
+        state.write(`- **Expected Result** : ${info.expectedResult}\n\n`);
+    }
+
+    // Checklist
+    if (fields && fields.length > 0) {
+        const hasValidSteps = fields.some(
+            (field: { step?: string }) => (field.step || "").trim() !== ""
+        );
+        if (hasValidSteps) {
+            state.write(`#### Steps\n\n`);
+            fields.forEach((field: { step?: string; done?: boolean }) => {
+                const step = (field.step || "").trim();
+                if (step !== "") {
+                    const checked = field.done ? "x" : " ";
+                    state.write(`- [${checked}] ${step}\n`);
+                }
+            });
+            state.write(`\n`);
+        }
+    }
+
+    state.write(`---\n\n`);
+};
+
 export const TestCaseExtension = Node.create({
     name: "template-testCase",
 
