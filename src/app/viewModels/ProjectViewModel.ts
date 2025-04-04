@@ -6,6 +6,7 @@ import { DocumentService } from "@/app/models/services/DocumentService";
 import { DocumentType } from "@/app/models/enum/DocumentType";
 import { v4 as uuidv4 } from "uuid";
 import defaultContent from "../models/default-value/defaultContent";
+import { ProjectUpdate } from "../models/types/ProjectUpdate";
 import { DocumentUpdate } from "../models/types/DocumentUpdate";
 
 export interface ProjectViewModel {
@@ -18,7 +19,7 @@ export interface ProjectViewModel {
     // Project actions
     createProject: (name: string) => void;
     deleteProject: (projectId: string) => void;
-    renameProject: (projectId: string, newName: string) => void;
+    editProject: (projectId: string, update: ProjectUpdate) => void;
     selectProject: (projectId: string) => void;
 
     // Document actions
@@ -109,18 +110,12 @@ export const useProjectViewModel = (): ProjectViewModel => {
         },
         [selectedProjectId]
     );
-    const renameProject = useCallback((projectId: string, newName: string) => {
-        const project = ProjectService.getProjectById(projectId);
-        if (!project) return;
-
-        project.name = newName;
-        ProjectService.saveProject(project);
-
-        // Update local state
-        setProjects((prevProjects) =>
-            prevProjects.map((p) => (p.id === projectId ? project : p))
-        );
-    }, []);
+    const editProject = useCallback(
+        (projectId: string, update: ProjectUpdate) => {
+            ProjectService.updateProject(projectId, update);
+        },
+        []
+    );
     const selectProject = useCallback((projectId: string) => {
         setSelectedProjectId(projectId);
     }, []);
@@ -189,7 +184,7 @@ export const useProjectViewModel = (): ProjectViewModel => {
         editingDocument,
         createProject,
         deleteProject,
-        renameProject,
+        editProject,
         selectProject,
         getDocumentsByProjectId,
         createDocument,

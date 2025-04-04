@@ -22,7 +22,7 @@ import { DocumentUpdate } from "@/app/models/types/DocumentUpdate";
 import { DocumentType } from "@/app/models/enum/DocumentType";
 import { useProjectContext } from "@/app/viewModels/context/ProjectContext";
 
-const EditDialog = () => {
+const DocEditDialog = () => {
     const {
         editingDocument: doc,
         editDocument,
@@ -124,4 +124,4 @@ const EditDialog = () => {
     );
 };
 
-export default EditDialog;
+export default DocEditDialog;

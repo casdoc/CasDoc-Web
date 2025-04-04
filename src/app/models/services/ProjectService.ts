@@ -1,6 +1,7 @@
 import { Project } from "@/app/models/entity/Project";
 import { Document } from "@/app/models/entity/Document";
 import { DocumentService } from "./DocumentService";
+import { ProjectUpdate } from "@/app/models/types/ProjectUpdate";
 
 const STORAGE_KEY = "PROJECTS";
 
@@ -50,6 +51,19 @@ export class ProjectService {
         return DocumentService.getAllDocuments().filter(
             (doc) => doc.getProjectId() === projectId
         );
+    }
+
+    static updateProject(projectId: string, update: ProjectUpdate): void {
+        if (typeof window === "undefined") return;
+        const projects = this.getAllProjects();
+        const index = projects.findIndex((proj) => proj.id === projectId);
+        if (index !== -1) {
+            const project = projects[index];
+            project.name = update.name;
+            project.description = update.description;
+            project.updatedAt = new Date();
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
+        }
     }
 
     static deleteProject(id: string): void {
