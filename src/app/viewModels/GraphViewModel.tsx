@@ -90,7 +90,6 @@ export function useGraphViewModel(): GraphViewModel {
     };
 
     const removeConnectionEdge = (edge: ConnectionEdge) => {
-        console.log(edge);
         setConnectionEdges((prevEdges) => {
             if (!edge.data?.bidirectional) {
                 const newEdges = prevEdges.filter(
@@ -101,12 +100,17 @@ export function useGraphViewModel(): GraphViewModel {
                 return newEdges;
             }
             const newEdges = prevEdges.map((e) => {
-                if (
-                    (e.target === edge.target && e.source === edge.source) ||
-                    (e.target === edge.source && e.source === edge.target)
-                ) {
+                if (e.target === edge.source && e.source === edge.target) {
                     return {
                         ...e,
+                        data: { ...e.data, bidirectional: false },
+                    };
+                }
+                if (e.target === edge.target && e.source === edge.source) {
+                    return {
+                        ...e,
+                        source: e.target,
+                        target: e.source,
                         data: { ...e.data, bidirectional: false },
                     };
                 }
