@@ -8,6 +8,8 @@ import { DropdownButton } from "@/app/components/doc/ui/Dropdown";
 import useContentItemActions from "./hooks/useContentItemActions";
 import { useData } from "./hooks/useData";
 import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { GripVertical } from "lucide-react";
 
 export type ContentItemMenuProps = {
     editor: Editor;
@@ -40,16 +42,16 @@ export const ContentItemMenu = ({
             onNodeChange={data.handleNodeChange}
             tippyOptions={{
                 offset: [-2, 16],
-                zIndex: 40,
+                zIndex: 4,
             }}
         >
             {isEditable ? (
                 <div className="flex items-center">
                     <Popover.Root open={menuOpen} onOpenChange={setMenuOpen}>
                         <Popover.Trigger asChild>
-                            <Toolbar.Button>
-                                <Icon name="GripVertical" />
-                            </Toolbar.Button>
+                            <Button variant="ghost" size="icon">
+                                <GripVertical />
+                            </Button>
                         </Popover.Trigger>
                         <Popover.Content
                             side="bottom"

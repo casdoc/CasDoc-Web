@@ -48,7 +48,10 @@ const DocView = ({ documentViewModel, graphViewModel }: DocViewProps) => {
     }
 
     return (
-        <div className="relative flex flex-col flex-1 h-dvh w-dvw bg-white">
+        <div
+            className={`relative flex flex-col flex-1 h-dvh w-full bg-white transition-all duration-500
+               `}
+        >
             <EditorHeader
                 mode={mode as DocMode}
                 setDocMode={setDocMode}
@@ -64,7 +67,7 @@ const DocView = ({ documentViewModel, graphViewModel }: DocViewProps) => {
                             mode === DocMode.Split ? `${splitWidth}%` : "100%",
                     }}
                 >
-                    <BlockEditor editor={editor} title={document.getTitle()} />
+                    <BlockEditor editor={editor} title={document.title} />
                 </div>
                 {mode === DocMode.Split && (
                     <div

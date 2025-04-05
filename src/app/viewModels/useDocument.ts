@@ -55,14 +55,14 @@ export function useDocumentViewModel(documentId: string): DocumentViewModel {
     useEffect(() => {
         if (!document) return;
 
-        const content = document.getContent();
+        const content = document.content;
 
         if (!content) {
             setGraphNodes([
                 {
                     id: "root",
                     pid: "root",
-                    label: document.getTitle() || "Untitled",
+                    label: document.title || "Untitled",
                     type: "",
                 },
             ]);
@@ -71,16 +71,16 @@ export function useDocumentViewModel(documentId: string): DocumentViewModel {
         const firstChild = content[0];
 
         if (!firstChild || !firstChild?.content) {
-            document.setTitle("Untitled Document");
+            document.title = "Untitled Document";
         } else {
-            document.setTitle(firstChild.content[0].text);
+            document.title = firstChild.content[0].text;
         }
 
         const newGraphNodes: GraphNode[] = [
             {
                 id: "root",
                 pid: "root",
-                label: document.getTitle() || "Untitled",
+                label: document.title || "Untitled",
                 type: "",
             },
         ];
@@ -129,7 +129,7 @@ export function useDocumentViewModel(documentId: string): DocumentViewModel {
         );
         setEditNodes(updatedEditNodes);
 
-        const oldContent = document.getContent() || [];
+        const oldContent = document.content || [];
         const newContent = oldContent.map((item) => {
             if (item?.attrs?.id === nodeId) {
                 const updatedNode = updatedEditNodes.find(
@@ -148,7 +148,7 @@ export function useDocumentViewModel(documentId: string): DocumentViewModel {
             return item;
         });
 
-        document.setAllContent(newContent);
+        document.content = newContent;
         updateDocument(document);
     };
 

@@ -27,58 +27,58 @@ export class Document extends BaseEntity {
         this._content = content;
     }
 
-    getType(): DocumentType {
+    get type(): DocumentType {
         return this._type;
     }
 
-    setType(value: DocumentType): void {
+    set type(value: DocumentType) {
         this._type = value;
-        this.updatedAt = new Date();
+        this._updatedAt = new Date();
     }
 
-    getProjectId(): string {
+    get projectId(): string {
         return this._projectId;
     }
 
-    setProjectId(value: string): void {
+    set projectId(value: string) {
         if (!value.trim()) {
             throw new Error("Project ID cannot be empty.");
         }
         this._projectId = value;
-        this.updatedAt = new Date();
+        this._updatedAt = new Date();
     }
 
-    getTitle(): string {
+    get title(): string {
         return this._title;
     }
 
-    setTitle(value: string): void {
+    set title(value: string) {
         if (!value.trim()) {
             throw new Error("Title cannot be empty.");
         }
         this._title = value;
-        this.updatedAt = new Date();
+        this._updatedAt = new Date();
     }
 
-    getDescription(): string {
+    get description(): string {
         return this._description;
     }
 
-    setDescription(value: string): void {
+    set description(value: string) {
         this._description = value;
-        this.updatedAt = new Date();
+        this._updatedAt = new Date();
     }
 
-    getContent(): JsonObject[] {
+    get content(): JsonObject[] {
         return this._content;
     }
 
-    setAllContent(value: JsonObject[]): void {
+    set content(value: JsonObject[]) {
         if (!Array.isArray(value)) {
             throw new Error("Content must be an array of JsonObject.");
         }
         this._content = value;
-        this.updatedAt = new Date();
+        this._updatedAt = new Date();
     }
 
     getTopicById = (id: string) => {

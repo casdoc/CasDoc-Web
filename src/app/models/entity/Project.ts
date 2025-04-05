@@ -25,7 +25,7 @@ export class Project extends BaseEntity {
             throw new Error("Name cannot be empty.");
         }
         this._name = value;
-        this.updatedAt = new Date();
+        this._updatedAt = new Date();
     }
 
     get description(): string {
@@ -37,6 +37,6 @@ export class Project extends BaseEntity {
             throw new Error("Description is too long (max 500 characters).");
         }
         this._description = value;
-        this.updatedAt = new Date();
+        this._updatedAt = new Date();
     }
 }
