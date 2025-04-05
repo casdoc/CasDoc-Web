@@ -47,6 +47,7 @@ const DocEditDialog = () => {
             title,
             description,
             type,
+            projectId: doc.projectId,
         };
         console.log("Updated Document:", updatedDocument);
         editDocument(doc.id, updatedDocument);

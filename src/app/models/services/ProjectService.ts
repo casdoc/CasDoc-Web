@@ -16,10 +16,10 @@ export class ProjectService {
                 (proj: any) =>
                     new Project(
                         proj.id,
-                        new Date(proj.createdAt),
-                        new Date(proj.updatedAt),
-                        proj.name,
-                        proj.description
+                        new Date(proj._createdAt),
+                        new Date(proj._updatedAt),
+                        proj._name,
+                        proj._description
                     )
             );
         } catch (error) {

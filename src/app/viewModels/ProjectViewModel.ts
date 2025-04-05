@@ -52,8 +52,6 @@ export const useProjectViewModel = (): ProjectViewModel => {
     // Load projects from localStorage and set default content
     useEffect(() => {
         const loadedProjects = ProjectService.getAllProjects();
-        setProjects(loadedProjects);
-
         // Set default content
         if (loadedProjects.length === 0) {
             const defaultProject = new Project(
@@ -79,11 +77,13 @@ export const useProjectViewModel = (): ProjectViewModel => {
             DocumentService.saveDocument(defaultDoc);
 
             setProjects([defaultProject]);
+        } else {
+            setProjects(loadedProjects);
         }
     }, []);
 
     // Project Actions
-    const createProject = useCallback((name: string) : string => {
+    const createProject = useCallback((name: string): string => {
         const newProject = new Project(
             uuidv4(),
             new Date(),
@@ -114,6 +114,13 @@ export const useProjectViewModel = (): ProjectViewModel => {
     const editProject = useCallback(
         (projectId: string, update: ProjectUpdate) => {
             ProjectService.updateProject(projectId, update);
+            setProjects((prevProjects) =>
+                prevProjects.map((proj) =>
+                    proj.id === projectId
+                        ? ({ ...proj, ...update } as Project)
+                        : proj
+                )
+            );
         },
         []
     );
@@ -158,6 +165,16 @@ export const useProjectViewModel = (): ProjectViewModel => {
     const editDocument = useCallback(
         (documentId: string, update: DocumentUpdate) => {
             DocumentService.updateDocument(documentId, update);
+            // Update local state to reflect changes
+            const updatedDoc = DocumentService.getDocumentById(documentId);
+            if (updatedDoc) {
+                // Force a re-fetch of documents for the affected project
+                const projectId = updatedDoc.projectId;
+                if (projectId) {
+                    // This will ensure the ProjectMenu component receives updated data
+                    setProjects((projects) => [...projects]);
+                }
+            }
         },
         []
     );
