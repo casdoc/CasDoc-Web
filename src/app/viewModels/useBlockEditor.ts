@@ -3,7 +3,6 @@ import { Editor, useEditor } from "@tiptap/react";
 import { Document } from "@/app/models/entity/Document";
 import { useCallback, useEffect, useRef } from "react";
 import { NodeSelection } from "@tiptap/pm/state";
-import { useNodeSelection } from "./context/NodeSelectionContext";
 
 interface BlockEditorProps {
     document?: Document;
@@ -16,7 +15,6 @@ export const useBlockEditor = ({
     ...editorOptions
 }: BlockEditorProps) => {
     const isInternalUpdate = useRef(false);
-    const { selectNode } = useNodeSelection();
 
     const onUpdate = useCallback(
         ({ editor }: { editor: Editor }) => {
@@ -104,23 +102,6 @@ export const useBlockEditor = ({
             window.removeEventListener("copy", handleCopy);
         };
     }, [document, editor]);
-
-    useEffect(() => {
-        if (!editor) return;
-
-        // Add listener for node selection events from extensions
-        const handleNodeSelection = (event: Event) => {
-            const customEvent = event as CustomEvent;
-            if (customEvent.detail && customEvent.detail.id) {
-                selectNode(customEvent.detail.id);
-            }
-        };
-
-        window.addEventListener("node-selection", handleNodeSelection);
-        return () => {
-            window.removeEventListener("node-selection", handleNodeSelection);
-        };
-    }, [editor, selectNode]);
 
     return { editor };
 };

@@ -2,33 +2,63 @@ import { NodeViewWrapper } from "@tiptap/react";
 import { NodeViewProps } from "@tiptap/core";
 import MermaidEditor from "@/app/components/doc/Mermaid/MermaidEditor";
 import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext";
-import { useCallback, useRef } from "react";
+import { useRef, useState, useEffect } from "react";
+import NodeBubbleBar from "@/app/components/doc/Popover/NodeBubbleBar";
+import useCustomNodeActions from "@/extensions/hooks/useCustomNodeActions";
 
-const MermaidComponent: React.FC<NodeViewProps> = ({
+const MermaidComponent = ({
     node,
     selected,
+    editor,
     updateAttributes,
-}) => {
+    getPos,
+}: NodeViewProps) => {
     const { id, config } = node.attrs;
     const mermaidCode = config?.content || "";
     const name = config?.info?.name || "Mermaid";
-    const { selectedNode, selectNode } = useNodeSelection();
+    const { selectedNode } = useNodeSelection();
     const isSelected = selectedNode === id;
     const isUpdatingRef = useRef(false);
+    const [bubbleOpen, setBubbleOpen] = useState(false);
+    const nodeRef = useRef<HTMLDivElement>(null);
 
-    const handleContainerClick = useCallback(
-        (e: React.MouseEvent) => {
-            e.stopPropagation();
-            e.preventDefault();
-            if (
-                (e.nativeEvent as MouseEvent & { __handledByEditor?: boolean })
-                    .__handledByEditor
-            )
-                return;
-            selectNode(isSelected ? null : id);
-        },
-        [id, isSelected, selectNode]
-    );
+    const { handleEdit, handleCopy, handleDelete, setNodeRef } =
+        useCustomNodeActions({
+            id,
+            selected,
+            getPos,
+            editor,
+        });
+
+    // Set the node ref when component mounts
+    useEffect(() => {
+        if (nodeRef.current) {
+            setNodeRef(nodeRef.current);
+        }
+    }, [setNodeRef, nodeRef]);
+
+    // When selected, ensure the node can receive focus
+    useEffect(() => {
+        if (selected && nodeRef.current) {
+            nodeRef.current.setAttribute("tabindex", "0");
+            nodeRef.current.focus();
+        }
+    }, [selected]);
+
+    const handleContainerClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        e.preventDefault();
+        if (window.getSelection()?.toString()) {
+            return;
+        }
+
+        setBubbleOpen(!bubbleOpen);
+        if (
+            (e.nativeEvent as MouseEvent & { __handledByEditor?: boolean })
+                .__handledByEditor
+        )
+            return;
+    };
 
     const handleCodeUpdate = (newCode: string) => {
         if (isUpdatingRef.current) return;
@@ -49,15 +79,22 @@ const MermaidComponent: React.FC<NodeViewProps> = ({
 
     return (
         <NodeViewWrapper
-            className={`ml-8 cursor-pointer  rounded-lg border-2 bg-white ${
+            className={`ml-8 cursor-pointer  rounded-lg border-2 relative bg-white select-none  ${
                 isSelected
-                    ? "border-blue-500"
+                    ? "border-blue-500 "
                     : selected
-                    ? "border-gray-500"
+                    ? "border-gray-500 "
                     : "border-white hover:border-gray-200"
-            } ${selected ? "select-none" : ""}`}
+            } `}
             onClick={handleContainerClick}
         >
+            <NodeBubbleBar
+                open={bubbleOpen}
+                onOpenChange={setBubbleOpen}
+                onCopy={handleCopy}
+                onDelete={handleDelete}
+                onEdit={handleEdit}
+            />
             <div className="h-full ">
                 <MermaidEditor
                     name={name}
