@@ -110,7 +110,7 @@ const APIinterfaceComponent = ({
                     <p className="m-0 text-sm text-gray-600 group-hover:cursor-text">
                         {info.description}
                     </p>
-                    <p className="m-0 py-2 text-sm text-black font-semibold group-hover:cursor-text">
+                    <p className="m-0 py-2 text-sm text-black font-semibold group-hover:cursor-text w-fit">
                         End Point : {info.endPoint}
                     </p>
                 </div>
@@ -149,7 +149,7 @@ const APIinterfaceComponent = ({
                                             )}
                                         </div>
                                         {field.description && (
-                                            <p className="m-0 p-0 text-sm text-gray-500 group-hover:cursor-text">
+                                            <p className="m-0 p-0 text-sm text-gray-500 group-hover:cursor-text w-fit">
                                                 {field.description}
                                             </p>
                                         )}
