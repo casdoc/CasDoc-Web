@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState } from "react";
 import { NodeViewWrapper } from "@tiptap/react";
 import { NodeViewProps } from "@tiptap/core";
 import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext";
 import NodeBubbleBar from "@/app/components/doc/Popover/NodeBubbleBar";
+import useCustomNodeActions from "@/extensions/hooks/useCustomNodeActions";
 
 const TopicComponent = ({ node, selected, editor, getPos }: NodeViewProps) => {
     const { id, config } = node.attrs;
@@ -10,59 +11,18 @@ const TopicComponent = ({ node, selected, editor, getPos }: NodeViewProps) => {
     const isSelected = selectedNode === id;
     const [bubbleOpen, setBubbleOpen] = useState(false);
 
-    const handleEdit = useCallback(() => {
-        const event = new CustomEvent("global-node-select", {
-            detail: { id },
-        });
-        window.dispatchEvent(event);
-    }, [id]);
-    // Add a direct keyboard event handler
-    useEffect(() => {
-        const handleKeyDown = (e: KeyboardEvent) => {
-            // Check if this is Ctrl+Enter (or Cmd+Enter on Mac)
-            const isMod = e.ctrlKey || e.metaKey;
-            if (isMod && e.key === "Enter") {
-                // Only handle if this node is selected
-                if (selected) {
-                    handleEdit();
-                    e.preventDefault();
-                    e.stopPropagation();
-                }
-            }
-        };
-        if (!selected) document.removeEventListener("keydown", handleKeyDown);
-        else document.addEventListener("keydown", handleKeyDown);
-        return () => {
-            document.removeEventListener("keydown", handleKeyDown);
-        };
-    }, [handleEdit, id, selected]);
+    const { handleEdit, handleCopy, handleDelete } = useCustomNodeActions({
+        id,
+        selected,
+        getPos,
+        editor,
+    });
 
     const handleClick = (): void => {
-        if (window.getSelection()?.toString()) return;
+        if (window.getSelection()?.toString()) {
+            return;
+        }
         setBubbleOpen(!bubbleOpen);
-    };
-
-    const handleCopy = () => {
-        if (typeof getPos === "function") {
-            const pos = getPos();
-            editor.commands.setNodeSelection(pos);
-
-            const event = new CustomEvent("node-copy", {
-                detail: { pos },
-            });
-            window.dispatchEvent(event);
-        }
-    };
-
-    const handleDelete = () => {
-        if (typeof getPos === "function") {
-            const pos = getPos();
-
-            const event = new CustomEvent("node-delete", {
-                detail: { id, pos },
-            });
-            window.dispatchEvent(event);
-        }
     };
 
     return (
@@ -73,8 +33,7 @@ const TopicComponent = ({ node, selected, editor, getPos }: NodeViewProps) => {
                     : selected
                     ? "border-gray-500 "
                     : "border-white hover:border-gray-200"
-            } ${selected ? "select-none" : ""}`}
-            onMouseDown={(e: React.MouseEvent) => e.stopPropagation()}
+            } `}
             onClick={handleClick}
         >
             <NodeBubbleBar
@@ -86,10 +45,10 @@ const TopicComponent = ({ node, selected, editor, getPos }: NodeViewProps) => {
             />
 
             <div className="border-l-4 border-slate-400 pl-3">
-                <h2 className="text-2xl font-bold text-black m-0 px-0 pb-1 group-hover:cursor-text">
+                <h2 className="text-2xl font-bold text-black m-0 px-0 pb-1 group-hover:cursor-text w-fit">
                     {config.info.name || "Unknown"}
                 </h2>
-                <p className="m-0 p-0 text-sm text-gray-500 font-semibold group-hover:cursor-text">
+                <p className="m-0 p-0 text-sm text-gray-500 font-semibold group-hover:cursor-text w-fit">
                     {config.info.description}
                 </p>
             </div>

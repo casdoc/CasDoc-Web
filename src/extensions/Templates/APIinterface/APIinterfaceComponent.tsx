@@ -1,8 +1,9 @@
 import { NodeViewWrapper } from "@tiptap/react";
 import { NodeViewProps } from "@tiptap/core";
 import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext";
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import NodeBubbleBar from "@/app/components/doc/Popover/NodeBubbleBar";
+import useCustomNodeActions from "@/extensions/hooks/useCustomNodeActions";
 
 export interface APIinterfaceParameter {
     name: string;
@@ -20,63 +21,22 @@ const APIinterfaceComponent = ({
     const { id, config } = node.attrs;
     const info = config?.info || {};
     const fields = config?.fields || [];
-    const [bubbleOpen, setBubbleOpen] = useState(false);
     const { selectedNode } = useNodeSelection();
     const isSelected = selectedNode === id;
+    const [bubbleOpen, setBubbleOpen] = useState(false);
 
-    const handleEdit = useCallback(() => {
-        const event = new CustomEvent("global-node-select", {
-            detail: { id },
-        });
-        window.dispatchEvent(event);
-    }, [id]);
-    // Add a direct keyboard event handler
-    useEffect(() => {
-        const handleKeyDown = (e: KeyboardEvent) => {
-            // Check if this is Ctrl+Enter (or Cmd+Enter on Mac)
-            const isMod = e.ctrlKey || e.metaKey;
-            if (isMod && e.key === "Enter") {
-                // Only handle if this node is selected
-                if (selected) {
-                    handleEdit();
-                    e.preventDefault();
-                    e.stopPropagation();
-                }
-            }
-        };
-        if (!selected) document.removeEventListener("keydown", handleKeyDown);
-        else document.addEventListener("keydown", handleKeyDown);
-        return () => {
-            document.removeEventListener("keydown", handleKeyDown);
-        };
-    }, [handleEdit, id, selected]);
+    const { handleEdit, handleCopy, handleDelete } = useCustomNodeActions({
+        id,
+        selected,
+        getPos,
+        editor,
+    });
 
     const handleClick = (): void => {
-        if (window.getSelection()?.toString()) return;
+        if (window.getSelection()?.toString()) {
+            return;
+        }
         setBubbleOpen(!bubbleOpen);
-    };
-
-    const handleCopy = () => {
-        if (typeof getPos === "function") {
-            const pos = getPos();
-            editor.commands.setNodeSelection(pos);
-
-            const event = new CustomEvent("node-copy", {
-                detail: { pos },
-            });
-            window.dispatchEvent(event);
-        }
-    };
-
-    const handleDelete = () => {
-        if (typeof getPos === "function") {
-            const pos = getPos();
-
-            const event = new CustomEvent("node-delete", {
-                detail: { id, pos },
-            });
-            window.dispatchEvent(event);
-        }
     };
 
     const getMethodColor = (method?: string): string => {
@@ -104,8 +64,7 @@ const APIinterfaceComponent = ({
                     : selected
                     ? "border-gray-500"
                     : "border-white hover:border-gray-200"
-            } ${selected ? "select-none" : ""}`}
-            onMouseDown={(e: React.MouseEvent) => e.stopPropagation()}
+            } `}
             onClick={handleClick}
         >
             <NodeBubbleBar

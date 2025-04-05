@@ -1,7 +1,9 @@
 import { NodeViewWrapper } from "@tiptap/react";
 import { NodeViewProps } from "@tiptap/core";
 import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
+import NodeBubbleBar from "@/app/components/doc/Popover/NodeBubbleBar";
+import useCustomNodeActions from "@/extensions/hooks/useCustomNodeActions";
 
 interface Field {
     acceptance: string;
@@ -11,17 +13,28 @@ interface Field {
 const UserStoryComponent = ({
     node,
     selected,
+    editor,
+    getPos,
     updateAttributes,
 }: NodeViewProps) => {
     const { id, config } = node.attrs;
-    const { selectedNode, selectNode } = useNodeSelection();
+    const { selectedNode } = useNodeSelection();
     const isSelected = selectedNode === id;
     const fields = config?.fields || [];
     const info = config?.info || {};
+    const [bubbleOpen, setBubbleOpen] = useState(false);
+    const { handleEdit, handleCopy, handleDelete } = useCustomNodeActions({
+        id,
+        selected,
+        getPos,
+        editor,
+    });
 
-    const handleClick = () => {
-        if (window.getSelection()?.toString()) return;
-        selectNode(isSelected ? null : id);
+    const handleClick = (): void => {
+        if (window.getSelection()?.toString()) {
+            return;
+        }
+        setBubbleOpen(!bubbleOpen);
     };
 
     const toggleCheckbox = () => {
@@ -62,16 +75,22 @@ const UserStoryComponent = ({
 
     return (
         <NodeViewWrapper
-            className={`ml-8 group cursor-pointer hover:bg-gray-50 rounded-lg pt-2 border-2 bg-white ${
+            className={`ml-8 group cursor-pointer hover:bg-gray-50 rounded-lg pt-2 border-2 relative bg-white ${
                 isSelected
                     ? "border-blue-500"
                     : selected
-                    ? "border-gray-500"
+                    ? "border-gray-500 "
                     : "border-white hover:border-gray-200"
-            } ${selected ? "select-none" : ""}`}
-            onMouseDown={(e: React.MouseEvent) => e.stopPropagation()}
+            }`}
             onClick={handleClick}
         >
+            <NodeBubbleBar
+                open={bubbleOpen}
+                onOpenChange={setBubbleOpen}
+                onCopy={handleCopy}
+                onDelete={handleDelete}
+                onEdit={handleEdit}
+            />
             <div className="px-3 py-1 border-b rounded-sm">
                 <div className="flex justify-between items-start">
                     <div>

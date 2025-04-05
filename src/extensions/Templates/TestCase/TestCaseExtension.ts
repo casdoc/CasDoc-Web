@@ -6,9 +6,9 @@ import {
     createConfigAttribute,
     createPasteHandlerPlugin,
     createNodeTransformer,
+    setupNodeEventHandlers,
+    cleanupNodeEventHandlers,
 } from "../../ExtensionUtils";
-
-import { NodeSelection } from "@tiptap/pm/state";
 
 const topicDefaultConfig = {
     config: {
@@ -103,25 +103,12 @@ export const TestCaseExtension = Node.create({
         return ["test-case", mergeAttributes(HTMLAttributes)];
     },
 
-    addKeyboardShortcuts() {
-        return {
-            "Mod-Enter": () => {
-                const { state } = this.editor;
-                const { selection } = state;
+    onCreate() {
+        setupNodeEventHandlers(this.editor, this.name, this.storage);
+    },
 
-                if (
-                    selection instanceof NodeSelection &&
-                    selection.node.attrs.id
-                ) {
-                    console.debug("Selected node id:", selection.node.attrs.id);
-                    const event = new CustomEvent("node-selection", {
-                        detail: { id: selection.node.attrs.id },
-                    });
-                    window.dispatchEvent(event);
-                }
-                return true;
-            },
-        };
+    onDestroy() {
+        cleanupNodeEventHandlers(this.storage);
     },
 
     addNodeView() {
