@@ -76,7 +76,14 @@ export function useDocumentViewModel(documentId: string): DocumentViewModel {
             document.title = firstChild.content[0].text;
         }
 
-        const newGraphNodes: GraphNode[] = [];
+        const newGraphNodes: GraphNode[] = [
+            {
+                id: "root",
+                pid: "root",
+                label: document.title || "Untitled",
+                type: "",
+            },
+        ];
         const newEditNodes: JsonObject[] = [];
         let lastTopicId: string | undefined = undefined;
 
@@ -97,17 +104,11 @@ export function useDocumentViewModel(documentId: string): DocumentViewModel {
             }
         }
 
-        setGraphNodes([
-            {
-                id: "root",
-                pid: "root",
-                label: document.title || "Untitled",
-                type: "",
-            },
-            ...newGraphNodes,
-        ]);
+        if (JSON.stringify(newGraphNodes) !== JSON.stringify(graphNodes)) {
+            setGraphNodes(newGraphNodes);
+        }
         setEditNodes(newEditNodes);
-    }, [document]);
+    }, [document, graphNodes]);
 
     const updateDocument = useCallback((document: Document) => {
         DocumentService.saveDocument(document);

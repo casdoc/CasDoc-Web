@@ -1,6 +1,9 @@
 import { NodeViewWrapper } from "@tiptap/react";
 import { NodeViewProps } from "@tiptap/core";
 import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext";
+import { useState, useRef, useEffect } from "react";
+import NodeBubbleBar from "@/app/components/doc/Popover/NodeBubbleBar";
+import useCustomNodeActions from "@/extensions/hooks/useCustomNodeActions";
 
 export interface APIinterfaceParameter {
     name: string;
@@ -9,20 +12,52 @@ export interface APIinterfaceParameter {
     description: string;
 }
 
-const APIinterfaceComponent: React.FC<NodeViewProps> = ({ node, selected }) => {
+const APIinterfaceComponent = ({
+    node,
+    selected,
+    editor,
+    getPos,
+}: NodeViewProps) => {
     const { id, config } = node.attrs;
     const info = config?.info || {};
     const fields = config?.fields || [];
-
-    const { selectedNode, selectNode } = useNodeSelection();
+    const { selectedNode } = useNodeSelection();
     const isSelected = selectedNode === id;
+    const [bubbleOpen, setBubbleOpen] = useState(false);
+    const nodeRef = useRef<HTMLDivElement>(null);
 
-    const handleClick = () => {
-        selectNode(isSelected ? null : id);
+    const { handleEdit, handleCopy, handleDelete, setNodeRef } =
+        useCustomNodeActions({
+            id,
+            selected,
+            getPos,
+            editor,
+        });
+
+    // Set the node ref when component mounts
+    useEffect(() => {
+        if (nodeRef.current) {
+            setNodeRef(nodeRef.current);
+        }
+    }, [setNodeRef, nodeRef]);
+
+    // When selected, ensure the node can receive focus
+    useEffect(() => {
+        if (selected && nodeRef.current) {
+            nodeRef.current.setAttribute("tabindex", "0");
+            nodeRef.current.focus();
+        }
+    }, [selected]);
+
+    const handleClick = (): void => {
+        if (window.getSelection()?.toString()) {
+            return;
+        }
+        setBubbleOpen(!bubbleOpen);
     };
 
     const getMethodColor = (method?: string): string => {
-        switch (method?.toUpperCase()) {
+        switch (method?.trim().toUpperCase()) {
             case "GET":
                 return "bg-green-500";
             case "POST":
@@ -40,15 +75,22 @@ const APIinterfaceComponent: React.FC<NodeViewProps> = ({ node, selected }) => {
 
     return (
         <NodeViewWrapper
-            className={`ml-8 cursor-pointer hover:bg-gray-50 rounded-lg pt-2 border-2 bg-white ${
+            className={`ml-8 group cursor-pointer hover:bg-gray-50 rounded-lg pt-2 border-2 relative bg-white ${
                 isSelected
                     ? "border-blue-500"
                     : selected
-                    ? "border-gray-500"
+                    ? "border-gray-500 "
                     : "border-white hover:border-gray-200"
-            }`}
+            } `}
             onClick={handleClick}
         >
+            <NodeBubbleBar
+                open={bubbleOpen}
+                onOpenChange={setBubbleOpen}
+                onCopy={handleCopy}
+                onDelete={handleDelete}
+                onEdit={handleEdit}
+            />
             <div className="pl-4">
                 <div className="flex items-center pb-2">
                     <span
@@ -58,15 +100,15 @@ const APIinterfaceComponent: React.FC<NodeViewProps> = ({ node, selected }) => {
                     >
                         {info.method?.toUpperCase() || "METHOD"}
                     </span>
-                    <span className="text-xl font-bold text-black">
+                    <span className="text-xl font-bold text-black group-hover:cursor-text">
                         {info.name || "API name"}
                     </span>
                 </div>
                 <div>
-                    <p className="m-0 text-sm text-gray-600">
+                    <p className="m-0 text-sm text-gray-600 group-hover:cursor-text">
                         {info.description}
                     </p>
-                    <p className="m-0 py-2 text-sm text-black font-semibold">
+                    <p className="m-0 py-2 text-sm text-black font-semibold group-hover:cursor-text w-fit">
                         End Point : {info.endPoint}
                     </p>
                 </div>
@@ -88,7 +130,7 @@ const APIinterfaceComponent: React.FC<NodeViewProps> = ({ node, selected }) => {
                                     <div key={index} className="py-2 px-4">
                                         <div className="flex justify-between items-center m-0 p-0">
                                             <div className="flex items-center">
-                                                <span className="font-medium text-gray-800">
+                                                <span className="font-medium text-gray-800 group-hover:cursor-text">
                                                     {field.name}
                                                 </span>
                                                 {field.required && (
@@ -99,13 +141,13 @@ const APIinterfaceComponent: React.FC<NodeViewProps> = ({ node, selected }) => {
                                             </div>
 
                                             {field.type && (
-                                                <span className="text-xs bg-gray-100 px-1 py-1 rounded text-gray-600 mr-2">
+                                                <span className="text-xs bg-gray-100 px-1 py-1 rounded text-gray-600 mr-2 group-hover:cursor-text">
                                                     {field.type}
                                                 </span>
                                             )}
                                         </div>
                                         {field.description && (
-                                            <p className="m-0 p-0 text-sm text-gray-500">
+                                            <p className="m-0 p-0 text-sm text-gray-500 group-hover:cursor-text w-fit">
                                                 {field.description}
                                             </p>
                                         )}

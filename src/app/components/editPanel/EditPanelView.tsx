@@ -24,14 +24,15 @@ const EditPanelView = ({
     graphViewModel,
 }: EditPanelProps) => {
     const { selectedNode, selectNode } = useNodeSelection();
-    const { searchBySourceId } = graphViewModel;
+    const { searchTarget, searchSource, removeConnectionEdge, updateLabel } =
+        graphViewModel;
     const { updateEditNodeById, editNodes } = documentViewModel;
 
     const [node, setNode] = useState<JsonObject>();
     const [isMounted, setIsMounted] = useState(false);
-    const [connectionEdges, setConnectionEdges] = useState<ConnectionEdge[]>(
-        []
-    );
+    const [targetEdges, setTargetEdges] = useState<ConnectionEdge[]>([]);
+    const [sourceEdges, setSourceEdges] = useState<ConnectionEdge[]>([]);
+    const [activeSection, setActiveSection] = useState<string>("info");
 
     const prevSelectState = useRef(selectedNode);
 
@@ -103,10 +104,12 @@ const EditPanelView = ({
         if (selectedNode) {
             const item = findNodeById(String(selectedNode));
             setNode(item);
-            const edges = searchBySourceId(selectedNode);
-            setConnectionEdges(edges);
+            const _targetEdges = searchTarget(selectedNode);
+            setTargetEdges(_targetEdges);
+            const _sourceEdges = searchSource(selectedNode);
+            setSourceEdges(_sourceEdges);
         }
-    }, [findNodeById, searchBySourceId, selectedNode]);
+    }, [findNodeById, searchTarget, searchSource, selectedNode]);
 
     useEffect(() => {
         setIsMounted(true);
@@ -125,66 +128,49 @@ const EditPanelView = ({
                 }
             }, 0);
         }
-    }, [selectedNode]);
+    }, [selectedNode, activeSection]);
 
     const handleFieldChange = useCallback(
         (
             e: React.ChangeEvent<HTMLTextAreaElement>,
-            index: number,
-            key: "name" | "description" | "type"
+            key: string,
+            index?: number
         ) => {
             if (!node) return;
-            const newFields = [...(node.config.fields ?? [])];
-
-            newFields[index] = {
-                ...newFields[index],
-                [key]: e.target.value,
-            };
-            const updatedConfig = {
-                ...node.config,
-                fields: newFields,
-            };
-
+            const updatedConfig = { ...node.config };
+            if (index !== undefined) {
+                const newFields = [...(node.config.fields ?? [])];
+                newFields[index] = {
+                    ...newFields[index],
+                    [key]: e.target.value,
+                };
+                updatedConfig.fields = newFields;
+            } else {
+                const updatedInfo = {
+                    ...(node.config.info || {}),
+                    [key]: e.target.value,
+                };
+                updatedConfig.info = updatedInfo;
+            }
             const updatedNode: JsonObject = {
                 ...node,
                 config: updatedConfig,
             };
-
             setNode(updatedNode);
             updateEditNodeById(updatedNode.id, { config: updatedConfig });
         },
         [node, updateEditNodeById]
     );
 
-    const handleConfigChange = (
-        e: React.ChangeEvent<HTMLTextAreaElement>,
-        key: string
-    ) => {
-        if (!node) return;
-
-        const updatedInfo = {
-            ...(node.config.info || {}),
-            [key]: e.target.value,
-        };
-
-        const updatedConfig = {
-            ...node.config,
-            info: updatedInfo,
-        };
-
-        const updatedNode: JsonObject = {
-            ...node,
-            config: updatedConfig,
-        };
-
-        setNode(updatedNode);
-        updateEditNodeById(updatedNode.id, { config: updatedConfig });
-    };
-
     const handleAddField = () => {
         if (!node) return;
         const newFields = [...(node.config.fields ?? [])];
-        newFields.push({ name: "", description: "", type: "" });
+        const keys = Object.keys(newFields[0] || {});
+        const newItem = keys.reduce((acc, key) => {
+            acc[key] = "";
+            return acc;
+        }, {} as Record<string, string>);
+        newFields.push(newItem);
 
         const updatedConfig = {
             ...node.config,
@@ -221,7 +207,7 @@ const EditPanelView = ({
 
     return (
         <div
-            className={`fixed top-0 right-0 pt-20 h-screen w-1/3 bg-gray-50 shadow-lg p-4 border-l border-gray-300 transform transition-transform duration-500 ${
+            className={`fixed top-0 right-0 py-20 h-screen w-1/3 bg-gray-50 shadow-lg p-4 border-l border-gray-300 transform transition-transform duration-500 ${
                 isMounted
                     ? selectedNode
                         ? "translate-x-0"
@@ -229,45 +215,65 @@ const EditPanelView = ({
                     : "translate-x-full"
             }`}
         >
-            <EditPanelHeader onClose={() => selectNode(null)} />
+            <EditPanelHeader
+                type={node?.type || ""}
+                onClose={() => selectNode(null)}
+                section={activeSection}
+                onSectionChange={setActiveSection}
+            />
             {selectedNode ? (
                 <div className="mt-4 flex flex-col h-full space-y-4 overflow-auto">
-                    <EditPanelInfo
-                        selectedNode={selectedNode}
-                        info={node?.config.info}
-                        handleConfigChange={handleConfigChange}
-                    />
-                    {node?.type &&
+                    {activeSection === "info" && (
+                        <EditPanelInfo
+                            selectedNode={selectedNode}
+                            info={node?.config.info}
+                            handleConfigChange={handleFieldChange}
+                        />
+                    )}
+                    {activeSection === "fields" &&
+                        node?.type &&
                         node?.type.startsWith("template") &&
                         node?.config.fields && (
-                            <div className="bg-white border border-gray-200 rounded-lg p-4 mr-4 shadow">
-                                <h2 className="text-lg font-semibold mb-4">
-                                    Fields
-                                </h2>
-                                {node?.config.fields &&
-                                node.config.fields.length > 0 ? (
-                                    <EditPanelFields
-                                        fields={node.config.fields}
-                                        handleFieldChange={handleFieldChange}
-                                        handleRemoveField={handleRemoveField}
-                                    />
-                                ) : (
-                                    <p className="text-gray-400 text-sm">
-                                        No fields available.
-                                    </p>
-                                )}
-                                <button
-                                    className="mt-6 px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600"
-                                    onClick={handleAddField}
-                                >
-                                    + Add Field
-                                </button>
-                            </div>
+                            <>
+                                <div className="bg-white border border-gray-200 rounded-lg p-4 mr-4 shadow">
+                                    <h2 className="text-lg font-semibold mb-4">
+                                        Fields
+                                    </h2>
+                                    {node?.config.fields &&
+                                    node.config.fields.length > 0 ? (
+                                        <EditPanelFields
+                                            fields={node.config.fields}
+                                            fieldKey={node.config.fieldKey}
+                                            handleFieldChange={
+                                                handleFieldChange
+                                            }
+                                            handleRemoveField={
+                                                handleRemoveField
+                                            }
+                                        />
+                                    ) : (
+                                        <p className="text-gray-400 text-sm">
+                                            No fields available.
+                                        </p>
+                                    )}
+                                    <button
+                                        className="mt-6 px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600"
+                                        onClick={handleAddField}
+                                    >
+                                        + Add Field
+                                    </button>
+                                </div>
+                            </>
                         )}
-                    <EditPanelRelationship
-                        connectionEdges={connectionEdges}
-                        findNodeById={findNodeById}
-                    />
+                    {activeSection === "relations" && (
+                        <EditPanelRelationship
+                            targetEdges={targetEdges}
+                            sourceEdges={sourceEdges}
+                            findNodeById={findNodeById}
+                            removeEdge={removeConnectionEdge}
+                            updLabel={updateLabel}
+                        />
+                    )}
                     <EditPanelCmdHint />
                 </div>
             ) : (

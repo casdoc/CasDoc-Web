@@ -68,6 +68,7 @@ export const GROUPS: Group[] = [
                                             description: "default field",
                                         },
                                     ],
+                                    fieldKey: "description",
                                 },
                             },
                         })
@@ -106,6 +107,7 @@ export const GROUPS: Group[] = [
                                                 "Unique identifier for the resource",
                                         },
                                     ],
+                                    fieldKey: "description",
                                 },
                             },
                         })
@@ -132,6 +134,82 @@ export const GROUPS: Group[] = [
                                     info: {
                                         name: "Mermaid",
                                     },
+                                },
+                            },
+                        })
+                        .run();
+                },
+            },
+            {
+                name: "userStory",
+                label: "User Story",
+                iconName: "SquareLibrary",
+                aliases: ["userStory"],
+                description: "User Story component of templates",
+                action: (editor) => {
+                    editor
+                        .chain()
+                        .focus()
+                        .insertContent({
+                            type: "template-userStory",
+                            attrs: {
+                                topicId: "root",
+                                id: uuidv4(),
+                                config: {
+                                    info: {
+                                        name: "User Login",
+                                        serial: "story-01",
+                                        priority: "2",
+                                        tag: "login",
+                                        role: "As a registered user, I would like to log in to the system.",
+                                        feature:
+                                            "Log in by entering your username and password to access my personal information and services.",
+                                    },
+                                    fields: [
+                                        {
+                                            acceptance:
+                                                "The user can successfully log in after entering the correct account and password",
+                                            done: false,
+                                        },
+                                    ],
+                                    fieldKey: "acceptance",
+                                },
+                            },
+                        })
+                        .run();
+                },
+            },
+            {
+                name: "testCase",
+                label: "Test Case",
+                iconName: "SquareLibrary",
+                aliases: ["testCase"],
+                description: "Standard test case component",
+                action: (editor) => {
+                    editor
+                        .chain()
+                        .focus()
+                        .insertContent({
+                            type: "template-testCase",
+                            attrs: {
+                                topicId: "root",
+                                id: uuidv4(),
+                                config: {
+                                    info: {
+                                        name: "Test Login Functionality",
+                                        serial: "test-01",
+                                        description:
+                                            "Ensure user can log in with correct credentials",
+                                        expectedResult:
+                                            "User is successfully redirected to dashboard after login",
+                                    },
+                                    fields: [
+                                        {
+                                            step: "Enter valid username and password",
+                                            done: false,
+                                        },
+                                    ],
+                                    fieldKey: "step",
                                 },
                             },
                         })

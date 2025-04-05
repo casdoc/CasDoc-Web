@@ -8,8 +8,9 @@ import {
     createConfigAttribute,
     createPasteHandlerPlugin,
     createNodeTransformer,
+    setupNodeEventHandlers,
+    cleanupNodeEventHandlers,
 } from "../../ExtensionUtils";
-import { NodeSelection } from "@tiptap/pm/state";
 
 const topicDefaultConfig = {
     info: {
@@ -26,6 +27,7 @@ const topicDefaultConfig = {
             description: "Unique identifier for the resource",
         },
     ],
+    fieldKey: "description",
 };
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const serializeAPIinterfaceToMarkdown = (state: any, node: any) => {
@@ -127,27 +129,12 @@ export const APIinterfaceExtension = Node.create({
         return ["api-interface", mergeAttributes(HTMLAttributes)];
     },
 
-    addKeyboardShortcuts() {
-        return {
-            "Mod-Enter": () => {
-                // Handle node selection directly instead of using the command
-                const { state } = this.editor;
-                const { selection } = state;
+    onCreate() {
+        setupNodeEventHandlers(this.editor, this.name, this.storage);
+    },
 
-                // Import needed at the top of the file
-                if (
-                    selection instanceof NodeSelection &&
-                    selection.node.attrs.id
-                ) {
-                    // Dispatch custom event that useBlockEditor can listen for
-                    const event = new CustomEvent("node-selection", {
-                        detail: { id: selection.node.attrs.id },
-                    });
-                    window.dispatchEvent(event);
-                }
-                return true;
-            },
-        };
+    onDestroy() {
+        cleanupNodeEventHandlers(this.storage);
     },
 
     addNodeView() {
