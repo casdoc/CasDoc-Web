@@ -92,8 +92,13 @@ export const useProjectViewModel = (): ProjectViewModel => {
             setProjects([defaultProject]);
         } else {
             setProjects(loadedProjects);
+            loadedProjects.forEach((proj) => {
+                documentsMap[proj.id] = ProjectService.getDocumentsByProjectId(
+                    proj.id
+                );
+            });
         }
-    }, []);
+    }, [documentsMap]);
 
     // Project Actions
     const createProject = useCallback((name: string): string => {
@@ -163,10 +168,10 @@ export const useProjectViewModel = (): ProjectViewModel => {
             DocumentService.saveDocument(newDocument);
 
             // Update local state
-            setDocumentsMap((prev) => ({
-                ...prev,
-                [projectId]: [...(prev[projectId] || []), newDocument],
-            }));
+            // setDocumentsMap((prev) => ({
+            //     ...prev,
+            //     [projectId]: [...(prev[projectId] || []), newDocument],
+            // }));
 
             // Select the new document
             setSelectedDocumentId(newDocument.id);
