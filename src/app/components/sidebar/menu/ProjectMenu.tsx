@@ -1,6 +1,6 @@
 import DocMenu from "./DocMenu";
 import DropDownMenu from "./DropDownMenu";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ChevronDown, Folder, Plus } from "lucide-react";
 import {
     SidebarMenuItem,
@@ -21,30 +21,23 @@ interface ProjectMenuProps {
 
 const ProjectMenu = ({ name, projectId }: ProjectMenuProps) => {
     const {
+        documentsMap,
         deleteProject,
         selectProject,
-        getDocumentsByProjectId,
         createDocument,
         deleteDocument,
         openEditProjectDialog,
         openEditDocumentDialog,
     } = useProjectContext();
 
-    const [documents, setDocuments] = useState(
-        getDocumentsByProjectId(projectId)
-    );
+    const documents = documentsMap[projectId] ?? [];
     const [isOpen, setIsOpen] = useState(true);
-
-    useEffect(() => {
-        setDocuments(getDocumentsByProjectId(projectId));
-    }, [projectId, getDocumentsByProjectId]);
 
     const handleAddDocument = (e: React.MouseEvent) => {
         e.stopPropagation();
         const documentId = createDocument(projectId, "Untitled Document");
         openEditDocumentDialog(documentId);
         setIsOpen(true);
-        setDocuments(getDocumentsByProjectId(projectId));
     };
 
     const handleMenuClick = (action: string, e: React.MouseEvent) => {
@@ -59,7 +52,6 @@ const ProjectMenu = ({ name, projectId }: ProjectMenuProps) => {
 
     const handleDeleteDocument = (documentId: string) => {
         deleteDocument(documentId);
-        setDocuments(getDocumentsByProjectId(projectId));
     };
 
     return (

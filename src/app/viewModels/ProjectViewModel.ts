@@ -11,6 +11,7 @@ import { DocumentUpdate } from "../models/types/DocumentUpdate";
 
 export interface ProjectViewModel {
     projects: Project[];
+    documentsMap: Record<string, Document[]>;
     selectedProjectId: string | null;
     selectedDocumentId: string | null;
     editingProject: Project | null;
@@ -38,6 +39,9 @@ export interface ProjectViewModel {
 
 export const useProjectViewModel = (): ProjectViewModel => {
     const [projects, setProjects] = useState<Project[]>([]);
+    const [documentsMap, setDocumentsMap] = useState<
+        Record<string, Document[]>
+    >({});
     const [selectedProjectId, setSelectedProjectId] = useState<string | null>(
         null
     );
@@ -75,6 +79,15 @@ export const useProjectViewModel = (): ProjectViewModel => {
                 defaultContent
             );
             DocumentService.saveDocument(defaultDoc);
+
+            // Update local state
+            setDocumentsMap((prev) => ({
+                ...prev,
+                [defaultProject.id]: [
+                    ...(prev[defaultProject.id] || []),
+                    defaultDoc,
+                ],
+            }));
 
             setProjects([defaultProject]);
         } else {
@@ -149,6 +162,12 @@ export const useProjectViewModel = (): ProjectViewModel => {
             );
             DocumentService.saveDocument(newDocument);
 
+            // Update local state
+            setDocumentsMap((prev) => ({
+                ...prev,
+                [projectId]: [...(prev[projectId] || []), newDocument],
+            }));
+
             // Select the new document
             setSelectedDocumentId(newDocument.id);
             return newDocument.id;
@@ -157,24 +176,40 @@ export const useProjectViewModel = (): ProjectViewModel => {
     );
     const deleteDocument = useCallback(
         (documentId: string) => {
+            const projectId =
+                DocumentService.getDocumentById(documentId)?.projectId;
+            if (!projectId) return;
+
             DocumentService.deleteDocument(documentId);
+
+            // Update local state
             if (selectedDocumentId === documentId) setSelectedDocumentId(null);
+            setDocumentsMap((prev) => ({
+                ...prev,
+                [projectId]: (prev[projectId] || []).filter(
+                    (doc) => doc.id !== documentId
+                ),
+            }));
         },
         [selectedDocumentId]
     );
     const editDocument = useCallback(
         (documentId: string, update: DocumentUpdate) => {
+            const projectId =
+                DocumentService.getDocumentById(documentId)?.projectId;
+            if (!projectId) return;
+
             DocumentService.updateDocument(documentId, update);
-            // Update local state to reflect changes
-            const updatedDoc = DocumentService.getDocumentById(documentId);
-            if (updatedDoc) {
-                // Force a re-fetch of documents for the affected project
-                const projectId = updatedDoc.projectId;
-                if (projectId) {
-                    // This will ensure the ProjectMenu component receives updated data
-                    setProjects((projects) => [...projects]);
-                }
-            }
+
+            // Update local state
+            setDocumentsMap((prev) => ({
+                ...prev,
+                [projectId]: (prev[projectId] || []).map((doc) =>
+                    doc.id === documentId
+                        ? ({ ...doc, ...update } as Document)
+                        : doc
+                ),
+            }));
         },
         []
     );
@@ -204,6 +239,7 @@ export const useProjectViewModel = (): ProjectViewModel => {
 
     return {
         projects,
+        documentsMap,
         selectedProjectId,
         selectedDocumentId,
         editingProject,

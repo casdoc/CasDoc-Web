@@ -109,6 +109,7 @@ const DocEditDialog = () => {
                                     <SelectItem value="SRD">SRD</SelectItem>
                                     <SelectItem value="SDD">SDD</SelectItem>
                                     <SelectItem value="STD">STD</SelectItem>
+                                    <SelectItem value="OTHER">OTHER</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
