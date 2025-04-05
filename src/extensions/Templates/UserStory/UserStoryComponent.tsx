@@ -108,6 +108,7 @@ const UserStoryComponent = ({
                 onCopy={handleCopy}
                 onDelete={handleDelete}
                 onEdit={handleEdit}
+                hasAgentAdvice={true}
             />
             <div className="px-3 py-1 border-b rounded-sm">
                 <div className="flex justify-between items-start">

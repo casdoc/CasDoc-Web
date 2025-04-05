@@ -73,6 +73,7 @@ const DataSchemaComponent = ({
                 onCopy={handleCopy}
                 onDelete={handleDelete}
                 onEdit={handleEdit}
+                hasAgentAdvice={true}
             />
             <div className="pl-4 ">
                 <div className="flex justify-between">

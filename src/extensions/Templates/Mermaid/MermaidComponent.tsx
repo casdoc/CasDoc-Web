@@ -94,6 +94,7 @@ const MermaidComponent = ({
                 onCopy={handleCopy}
                 onDelete={handleDelete}
                 onEdit={handleEdit}
+                hasAgentAdvice={true}
             />
             <div className="h-full ">
                 <MermaidEditor

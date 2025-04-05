@@ -90,6 +90,7 @@ const APIinterfaceComponent = ({
                 onCopy={handleCopy}
                 onDelete={handleDelete}
                 onEdit={handleEdit}
+                hasAgentAdvice={true}
             />
             <div className="pl-4">
                 <div className="flex items-center pb-2">

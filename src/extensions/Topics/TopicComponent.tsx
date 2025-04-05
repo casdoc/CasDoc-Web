@@ -61,6 +61,7 @@ const TopicComponent = ({ node, selected, editor, getPos }: NodeViewProps) => {
                 onCopy={handleCopy}
                 onDelete={handleDelete}
                 onEdit={handleEdit}
+                hasAgentAdvice={true}
             />
 
             <div className="border-l-4 border-slate-400 pl-3">
