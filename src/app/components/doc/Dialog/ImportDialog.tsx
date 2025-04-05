@@ -1,5 +1,4 @@
 import { useState, useRef } from "react";
-import { Icon } from "@/app/components/doc/ui/Icon";
 import { Button } from "@/components/ui/button";
 import {
     Dialog,
@@ -12,6 +11,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { marked } from "marked";
 import { Editor } from "@tiptap/react";
+import { FileText, FileUp } from "lucide-react";
 
 interface ImportDialogProps {
     editor: Editor;
@@ -94,7 +94,7 @@ const ImportDialog = ({ editor }: ImportDialogProps) => {
         <Dialog open={importDialogOpen} onOpenChange={setImportDialogOpen}>
             <DialogTrigger asChild>
                 <Button size="icon" variant="outline">
-                    <Icon name="FileUp" />
+                    <FileUp />
                 </Button>
             </DialogTrigger>
             <DialogContent>
@@ -110,7 +110,7 @@ const ImportDialog = ({ editor }: ImportDialogProps) => {
                         variant="outline"
                         onClick={() => fileInputRef.current?.click()}
                     >
-                        <Icon name="FileText" className="mr-2" />
+                        <FileText className="mr-2" />
                         Import from Markdown
                     </Button>
                     <input
