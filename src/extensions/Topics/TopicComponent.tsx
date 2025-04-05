@@ -46,7 +46,6 @@ const TopicComponent = ({ node, selected, editor, getPos }: NodeViewProps) => {
 
     return (
         <NodeViewWrapper
-            ref={nodeRef}
             className={`cursor-pointer group hover:bg-gray-50 rounded-lg border-2 px-1 py-2 bg-white relative  ${
                 isSelected
                     ? "border-blue-500"
@@ -55,7 +54,6 @@ const TopicComponent = ({ node, selected, editor, getPos }: NodeViewProps) => {
                     : "border-white hover:border-gray-200"
             } `}
             onClick={handleClick}
-            tabIndex={0}
         >
             <NodeBubbleBar
                 open={bubbleOpen}

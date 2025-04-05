@@ -79,7 +79,6 @@ const MermaidComponent = ({
 
     return (
         <NodeViewWrapper
-            ref={nodeRef}
             className={`ml-8 cursor-pointer  rounded-lg border-2 relative bg-white select-none  ${
                 isSelected
                     ? "border-blue-500 "
@@ -88,7 +87,6 @@ const MermaidComponent = ({
                     : "border-white hover:border-gray-200"
             } `}
             onClick={handleContainerClick}
-            tabIndex={0}
         >
             <NodeBubbleBar
                 open={bubbleOpen}

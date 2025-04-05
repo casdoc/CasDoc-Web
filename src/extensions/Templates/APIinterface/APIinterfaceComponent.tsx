@@ -75,7 +75,6 @@ const APIinterfaceComponent = ({
 
     return (
         <NodeViewWrapper
-            ref={nodeRef}
             className={`ml-8 group cursor-pointer hover:bg-gray-50 rounded-lg pt-2 border-2 relative bg-white ${
                 isSelected
                     ? "border-blue-500"
@@ -84,7 +83,6 @@ const APIinterfaceComponent = ({
                     : "border-white hover:border-gray-200"
             } `}
             onClick={handleClick}
-            tabIndex={0}
         >
             <NodeBubbleBar
                 open={bubbleOpen}
