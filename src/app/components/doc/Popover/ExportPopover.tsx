@@ -69,7 +69,7 @@ const ExportPopover = ({ editor }: { editor: Editor }) => {
     return (
         <Popover>
             <PopoverTrigger asChild>
-                <Button size="icon" variant="ghost">
+                <Button size="icon" variant="outline">
                     <FileDown />
                 </Button>
             </PopoverTrigger>

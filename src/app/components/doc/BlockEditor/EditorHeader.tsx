@@ -2,7 +2,6 @@
 
 import { useCallback } from "react";
 import DocMode from "@/app/models/enum/DocMode";
-// import LogoButton from "@/app/components/LogoButton";
 import GuideButton from "@/app/components/guide/GuideButton";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
@@ -36,7 +35,6 @@ const EditorHeader = ({ mode, setDocMode, editor }: EditorHeaderProps) => {
         <div className="flex flex-row items-center justify-between flex-none py-2 px-3 text-black bg-white border-b border-neutral-200 dark:bg-black dark:text-white dark:border-neutral-800 z-50">
             {/* Left side with logo and mode buttons */}
             <div className="flex items-center gap-x-1.5">
-                {/* <LogoButton /> */}
                 <TooltipProvider>
                     <Tooltip>
                         <TooltipTrigger asChild>
