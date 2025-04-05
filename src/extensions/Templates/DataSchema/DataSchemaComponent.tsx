@@ -1,9 +1,8 @@
 import { NodeViewWrapper } from "@tiptap/react";
 import { NodeViewProps } from "@tiptap/core";
 import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext";
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import NodeBubbleBar from "@/app/components/doc/Popover/NodeBubbleBar";
-import useCustomNodeActions from "@/extensions/hooks/useCustomNodeActions";
 
 export interface DataSchemaField {
     name: string;
@@ -19,47 +18,34 @@ const DataSchemaComponent = ({
 }: NodeViewProps) => {
     const { id, config } = node.attrs;
     const { selectedNode } = useNodeSelection();
-    const isSelected = selectedNode === id;
+    const isEditing = selectedNode === id;
     const fields = config?.fields || [];
     const info = config?.info || {};
-    const [bubbleOpen, setBubbleOpen] = useState(false);
-    const nodeRef = useRef<HTMLDivElement>(null);
 
-    const { handleEdit, handleCopy, handleDelete, setNodeRef } =
-        useCustomNodeActions({
-            id,
-            selected,
-            getPos,
-            editor,
-        });
+    const [showBubbleBar, setShowBubbleBar] = useState(false);
 
-    // Set the node ref when component mounts
+    // Reset bubble bar when component loses selection
     useEffect(() => {
-        if (nodeRef.current) {
-            setNodeRef(nodeRef.current);
+        if (!selected && showBubbleBar) {
+            setShowBubbleBar(false);
         }
-    }, [setNodeRef, nodeRef]);
+    }, [selected, showBubbleBar]);
 
-    // When selected, ensure the node can receive focus
-    useEffect(() => {
-        if (selected && nodeRef.current) {
-            nodeRef.current.setAttribute("tabindex", "0");
-            nodeRef.current.focus();
-        }
-    }, [selected]);
-
-    const handleClick = (): void => {
+    const handleClick = (e: React.MouseEvent): void => {
+        // Don't toggle if text is selected
         if (window.getSelection()?.toString()) {
             return;
         }
-
-        setBubbleOpen(!bubbleOpen);
+        // Toggle the bubble bar visibility
+        setShowBubbleBar(!showBubbleBar);
+        // Prevent event from propagating to parent elements
+        e.stopPropagation();
     };
 
     return (
         <NodeViewWrapper
             className={`ml-8 group cursor-pointer hover:bg-gray-50 rounded-lg pt-2 border-2 relative bg-white ${
-                isSelected
+                isEditing
                     ? "border-blue-500"
                     : selected
                     ? "border-gray-500 "
@@ -68,11 +54,10 @@ const DataSchemaComponent = ({
             onClick={handleClick}
         >
             <NodeBubbleBar
-                open={bubbleOpen}
-                onOpenChange={setBubbleOpen}
-                onCopy={handleCopy}
-                onDelete={handleDelete}
-                onEdit={handleEdit}
+                id={id}
+                selected={showBubbleBar}
+                getPos={getPos}
+                editor={editor}
             />
             <div className="pl-4 ">
                 <div className="flex justify-between">
