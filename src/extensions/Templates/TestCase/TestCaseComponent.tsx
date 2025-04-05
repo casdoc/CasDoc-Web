@@ -4,6 +4,12 @@ import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext"
 import { useCallback, useState, useRef, useEffect } from "react";
 import NodeBubbleBar from "@/app/components/doc/Popover/NodeBubbleBar";
 import useCustomNodeActions from "@/extensions/hooks/useCustomNodeActions";
+import {
+    Collapsible,
+    CollapsibleContent,
+    CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { ChevronDown } from "lucide-react";
 
 interface Field {
     step: string;
@@ -81,7 +87,7 @@ const TestCaseComponent = ({
 
     return (
         <NodeViewWrapper
-            className={`ml-8 group cursor-pointer hover:bg-gray-50 rounded-lg pt-2 border-2 relative bg-white ${
+            className={`ml-8 group cursor-pointer hover:bg-gray-50 rounded-lg border-2 relative bg-white ${
                 isSelected
                     ? "border-blue-500"
                     : selected
@@ -90,67 +96,75 @@ const TestCaseComponent = ({
             } `}
             onClick={handleClick}
         >
-            <NodeBubbleBar
-                open={bubbleOpen}
-                onOpenChange={setBubbleOpen}
-                onCopy={handleCopy}
-                onDelete={handleDelete}
-                onEdit={handleEdit}
-            />
-            <div className="px-3 py-1 border-b rounded-sm">
-                <div className="flex justify-between items-start">
-                    <div>
-                        <p className="text-xs font-medium text-gray-500 mb-1 group-hover:cursor-text w-fit">
-                            {info.serial}
-                        </p>
-                        <h2 className="text-xl font-bold text-gray-900 mt-0 group-hover:cursor-text w-fit">
-                            {info.name || "New Test Case"}
-                        </h2>
-                        {info.description && (
-                            <p className="text-sm text-gray-600 mt-1 group-hover:cursor-text">
-                                {info.description}
+            <Collapsible>
+                <NodeBubbleBar
+                    open={bubbleOpen}
+                    onOpenChange={setBubbleOpen}
+                    onCopy={handleCopy}
+                    onDelete={handleDelete}
+                    onEdit={handleEdit}
+                />
+                <CollapsibleTrigger className="w-full h-full pt-3 pb-1 px-3 border-b rounded-sm group/chevron">
+                    <div className="flex justify-between items-start">
+                        <div>
+                            <p className="text-xs font-medium text-gray-500 mb-1 group-hover:cursor-text w-fit">
+                                {info.serial}
                             </p>
-                        )}
+                            <div className="flex items-center gap-1">
+                                <h2 className="text-xl font-bold text-gray-900 mt-0 group-hover:cursor-text w-fit">
+                                    {info.name || "New Test Case"}
+                                </h2>
+                                <ChevronDown className="w-4 h-4 opacity-0 group-hover/chevron:opacity-100 transition-all duration-200 group-data-[state=open]/chevron:rotate-180" />
+                            </div>
+                            {info.description && (
+                                <p className="text-sm text-gray-600 mt-1 group-hover:cursor-text">
+                                    {info.description}
+                                </p>
+                            )}
+                        </div>
                     </div>
-                </div>
-            </div>
-            <div className="px-4 py-3 space-y-2">
-                <div>
-                    <h3 className="text-sm font-semibold text-gray-600 uppercase tracking-wide group-hover:cursor-text w-fit">
-                        Expected Result
-                    </h3>
-                    <p className="text-sm text-gray-700 mt-1 mb-4 group-hover:cursor-text">
-                        {info.expectedResult}
-                    </p>
-                </div>
-                <div>
-                    <h3 className="text-sm font-semibold text-gray-600 uppercase tracking-wide group-hover:cursor-text w-fit">
-                        Steps
-                    </h3>
-                    <ul className="divide-y divide-gray-100 mt-1">
-                        {fields.map((field: Field, index: number) => (
-                            <li key={index} className="flex items-start py-2">
-                                <input
-                                    type="checkbox"
-                                    checked={isTaskDone(field.done)}
-                                    onClick={(e) => e.stopPropagation()}
-                                    onChange={toggleCheckbox}
-                                    className="mt-1 mr-2"
-                                />
-                                <span
-                                    className={`text-sm ${
-                                        isTaskDone(field.done)
-                                            ? "line-through text-gray-400"
-                                            : "text-gray-800"
-                                    } group-hover:cursor-text`}
+                </CollapsibleTrigger>
+                <CollapsibleContent className="px-4 py-3 space-y-2">
+                    <div>
+                        <h3 className="text-sm font-semibold text-gray-600 uppercase tracking-wide group-hover:cursor-text w-fit">
+                            Expected Result
+                        </h3>
+                        <p className="text-sm text-gray-700 mt-1 mb-4 group-hover:cursor-text">
+                            {info.expectedResult}
+                        </p>
+                    </div>
+                    <div>
+                        <h3 className="text-sm font-semibold text-gray-600 uppercase tracking-wide group-hover:cursor-text w-fit">
+                            Steps
+                        </h3>
+                        <ul className="divide-y divide-gray-100 mt-1">
+                            {fields.map((field: Field, index: number) => (
+                                <li
+                                    key={index}
+                                    className="flex items-start py-2"
                                 >
-                                    {index + 1}. {field.step}
-                                </span>
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-            </div>
+                                    <input
+                                        type="checkbox"
+                                        checked={isTaskDone(field.done)}
+                                        onClick={(e) => e.stopPropagation()}
+                                        onChange={toggleCheckbox}
+                                        className="mt-1 mr-2"
+                                    />
+                                    <span
+                                        className={`text-sm ${
+                                            isTaskDone(field.done)
+                                                ? "line-through text-gray-400"
+                                                : "text-gray-800"
+                                        } group-hover:cursor-text`}
+                                    >
+                                        {index + 1}. {field.step}
+                                    </span>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                </CollapsibleContent>
+            </Collapsible>
         </NodeViewWrapper>
     );
 };
