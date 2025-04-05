@@ -79,7 +79,14 @@ const NodeBubbleBar: React.FC<NodeBubbleBarProps> = ({
                                 </Button>
                             </TooltipTrigger>
                             <TooltipContent side="bottom">
-                                <p>Edit</p>
+                                <p>
+                                    Edit (
+                                    {typeof window !== "undefined" &&
+                                    /Mac/.test(navigator.platform)
+                                        ? "Cmd"
+                                        : "Ctrl"}{" "}
+                                    + Enter)
+                                </p>
                             </TooltipContent>
                         </Tooltip>
                     )}
