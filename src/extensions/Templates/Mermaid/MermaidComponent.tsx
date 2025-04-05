@@ -2,7 +2,7 @@ import { NodeViewWrapper } from "@tiptap/react";
 import { NodeViewProps } from "@tiptap/core";
 import MermaidEditor from "@/app/components/doc/Mermaid/MermaidEditor";
 import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import NodeBubbleBar from "@/app/components/doc/Popover/NodeBubbleBar";
 import useCustomNodeActions from "@/extensions/hooks/useCustomNodeActions";
 
@@ -20,13 +20,30 @@ const MermaidComponent = ({
     const isSelected = selectedNode === id;
     const isUpdatingRef = useRef(false);
     const [bubbleOpen, setBubbleOpen] = useState(false);
+    const nodeRef = useRef<HTMLDivElement>(null);
 
-    const { handleEdit, handleCopy, handleDelete } = useCustomNodeActions({
-        id,
-        selected,
-        getPos,
-        editor,
-    });
+    const { handleEdit, handleCopy, handleDelete, setNodeRef } =
+        useCustomNodeActions({
+            id,
+            selected,
+            getPos,
+            editor,
+        });
+
+    // Set the node ref when component mounts
+    useEffect(() => {
+        if (nodeRef.current) {
+            setNodeRef(nodeRef.current);
+        }
+    }, [setNodeRef, nodeRef]);
+
+    // When selected, ensure the node can receive focus
+    useEffect(() => {
+        if (selected && nodeRef.current) {
+            nodeRef.current.setAttribute("tabindex", "0");
+            nodeRef.current.focus();
+        }
+    }, [selected]);
 
     const handleContainerClick = (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -62,6 +79,7 @@ const MermaidComponent = ({
 
     return (
         <NodeViewWrapper
+            ref={nodeRef}
             className={`ml-8 cursor-pointer  rounded-lg border-2 relative bg-white select-none  ${
                 isSelected
                     ? "border-blue-500 "
@@ -70,6 +88,7 @@ const MermaidComponent = ({
                     : "border-white hover:border-gray-200"
             } `}
             onClick={handleContainerClick}
+            tabIndex={0}
         >
             <NodeBubbleBar
                 open={bubbleOpen}

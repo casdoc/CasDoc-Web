@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { NodeViewWrapper } from "@tiptap/react";
 import { NodeViewProps } from "@tiptap/core";
 import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext";
@@ -10,13 +10,32 @@ const TopicComponent = ({ node, selected, editor, getPos }: NodeViewProps) => {
     const { selectedNode } = useNodeSelection();
     const isSelected = selectedNode === id;
     const [bubbleOpen, setBubbleOpen] = useState(false);
+    const nodeRef = useRef<HTMLDivElement>(null);
 
-    const { handleEdit, handleCopy, handleDelete } = useCustomNodeActions({
-        id,
-        selected,
-        getPos,
-        editor,
-    });
+    const { handleEdit, handleCopy, handleDelete, setNodeRef } =
+        useCustomNodeActions({
+            id,
+            selected,
+            getPos,
+            editor,
+        });
+
+    // Set the node ref when component mounts
+    useEffect(() => {
+        if (nodeRef.current) {
+            setNodeRef(nodeRef.current);
+        }
+    }, [setNodeRef, nodeRef]);
+
+    // When selected, ensure the node can receive focus
+    useEffect(() => {
+        if (selected && nodeRef.current) {
+            // Make sure the node is focusable
+            nodeRef.current.setAttribute("tabindex", "0");
+            // Focus the node when selected
+            nodeRef.current.focus();
+        }
+    }, [selected]);
 
     const handleClick = (): void => {
         if (window.getSelection()?.toString()) {
@@ -27,6 +46,7 @@ const TopicComponent = ({ node, selected, editor, getPos }: NodeViewProps) => {
 
     return (
         <NodeViewWrapper
+            ref={nodeRef}
             className={`cursor-pointer group hover:bg-gray-50 rounded-lg border-2 px-1 py-2 bg-white relative  ${
                 isSelected
                     ? "border-blue-500"
@@ -35,6 +55,7 @@ const TopicComponent = ({ node, selected, editor, getPos }: NodeViewProps) => {
                     : "border-white hover:border-gray-200"
             } `}
             onClick={handleClick}
+            tabIndex={0}
         >
             <NodeBubbleBar
                 open={bubbleOpen}

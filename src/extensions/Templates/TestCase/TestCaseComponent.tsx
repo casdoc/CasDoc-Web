@@ -1,7 +1,7 @@
 import { NodeViewWrapper } from "@tiptap/react";
 import { NodeViewProps } from "@tiptap/core";
 import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext";
-import { useCallback, useState } from "react";
+import { useCallback, useState, useRef, useEffect } from "react";
 import NodeBubbleBar from "@/app/components/doc/Popover/NodeBubbleBar";
 import useCustomNodeActions from "@/extensions/hooks/useCustomNodeActions";
 
@@ -23,12 +23,30 @@ const TestCaseComponent = ({
     const fields = config?.fields || [];
     const info = config?.info || {};
     const [bubbleOpen, setBubbleOpen] = useState(false);
-    const { handleEdit, handleCopy, handleDelete } = useCustomNodeActions({
-        id,
-        selected,
-        getPos,
-        editor,
-    });
+    const nodeRef = useRef<HTMLDivElement>(null);
+
+    const { handleEdit, handleCopy, handleDelete, setNodeRef } =
+        useCustomNodeActions({
+            id,
+            selected,
+            getPos,
+            editor,
+        });
+
+    // Set the node ref when component mounts
+    useEffect(() => {
+        if (nodeRef.current) {
+            setNodeRef(nodeRef.current);
+        }
+    }, [setNodeRef, nodeRef]);
+
+    // When selected, ensure the node can receive focus
+    useEffect(() => {
+        if (selected && nodeRef.current) {
+            nodeRef.current.setAttribute("tabindex", "0");
+            nodeRef.current.focus();
+        }
+    }, [selected]);
 
     const handleClick = (): void => {
         if (window.getSelection()?.toString()) {
@@ -63,14 +81,16 @@ const TestCaseComponent = ({
 
     return (
         <NodeViewWrapper
+            ref={nodeRef}
             className={`ml-8 group cursor-pointer hover:bg-gray-50 rounded-lg pt-2 border-2 relative bg-white ${
                 isSelected
                     ? "border-blue-500"
                     : selected
-                    ? "border-gray-500"
+                    ? "border-gray-500 "
                     : "border-white hover:border-gray-200"
             } `}
             onClick={handleClick}
+            tabIndex={0}
         >
             <NodeBubbleBar
                 open={bubbleOpen}
