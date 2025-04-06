@@ -11,7 +11,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { marked } from "marked";
 import { Editor } from "@tiptap/react";
-import { FileDown, FileText, FileUp } from "lucide-react";
+import { FileDown, FileText } from "lucide-react";
 
 interface ImportDialogProps {
     editor: Editor;

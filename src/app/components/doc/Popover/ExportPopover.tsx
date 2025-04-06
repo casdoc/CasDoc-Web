@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Editor } from "@tiptap/react";
 import { useToast } from "@/hooks/use-toast";
-import { Copy, FileDown, FileText, Share } from "lucide-react";
+import { Copy, FileText, Share } from "lucide-react";
 import {
     Popover,
     PopoverContent,
