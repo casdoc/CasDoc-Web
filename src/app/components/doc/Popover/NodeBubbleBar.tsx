@@ -210,7 +210,7 @@ const NodeBubbleBar: React.FC<NodeBubbleBarProps> = ({
                             </TooltipContent>
                         </Tooltip>
 
-                        <DropdownMenu>
+                        {/* <DropdownMenu>
                             <DropdownMenuTrigger>
                                 <div className="flex items-center gap-1 px-2">
                                     <Bot size={18} color="#3B9EFF" />
@@ -228,17 +228,17 @@ const NodeBubbleBar: React.FC<NodeBubbleBarProps> = ({
                                     Auto Connect
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
-                        </DropdownMenu>
+                        </DropdownMenu> */}
                     </TooltipProvider>
                 </PopoverContent>
             </Popover>
 
-            <AgentRelationAdviceDialog
+            {/* <AgentRelationAdviceDialog
                 open={adviceDialogOpen}
                 selectedNodeId={id}
                 onOpenChange={setAdviceDialogOpen}
                 title="AI Relationship Advice"
-            />
+            /> */}
         </div>
     );
 };
