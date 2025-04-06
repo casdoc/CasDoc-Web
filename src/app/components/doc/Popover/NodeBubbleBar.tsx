@@ -1,10 +1,17 @@
-import React, { useRef, useReducer, useCallback, memo, useEffect } from "react";
+import React, {
+    useRef,
+    useReducer,
+    useCallback,
+    memo,
+    useEffect,
+    useState,
+} from "react";
 import {
     Popover,
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
-import { Copy, Trash2, Pencil } from "lucide-react";
+import { Copy, Trash2, Pencil, Bot, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
     Tooltip,
@@ -14,6 +21,13 @@ import {
 } from "@/components/ui/tooltip";
 import useCustomNodeActions from "@/extensions/hooks/useCustomNodeActions";
 import { Editor } from "@tiptap/core";
+import AgentRelationAdviceDialog from "../Dialog/AgentRelationAdviceDialog";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 // Define reducer action types
 type BubbleAction =
@@ -59,6 +73,7 @@ const NodeBubbleBar: React.FC<NodeBubbleBarProps> = ({
     initialOpen = false,
 }) => {
     const contentRef = useRef<HTMLDivElement>(null);
+    const [adviceDialogOpen, setAdviceDialogOpen] = useState(false);
 
     const [state, dispatch] = useReducer(bubbleReducer, {
         isOpen: initialOpen,
@@ -76,9 +91,6 @@ const NodeBubbleBar: React.FC<NodeBubbleBarProps> = ({
     useEffect(() => {
         if (selected) {
             dispatch({ type: "SET_OPEN", payload: true });
-        } else {
-            console.debug("not selected");
-            // dispatch({ type: "SET_OPEN", payload: false });
         }
     }, [selected, setNodeRef]);
 
@@ -115,6 +127,15 @@ const NodeBubbleBar: React.FC<NodeBubbleBarProps> = ({
             dispatch({ type: "SET_OPEN", payload: false });
         },
         [handleDelete]
+    );
+
+    const onAdviceClick = useCallback(
+        (e: React.MouseEvent) => {
+            e.stopPropagation();
+            setAdviceDialogOpen(true);
+            handleOpenChange(false);
+        },
+        [setAdviceDialogOpen, handleOpenChange]
     );
 
     // Only render when selected
@@ -188,9 +209,36 @@ const NodeBubbleBar: React.FC<NodeBubbleBarProps> = ({
                                 <p>Delete</p>
                             </TooltipContent>
                         </Tooltip>
+
+                        {/* <DropdownMenu>
+                            <DropdownMenuTrigger>
+                                <div className="flex items-center gap-1 px-2">
+                                    <Bot size={18} color="#3B9EFF" />
+                                    <div className="text-[#3B9EFF] font-semibold text-sm">
+                                        AI tools
+                                    </div>
+                                    <ChevronDown size={14} color="#3B9EFF" />
+                                </div>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent alignOffset={2}>
+                                <DropdownMenuItem
+                                    onClick={onAdviceClick}
+                                    className="text-sm"
+                                >
+                                    Auto Connect
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu> */}
                     </TooltipProvider>
                 </PopoverContent>
             </Popover>
+
+            {/* <AgentRelationAdviceDialog
+                open={adviceDialogOpen}
+                selectedNodeId={id}
+                onOpenChange={setAdviceDialogOpen}
+                title="AI Relationship Advice"
+            /> */}
         </div>
     );
 };
