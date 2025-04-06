@@ -22,7 +22,7 @@ const EditPanelRelationship = ({
         useNodeSelection();
 
     return (
-        <div className="bg-white border border-gray-200 rounded-lg p-4 mr-4 shadow">
+        <div className="bg-white border border-gray-200 rounded-lg p-4 shadow">
             <h2 className="text-lg font-semibold mb-4">Relationships</h2>
             <RelationshipSection
                 title="Target To:"

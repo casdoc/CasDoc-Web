@@ -66,8 +66,12 @@ const GraphView = ({ docMode, graphNodes }: GraphViewProps) => {
     const nodeWidth = 242;
     const nodeHeight = 12;
 
-    const { connectionEdges, updConnectionEdges, removeConnectionEdge } =
-        useGraphContext();
+    const {
+        connectionEdges,
+        updConnectionEdges,
+        removeConnectionEdge,
+        affectedIds,
+    } = useGraphContext();
     const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
     const { fitView, setCenter } = useReactFlow();
@@ -80,8 +84,7 @@ const GraphView = ({ docMode, graphNodes }: GraphViewProps) => {
             setNodes([]);
             return;
         }
-
-        const newNodes = convertDataToNodes(graphNodes);
+        const newNodes = convertDataToNodes(graphNodes, affectedIds);
         const newStructuralEdges = convertDataToStructuralEdges(graphNodes);
 
         const { layoutedNodes } = getLayoutedElements(
@@ -95,7 +98,7 @@ const GraphView = ({ docMode, graphNodes }: GraphViewProps) => {
         const tmpConnectionEdges = connectConnectionEdges(connectionEdges);
         setNodes(layoutedNodes);
         setEdges([...newStructuralEdges, ...tmpConnectionEdges]);
-    }, [graphNodes, connectionEdges, setNodes, setEdges]);
+    }, [graphNodes, connectionEdges, affectedIds, setNodes, setEdges]);
 
     useEffect(() => {
         fitView({ duration: 500 });

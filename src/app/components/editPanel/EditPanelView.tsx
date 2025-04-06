@@ -15,8 +15,15 @@ import { ConnectionEdge } from "@/app/viewModels/GraphViewModel";
 const EditPanelView = () => {
     const { updateEditNodeById, editNodes } = useDocumentContext();
     const { selectedNode, selectNode } = useNodeSelection();
-    const { searchTarget, searchSource, removeConnectionEdge, updateLabel } =
-        useGraphContext();
+    const {
+        searchTarget,
+        searchSource,
+        removeConnectionEdge,
+        updateLabel,
+        updateAffectedIds,
+        affectedIds,
+        removeAffectedId,
+    } = useGraphContext();
 
     const [node, setNode] = useState<JsonObject>();
     const [isMounted, setIsMounted] = useState(false);
@@ -148,8 +155,17 @@ const EditPanelView = () => {
             };
             setNode(updatedNode);
             updateEditNodeById(updatedNode.id, { config: updatedConfig });
+
+            // Update affected IDs when fields change
+            if (selectedNode) {
+                // const targetEdges = searchTarget(selectedNode);
+                const affectedTargetIds = targetEdges.map(
+                    (edge) => edge.target
+                );
+                updateAffectedIds(affectedTargetIds);
+            }
         },
-        [node, updateEditNodeById]
+        [node, updateEditNodeById, selectedNode, targetEdges, updateAffectedIds]
     );
 
     const handleAddField = () => {
@@ -211,6 +227,23 @@ const EditPanelView = () => {
                 section={activeSection}
                 onSectionChange={setActiveSection}
             />
+
+            {/* Alert message for source connections */}
+            {sourceEdges.length > 0 && affectedIds.includes(node?.id) && (
+                <div className="mt-4 bg-yellow-50 border border-yellow-200 rounded-lg p-4 flex justify-between items-center">
+                    <div className="text-sm text-yellow-700">
+                        This node has source connections that might need
+                        updates.
+                    </div>
+                    <button
+                        className="px-3 py-1 text-sm bg-yellow-500 text-white rounded hover:bg-yellow-600"
+                        onClick={() => removeAffectedId(node?.id)}
+                    >
+                        Resolve
+                    </button>
+                </div>
+            )}
+
             {selectedNode ? (
                 <div className="mt-4 flex flex-col h-full space-y-4 overflow-auto">
                     {activeSection === "info" && (
@@ -225,7 +258,7 @@ const EditPanelView = () => {
                         node?.type.startsWith("template") &&
                         node?.config.fields && (
                             <>
-                                <div className="bg-white border border-gray-200 rounded-lg p-4 mr-4 shadow">
+                                <div className="bg-white border border-gray-200 rounded-lg p-4  shadow">
                                     <h2 className="text-lg font-semibold mb-4">
                                         Fields
                                     </h2>
