@@ -4,6 +4,7 @@ import MermaidEditor from "@/app/components/doc/Mermaid/MermaidEditor";
 import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext";
 import { useRef, useState, useEffect } from "react";
 import NodeBubbleBar from "@/app/components/doc/Popover/NodeBubbleBar";
+import useCustomNodeActions from "../../../extensions/hooks/useCustomNodeActions";
 
 const MermaidComponent = ({
     node,
@@ -19,6 +20,12 @@ const MermaidComponent = ({
     const isEditing = selectedNode === id;
     const isUpdatingRef = useRef(false);
     const [showBubbleBar, setShowBubbleBar] = useState(false);
+    const { setNodeRef } = useCustomNodeActions({
+        id,
+        selected,
+        getPos,
+        editor,
+    });
 
     // Reset bubble bar when component loses selection
     useEffect(() => {
@@ -69,6 +76,7 @@ const MermaidComponent = ({
                     : "border-white hover:border-gray-200"
             } `}
             onClick={handleContainerClick}
+            ref={setNodeRef}
         >
             <NodeBubbleBar
                 id={id}

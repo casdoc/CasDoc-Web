@@ -3,6 +3,7 @@ import { NodeViewProps } from "@tiptap/core";
 import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext";
 import { useState, useEffect } from "react";
 import NodeBubbleBar from "@/app/components/doc/Popover/NodeBubbleBar";
+import useCustomNodeActions from "../../../extensions/hooks/useCustomNodeActions";
 import {
     Collapsible,
     CollapsibleContent,
@@ -29,6 +30,12 @@ const APIinterfaceComponent = ({
     const { selectedNode } = useNodeSelection();
     const isEditing = selectedNode === id;
     const [showBubbleBar, setShowBubbleBar] = useState(false);
+    const { setNodeRef } = useCustomNodeActions({
+        id,
+        selected,
+        getPos,
+        editor,
+    });
 
     // Reset bubble bar when component loses selection
     useEffect(() => {
@@ -74,8 +81,9 @@ const APIinterfaceComponent = ({
                     : "border-white hover:border-gray-200"
             } `}
             onClick={handleClick}
+            ref={setNodeRef}
         >
-            <Collapsible>
+            <Collapsible defaultOpen={true}>
                 <NodeBubbleBar
                     id={id}
                     selected={showBubbleBar}
