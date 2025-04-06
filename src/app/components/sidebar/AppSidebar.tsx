@@ -5,16 +5,16 @@ import {
     // SidebarFooter,
 } from "@/components/ui/sidebar";
 import ProjectGroup from "./group/ProjectGroup";
-import ProjectEditDialog from "./dialog/ProjectEditDialog";
-import DocEditDialog from "./dialog/DocEditDialog";
+import ProjectDialog from "./dialog/ProjectDialog";
+import DocDialog from "./dialog/DocDialog";
 
 const AppSidebar = () => (
     <Sidebar>
         {/* <SidebarHeader /> */}
         <SidebarContent className="bg-neutral-50">
             <ProjectGroup />
-            <ProjectEditDialog />
-            <DocEditDialog />
+            <ProjectDialog />
+            <DocDialog />
         </SidebarContent>
         {/* <SidebarFooter /> */}
     </Sidebar>

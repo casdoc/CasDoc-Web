@@ -1,7 +1,8 @@
 import { Project } from "@/app/models/entity/Project";
 import { Document } from "@/app/models/entity/Document";
 import { DocumentService } from "./DocumentService";
-import { ProjectUpdate } from "@/app/models/types/ProjectUpdate";
+import { ProjectInput } from "@/app/models/types/ProjectInput";
+import { v4 as uuidv4 } from "uuid";
 
 const STORAGE_KEY = "PROJECTS";
 
@@ -34,26 +35,29 @@ export class ProjectService {
         return projects.find((proj) => proj.id === id) || null;
     }
 
-    static saveProject(project: Project): void {
-        if (typeof window === "undefined") return;
-        const projects = this.getAllProjects();
-        const index = projects.findIndex((proj) => proj.id === project.id);
-        if (index !== -1) {
-            projects[index] = project;
-        } else {
-            projects.push(project);
-        }
-
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
-    }
-
     static getDocumentsByProjectId(projectId: string): Document[] {
         return DocumentService.getAllDocuments().filter(
             (doc) => doc.projectId === projectId
         );
     }
 
-    static updateProject(projectId: string, update: ProjectUpdate): void {
+    static createProject(input: ProjectInput): Project | null {
+        if (typeof window === "undefined") return null;
+        const projects = this.getAllProjects();
+        const newProject = new Project(
+            uuidv4(),
+            new Date(),
+            new Date(),
+            input.name,
+            input.description
+        );
+
+        projects.push(newProject);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
+        return newProject;
+    }
+
+    static updateProject(projectId: string, update: ProjectInput): void {
         if (typeof window === "undefined") return;
         const projects = this.getAllProjects();
         const index = projects.findIndex((proj) => proj.id === projectId);

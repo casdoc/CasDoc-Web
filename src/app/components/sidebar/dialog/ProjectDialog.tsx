@@ -10,39 +10,44 @@ import {
     Dialog,
 } from "@/components/ui/dialog";
 import { useProjectContext } from "@/app/viewModels/context/ProjectContext";
-import { ProjectUpdate } from "@/app/models/types/ProjectUpdate";
+import { ProjectInput } from "@/app/models/types/ProjectInput";
 
-const ProjectEditDialog = () => {
+const ProjectDialog = () => {
     const {
         editingProject: project,
+        isProjectDialogOpen,
+        createProject,
         editProject,
-        closeEditProjectDialog,
+        closeProjectDialog,
     } = useProjectContext();
-    const handleEditProject = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSaveProject = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        console.log(project);
-        if (!project) return;
 
         const formData = new FormData(e.currentTarget);
-
         const name =
             formData.get("name")?.toString()?.trim() ?? "Untitled Project";
         const description =
             formData.get("description")?.toString().trim() ?? "";
 
-        const updatedProject: ProjectUpdate = {
+        const input: ProjectInput = {
             name,
             description,
         };
-        console.log("Updated Project:", updatedProject);
-        editProject(project.id, updatedProject);
-        closeEditProjectDialog();
+
+        if (!project) {
+            // Create project
+            createProject(input);
+        } else {
+            // Update project
+            editProject(project.id, input);
+        }
+        closeProjectDialog();
     };
 
     return (
-        <Dialog open={project !== null} onOpenChange={closeEditProjectDialog}>
+        <Dialog open={isProjectDialogOpen} onOpenChange={closeProjectDialog}>
             <DialogContent>
-                <form onSubmit={handleEditProject}>
+                <form onSubmit={handleSaveProject}>
                     <DialogHeader>
                         <DialogTitle>Edit Document</DialogTitle>
                         <DialogDescription>
@@ -86,4 +91,4 @@ const ProjectEditDialog = () => {
     );
 };
 
-export default ProjectEditDialog;
+export default ProjectDialog;

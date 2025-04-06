@@ -12,12 +12,15 @@ interface DocMenuProps {
     projectId: string;
     documentId: string;
     title: string;
-    onDelete: (documentId: string) => void;
 }
 
-const DocMenu = ({ documentId, title, onDelete }: DocMenuProps) => {
-    const { selectedDocumentId, selectDocument, openEditDocumentDialog } =
-        useProjectContext();
+const DocMenu = ({ projectId, documentId, title }: DocMenuProps) => {
+    const {
+        selectedDocumentId,
+        deleteDocument,
+        selectDocument,
+        openDocumentDialog,
+    } = useProjectContext();
 
     const isSelected = selectedDocumentId === documentId;
 
@@ -26,9 +29,9 @@ const DocMenu = ({ documentId, title, onDelete }: DocMenuProps) => {
 
         console.log(action);
         if (action === "Delete") {
-            onDelete(documentId);
+            deleteDocument(documentId);
         } else if (action === "Edit") {
-            openEditDocumentDialog(documentId);
+            openDocumentDialog(projectId, documentId);
         }
     };
 
