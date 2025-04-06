@@ -11,7 +11,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { marked } from "marked";
 import { Editor } from "@tiptap/react";
-import { FileText, FileUp } from "lucide-react";
+import { FileDown, FileText } from "lucide-react";
 
 interface ImportDialogProps {
     editor: Editor;
@@ -94,7 +94,7 @@ const ImportDialog = ({ editor }: ImportDialogProps) => {
         <Dialog open={importDialogOpen} onOpenChange={setImportDialogOpen}>
             <DialogTrigger asChild>
                 <Button size="icon" variant="outline">
-                    <FileUp />
+                    <FileDown />
                 </Button>
             </DialogTrigger>
             <DialogContent>
