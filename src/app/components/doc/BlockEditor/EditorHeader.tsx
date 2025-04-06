@@ -51,6 +51,7 @@ const EditorHeader = ({ mode, setDocMode, editor }: EditorHeaderProps) => {
                             <p>Sidebar</p>
                         </TooltipContent>
                     </Tooltip>
+                    <div className="h-6 w-px mx-1 bg-neutral-200 dark:bg-neutral-800" />
                     <Tooltip>
                         <TooltipTrigger asChild>
                             <Button

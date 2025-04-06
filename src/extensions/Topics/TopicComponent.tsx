@@ -3,10 +3,18 @@ import { NodeViewWrapper } from "@tiptap/react";
 import { NodeViewProps } from "@tiptap/core";
 import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext";
 import NodeBubbleBar from "@/app/components/doc/Popover/NodeBubbleBar";
+import useCustomNodeActions from "../hooks/useCustomNodeActions";
+
 const TopicComponent = ({ node, selected, editor, getPos }: NodeViewProps) => {
     const { id, config } = node.attrs;
     const { selectedNode } = useNodeSelection();
     const isEditing = selectedNode === id;
+    const { setNodeRef } = useCustomNodeActions({
+        id,
+        selected,
+        getPos,
+        editor,
+    });
 
     const [showBubbleBar, setShowBubbleBar] = useState(false);
 
@@ -37,6 +45,7 @@ const TopicComponent = ({ node, selected, editor, getPos }: NodeViewProps) => {
                     : "border-white hover:border-gray-200"
             } `}
             onClick={handleClick}
+            ref={setNodeRef}
         >
             <NodeBubbleBar
                 id={id}

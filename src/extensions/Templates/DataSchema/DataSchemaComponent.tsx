@@ -3,6 +3,7 @@ import { NodeViewProps } from "@tiptap/core";
 import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext";
 import { useState, useEffect } from "react";
 import NodeBubbleBar from "@/app/components/doc/Popover/NodeBubbleBar";
+import useCustomNodeActions from "../../../extensions/hooks/useCustomNodeActions";
 import {
     Collapsible,
     CollapsibleContent,
@@ -27,6 +28,12 @@ const DataSchemaComponent = ({
     const isEditing = selectedNode === id;
     const fields = config?.fields || [];
     const info = config?.info || {};
+    const { setNodeRef } = useCustomNodeActions({
+        id,
+        selected,
+        getPos,
+        editor,
+    });
 
     const [showBubbleBar, setShowBubbleBar] = useState(false);
 
@@ -58,8 +65,9 @@ const DataSchemaComponent = ({
                     : "border-white hover:border-gray-200"
             } `}
             onClick={handleClick}
+            ref={setNodeRef}
         >
-            <Collapsible>
+            <Collapsible defaultOpen={true}>
                 <NodeBubbleBar
                     id={id}
                     selected={showBubbleBar}

@@ -45,7 +45,7 @@ const DocView = () => {
 
     return (
         <div
-            className={`relative flex flex-col flex-1 h-dvh w-full bg-white transition-all duration-500
+            className={`overflow-y-hidden relative flex flex-col flex-1 h-full w-full bg-white transition-all duration-500
                `}
         >
             <EditorHeader
@@ -55,7 +55,7 @@ const DocView = () => {
             />
             <div className="flex flex-row overflow-y-auto h-full">
                 <div
-                    className={`overflow-y-auto ${
+                    className={`overflow-y-auto h-full ${
                         mode === DocMode.Edit ? "w-full" : ""
                     } ${mode === DocMode.Graph ? "hidden" : ""}`}
                     style={{
@@ -71,7 +71,7 @@ const DocView = () => {
                         onMouseDown={() => {
                             isResizing.current = true;
                         }}
-                    ></div>
+                    />
                 )}
                 <div
                     className={`
