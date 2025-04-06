@@ -25,7 +25,6 @@ const useCustomNodeActions = ({
         const handleKeyDown = (e: KeyboardEvent) => {
             const isMod = e.ctrlKey || e.metaKey;
             if (isMod && e.key === "Enter" && selected) {
-                console.log("Ctrl+Enter detected for node:", id);
                 handleEdit();
                 e.preventDefault();
                 e.stopPropagation();
