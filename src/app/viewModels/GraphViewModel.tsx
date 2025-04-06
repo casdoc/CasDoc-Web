@@ -9,6 +9,9 @@ export interface GraphViewModel {
     searchSource: (sourceId: string) => ConnectionEdge[];
     removeConnectionEdge: (edge: ConnectionEdge) => void;
     updateLabel: (edge: ConnectionEdge, content: string) => void;
+    affectedIds: string[];
+    updateAffectedIds: (ids: string[]) => void;
+    clearAffectedIds: () => void;
 }
 
 export interface ConnectionEdge {
@@ -22,6 +25,7 @@ export function useGraphViewModel(): GraphViewModel {
     const [connectionEdges, setConnectionEdges] = useState<ConnectionEdge[]>(
         []
     );
+    const [affectedIds, setAffectedIds] = useState<string[]>([]);
 
     useEffect(() => {
         const localEdges = GraphService.getEdges();
@@ -139,6 +143,14 @@ export function useGraphViewModel(): GraphViewModel {
         });
     };
 
+    const updateAffectedIds = useCallback((ids: string[]) => {
+        setAffectedIds((prevIds) => Array.from(new Set([...prevIds, ...ids])));
+    }, []);
+
+    const clearAffectedIds = useCallback(() => {
+        setAffectedIds([]);
+    }, []);
+
     return {
         connectionEdges,
         updConnectionEdges,
@@ -146,5 +158,8 @@ export function useGraphViewModel(): GraphViewModel {
         searchSource,
         removeConnectionEdge,
         updateLabel,
+        affectedIds,
+        updateAffectedIds,
+        clearAffectedIds,
     };
 }

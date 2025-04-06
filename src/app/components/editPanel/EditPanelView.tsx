@@ -15,8 +15,13 @@ import { ConnectionEdge } from "@/app/viewModels/GraphViewModel";
 const EditPanelView = () => {
     const { updateEditNodeById, editNodes } = useDocumentContext();
     const { selectedNode, selectNode } = useNodeSelection();
-    const { searchTarget, searchSource, removeConnectionEdge, updateLabel } =
-        useGraphContext();
+    const {
+        searchTarget,
+        searchSource,
+        removeConnectionEdge,
+        updateLabel,
+        updateAffectedIds,
+    } = useGraphContext();
 
     const [node, setNode] = useState<JsonObject>();
     const [isMounted, setIsMounted] = useState(false);
@@ -148,8 +153,17 @@ const EditPanelView = () => {
             };
             setNode(updatedNode);
             updateEditNodeById(updatedNode.id, { config: updatedConfig });
+
+            // Update affected IDs when fields change
+            if (selectedNode) {
+                // const targetEdges = searchTarget(selectedNode);
+                const affectedTargetIds = targetEdges.map(
+                    (edge) => edge.target
+                );
+                updateAffectedIds(affectedTargetIds);
+            }
         },
-        [node, updateEditNodeById]
+        [node, updateEditNodeById, selectedNode, targetEdges, updateAffectedIds]
     );
 
     const handleAddField = () => {

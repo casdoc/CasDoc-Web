@@ -2,7 +2,10 @@ import { ConnectionEdge } from "@/app/viewModels/GraphViewModel";
 import { GraphNode } from "@/app/viewModels/useDocument";
 import { Edge, Node, Position } from "@xyflow/react";
 
-export const convertDataToNodes = (data: GraphNode[]): Node[] => {
+export const convertDataToNodes = (
+    data: GraphNode[],
+    affectedIds: string[]
+): Node[] => {
     if (data.length === 0) return [];
     const defaultPosition = { x: 0, y: 0 };
     return data.map((item: GraphNode) => ({
@@ -11,6 +14,7 @@ export const convertDataToNodes = (data: GraphNode[]): Node[] => {
         data: {
             label: item.label || "unknown",
             type: item.type,
+            isAffected: affectedIds.includes(item.id.toString()),
         },
         type: "custom",
         deletable: false,
