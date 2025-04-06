@@ -25,7 +25,7 @@ export default function DocumentContent({ documentId }: DocumentContentProps) {
         <DocumentProvider documentId={activeDocumentId}>
             <GraphProvider>
                 <NodeSelectionProvider>
-                    <SidebarProvider>
+                    <SidebarProvider defaultOpen={false}>
                         <ChatProvider>
                             <AppSidebar />
                             <div className="h-dvh w-dvw flex flex-col items-center bg-gray-100 text-black">
