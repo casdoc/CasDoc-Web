@@ -85,9 +85,6 @@ const NodeBubbleBar: React.FC<NodeBubbleBarProps> = ({
     useEffect(() => {
         if (selected) {
             dispatch({ type: "SET_OPEN", payload: true });
-        } else {
-            console.debug("not selected");
-            // dispatch({ type: "SET_OPEN", payload: false });
         }
     }, [selected, setNodeRef]);
 
