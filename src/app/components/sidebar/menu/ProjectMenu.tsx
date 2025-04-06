@@ -24,10 +24,8 @@ const ProjectMenu = ({ name, projectId }: ProjectMenuProps) => {
         documentsMap,
         deleteProject,
         selectProject,
-        createDocument,
-        deleteDocument,
-        openEditProjectDialog,
-        openEditDocumentDialog,
+        openProjectDialog,
+        openDocumentDialog,
     } = useProjectContext();
 
     const documents = documentsMap[projectId] ?? [];
@@ -35,8 +33,7 @@ const ProjectMenu = ({ name, projectId }: ProjectMenuProps) => {
 
     const handleAddDocument = (e: React.MouseEvent) => {
         e.stopPropagation();
-        const documentId = createDocument(projectId, "Untitled Document");
-        openEditDocumentDialog(documentId);
+        openDocumentDialog(projectId);
         setIsOpen(true);
     };
 
@@ -46,12 +43,8 @@ const ProjectMenu = ({ name, projectId }: ProjectMenuProps) => {
         if (action === "Delete") {
             deleteProject(projectId);
         } else if (action === "Edit") {
-            openEditProjectDialog(projectId);
+            openProjectDialog(projectId);
         }
-    };
-
-    const handleDeleteDocument = (documentId: string) => {
-        deleteDocument(documentId);
     };
 
     return (
@@ -92,7 +85,6 @@ const ProjectMenu = ({ name, projectId }: ProjectMenuProps) => {
                                 projectId={projectId}
                                 documentId={doc.id}
                                 title={doc.title}
-                                onDelete={handleDeleteDocument}
                             />
                         ))}
                     </SidebarMenuSub>

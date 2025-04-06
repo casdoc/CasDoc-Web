@@ -1,5 +1,6 @@
 import { Document } from "@/app/models/entity/Document";
-import { DocumentUpdate } from "@/app/models/types/DocumentUpdate";
+import { DocumentInput } from "@/app/models/types/DocumentInput";
+import { v4 as uuidv4 } from "uuid";
 
 const STORAGE_KEY = "DOCUMENTS";
 
@@ -35,6 +36,25 @@ export class DocumentService {
         return documents.find((doc) => doc.id === id) || null;
     }
 
+    static createDocument(input: DocumentInput): Document | null {
+        if (typeof window === "undefined") return null;
+        const documents = this.getAllDocuments();
+        const newDocument = new Document(
+            uuidv4(),
+            new Date(),
+            new Date(),
+            input.type,
+            input.projectId,
+            input.title,
+            input.description,
+            input.content ?? []
+        );
+
+        documents.push(newDocument);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(documents));
+        return newDocument;
+    }
+
     static saveDocument(document: Document): void {
         if (typeof window === "undefined") return;
         const documents = this.getAllDocuments();
@@ -48,7 +68,7 @@ export class DocumentService {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(documents));
     }
 
-    static updateDocument(documentId: string, update: DocumentUpdate): void {
+    static updateDocument(documentId: string, update: DocumentInput): void {
         if (typeof window === "undefined") return;
         const documents = this.getAllDocuments();
         const index = documents.findIndex((doc) => doc.id === documentId);
