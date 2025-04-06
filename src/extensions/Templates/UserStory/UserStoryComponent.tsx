@@ -3,6 +3,7 @@ import { NodeViewProps } from "@tiptap/core";
 import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext";
 import { useCallback, useState, useEffect } from "react";
 import NodeBubbleBar from "@/app/components/doc/Popover/NodeBubbleBar";
+import useCustomNodeActions from "../../../extensions/hooks/useCustomNodeActions";
 import {
     Collapsible,
     CollapsibleContent,
@@ -28,6 +29,12 @@ const UserStoryComponent = ({
     const fields = config?.fields || [];
     const info = config?.info || {};
     const [showBubbleBar, setShowBubbleBar] = useState(false);
+    const { setNodeRef } = useCustomNodeActions({
+        id,
+        selected,
+        getPos,
+        editor,
+    });
 
     // Reset bubble bar when component loses selection
     useEffect(() => {
@@ -93,6 +100,7 @@ const UserStoryComponent = ({
                     : "border-white hover:border-gray-200"
             }`}
             onClick={handleClick}
+            ref={setNodeRef}
         >
             <Collapsible>
                 <NodeBubbleBar
