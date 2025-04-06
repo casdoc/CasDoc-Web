@@ -16,7 +16,7 @@ const EditPanelInfo = ({
     handleConfigChange,
 }: EditPanelInfoProps) => {
     return (
-        <div className="bg-white border border-gray-200 rounded-lg p-4 mr-4 shadow">
+        <div className="bg-white border border-gray-200 rounded-lg p-4  shadow">
             <h2 className="text-lg font-semibold mb-4">Basic Info</h2>
             <p className="text-sm text-gray-500 mb-4">
                 <span className="font-semibold">ID:</span> {selectedNode}
