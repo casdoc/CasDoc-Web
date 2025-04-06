@@ -7,6 +7,8 @@ import GraphView from "../flow/GraphView";
 import { ReactFlowProvider } from "@xyflow/react";
 import { useState, useEffect, useRef } from "react";
 import { useDocumentContext } from "@/app/viewModels/context/DocumentContext";
+import { useChatContext } from "@/app/viewModels/context/ChatContext";
+import ChatView from "../chat/ChatView";
 
 const DocView = () => {
     const { mode, setDocMode } = useDocModeViewModel();
@@ -14,7 +16,7 @@ const DocView = () => {
     const { editor } = useBlockEditor({ document, updateDocument });
     const [splitWidth, setSplitWidth] = useState(50);
     const isResizing = useRef(false);
-
+    const { isOpen } = useChatContext();
     useEffect(() => {
         const handleMouseMove = (e: MouseEvent) => {
             if (!isResizing.current) return;
@@ -89,7 +91,11 @@ const DocView = () => {
                     }}
                 >
                     <ReactFlowProvider>
-                        <GraphView docMode={mode} graphNodes={graphNodes} />
+                        {isOpen ? (
+                            <ChatView />
+                        ) : (
+                            <GraphView docMode={mode} graphNodes={graphNodes} />
+                        )}
                     </ReactFlowProvider>
                 </div>
             </div>

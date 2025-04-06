@@ -1,4 +1,6 @@
-import { TextArea } from "@radix-ui/themes";
+import { useChatContext } from "@/app/viewModels/context/ChatContext";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { FaArrowUp } from "react-icons/fa";
 
@@ -10,12 +12,13 @@ interface ChatMessage {
 const ChatView = () => {
     const [inputValue, setInputValue] = useState("");
     const [messages, setMessages] = useState<ChatMessage[]>([]);
-
+    const { componentAddAI } = useChatContext();
     const handleOnChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setInputValue(e.target.value);
     };
 
     const handleOnClick = () => {
+        if (inputValue.length === 0) return;
         const userMsg: ChatMessage = {
             role: "user",
             content: inputValue,
@@ -40,16 +43,16 @@ const ChatView = () => {
             });
 
             let response: React.ReactNode = "Hello! This is a demo message.";
-            if (inputValue.includes("新增「刪除商店 API」的功能")) {
+            if (
+                inputValue.includes("新增") &&
+                inputValue.includes("刪除商店 API")
+            ) {
                 response = (
                     <div>
-                        <div className="flex justify-between items-center mb-2">
+                        <div className="flex flex-row justify-between items-center mb-2">
                             <p className="font-semibold">
                                 功能名稱：刪除商店 API
                             </p>
-                            <button className="bg-blue-500 text-white text-xs px-3 py-1 rounded-md hover:opacity-70 transition-opacity">
-                                Apply
-                            </button>
                         </div>
                         <div className="hover:opacity-70 transition-opacity">
                             <ul className="list-disc pl-5 space-y-1 text-sm">
@@ -75,12 +78,50 @@ const ChatView = () => {
                                 </li>
                             </ul>
                         </div>
+                        <Button
+                            size="sm"
+                            variant="default"
+                            className="h-6 mt-1"
+                            onClick={() =>
+                                componentAddAI(
+                                    "c2ecbc7b-e1d9-4491-a85b-6605dfdf6d10",
+                                    {
+                                        type: "template-apiInterface",
+                                        attrs: {
+                                            topicId: "root",
+                                            id: "407e7cf8-c10d-4654-9ab3-a84459f08823",
+                                            config: {
+                                                info: {
+                                                    name: "刪除商店 API",
+                                                    method: "DELETE",
+                                                    description:
+                                                        "權限：僅限管理員或商店擁有者可操作，根據商店 ID                                  刪除指定商店，需進行身份驗證與權限檢查\n",
+                                                    endPoint: "/api/stores/:id",
+                                                },
+                                                fields: [
+                                                    {
+                                                        name: "status",
+                                                        type: "string",
+                                                        required: true,
+                                                        description:
+                                                            "Http request狀態碼",
+                                                    },
+                                                ],
+                                                fieldKey: "description",
+                                            },
+                                        },
+                                    }
+                                )
+                            }
+                        >
+                            Apply
+                        </Button>
                     </div>
                 );
             } else if (
-                inputValue.includes(
-                    "評估 「user schema 新增生日屬性」的開發成本"
-                )
+                inputValue.includes("評估") &&
+                inputValue.includes("user schema") &&
+                inputValue.includes("開發成本")
             ) {
                 response = (
                     <div className="relative">
@@ -110,6 +151,13 @@ const ChatView = () => {
                                 </li>
                             </ul>
                         </div>
+                        <Button
+                            size="sm"
+                            variant="default"
+                            className="h-6 mt-1"
+                        >
+                            Apply
+                        </Button>
                     </div>
                 );
             }
@@ -128,8 +176,8 @@ const ChatView = () => {
     }
 
     return (
-        <div className="flex justify-center w-screen min-h-screen p-20">
-            <div className="w-2/3">
+        <div className="flex flex-col justify-center w-full h-full bg-neutral-50 gap-3">
+            <div className=" w-auto m-4 p-4 bg-white h-full rounded-md overflow-auto">
                 {messages.map((msg, index) => {
                     if (msg.role === "spinner") {
                         return (
@@ -166,27 +214,29 @@ const ChatView = () => {
                     );
                 })}
             </div>
-            <div className="flex items-center justify-center fixed bottom-8 w-full">
-                <TextArea
-                    size="2"
-                    placeholder="enter some message..."
-                    className="w-2/3 rounded-xl"
-                    value={inputValue}
-                    onChange={(e) => handleOnChange(e)}
-                    onKeyDown={(e) => {
-                        if (inputValue.trim() === "") return;
-                        if (e.key === "Enter" && !e.shiftKey) {
-                            e.preventDefault();
-                            handleOnClick();
-                        }
-                    }}
-                />
-                <button
-                    onClick={handleOnClick}
-                    className="h-fit bg-blue-500 rounded-full shadow-xl text-white font-semibold mx-5 p-3 hover:opacity-60 transition-opacity"
-                >
-                    <FaArrowUp size={20} />
-                </button>
+            <div className="flex flex-row min-h-30">
+                <div className="flex-grow  min-h-[120px]  my-2 ml-4 mr-0">
+                    <Textarea
+                        placeholder="enter some message..."
+                        value={inputValue}
+                        className="bg-white h-full"
+                        onChange={(e) => handleOnChange(e)}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter" && !e.shiftKey) {
+                                e.preventDefault();
+                                handleOnClick();
+                            }
+                        }}
+                        onPaste={(e) => {
+                            e.persist();
+                        }}
+                    />
+                </div>
+                <div className="flex items-center  justify-center w-auto m-2">
+                    <Button onClick={handleOnClick} variant="ghost">
+                        <FaArrowUp size={20} />
+                    </Button>
+                </div>
             </div>
         </div>
     );

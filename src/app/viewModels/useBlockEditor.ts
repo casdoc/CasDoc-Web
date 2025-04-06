@@ -3,6 +3,10 @@ import { Editor, useEditor } from "@tiptap/react";
 import { Document } from "@/app/models/entity/Document";
 import { useCallback, useEffect, useRef } from "react";
 import { NodeSelection } from "@tiptap/pm/state";
+import {
+    setupAIEventHandlers,
+    cleanupAIEventHandlers,
+} from "@/extensions/ExtensionUtils";
 
 interface BlockEditorProps {
     document?: Document;
@@ -47,6 +51,8 @@ export const useBlockEditor = ({
         },
         onUpdate: onUpdate,
         onCreate({ editor }) {
+            setupAIEventHandlers(editor, editor.storage);
+
             // Only set content if editor is empty or if document has content
             if (!editor.isEmpty || (document && document.content.length > 0)) {
                 editor.commands.setContent(
@@ -60,6 +66,11 @@ export const useBlockEditor = ({
             } else {
                 // Explicitly set an empty heading
                 editor.commands.setNode("heading", { level: 1 });
+            }
+        },
+        onDestroy() {
+            if (editor && editor.storage) {
+                cleanupAIEventHandlers(editor.storage);
             }
         },
     });

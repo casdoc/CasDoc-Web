@@ -193,6 +193,7 @@ export const setupNodeEventHandlers = (
             editor.commands.insertContentAt(pos + node.nodeSize, newNode);
         }
     };
+
     // Set up the event listeners
     window.addEventListener("node-copy", handleNodeCopy);
     window.addEventListener("node-delete", handleNodeDelete);
@@ -206,13 +207,127 @@ export const setupNodeEventHandlers = (
     storageRef.hasInitializedListeners = true;
 };
 
+export const setupAIEventHandlers = (
+    editor: Editor,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    storageRef: Record<string, any>
+) => {
+    // If storageRef is undefined, use the editor's storage.
+    if (!storageRef) {
+        storageRef = editor.storage;
+    }
+
+    // Handle AI component update event
+    const handleAiComponentUpdate = (event: Event) => {
+        const customEvent = event as CustomEvent;
+        const { componentId, nodeJson } = customEvent.detail;
+
+        // Find the node position by ID
+        let foundPos = -1;
+        editor.state.doc.descendants((node, pos) => {
+            if (node.attrs && node.attrs.id === componentId) {
+                foundPos = pos;
+                return false; // Stop traversal
+            }
+            return true; // Continue traversal
+        });
+
+        if (foundPos >= 0) {
+            const targetNode = editor.state.doc.nodeAt(foundPos);
+            if (targetNode) {
+                // Replace the node with updated content
+                editor.commands.insertContentAt(
+                    { from: foundPos, to: foundPos + targetNode.nodeSize },
+                    nodeJson
+                );
+            }
+        }
+    };
+
+    // Handle AI component add event
+    const handleAiComponentAdd = (event: Event) => {
+        const customEvent = event as CustomEvent;
+        const { componentId, nodeJson } = customEvent.detail;
+
+        // Find the node position by ID
+        let foundPos = -1;
+        let foundNode = null;
+
+        editor.state.doc.descendants((node, pos) => {
+            if (node.attrs && node.attrs.id === componentId) {
+                foundPos = pos;
+                foundNode = node;
+                return false; // Stop traversal
+            }
+            return true; // Continue traversal
+        });
+
+        if (foundPos >= 0 && foundNode) {
+            // Calculate the exact position after the found node
+            const insertPos = foundPos + 1;
+
+            // Insert just one node after the found node
+            editor.commands.insertContentAt(insertPos, nodeJson);
+
+            // Scroll to make the target component visible in the middle of viewport
+            setTimeout(() => {
+                // Try to find the DOM node for the component
+                const domNode = editor.view.nodeDOM(foundPos);
+                if (domNode && domNode instanceof HTMLElement) {
+                    // Scroll the component into the center of the viewport
+                    domNode.scrollIntoView({
+                        behavior: "smooth",
+                        block: "center",
+                    });
+                }
+            }, 100); // Delay to ensure DOM is updated
+        }
+    };
+
+    // Set up event listeners
+    window.addEventListener(
+        "ai-apply-update-component",
+        handleAiComponentUpdate
+    );
+    window.addEventListener("ai-add-component", handleAiComponentAdd);
+
+    // Store handlers for cleanup
+    storageRef.aiEventHandlers = {
+        update: handleAiComponentUpdate,
+        add: handleAiComponentAdd,
+    };
+
+    storageRef.hasInitializedAIListeners = true;
+};
+
+/**
+ * Removes event listeners that were set up by setupAIEventHandlers
+ * @param storageRef A reference to the extension's storage
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function cleanupAIEventHandlers(storageRef: Record<string, any>) {
+    if (storageRef && storageRef.aiEventHandlers) {
+        window.removeEventListener(
+            "ai-apply-update-component",
+            storageRef.aiEventHandlers.update
+        );
+        window.removeEventListener(
+            "ai-add-component",
+            storageRef.aiEventHandlers.add
+        );
+
+        storageRef.aiEventHandlers = null;
+        storageRef.hasInitializedAIListeners = false;
+    }
+}
+
 /**
  * Removes event listeners that were set up by setupNodeEventHandlers
  * @param storageRef A reference to the extension's storage
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function cleanupNodeEventHandlers(storageRef: Record<string, any>) {
-    if (storageRef.eventHandlers) {
+    if (storageRef && storageRef.eventHandlers) {
         window.removeEventListener("node-copy", storageRef.eventHandlers.copy);
         window.removeEventListener(
             "node-delete",
@@ -220,5 +335,6 @@ export function cleanupNodeEventHandlers(storageRef: Record<string, any>) {
         );
 
         storageRef.eventHandlers = null;
+        storageRef.hasInitializedListeners = false;
     }
 }

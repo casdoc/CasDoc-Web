@@ -15,7 +15,13 @@ import {
 import ImportDialog from "../Dialog/ImportDialog";
 import { Editor } from "@tiptap/core";
 import ExportPopover from "../Popover/ExportPopover";
-import { FilePenLine, Network, SquareSplitHorizontal } from "lucide-react";
+import {
+    BotMessageSquare,
+    FilePenLine,
+    Network,
+    SquareSplitHorizontal,
+} from "lucide-react";
+import { useChatContext } from "@/app/viewModels/context/ChatContext";
 
 interface EditorHeaderProps {
     mode: DocMode;
@@ -30,6 +36,7 @@ const EditorHeader = ({ mode, setDocMode, editor }: EditorHeaderProps) => {
         },
         [setDocMode]
     );
+    const { isOpen, setIsOpen } = useChatContext();
 
     return (
         <div className="flex flex-row items-center justify-between flex-none py-2 px-3 text-black bg-white border-b border-neutral-200 dark:bg-black dark:text-white dark:border-neutral-800 z-50">
@@ -108,6 +115,17 @@ const EditorHeader = ({ mode, setDocMode, editor }: EditorHeaderProps) => {
             {/* Right side with import button and guide button */}
             <div className="flex items-center gap-x-4">
                 <TooltipProvider>
+                    <Button
+                        variant="default"
+                        onClick={() => setIsOpen(!isOpen)}
+                    >
+                        <div className="flex items-center gap-3 px-1">
+                            <BotMessageSquare color=" #fafafa" />
+                            <div className="text-neutral-50 font-semibold text-sm">
+                                CasDoc Agent
+                            </div>
+                        </div>
+                    </Button>
                     <Tooltip>
                         <TooltipTrigger asChild>
                             <div>
