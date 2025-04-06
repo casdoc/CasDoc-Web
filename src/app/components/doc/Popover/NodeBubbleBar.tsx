@@ -202,8 +202,8 @@ const NodeBubbleBar: React.FC<NodeBubbleBarProps> = ({
                                 <p>Delete</p>
                             </TooltipContent>
                         </Tooltip>
-
-                        {/* <DropdownMenu>
+                        {/* 
+                        <DropdownMenu>
                             <DropdownMenuTrigger>
                                 <div className="flex items-center gap-1 px-2">
                                     <Bot size={18} color="#3B9EFF" />

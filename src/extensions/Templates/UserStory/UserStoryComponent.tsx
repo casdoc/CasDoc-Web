@@ -101,7 +101,7 @@ const UserStoryComponent = ({
                     getPos={getPos}
                     editor={editor}
                 />
-                <CollapsibleTrigger className="w-full h-full pt-3 pb-1 px-3 border-b rounded-sm group/chevron">
+                <div className="w-full h-full pt-3 pb-1 px-3 border-b rounded-sm group/chevron">
                     <div className="flex justify-between items-start">
                         <div>
                             <p className="text-xs font-medium text-gray-500 mb-1 group-hover:cursor-text w-fit">
@@ -118,7 +118,12 @@ const UserStoryComponent = ({
                                 <h2 className="text-xl font-bold text-gray-900 mt-0 group-hover:cursor-text">
                                     {info.name || "New Story"}
                                 </h2>
-                                <ChevronDown className="w-4 h-4 opacity-0 group-hover/chevron:opacity-100 transition-all duration-200 group-data-[state=open]/chevron:rotate-180" />
+                                <CollapsibleTrigger
+                                    className="w-6 h-6 bg-transparent group/chevron "
+                                    onClick={(e) => e.stopPropagation()}
+                                >
+                                    <ChevronDown className="w-4 h-4 opacity-0 group-hover/chevron:opacity-100 transition-all duration-200 group-data-[state=open]/chevron:rotate-180" />
+                                </CollapsibleTrigger>
                             </div>
                             <div className="flex flex-wrap items-center gap-2 my-1">
                                 {info.tag.trim() !== "" && (
@@ -142,7 +147,7 @@ const UserStoryComponent = ({
                             </div>
                         </div>
                     </div>
-                </CollapsibleTrigger>
+                </div>
                 <CollapsibleContent className="px-4 py-3 space-y-2">
                     <div>
                         <h3 className="text-sm font-semibold text-gray-600 uppercase tracking-wide">
