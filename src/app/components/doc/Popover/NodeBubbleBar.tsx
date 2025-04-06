@@ -11,7 +11,14 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
-import { Copy, Trash2, Pencil, BrainCircuit } from "lucide-react";
+import {
+    Copy,
+    Trash2,
+    Pencil,
+    BrainCircuit,
+    Bot,
+    ChevronDown,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
     Tooltip,
@@ -22,6 +29,14 @@ import {
 import useCustomNodeActions from "@/extensions/hooks/useCustomNodeActions";
 import { Editor } from "@tiptap/core";
 import AgentRelationAdviceDialog from "../Dialog/AgentRelationAdviceDialog";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 // Define reducer action types
 type BubbleAction =
@@ -204,20 +219,25 @@ const NodeBubbleBar: React.FC<NodeBubbleBarProps> = ({
                             </TooltipContent>
                         </Tooltip>
 
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <Button
+                        <DropdownMenu>
+                            <DropdownMenuTrigger>
+                                <div className="flex items-center gap-1 px-2">
+                                    <Bot size={18} color="#3B9EFF" />
+                                    <div className="text-[#3B9EFF] font-semibold text-sm">
+                                        AI tools
+                                    </div>
+                                    <ChevronDown size={14} color="#3B9EFF" />
+                                </div>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent alignOffset={2}>
+                                <DropdownMenuItem
                                     onClick={onAdviceClick}
-                                    variant="ghost"
-                                    className="focus:outline-none"
+                                    className="text-sm"
                                 >
-                                    <BrainCircuit size={20} color="blue" />
-                                </Button>
-                            </TooltipTrigger>
-                            <TooltipContent side="bottom">
-                                <p>Auto relateion</p>
-                            </TooltipContent>
-                        </Tooltip>
+                                    Auto Connect
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                     </TooltipProvider>
                 </PopoverContent>
             </Popover>
