@@ -4,7 +4,6 @@ import MermaidEditor from "@/app/components/doc/Mermaid/MermaidEditor";
 import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext";
 import { useRef, useState, useEffect } from "react";
 import NodeBubbleBar from "@/app/components/doc/Popover/NodeBubbleBar";
-import useCustomNodeActions from "@/extensions/hooks/useCustomNodeActions";
 
 const MermaidComponent = ({
     node,
@@ -17,33 +16,16 @@ const MermaidComponent = ({
     const mermaidCode = config?.content || "";
     const name = config?.info?.name || "Mermaid";
     const { selectedNode } = useNodeSelection();
-    const isSelected = selectedNode === id;
+    const isEditing = selectedNode === id;
     const isUpdatingRef = useRef(false);
-    const [bubbleOpen, setBubbleOpen] = useState(false);
-    const nodeRef = useRef<HTMLDivElement>(null);
+    const [showBubbleBar, setShowBubbleBar] = useState(false);
 
-    const { handleEdit, handleCopy, handleDelete, setNodeRef } =
-        useCustomNodeActions({
-            id,
-            selected,
-            getPos,
-            editor,
-        });
-
-    // Set the node ref when component mounts
+    // Reset bubble bar when component loses selection
     useEffect(() => {
-        if (nodeRef.current) {
-            setNodeRef(nodeRef.current);
+        if (!selected && showBubbleBar) {
+            setShowBubbleBar(false);
         }
-    }, [setNodeRef, nodeRef]);
-
-    // When selected, ensure the node can receive focus
-    useEffect(() => {
-        if (selected && nodeRef.current) {
-            nodeRef.current.setAttribute("tabindex", "0");
-            nodeRef.current.focus();
-        }
-    }, [selected]);
+    }, [selected, showBubbleBar]);
 
     const handleContainerClick = (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -51,8 +33,8 @@ const MermaidComponent = ({
         if (window.getSelection()?.toString()) {
             return;
         }
-
-        setBubbleOpen(!bubbleOpen);
+        // Toggle the bubble bar visibility
+        setShowBubbleBar(!showBubbleBar);
         if (
             (e.nativeEvent as MouseEvent & { __handledByEditor?: boolean })
                 .__handledByEditor
@@ -80,7 +62,7 @@ const MermaidComponent = ({
     return (
         <NodeViewWrapper
             className={`ml-8 cursor-pointer  rounded-lg border-2 relative bg-white select-none  ${
-                isSelected
+                isEditing
                     ? "border-blue-500 "
                     : selected
                     ? "border-gray-500 "
@@ -89,11 +71,10 @@ const MermaidComponent = ({
             onClick={handleContainerClick}
         >
             <NodeBubbleBar
-                open={bubbleOpen}
-                onOpenChange={setBubbleOpen}
-                onCopy={handleCopy}
-                onDelete={handleDelete}
-                onEdit={handleEdit}
+                id={id}
+                selected={showBubbleBar}
+                getPos={getPos}
+                editor={editor}
             />
             <div className="h-full ">
                 <MermaidEditor
