@@ -16,7 +16,7 @@ export function useChatContext(): ChatViewModel {
     const context = useContext(ChatContext);
     if (context === undefined) {
         throw new Error(
-            "useChatViewModel must be used within a DocumentProvider"
+            "useChatViewModel must be used within a ChatProvider"
         );
     }
     return context;
