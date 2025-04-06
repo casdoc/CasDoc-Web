@@ -9,7 +9,8 @@ import { useProjectContext } from "@/app/viewModels/context/ProjectContext";
 import { DocumentProvider } from "@/app/viewModels/context/DocumentContext";
 import { GraphProvider } from "@/app/viewModels/context/GraphContext";
 
-import ChatPopup from "./chat/ChatPopup";
+// import ChatPopup from "./chat/ChatPopup";
+import { ChatProvider } from "@/app/viewModels/context/ChatContext";
 
 interface DocumentContentProps {
     documentId?: string;
@@ -25,12 +26,14 @@ export default function DocumentContent({ documentId }: DocumentContentProps) {
             <GraphProvider>
                 <NodeSelectionProvider>
                     <SidebarProvider>
-                        <AppSidebar />
-                        <div className="h-dvh w-dvw flex flex-col items-center bg-gray-100 text-black">
-                            <DocView />
-                            <EditPanel />
-                            <ChatPopup />
-                        </div>
+                        <ChatProvider>
+                            <AppSidebar />
+                            <div className="h-dvh w-dvw flex flex-col items-center bg-gray-100 text-black">
+                                <DocView />
+                                <EditPanel />
+                                {/* <ChatPopup /> */}
+                            </div>
+                        </ChatProvider>
                     </SidebarProvider>
                 </NodeSelectionProvider>
             </GraphProvider>
