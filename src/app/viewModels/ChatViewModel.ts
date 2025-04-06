@@ -42,9 +42,12 @@ export const useChatViewModel = (): ChatViewModel => {
     };
 
     const addNodeToAgent = (nodeId: string, title: string) => {
-        if (!addToAgentNodeIds.some((node) => node.id === nodeId)) {
-            setAddToAgentNodeIds([...addToAgentNodeIds, { id: nodeId, title }]);
-        }
+        setAddToAgentNodeIds((prev) => {
+            if (!prev.some((node) => node.id === nodeId)) {
+                return [...prev, { id: nodeId, title }];
+            }
+            return prev;
+        });
     };
 
     const removeNodeFromAgent = (nodeId: string) => {
