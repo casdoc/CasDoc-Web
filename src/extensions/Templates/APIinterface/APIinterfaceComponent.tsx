@@ -1,9 +1,8 @@
 import { NodeViewWrapper } from "@tiptap/react";
 import { NodeViewProps } from "@tiptap/core";
 import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext";
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import NodeBubbleBar from "@/app/components/doc/Popover/NodeBubbleBar";
-import useCustomNodeActions from "@/extensions/hooks/useCustomNodeActions";
 import {
     Collapsible,
     CollapsibleContent,
@@ -28,40 +27,26 @@ const APIinterfaceComponent = ({
     const info = config?.info || {};
     const fields = config?.fields || [];
     const { selectedNode } = useNodeSelection();
-    const isSelected = selectedNode === id;
-    const [bubbleOpen, setBubbleOpen] = useState(false);
-    const nodeRef = useRef<HTMLDivElement>(null);
+    const isEditing = selectedNode === id;
+    const [showBubbleBar, setShowBubbleBar] = useState(false);
 
-    const { handleEdit, handleCopy, handleDelete, setNodeRef } =
-        useCustomNodeActions({
-            id,
-            selected,
-            getPos,
-            editor,
-        });
-
-    // Set the node ref when component mounts
+    // Reset bubble bar when component loses selection
     useEffect(() => {
-        if (nodeRef.current) {
-            setNodeRef(nodeRef.current);
+        if (!selected && showBubbleBar) {
+            setShowBubbleBar(false);
         }
-    }, [setNodeRef, nodeRef]);
+    }, [selected, showBubbleBar]);
 
-    // When selected, ensure the node can receive focus
-    useEffect(() => {
-        if (selected && nodeRef.current) {
-            nodeRef.current.setAttribute("tabindex", "0");
-            nodeRef.current.focus();
-        }
-    }, [selected]);
-
-    const handleClick = (): void => {
+    const handleClick = (e: React.MouseEvent): void => {
+        // Don't toggle if text is selected
         if (window.getSelection()?.toString()) {
             return;
         }
-        setBubbleOpen(!bubbleOpen);
+        // Toggle the bubble bar visibility
+        setShowBubbleBar(!showBubbleBar);
+        // Prevent event from propagating to parent elements
+        e.stopPropagation();
     };
-
     const getMethodColor = (method?: string): string => {
         switch (method?.trim().toUpperCase()) {
             case "GET":
@@ -82,7 +67,7 @@ const APIinterfaceComponent = ({
     return (
         <NodeViewWrapper
             className={`ml-8 group cursor-pointer hover:bg-gray-50 rounded-lg pt-2 border-2 relative bg-white ${
-                isSelected
+                isEditing
                     ? "border-blue-500"
                     : selected
                     ? "border-gray-500 "
@@ -92,11 +77,10 @@ const APIinterfaceComponent = ({
         >
             <Collapsible>
                 <NodeBubbleBar
-                    open={bubbleOpen}
-                    onOpenChange={setBubbleOpen}
-                    onCopy={handleCopy}
-                    onDelete={handleDelete}
-                    onEdit={handleEdit}
+                    id={id}
+                    selected={showBubbleBar}
+                    getPos={getPos}
+                    editor={editor}
                 />
                 <CollapsibleTrigger className="w-full h-full pt-2 pl-4 border-b rounded-sm group/chevron">
                     <div className="flex items-center pb-2 gap-1">
