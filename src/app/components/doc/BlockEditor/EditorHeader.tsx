@@ -15,12 +15,7 @@ import {
 import ImportDialog from "../Dialog/ImportDialog";
 import { Editor } from "@tiptap/core";
 import ExportPopover from "../Popover/ExportPopover";
-import {
-    FilePenLine,
-    FolderTree,
-    Network,
-    SquareSplitHorizontal,
-} from "lucide-react";
+import { FilePenLine, Network, SquareSplitHorizontal } from "lucide-react";
 
 interface EditorHeaderProps {
     mode: DocMode;

@@ -12,7 +12,7 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip";
-import AgentRelationAdviceDialog from "./AgentRelationAdviceDialog";
+import AgentRelationAdviceDialog from "../Dialog/AgentRelationAdviceDialog";
 
 interface NodeBubbleBarProps {
     open: boolean;
@@ -124,7 +124,7 @@ const NodeBubbleBar: React.FC<NodeBubbleBarProps> = ({
                                     </Button>
                                 </TooltipTrigger>
                                 <TooltipContent side="bottom">
-                                    <p>AI Advice</p>
+                                    <p>Auto relateion</p>
                                 </TooltipContent>
                             </Tooltip>
                         )}
