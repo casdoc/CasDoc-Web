@@ -1,5 +1,10 @@
 import { useState } from "react";
 
+interface AgentNode {
+    id: string;
+    title: string;
+}
+
 export interface ChatViewModel {
     isOpen: boolean;
     setIsOpen: (isOpen: boolean) => void;
@@ -7,10 +12,14 @@ export interface ChatViewModel {
     componentChangeApply: (componentId: string, nodeJson: any) => void;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     componentAddAI: (componentId: string, nodeJson: any) => void;
+    addToAgentNodeIds: AgentNode[];
+    addNodeToAgent: (nodeId: string, title: string) => void;
+    removeNodeFromAgent: (nodeId: string) => void;
 }
 
 export const useChatViewModel = (): ChatViewModel => {
     const [isOpen, setIsOpen] = useState(false);
+    const [addToAgentNodeIds, setAddToAgentNodeIds] = useState<AgentNode[]>([]);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const componentChangeApply = (componentId: string, nodeJson: any) => {
@@ -32,10 +41,28 @@ export const useChatViewModel = (): ChatViewModel => {
         );
     };
 
+    const addNodeToAgent = (nodeId: string, title: string) => {
+        setAddToAgentNodeIds((prev) => {
+            if (!prev.some((node) => node.id === nodeId)) {
+                return [...prev, { id: nodeId, title }];
+            }
+            return prev;
+        });
+    };
+
+    const removeNodeFromAgent = (nodeId: string) => {
+        setAddToAgentNodeIds(
+            addToAgentNodeIds.filter((node) => node.id !== nodeId)
+        );
+    };
+
     return {
         isOpen,
         setIsOpen,
         componentChangeApply,
         componentAddAI,
+        addToAgentNodeIds,
+        addNodeToAgent,
+        removeNodeFromAgent,
     };
 };
