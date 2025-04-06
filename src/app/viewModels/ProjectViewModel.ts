@@ -13,6 +13,8 @@ export interface ProjectViewModel {
     documentsMap: Record<string, Document[]>;
     selectedProjectId: string | null;
     selectedDocumentId: string | null;
+    isProjectDialogOpen: boolean;
+    isDocumentDialogOpen: boolean;
     editingProject: Project | null;
     editingDocument: Document | null;
 
@@ -30,10 +32,10 @@ export interface ProjectViewModel {
     selectDocument: (documentId: string) => void;
 
     // Dialog actions
-    openEditProjectDialog: (projectId: string) => void;
-    openEditDocumentDialog: (documentId: string) => void;
-    closeEditProjectDialog: () => void;
-    closeEditDocumentDialog: () => void;
+    openProjectDialog: (projectId?: string) => void;
+    openDocumentDialog: (projectId: string, documentId?: string) => void;
+    closeProjectDialog: () => void;
+    closeDocumentDialog: () => void;
 }
 
 export const useProjectViewModel = (): ProjectViewModel => {
@@ -47,6 +49,8 @@ export const useProjectViewModel = (): ProjectViewModel => {
     const [selectedDocumentId, setSelectedDocumentId] = useState<string | null>(
         null
     );
+    const [isProjectDialogOpen, setIsProjectDialogOpen] = useState(false);
+    const [isDocumentDialogOpen, setIsDocumentDialogOpen] = useState(false);
     const [editingProject, setEditingProject] = useState<Project | null>(null);
     const [editingDocument, setEditingDocument] = useState<Document | null>(
         null
@@ -195,22 +199,29 @@ export const useProjectViewModel = (): ProjectViewModel => {
     }, []);
 
     // Dialog Actions
-    const openEditProjectDialog = useCallback((projectId: string) => {
-        const project = ProjectService.getProjectById(projectId);
-        if (project) setEditingProject(project);
-        console.log(projectId);
-        console.log(project);
+    const openProjectDialog = useCallback((projectId?: string) => {
+        setIsProjectDialogOpen(true);
+        setEditingProject(
+            projectId ? ProjectService.getProjectById(projectId) : null
+        );
     }, []);
-    const openEditDocumentDialog = useCallback((documentId: string) => {
-        const document = DocumentService.getDocumentById(documentId);
-        if (document) setEditingDocument(document);
-        console.log(documentId);
-        console.log(document);
-    }, []);
-    const closeEditProjectDialog = useCallback(() => {
+    const openDocumentDialog = useCallback(
+        (projectId: string, documentId?: string) => {
+            setIsDocumentDialogOpen(true);
+            setEditingProject(ProjectService.getProjectById(projectId));
+            setEditingDocument(
+                documentId ? DocumentService.getDocumentById(documentId) : null
+            );
+        },
+        []
+    );
+    const closeProjectDialog = useCallback(() => {
+        setIsProjectDialogOpen(false);
         setEditingProject(null);
     }, []);
-    const closeEditDocumentDialog = useCallback(() => {
+    const closeDocumentDialog = useCallback(() => {
+        setIsDocumentDialogOpen(false);
+        setEditingProject(null);
         setEditingDocument(null);
     }, []);
 
@@ -219,6 +230,8 @@ export const useProjectViewModel = (): ProjectViewModel => {
         documentsMap,
         selectedProjectId,
         selectedDocumentId,
+        isProjectDialogOpen,
+        isDocumentDialogOpen,
         editingProject,
         editingDocument,
         createProject,
@@ -230,9 +243,9 @@ export const useProjectViewModel = (): ProjectViewModel => {
         deleteDocument,
         editDocument,
         selectDocument,
-        openEditProjectDialog,
-        openEditDocumentDialog,
-        closeEditProjectDialog,
-        closeEditDocumentDialog,
+        openProjectDialog,
+        openDocumentDialog,
+        closeProjectDialog,
+        closeDocumentDialog,
     };
 };

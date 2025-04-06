@@ -22,40 +22,47 @@ import { DocumentInput } from "@/app/models/types/DocumentInput";
 import { DocumentType } from "@/app/models/enum/DocumentType";
 import { useProjectContext } from "@/app/viewModels/context/ProjectContext";
 
-const DocEditDialog = () => {
+const DocDialog = () => {
     const {
+        editingProject: project,
         editingDocument: doc,
+        isDocumentDialogOpen,
+        createDocument,
         editDocument,
-        closeEditDocumentDialog,
+        closeDocumentDialog,
     } = useProjectContext();
     const [type, setType] = useState<DocumentType>(
         doc?.type ?? DocumentType.SRD
     );
     const handleEditDocument = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        console.log(doc);
-        if (!doc) return;
+        if (!project) return;
 
         const formData = new FormData(e.currentTarget);
-
         const title =
             formData.get("title")?.toString()?.trim() ?? "Untitled Document";
         const description =
             formData.get("description")?.toString().trim() ?? "";
 
-        const updatedDocument: DocumentInput = {
+        const input: DocumentInput = {
             title,
             description,
             type,
-            projectId: doc.projectId,
+            projectId: project.id,
         };
-        console.log("Updated Document:", updatedDocument);
-        editDocument(doc.id, updatedDocument);
-        closeEditDocumentDialog();
+
+        if (!doc) {
+            // Create document
+            createDocument(input);
+        } else {
+            // Edit document
+            editDocument(doc.id, input);
+        }
+        closeDocumentDialog();
     };
 
     return (
-        <Dialog open={doc !== null} onOpenChange={closeEditDocumentDialog}>
+        <Dialog open={isDocumentDialogOpen} onOpenChange={closeDocumentDialog}>
             <DialogContent>
                 <form onSubmit={handleEditDocument}>
                     <DialogHeader>
@@ -124,4 +131,4 @@ const DocEditDialog = () => {
     );
 };
 
-export default DocEditDialog;
+export default DocDialog;

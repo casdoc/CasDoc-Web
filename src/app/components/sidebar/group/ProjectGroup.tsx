@@ -20,15 +20,13 @@ const dropdownItems = ["Order"];
 const ProjectGroup = () => {
     const {
         projects,
-        createProject,
         selectedProjectId,
-        openEditProjectDialog,
+        openProjectDialog,
     } = useProjectContext();
     const [isOpen, setIsOpen] = useState(true);
     const handleAddProject = (e: React.MouseEvent) => {
         e.stopPropagation();
-        const projectId = createProject("Untitled Project");
-        openEditProjectDialog(projectId);
+        openProjectDialog();
         setIsOpen(true);
     };
 
