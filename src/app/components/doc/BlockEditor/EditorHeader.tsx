@@ -120,7 +120,7 @@ const EditorHeader = ({ mode, setDocMode, editor }: EditorHeaderProps) => {
                         onClick={() => setIsOpen(!isOpen)}
                     >
                         <div className="flex items-center gap-3 px-1">
-                            <BotMessageSquare color=" #fafafa" />
+                            <BotMessageSquare color="#fafafa" />
                             <div className="text-neutral-50 font-semibold text-sm">
                                 CasDoc Agent
                             </div>
