@@ -26,63 +26,63 @@ export class Component extends BaseEntity {
         this._content = content;
     }
 
-    getDocumentId(): string {
+    get documentId(): string {
         return this._documentId;
     }
 
-    setDocumentId(value: string): void {
+    set documentId(value: string) {
         if (!value.trim()) {
             throw new Error("Document ID cannot be empty.");
         }
         this._documentId = value;
-        this.updatedAt = new Date();
+        this._updatedAt = new Date();
     }
 
-    getTopicId(): string {
+    get topicId(): string {
         return this._topicId;
     }
 
-    setTopicId(value: string): void {
+    set topicId(value: string) {
         if (!value.trim()) {
             throw new Error("Topic type cannot be empty.");
         }
         this._topicId = value;
-        this.updatedAt = new Date();
+        this._updatedAt = new Date();
     }
 
-    getTemplateType(): string {
+    get templateType(): string {
         return this._templateType;
     }
 
-    setTemplateType(value: string): void {
+    set templateType(value: string) {
         if (!value.trim()) {
             throw new Error("Template type cannot be empty.");
         }
         this._templateType = value;
-        this.updatedAt = new Date();
+        this._updatedAt = new Date();
     }
 
-    getName(): string {
+    get name(): string {
         return this._name;
     }
 
-    setName(value: string): void {
+    set name(value: string) {
         if (!value.trim()) {
             throw new Error("Name cannot be empty.");
         }
         this._name = value;
-        this.updatedAt = new Date();
+        this._updatedAt = new Date();
     }
 
-    getContent(): JsonObject {
+    get content(): JsonObject {
         return this._content;
     }
 
-    setData(value: JsonObject): void {
+    set data(value: JsonObject) {
         if (!Array.isArray(value)) {
             throw new Error("Data must be an array of JsonObject.");
         }
         this._content = value;
-        this.updatedAt = new Date();
+        this._updatedAt = new Date();
     }
 }

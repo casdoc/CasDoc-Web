@@ -1,7 +1,8 @@
 import { NodeViewWrapper } from "@tiptap/react";
 import { NodeViewProps } from "@tiptap/core";
 import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext";
-import { useCallback } from "react";
+import { useCallback, useState, useEffect } from "react";
+import NodeBubbleBar from "@/app/components/doc/Popover/NodeBubbleBar";
 
 interface Field {
     acceptance: string;
@@ -11,17 +12,33 @@ interface Field {
 const UserStoryComponent = ({
     node,
     selected,
+    editor,
+    getPos,
     updateAttributes,
 }: NodeViewProps) => {
     const { id, config } = node.attrs;
-    const { selectedNode, selectNode } = useNodeSelection();
-    const isSelected = selectedNode === id;
+    const { selectedNode } = useNodeSelection();
+    const isEditing = selectedNode === id;
     const fields = config?.fields || [];
     const info = config?.info || {};
+    const [showBubbleBar, setShowBubbleBar] = useState(false);
 
-    const handleClick = () => {
-        if (window.getSelection()?.toString()) return;
-        selectNode(isSelected ? null : id);
+    // Reset bubble bar when component loses selection
+    useEffect(() => {
+        if (!selected && showBubbleBar) {
+            setShowBubbleBar(false);
+        }
+    }, [selected, showBubbleBar]);
+
+    const handleClick = (e: React.MouseEvent): void => {
+        // Don't toggle if text is selected
+        if (window.getSelection()?.toString()) {
+            return;
+        }
+        // Toggle the bubble bar visibility
+        setShowBubbleBar(!showBubbleBar);
+        // Prevent event from propagating to parent elements
+        e.stopPropagation();
     };
 
     const toggleCheckbox = () => {
@@ -62,16 +79,21 @@ const UserStoryComponent = ({
 
     return (
         <NodeViewWrapper
-            className={`ml-8 group cursor-pointer hover:bg-gray-50 rounded-lg pt-2 border-2 bg-white ${
-                isSelected
+            className={`ml-8 group cursor-pointer hover:bg-gray-50 rounded-lg pt-2 border-2 relative bg-white ${
+                isEditing
                     ? "border-blue-500"
                     : selected
-                    ? "border-gray-500"
+                    ? "border-gray-500 "
                     : "border-white hover:border-gray-200"
-            } ${selected ? "select-none" : ""}`}
-            onMouseDown={(e: React.MouseEvent) => e.stopPropagation()}
+            }`}
             onClick={handleClick}
         >
+            <NodeBubbleBar
+                id={id}
+                selected={showBubbleBar}
+                getPos={getPos}
+                editor={editor}
+            />
             <div className="px-3 py-1 border-b rounded-sm">
                 <div className="flex justify-between items-start">
                     <div>

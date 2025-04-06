@@ -1,6 +1,8 @@
 import { NodeViewWrapper } from "@tiptap/react";
 import { NodeViewProps } from "@tiptap/core";
 import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext";
+import { useState, useEffect } from "react";
+import NodeBubbleBar from "@/app/components/doc/Popover/NodeBubbleBar";
 
 export interface APIinterfaceParameter {
     name: string;
@@ -9,19 +11,36 @@ export interface APIinterfaceParameter {
     description: string;
 }
 
-const APIinterfaceComponent = ({ node, selected }: NodeViewProps) => {
+const APIinterfaceComponent = ({
+    node,
+    selected,
+    editor,
+    getPos,
+}: NodeViewProps) => {
     const { id, config } = node.attrs;
     const info = config?.info || {};
     const fields = config?.fields || [];
+    const { selectedNode } = useNodeSelection();
+    const isEditing = selectedNode === id;
+    const [showBubbleBar, setShowBubbleBar] = useState(false);
 
-    const { selectedNode, selectNode } = useNodeSelection();
-    const isSelected = selectedNode === id;
+    // Reset bubble bar when component loses selection
+    useEffect(() => {
+        if (!selected && showBubbleBar) {
+            setShowBubbleBar(false);
+        }
+    }, [selected, showBubbleBar]);
 
-    const handleClick = () => {
-        if (window.getSelection()?.toString()) return;
-        selectNode(isSelected ? null : id);
+    const handleClick = (e: React.MouseEvent): void => {
+        // Don't toggle if text is selected
+        if (window.getSelection()?.toString()) {
+            return;
+        }
+        // Toggle the bubble bar visibility
+        setShowBubbleBar(!showBubbleBar);
+        // Prevent event from propagating to parent elements
+        e.stopPropagation();
     };
-
     const getMethodColor = (method?: string): string => {
         switch (method?.trim().toUpperCase()) {
             case "GET":
@@ -41,16 +60,21 @@ const APIinterfaceComponent = ({ node, selected }: NodeViewProps) => {
 
     return (
         <NodeViewWrapper
-            className={`ml-8 group cursor-pointer hover:bg-gray-50 rounded-lg pt-2 border-2 bg-white ${
-                isSelected
+            className={`ml-8 group cursor-pointer hover:bg-gray-50 rounded-lg pt-2 border-2 relative bg-white ${
+                isEditing
                     ? "border-blue-500"
                     : selected
-                    ? "border-gray-500"
+                    ? "border-gray-500 "
                     : "border-white hover:border-gray-200"
-            } ${selected ? "select-none" : ""}`}
-            onMouseDown={(e: React.MouseEvent) => e.stopPropagation()}
+            } `}
             onClick={handleClick}
         >
+            <NodeBubbleBar
+                id={id}
+                selected={showBubbleBar}
+                getPos={getPos}
+                editor={editor}
+            />
             <div className="pl-4">
                 <div className="flex items-center pb-2">
                     <span
@@ -65,10 +89,10 @@ const APIinterfaceComponent = ({ node, selected }: NodeViewProps) => {
                     </span>
                 </div>
                 <div>
-                    <p className="m-0 text-sm text-gray-600 group-hover:cursor-text">
+                    <p className="m-0 text-sm text-gray-600 group-hover:cursor-text w-fit">
                         {info.description}
                     </p>
-                    <p className="m-0 py-2 text-sm text-black font-semibold group-hover:cursor-text">
+                    <p className="m-0 py-2 text-sm text-black font-semibold group-hover:cursor-text w-fit">
                         End Point : {info.endPoint}
                     </p>
                 </div>
@@ -107,7 +131,7 @@ const APIinterfaceComponent = ({ node, selected }: NodeViewProps) => {
                                             )}
                                         </div>
                                         {field.description && (
-                                            <p className="m-0 p-0 text-sm text-gray-500 group-hover:cursor-text">
+                                            <p className="m-0 p-0 text-sm text-gray-500 group-hover:cursor-text w-fit">
                                                 {field.description}
                                             </p>
                                         )}

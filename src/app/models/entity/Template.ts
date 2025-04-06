@@ -24,48 +24,48 @@ export class Template extends BaseEntity {
         this._fields = fields;
     }
 
-    getDocumentType(): DocumentType {
+    get documentType(): DocumentType {
         return this._documentType;
     }
 
-    setDocumentType(value: DocumentType): void {
+    set documentType(value: DocumentType) {
         this._documentType = value;
-        this.updatedAt = new Date();
+        this._updatedAt = new Date();
     }
 
-    getTopicType(): string {
+    get topicType(): string {
         return this._topicType;
     }
 
-    setTopicType(value: string): void {
+    set topicType(value: string) {
         if (!value.trim()) {
             throw new Error("Topic type cannot be empty.");
         }
         this._topicType = value;
-        this.updatedAt = new Date();
+        this._updatedAt = new Date();
     }
 
-    getName(): string {
+    get name(): string {
         return this._name;
     }
 
-    setName(value: string): void {
+    set name(value: string) {
         if (!value.trim()) {
             throw new Error("Name cannot be empty.");
         }
         this._name = value;
-        this.updatedAt = new Date();
+        this._updatedAt = new Date();
     }
 
-    getFields(): TemplateField[] {
+    get fields(): TemplateField[] {
         return this._fields;
     }
 
-    setFields(value: TemplateField[]): void {
+    set fields(value: TemplateField[]) {
         if (!Array.isArray(value)) {
             throw new Error("Fields must be an array of TemplateField.");
         }
         this._fields = value;
-        this.updatedAt = new Date();
+        this._updatedAt = new Date();
     }
 }

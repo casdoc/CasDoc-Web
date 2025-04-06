@@ -29,13 +29,13 @@ import {
 } from "./utils/converter";
 // import { FlowSettingPanel } from "./setting-panel/FlowSettingPanel";
 import CustomNode from "./components/CustomNode";
-import { GraphViewModel } from "@/app/viewModels/GraphViewModel";
 import { GraphNode } from "@/app/viewModels/useDocument";
 import DocMode from "@/app/models/enum/DocMode";
 import { FlowScrollModeButton } from "./setting-panel/FlowScrollModeButton";
 import ToastManager from "@/app/viewModels/ToastManager";
 import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext";
 import CustomEdge from "./components/CustomEdge";
+import { useGraphContext } from "@/app/viewModels/context/GraphContext";
 
 const nodeTypes = { custom: CustomNode };
 const edgeTypes = {
@@ -57,10 +57,9 @@ const defaultEdgeOptions = {
 interface GraphViewProps {
     docMode: DocMode | undefined;
     graphNodes: GraphNode[];
-    graphViewModel: GraphViewModel;
 }
 
-const GraphView = ({ docMode, graphNodes, graphViewModel }: GraphViewProps) => {
+const GraphView = ({ docMode, graphNodes }: GraphViewProps) => {
     // const [colorMode, setColorMode] = useState<"light" | "dark">("light");
     // const [selectedLayout, setSelectedLayout] = useState("LR");
     const [scrollMode, setScrollMode] = useState<"zoom" | "drag">("drag");
@@ -68,7 +67,7 @@ const GraphView = ({ docMode, graphNodes, graphViewModel }: GraphViewProps) => {
     const nodeHeight = 12;
 
     const { connectionEdges, updConnectionEdges, removeConnectionEdge } =
-        graphViewModel;
+        useGraphContext();
     const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
     const { fitView, setCenter } = useReactFlow();

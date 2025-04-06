@@ -4,19 +4,13 @@ import EditorHeader from "@/app/components/doc/BlockEditor/EditorHeader";
 import { useBlockEditor } from "@/app/viewModels/useBlockEditor";
 import { BlockEditor } from "@/app/components/doc/BlockEditor/BlockEditor";
 import GraphView from "../flow/GraphView";
-import { DocumentViewModel } from "@/app/viewModels/useDocument";
-import { GraphViewModel } from "@/app/viewModels/GraphViewModel";
 import { ReactFlowProvider } from "@xyflow/react";
 import { useState, useEffect, useRef } from "react";
+import { useDocumentContext } from "@/app/viewModels/context/DocumentContext";
 
-interface DocViewProps {
-    documentViewModel: DocumentViewModel;
-    graphViewModel: GraphViewModel;
-}
-
-const DocView = ({ documentViewModel, graphViewModel }: DocViewProps) => {
+const DocView = () => {
     const { mode, setDocMode } = useDocModeViewModel();
-    const { document, updateDocument, graphNodes } = documentViewModel;
+    const { document, graphNodes, updateDocument } = useDocumentContext();
     const { editor } = useBlockEditor({ document, updateDocument });
     const [splitWidth, setSplitWidth] = useState(50);
     const isResizing = useRef(false);
@@ -48,7 +42,10 @@ const DocView = ({ documentViewModel, graphViewModel }: DocViewProps) => {
     }
 
     return (
-        <div className="relative flex flex-col flex-1 h-dvh w-dvw bg-white">
+        <div
+            className={`relative flex flex-col flex-1 h-dvh w-full bg-white transition-all duration-500
+               `}
+        >
             <EditorHeader
                 mode={mode as DocMode}
                 setDocMode={setDocMode}
@@ -64,7 +61,7 @@ const DocView = ({ documentViewModel, graphViewModel }: DocViewProps) => {
                             mode === DocMode.Split ? `${splitWidth}%` : "100%",
                     }}
                 >
-                    <BlockEditor editor={editor} title={document.getTitle()} />
+                    <BlockEditor editor={editor} title={document.title} />
                 </div>
                 {mode === DocMode.Split && (
                     <div
@@ -92,11 +89,7 @@ const DocView = ({ documentViewModel, graphViewModel }: DocViewProps) => {
                     }}
                 >
                     <ReactFlowProvider>
-                        <GraphView
-                            docMode={mode}
-                            graphNodes={graphNodes}
-                            graphViewModel={graphViewModel}
-                        />
+                        <GraphView docMode={mode} graphNodes={graphNodes} />
                     </ReactFlowProvider>
                 </div>
             </div>

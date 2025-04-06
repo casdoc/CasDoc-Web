@@ -2,14 +2,14 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Editor } from "@tiptap/react";
+import { useToast } from "@/hooks/use-toast";
+import { Clapperboard, FileDown } from "lucide-react";
 import {
     Popover,
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
-import { Icon } from "@/app/components/doc/ui/Icon";
-import { Editor } from "@tiptap/react";
-import { useToast } from "@/hooks/use-toast";
 import {
     getMarkdown,
     downloadMarkdown,
@@ -70,7 +70,7 @@ const ExportPopover = ({ editor }: { editor: Editor }) => {
         <Popover>
             <PopoverTrigger asChild>
                 <Button size="icon" variant="outline">
-                    <Icon name="Download" />
+                    <FileDown />
                 </Button>
             </PopoverTrigger>
             <PopoverContent
@@ -86,7 +86,7 @@ const ExportPopover = ({ editor }: { editor: Editor }) => {
                         onClick={handleExportMarkdown}
                         disabled={isExporting}
                     >
-                        <Icon name="FileDown" className="mr-2" />
+                        <FileDown className="mr-2" />
                         Export as Markdown
                     </Button>
                     <Button
@@ -95,7 +95,7 @@ const ExportPopover = ({ editor }: { editor: Editor }) => {
                         onClick={handleCopyMarkdown}
                         disabled={isExporting}
                     >
-                        <Icon name="Clipboard" className="mr-2" />
+                        <Clapperboard className="mr-2" />
                         Copy as Markdown
                     </Button>
                 </div>

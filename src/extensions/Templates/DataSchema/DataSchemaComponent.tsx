@@ -1,6 +1,8 @@
 import { NodeViewWrapper } from "@tiptap/react";
 import { NodeViewProps } from "@tiptap/core";
 import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext";
+import { useState, useEffect } from "react";
+import NodeBubbleBar from "@/app/components/doc/Popover/NodeBubbleBar";
 
 export interface DataSchemaField {
     name: string;
@@ -8,31 +10,56 @@ export interface DataSchemaField {
     description: string;
 }
 
-const DataSchemaComponent = ({ node, selected }: NodeViewProps) => {
+const DataSchemaComponent = ({
+    node,
+    selected,
+    editor,
+    getPos,
+}: NodeViewProps) => {
     const { id, config } = node.attrs;
-    const { selectedNode, selectNode } = useNodeSelection();
-    const isSelected = selectedNode === id;
+    const { selectedNode } = useNodeSelection();
+    const isEditing = selectedNode === id;
     const fields = config?.fields || [];
     const info = config?.info || {};
 
-    const handleClick = () => {
-        if (window.getSelection()?.toString()) return;
-        selectNode(isSelected ? null : id);
+    const [showBubbleBar, setShowBubbleBar] = useState(false);
+
+    // Reset bubble bar when component loses selection
+    useEffect(() => {
+        if (!selected && showBubbleBar) {
+            setShowBubbleBar(false);
+        }
+    }, [selected, showBubbleBar]);
+
+    const handleClick = (e: React.MouseEvent): void => {
+        // Don't toggle if text is selected
+        if (window.getSelection()?.toString()) {
+            return;
+        }
+        // Toggle the bubble bar visibility
+        setShowBubbleBar(!showBubbleBar);
+        // Prevent event from propagating to parent elements
+        e.stopPropagation();
     };
 
     return (
         <NodeViewWrapper
-            className={`ml-8 group cursor-pointer hover:bg-gray-50 rounded-lg pt-2 border-2 bg-white ${
-                isSelected
+            className={`ml-8 group cursor-pointer hover:bg-gray-50 rounded-lg pt-2 border-2 relative bg-white ${
+                isEditing
                     ? "border-blue-500"
                     : selected
-                    ? "border-gray-500"
+                    ? "border-gray-500 "
                     : "border-white hover:border-gray-200"
-            } ${selected ? "select-none" : ""}`}
-            onMouseDown={(e: React.MouseEvent) => e.stopPropagation()}
+            } `}
             onClick={handleClick}
         >
-            <div className="pl-4">
+            <NodeBubbleBar
+                id={id}
+                selected={showBubbleBar}
+                getPos={getPos}
+                editor={editor}
+            />
+            <div className="pl-4 ">
                 <div className="flex justify-between">
                     <h2 className="text-xl font-bold text-black group-hover:cursor-text">
                         {info.name || "Schema Name"}
@@ -43,7 +70,7 @@ const DataSchemaComponent = ({ node, selected }: NodeViewProps) => {
                         </span>
                     </div>
                 </div>
-                <p className="mt-0 text-sm text-gray-600 group-hover:cursor-text">
+                <p className="mt-0 text-sm text-gray-600 group-hover:cursor-text w-fit">
                     {info.description || "Schema Description"}
                 </p>
             </div>
@@ -72,7 +99,7 @@ const DataSchemaComponent = ({ node, selected }: NodeViewProps) => {
                                         )}
                                     </div>
                                     {field.description && (
-                                        <p className="mt-0 text-sm text-gray-500 group-hover:cursor-text">
+                                        <p className="mt-0 text-sm text-gray-500 group-hover:cursor-text w-fit">
                                             {field.description}
                                         </p>
                                     )}

@@ -238,7 +238,10 @@ const MermaidEditor: React.FC<MermaidEditorProps> = ({
                 </VisuallyHidden>
                 <DialogContent className="min-w-full w-full h-full p-0 [&>button[type='button']]:hidden">
                     <div className="flex flex-col h-full">
-                        <div className="flex justify-between items-center p-2 border-b">
+                        <div
+                            className="flex justify-between items-center p-2 border-b"
+                            onClick={stopPropagation}
+                        >
                             <span className="font-bold text-gray-800 px-4">
                                 Mermaid Editor
                             </span>

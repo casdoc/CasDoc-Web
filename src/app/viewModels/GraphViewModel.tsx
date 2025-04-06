@@ -124,7 +124,12 @@ export function useGraphViewModel(): GraphViewModel {
     const updateLabel = (edge: ConnectionEdge, content: string) => {
         setConnectionEdges((prevEdges) => {
             const newEdges = prevEdges.map((e) => {
-                if (e.source === edge.source || e.target === edge.target) {
+                if (
+                    (e.source === edge.source && e.target === edge.target) ||
+                    (e.source == edge.target &&
+                        e.target === edge.source &&
+                        e.data.bidirectional)
+                ) {
                     return { ...e, label: content };
                 }
                 return e;

@@ -23,45 +23,45 @@ export class Topic extends BaseEntity {
         this._description = description;
     }
 
-    getDocumentId(): string {
+    get documentId(): string {
         return this._documentId;
     }
 
-    setDocumentId(value: string): void {
+    set documentId(value: string) {
         if (!value.trim()) {
             throw new Error("Document ID cannot be empty.");
         }
         this._documentId = value;
-        this.updatedAt = new Date();
+        this._updatedAt = new Date();
     }
 
-    getDocumentType(): DocumentType {
+    get documentType(): DocumentType {
         return this._documentType;
     }
 
-    setDocumentType(value: DocumentType): void {
+    set documentType(value: DocumentType) {
         this._documentType = value;
-        this.updatedAt = new Date();
+        this._updatedAt = new Date();
     }
 
-    getName(): string {
+    get name(): string {
         return this._name;
     }
 
-    setType(value: string): void {
+    set type(value: string) {
         if (!value.trim()) {
             throw new Error("Type cannot be empty.");
         }
         this._name = value;
-        this.updatedAt = new Date();
+        this._updatedAt = new Date();
     }
 
-    getDescription(): string {
+    get description(): string {
         return this._description;
     }
 
-    setDescription(value: string): void {
+    set description(value: string) {
         this._description = value;
-        this.updatedAt = new Date();
+        this._updatedAt = new Date();
     }
 }
