@@ -85,7 +85,7 @@ const TestCaseComponent = ({
             onClick={handleClick}
             ref={setNodeRef}
         >
-            <Collapsible>
+            <Collapsible defaultOpen={true}>
                 <NodeBubbleBar
                     id={id}
                     selected={showBubbleBar}

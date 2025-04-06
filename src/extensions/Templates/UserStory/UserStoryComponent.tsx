@@ -102,7 +102,7 @@ const UserStoryComponent = ({
             onClick={handleClick}
             ref={setNodeRef}
         >
-            <Collapsible>
+            <Collapsible defaultOpen={true}>
                 <NodeBubbleBar
                     id={id}
                     selected={showBubbleBar}

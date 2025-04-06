@@ -67,7 +67,7 @@ const DataSchemaComponent = ({
             onClick={handleClick}
             ref={setNodeRef}
         >
-            <Collapsible>
+            <Collapsible defaultOpen={true}>
                 <NodeBubbleBar
                     id={id}
                     selected={showBubbleBar}
