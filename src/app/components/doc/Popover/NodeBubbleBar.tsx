@@ -224,6 +224,7 @@ const NodeBubbleBar: React.FC<NodeBubbleBarProps> = ({
 
             <AgentRelationAdviceDialog
                 open={adviceDialogOpen}
+                selectedNodeId={id}
                 onOpenChange={setAdviceDialogOpen}
                 title="AI Relationship Advice"
             />

@@ -17,6 +17,8 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useGraphContext } from "@/app/viewModels/context/GraphContext";
+import { ConnectionEdge } from "@/app/viewModels/GraphViewModel";
 
 // Updated advice interface with reason
 interface Advice {
@@ -26,13 +28,15 @@ interface Advice {
 
 interface AgentRelationAdviceDialogProps {
     open: boolean;
+    selectedNodeId: string;
     onOpenChange: (open: boolean) => void;
-    advice?: Advice[]; // Changed to Advice array
+    advice?: Advice[];
     title?: string;
 }
 
 const AgentRelationAdviceDialog: React.FC<AgentRelationAdviceDialogProps> = ({
     open,
+    selectedNodeId,
     onOpenChange,
     advice = [],
     title = "AI Advice",
@@ -40,7 +44,7 @@ const AgentRelationAdviceDialog: React.FC<AgentRelationAdviceDialogProps> = ({
     const [loading, setLoading] = useState(true);
     const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
     const { graphNodes } = useDocumentContext();
-
+    const { updConnectionEdges, removeConnectionEdge } = useGraphContext();
     // For testing - remove this in production
     const mockAdvice: Advice[] = graphNodes.map((node: GraphNode) => ({
         id: node.id,
@@ -78,19 +82,47 @@ const AgentRelationAdviceDialog: React.FC<AgentRelationAdviceDialogProps> = ({
         const adviceItem = advice.find((item) => item.id === nodeId);
         return adviceItem?.reason || "";
     };
+    const hadleConnet = (id: string) => {
+        const newEdge: ConnectionEdge = {
+            source: selectedNodeId,
+            target: id,
+            label: "",
+            data: { bidirectional: false },
+        };
+
+        updConnectionEdges(newEdge);
+    };
+
+    const handleDisconnect = (id: string) => {
+        const deleteEdge: ConnectionEdge = {
+            source: selectedNodeId,
+            target: id,
+            label: "",
+            data: { bidirectional: false },
+        };
+        removeConnectionEdge(deleteEdge);
+    };
 
     const toggleSelect = (id: string) => {
+        const isCurrentlySelected = selectedItems.has(id);
+
+        // Update the selected items state
         setSelectedItems((prev) => {
             const newSet = new Set(prev);
-            if (newSet.has(id)) {
+            if (isCurrentlySelected) {
                 newSet.delete(id);
-                console.debug(`Removed node ${id} from selection`);
             } else {
                 newSet.add(id);
-                console.debug(`Added node ${id} to selection`);
             }
             return newSet;
         });
+
+        // Perform the appropriate connection action outside the state update
+        if (isCurrentlySelected) {
+            handleDisconnect(id);
+        } else {
+            hadleConnet(id);
+        }
     };
 
     return (
@@ -170,7 +202,8 @@ const AgentRelationAdviceDialog: React.FC<AgentRelationAdviceDialogProps> = ({
                                 {templateNodes
                                     .filter(
                                         (template) =>
-                                            template.pid === topicNode.id
+                                            template.pid === topicNode.id &&
+                                            template.id !== selectedNodeId
                                     )
                                     .map((template) => (
                                         <div
