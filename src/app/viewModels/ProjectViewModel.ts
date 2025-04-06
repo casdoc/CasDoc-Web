@@ -4,10 +4,9 @@ import { Document } from "@/app/models/entity/Document";
 import { ProjectService } from "@/app/models/services/ProjectService";
 import { DocumentService } from "@/app/models/services/DocumentService";
 import { DocumentType } from "@/app/models/enum/DocumentType";
-import { v4 as uuidv4 } from "uuid";
 import defaultContent from "../models/default-value/defaultContent";
-import { ProjectUpdate } from "../models/types/ProjectUpdate";
-import { DocumentUpdate } from "../models/types/DocumentUpdate";
+import { ProjectInput } from "../models/types/ProjectInput";
+import { DocumentInput } from "../models/types/DocumentInput";
 
 export interface ProjectViewModel {
     projects: Project[];
@@ -18,16 +17,16 @@ export interface ProjectViewModel {
     editingDocument: Document | null;
 
     // Project actions
-    createProject: (name: string) => string;
+    createProject: (input: ProjectInput) => string;
     deleteProject: (projectId: string) => void;
-    editProject: (projectId: string, update: ProjectUpdate) => void;
+    editProject: (projectId: string, update: ProjectInput) => void;
     selectProject: (projectId: string) => void;
 
     // Document actions
     getDocumentsByProjectId: (projectId: string) => Document[];
-    createDocument: (projectId: string, name: string) => string;
+    createDocument: (input: DocumentInput) => string;
     deleteDocument: (documentId: string) => void;
-    editDocument: (documentId: string, update: DocumentUpdate) => void;
+    editDocument: (documentId: string, update: DocumentInput) => void;
     selectDocument: (documentId: string) => void;
 
     // Dialog actions
@@ -58,39 +57,33 @@ export const useProjectViewModel = (): ProjectViewModel => {
         const loadedProjects = ProjectService.getAllProjects();
         // Set default content
         if (loadedProjects.length === 0) {
-            const defaultProject = new Project(
-                uuidv4(),
-                new Date(),
-                new Date(),
-                "My First Project",
-                "Default project"
-            );
-            ProjectService.saveProject(defaultProject);
+            const defaultProject = ProjectService.createProject({
+                name: "My First Project",
+                description: "Default project",
+            } as ProjectInput);
+            if (!defaultProject) return;
 
             // Create a default document
-            const defaultDoc = new Document(
-                uuidv4(),
-                new Date(),
-                new Date(),
-                DocumentType.SRD,
-                defaultProject.id,
-                "Untitled Document",
-                "No description",
-                defaultContent
-            );
-            DocumentService.saveDocument(defaultDoc);
+            const defaultDoc = DocumentService.createDocument({
+                type: DocumentType.SRD,
+                projectId: defaultProject.id,
+                title: "Untitled Document",
+                description: "No description",
+                content: defaultContent,
+            } as DocumentInput);
+            if (!defaultDoc) return;
 
             // Update local state
+            setProjects([defaultProject]);
             setDocumentsMap((prev) => ({
                 ...prev,
-                [defaultProject.id]: [
-                    ...(prev[defaultProject.id] || []),
+                [defaultDoc.projectId]: [
+                    ...(prev[defaultDoc.projectId] || []),
                     defaultDoc,
                 ],
             }));
-
-            setProjects([defaultProject]);
         } else {
+            // Update local state
             setProjects(loadedProjects);
             loadedProjects.forEach((proj) => {
                 documentsMap[proj.id] = ProjectService.getDocumentsByProjectId(
@@ -101,21 +94,13 @@ export const useProjectViewModel = (): ProjectViewModel => {
     }, [documentsMap]);
 
     // Project Actions
-    const createProject = useCallback((name: string): string => {
-        const newProject = new Project(
-            uuidv4(),
-            new Date(),
-            new Date(),
-            name,
-            "No description"
-        );
-        ProjectService.saveProject(newProject);
+    const createProject = useCallback((input: ProjectInput): string => {
+        const project = ProjectService.createProject(input);
+        if (!project) throw new Error("Failed to create project");
 
         // Update local state
-        setProjects((prevProjects) => [...prevProjects, newProject]);
-        // Select the new project
-        setSelectedProjectId(newProject.id);
-        return newProject.id;
+        setProjects((prev) => [...prev, project]);
+        return project.id;
     }, []);
     const deleteProject = useCallback(
         (projectId: string) => {
@@ -130,7 +115,7 @@ export const useProjectViewModel = (): ProjectViewModel => {
         [selectedProjectId]
     );
     const editProject = useCallback(
-        (projectId: string, update: ProjectUpdate) => {
+        (projectId: string, update: ProjectInput) => {
             ProjectService.updateProject(projectId, update);
             setProjects((prevProjects) =>
                 prevProjects.map((proj) =>
@@ -153,32 +138,19 @@ export const useProjectViewModel = (): ProjectViewModel => {
         },
         []
     );
-    const createDocument = useCallback(
-        (projectId: string, name: string): string => {
-            const newDocument = new Document(
-                uuidv4(),
-                new Date(),
-                new Date(),
-                DocumentType.SRD,
-                projectId,
-                name,
-                "No description",
-                []
-            );
-            DocumentService.saveDocument(newDocument);
+    const createDocument = useCallback((input: DocumentInput): string => {
+        const document = DocumentService.createDocument(input);
+        if (!document) throw new Error("Failed to create document");
 
-            // Update local state
-            // setDocumentsMap((prev) => ({
-            //     ...prev,
-            //     [projectId]: [...(prev[projectId] || []), newDocument],
-            // }));
-
-            // Select the new document
-            setSelectedDocumentId(newDocument.id);
-            return newDocument.id;
-        },
-        []
-    );
+        setDocumentsMap((prev) => ({
+            ...prev,
+            [document.projectId]: [
+                ...(prev[document.projectId] || []),
+                document,
+            ],
+        }));
+        return document.id;
+    }, []);
     const deleteDocument = useCallback(
         (documentId: string) => {
             const projectId =
@@ -199,7 +171,7 @@ export const useProjectViewModel = (): ProjectViewModel => {
         [selectedDocumentId]
     );
     const editDocument = useCallback(
-        (documentId: string, update: DocumentUpdate) => {
+        (documentId: string, update: DocumentInput) => {
             const projectId =
                 DocumentService.getDocumentById(documentId)?.projectId;
             if (!projectId) return;

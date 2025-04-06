@@ -10,7 +10,7 @@ import {
     Dialog,
 } from "@/components/ui/dialog";
 import { useProjectContext } from "@/app/viewModels/context/ProjectContext";
-import { ProjectUpdate } from "@/app/models/types/ProjectUpdate";
+import { ProjectInput } from "@/app/models/types/ProjectInput";
 
 const ProjectEditDialog = () => {
     const {
@@ -30,7 +30,7 @@ const ProjectEditDialog = () => {
         const description =
             formData.get("description")?.toString().trim() ?? "";
 
-        const updatedProject: ProjectUpdate = {
+        const updatedProject: ProjectInput = {
             name,
             description,
         };

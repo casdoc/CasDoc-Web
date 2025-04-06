@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/select";
 
 import { useState } from "react";
-import { DocumentUpdate } from "@/app/models/types/DocumentUpdate";
+import { DocumentInput } from "@/app/models/types/DocumentInput";
 import { DocumentType } from "@/app/models/enum/DocumentType";
 import { useProjectContext } from "@/app/viewModels/context/ProjectContext";
 
@@ -43,7 +43,7 @@ const DocEditDialog = () => {
         const description =
             formData.get("description")?.toString().trim() ?? "";
 
-        const updatedDocument: DocumentUpdate = {
+        const updatedDocument: DocumentInput = {
             title,
             description,
             type,
