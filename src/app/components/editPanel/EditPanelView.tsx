@@ -2,10 +2,6 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext";
-import {
-    ConnectionEdge,
-    GraphViewModel,
-} from "@/app/viewModels/GraphViewModel";
 import EditPanelHeader from "./EditPanelHeader";
 import EditPanelRelationship from "./EditPanelRelationship";
 import EditPanelFields from "./EditPanelFields";
@@ -13,16 +9,14 @@ import { JsonObject } from "@/app/models/types/JsonObject";
 import EditPanelInfo from "./EditPanelInfo";
 import EditPanelCmdHint from "./EditPanelCmdHint";
 import { useDocumentContext } from "@/app/viewModels/context/DocumentContext";
+import { useGraphContext } from "@/app/viewModels/context/GraphContext";
+import { ConnectionEdge } from "@/app/viewModels/GraphViewModel";
 
-interface EditPanelProps {
-    graphViewModel: GraphViewModel;
-}
-
-const EditPanelView = ({ graphViewModel }: EditPanelProps) => {
+const EditPanelView = () => {
     const { updateEditNodeById, editNodes } = useDocumentContext();
     const { selectedNode, selectNode } = useNodeSelection();
     const { searchTarget, searchSource, removeConnectionEdge, updateLabel } =
-        graphViewModel;
+        useGraphContext();
 
     const [node, setNode] = useState<JsonObject>();
     const [isMounted, setIsMounted] = useState(false);

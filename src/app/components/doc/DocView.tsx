@@ -4,16 +4,11 @@ import EditorHeader from "@/app/components/doc/BlockEditor/EditorHeader";
 import { useBlockEditor } from "@/app/viewModels/useBlockEditor";
 import { BlockEditor } from "@/app/components/doc/BlockEditor/BlockEditor";
 import GraphView from "../flow/GraphView";
-import { GraphViewModel } from "@/app/viewModels/GraphViewModel";
 import { ReactFlowProvider } from "@xyflow/react";
 import { useState, useEffect, useRef } from "react";
 import { useDocumentContext } from "@/app/viewModels/context/DocumentContext";
 
-interface DocViewProps {
-    graphViewModel: GraphViewModel;
-}
-
-const DocView = ({ graphViewModel }: DocViewProps) => {
+const DocView = () => {
     const { mode, setDocMode } = useDocModeViewModel();
     const { document, graphNodes, updateDocument } = useDocumentContext();
     const { editor } = useBlockEditor({ document, updateDocument });
@@ -94,11 +89,7 @@ const DocView = ({ graphViewModel }: DocViewProps) => {
                     }}
                 >
                     <ReactFlowProvider>
-                        <GraphView
-                            docMode={mode}
-                            graphNodes={graphNodes}
-                            graphViewModel={graphViewModel}
-                        />
+                        <GraphView docMode={mode} graphNodes={graphNodes} />
                     </ReactFlowProvider>
                 </div>
             </div>
