@@ -4,7 +4,7 @@ export interface ChatViewModel {
     isOpen: boolean;
     setIsOpen: (isOpen: boolean) => void;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    componentChangeAply: (componentId: string, nodeJson: any) => void;
+    componentChangeApply: (componentId: string, nodeJson: any) => void;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     componentAddAI: (componentId: string, nodeJson: any) => void;
 }
@@ -35,7 +35,7 @@ export const useChatViewModel = (): ChatViewModel => {
     return {
         isOpen,
         setIsOpen,
-        componentChangeAply,
+        componentChangeApply,
         componentAddAI,
     };
 };
