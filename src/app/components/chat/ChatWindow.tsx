@@ -6,7 +6,7 @@ import { useState } from "react";
 
 interface ChatMessage {
     role: string;
-    content: string;
+    content: React.ReactNode;
 }
 
 const ChatWindow = ({ onClose }: { onClose: () => void }) => {

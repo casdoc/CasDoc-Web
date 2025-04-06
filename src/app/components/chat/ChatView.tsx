@@ -4,7 +4,7 @@ import { FaArrowUp } from "react-icons/fa";
 
 interface ChatMessage {
     role: string;
-    content: string;
+    content: React.ReactNode;
 }
 
 const ChatView = () => {
@@ -38,45 +38,100 @@ const ChatView = () => {
                 updated.pop();
                 return updated;
             });
-            typedChatReply("Hello! This is a demo message.");
-        }, 1000);
+
+            let response: React.ReactNode = "Hello! This is a demo message.";
+            if (inputValue.includes("新增「刪除商店 API」的功能")) {
+                response = (
+                    <div>
+                        <div className="flex justify-between items-center mb-2">
+                            <p className="font-semibold">
+                                功能名稱：刪除商店 API
+                            </p>
+                            <button className="bg-blue-500 text-white text-xs px-3 py-1 rounded-md hover:opacity-70 transition-opacity">
+                                Apply
+                            </button>
+                        </div>
+                        <div className="hover:opacity-70 transition-opacity">
+                            <ul className="list-disc pl-5 space-y-1 text-sm">
+                                <li>
+                                    方法：<code>DELETE</code>
+                                </li>
+                                <li>
+                                    路由：<code>/api/stores/:id</code>
+                                </li>
+                                <li>權限：僅限管理員或商店擁有者可操作</li>
+                                <li>
+                                    描述：根據商店 ID
+                                    刪除指定商店，需進行身份驗證與權限檢查
+                                </li>
+                                <li>
+                                    回傳結果：
+                                    <ul className="list-disc pl-5">
+                                        <li>200：刪除成功</li>
+                                        <li>404：找不到商店</li>
+                                        <li>403：無權限</li>
+                                        <li>500：伺服器錯誤</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                );
+            } else if (
+                inputValue.includes(
+                    "評估 「user schema 新增生日屬性」的開發成本"
+                )
+            ) {
+                response = (
+                    <div className="relative">
+                        <div className="flex justify-between items-center mb-2">
+                            <p>
+                                你需要在 <code>User Schema</code> 新增{" "}
+                                <code>birth</code> 屬性，並修改兩隻 API。
+                            </p>
+                        </div>
+                        <p className="mb-2">
+                            如果有需要，我可以告訴你需要修改的實際對象，或是幫您進行修改供您套用。
+                        </p>
+                        <div className="hover:opacity-70 transition-opacity">
+                            <ul className="list-disc pl-5 space-y-1 text-sm">
+                                <li>
+                                    Schema 路徑：<code>models/User.ts</code>
+                                </li>
+                                <li>
+                                    API UpdateUserProfile：
+                                    <code>PUT /api/users/:id</code>
+                                    （更新使用者）
+                                </li>
+                                <li>
+                                    API GetUserById：
+                                    <code>GET /api/users/:id</code>
+                                    （取得使用者）
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                );
+            }
+
+            typedChatReply(response);
+        }, 2500);
     };
 
     // typedChatReply function for typed effect
-    function typedChatReply(fullText: string) {
+    function typedChatReply(fullContent: React.ReactNode) {
         const chatMsg: ChatMessage = {
             role: "chat",
-            content: "",
+            content: fullContent,
         };
         setMessages((prev) => [...prev, chatMsg]);
-
-        let index = 0;
-        let typed = "";
-
-        const intervalId = setInterval(() => {
-            typed += fullText[index];
-            index++;
-            setMessages((prev) => {
-                const updated = [...prev];
-                const lastMsgIndex = updated.length - 1;
-                updated[lastMsgIndex] = {
-                    ...updated[lastMsgIndex],
-                    content: typed,
-                };
-                return updated;
-            });
-
-            if (index >= fullText.length) {
-                clearInterval(intervalId);
-            }
-        }, 40);
     }
 
     return (
-        <div className="flex justify-center w-screen h-screen p-20">
+        <div className="flex justify-center w-screen min-h-screen p-20">
             <div className="w-2/3">
                 {messages.map((msg, index) => {
-                    if (msg.role === "chatSpinner") {
+                    if (msg.role === "spinner") {
                         return (
                             <div
                                 key={index}
@@ -101,7 +156,9 @@ const ChatView = () => {
                     return (
                         <div key={index} className={containerClasses}>
                             <div
-                                className={`${bubbleClasses} max-w-xs px-3 py-2 rounded-xl`}
+                                className={`${bubbleClasses} ${
+                                    msg.role === "user" && `max-w-xs`
+                                } px-3 py-2 rounded-xl`}
                             >
                                 {msg.content}
                             </div>

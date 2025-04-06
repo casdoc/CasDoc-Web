@@ -8,19 +8,7 @@ const defaultContent = [
         content: [
             {
                 type: "text",
-                text: "CasDoc Guidelines",
-            },
-        ],
-    },
-    {
-        type: "paragraph",
-        attrs: {
-            textAlign: null,
-        },
-        content: [
-            {
-                type: "text",
-                text: "CasDoc 是一款透過文件結構視覺化提升可追溯性的文件編輯工具。以下是具體操作步驟：",
+                text: "Order System - SDD",
             },
         ],
     },
@@ -28,46 +16,10 @@ const defaultContent = [
         type: "topic",
         attrs: {
             documentId: "default-document",
-            id: "6091cb7c-ac87-4111-8830-dbcd813dd626",
+            id: "579a3b2f-d323-4e87-9d57-49aa5714380d",
             config: {
                 info: {
-                    name: " 1. 新增主題（Topic）",
-                    description:
-                        "在編輯區輸入「/」，會跳出命令選單。 \n選擇「新增 Topic」以建立新的主題元件（Component）。",
-                },
-            },
-        },
-    },
-    {
-        type: "template-dataSchema",
-        attrs: {
-            topicId: "root",
-            id: "2bf47ade-e294-4641-87b1-8068a45b4354",
-            config: {
-                info: {
-                    name: "Topic",
-                    type: "Component",
-                    description: "建議先新增 Topic 再新增 Template。",
-                },
-                fields: [
-                    {
-                        name: "Click me",
-                        type: "Edit",
-                        description: "點擊以編輯元件內容",
-                    },
-                ],
-                fieldKey: "description",
-            },
-        },
-    },
-    {
-        type: "topic",
-        attrs: {
-            documentId: "default-document",
-            id: "ce399f02-cb6c-46eb-9f7b-95a78d61af5f",
-            config: {
-                info: {
-                    name: "2. 選擇模板（Template）",
+                    name: "Data Design",
                     description: "",
                 },
             },
@@ -77,19 +29,589 @@ const defaultContent = [
         type: "template-dataSchema",
         attrs: {
             topicId: "root",
-            id: "9d39986e-c75f-4347-b99d-dd13bf6e042d",
+            id: "8260d8dd-c983-49e8-a9ae-f2b081064130",
             config: {
                 info: {
-                    name: "Template",
-                    type: "Component",
-                    description:
-                        "建立主題後，從提供的模板中選擇符合需求的樣式。",
+                    name: "Store",
+                    type: "Object",
+                    description: "儲存店家資料",
                 },
                 fields: [
                     {
-                        name: "Click me",
-                        type: "Edit",
-                        description: "點擊以編輯內容",
+                        name: "id",
+                        type: "string",
+                        description: "該商家的id",
+                    },
+                    {
+                        name: "name",
+                        type: "string",
+                        description: "商家名稱",
+                    },
+                    {
+                        name: "picture",
+                        type: "string",
+                        description: "商家圖片",
+                    },
+                    {
+                        name: "phoneNumber",
+                        type: "string",
+                        description: "商家電話號碼",
+                    },
+                    {
+                        name: "address",
+                        type: "string",
+                        description: "商家位址",
+                    },
+                    {
+                        name: "rating",
+                        type: "double",
+                        description: "商家星星等級",
+                    },
+                    {
+                        name: "menuId",
+                        type: "string",
+                        description: "菜單id",
+                    },
+                    {
+                        name: "avarageSpend",
+                        type: "integer",
+                        description: "平均花費",
+                    },
+                    {
+                        name: "description",
+                        type: "string",
+                        description: "商家簡介",
+                    },
+                    {
+                        name: "businessHours",
+                        type: "pair<Date,Date>[7][2]",
+                        description:
+                            "星期一到日的開始營業時間，front 為開始時間，back 為結束時間，每天可以有兩個時段，第一個時段要比第二個時段早，若只有一個時段第二個時段設為null",
+                    },
+                    {
+                        name: "isBusiness",
+                        type: "boolean",
+                        description: "店家是否正在營業中",
+                    },
+                    {
+                        name: "orderList",
+                        type: "ArrayList<String>",
+                        description: "店家訂單list",
+                    },
+                ],
+                fieldKey: "description",
+            },
+        },
+    },
+    {
+        type: "template-dataSchema",
+        attrs: {
+            topicId: "root",
+            id: "f1074f24-ce0c-4eed-9de4-54a006db3b04",
+            config: {
+                info: {
+                    name: "Review",
+                    type: "Object",
+                    description: "儲存評論資料",
+                },
+                fields: [
+                    {
+                        name: "id",
+                        type: "string",
+                        description: "評論id",
+                    },
+                    {
+                        name: "averageSpend",
+                        type: "double",
+                        description: "平均花費",
+                    },
+                    {
+                        name: "comment",
+                        type: "string",
+                        description: "評論內容",
+                    },
+                    {
+                        name: "storeId",
+                        type: "string",
+                        description: "商店id",
+                    },
+                    {
+                        name: "orderId",
+                        type: "string",
+                        description: "訂單id",
+                    },
+                    {
+                        name: "userId",
+                        type: "string",
+                        description: "使用者id",
+                    },
+                    {
+                        name: "userName",
+                        type: "string",
+                        description: "評論使用者名稱",
+                    },
+                    {
+                        name: "rating",
+                        type: "double",
+                        description: "評論星數",
+                    },
+                    {
+                        name: "date",
+                        type: "Date",
+                        description: "評論時間",
+                    },
+                ],
+                fieldKey: "description",
+            },
+        },
+    },
+    {
+        type: "template-dataSchema",
+        attrs: {
+            topicId: "root",
+            id: "5759e317-babd-4dc1-8ec4-195f6c1ac0b7",
+            config: {
+                info: {
+                    name: "Menu",
+                    type: "Object",
+                    description: "儲存菜單資料",
+                },
+                fields: [
+                    {
+                        name: "id",
+                        type: "string",
+                        description: "菜單id",
+                    },
+                    {
+                        name: "categories",
+                        type: "ArrayList<String>",
+                        description: "菜品類別與其菜品id列表",
+                    },
+                ],
+                fieldKey: "description",
+            },
+        },
+    },
+    {
+        type: "template-dataSchema",
+        attrs: {
+            topicId: "root",
+            id: "6abad47d-d5f9-495f-9331-49c3462e6d61",
+            config: {
+                info: {
+                    name: "Category",
+                    type: "Object",
+                    description: "儲存菜品類別與其菜品資料",
+                },
+                fields: [
+                    {
+                        name: "name",
+                        type: "string",
+                        description: "菜品類別名稱",
+                    },
+                    {
+                        name: "dieshes",
+                        type: "ArrayList<String>",
+                        description: "菜品id列表",
+                    },
+                ],
+                fieldKey: "description",
+            },
+        },
+    },
+    {
+        type: "template-dataSchema",
+        attrs: {
+            topicId: "root",
+            id: "2f8e6f4a-384c-412a-b924-5cbbcc1dc7f6",
+            config: {
+                info: {
+                    name: "Dish",
+                    type: "Object",
+                    description: "儲存菜品資料",
+                },
+                fields: [
+                    {
+                        name: "id",
+                        type: "string",
+                        description: "品項id",
+                    },
+                    {
+                        name: "name",
+                        type: "string",
+                        description: "品項名稱",
+                    },
+                    {
+                        name: "description",
+                        type: "string",
+                        description: "品項介紹",
+                    },
+                    {
+                        name: "picture",
+                        type: "string",
+                        description: "品項圖片",
+                    },
+                    {
+                        name: "price",
+                        type: "double",
+                        description: "品項價錢",
+                    },
+                    {
+                        name: "category",
+                        type: "string",
+                        description: "品項類別",
+                    },
+                    {
+                        name: "salesVolume",
+                        type: "integer",
+                        description: "品項銷量",
+                    },
+                    {
+                        name: "dishAttributes",
+                        type: "ArrayList<String>",
+                        description: "品項客製化選項類別清單",
+                    },
+                ],
+                fieldKey: "description",
+            },
+        },
+    },
+    {
+        type: "template-dataSchema",
+        attrs: {
+            topicId: "root",
+            id: "abf43696-93ed-4293-861c-2b159efd6a95",
+            config: {
+                info: {
+                    name: "DishAttribute",
+                    type: "Object",
+                    description: "儲存菜品細項類別資料",
+                },
+                fields: [
+                    {
+                        name: "name",
+                        type: "string",
+                        description: "細項類別名稱",
+                    },
+                    {
+                        name: "description",
+                        type: "string",
+                        description: "細項類別敘述",
+                    },
+                    {
+                        name: "type",
+                        type: "string",
+                        description:
+                            '只有兩種可能 "single"、"multiple"，分別代表單選、多選',
+                    },
+                    {
+                        name: "isRequired",
+                        type: "boolean",
+                        description: "是否為必選",
+                    },
+                    {
+                        name: "AttributeOptios",
+                        type: "ArrayList<String>",
+                        description: "選項列表",
+                    },
+                ],
+                fieldKey: "description",
+            },
+        },
+    },
+    {
+        type: "template-dataSchema",
+        attrs: {
+            topicId: "root",
+            id: "9bbf58ae-d7e5-4956-af0b-c3f350a37762",
+            config: {
+                info: {
+                    name: "AttributeOption",
+                    type: "Object",
+                    description: "儲存細項類別選項資料",
+                },
+                fields: [
+                    {
+                        name: "name",
+                        type: "string",
+                        description: "選項名稱",
+                    },
+                    {
+                        name: "extraCost",
+                        type: "double",
+                        description: "需要的額外費用",
+                    },
+                    {
+                        name: "isChosen",
+                        type: "boolean",
+                        description: "是否被選擇",
+                    },
+                ],
+                fieldKey: "description",
+            },
+        },
+    },
+    {
+        type: "template-dataSchema",
+        attrs: {
+            topicId: "root",
+            id: "587478a4-ae49-4dbf-ac09-7a912fe79ff5",
+            config: {
+                info: {
+                    name: "User",
+                    type: "Object",
+                    description: "儲存使用者資料",
+                },
+                fields: [
+                    {
+                        name: "id",
+                        type: "string",
+                        description: "使用者id",
+                    },
+                    {
+                        name: "name",
+                        type: "string",
+                        description: "使用者名稱",
+                    },
+                    {
+                        name: "email",
+                        type: "string",
+                        description: "使用者email",
+                    },
+                    {
+                        name: "password",
+                        type: "string",
+                        description: "使用者密碼",
+                    },
+                    {
+                        name: "phoneNumber",
+                        type: "string",
+                        description: "使用者電話",
+                    },
+                    {
+                        name: "avatarUrl",
+                        type: "string",
+                        description: "使用者頭像網址",
+                    },
+                    {
+                        name: "gender",
+                        type: "Gender",
+                        description: "使用者性別",
+                    },
+                    {
+                        name: "role",
+                        type: "Role",
+                        description: "使用者角色",
+                    },
+                    {
+                        name: "loginType",
+                        type: "LoginType",
+                        description: "使用者登入方式",
+                    },
+                ],
+                fieldKey: "description",
+            },
+        },
+    },
+    {
+        type: "template-dataSchema",
+        attrs: {
+            topicId: "root",
+            id: "2a0a080f-a4da-44a3-950a-64eab7d57b6f",
+            config: {
+                info: {
+                    name: "Order",
+                    type: "Object",
+                    description: "儲存訂單資料",
+                },
+                fields: [
+                    {
+                        name: "id",
+                        type: "string",
+                        description: "訂單id",
+                    },
+                    {
+                        name: "customerId",
+                        type: "string",
+                        description: "顧客id",
+                    },
+                    {
+                        name: "storeId",
+                        type: "string",
+                        description: "商家id",
+                    },
+                    {
+                        name: "cost",
+                        type: "double",
+                        description: "訂單計價",
+                    },
+                    {
+                        name: "note",
+                        type: "string",
+                        description: "訂單備註",
+                    },
+                    {
+                        name: "status",
+                        type: "OrderStatus",
+                        description: "訂單狀態",
+                    },
+                    {
+                        name: "orderedDishes",
+                        type: "ArrayList<String>",
+                        description: "下定菜品列表",
+                    },
+                    {
+                        name: "orderTime",
+                        type: "LocalTime",
+                        description: "顧客下訂單時間",
+                    },
+                    {
+                        name: "acceptTime",
+                        type: "LocalTime",
+                        description: "商家接單時間",
+                    },
+                    {
+                        name: "isReserved",
+                        type: "boolean",
+                        description: "訂單是否為預定訂單",
+                    },
+                    {
+                        name: "estimatedPropTime",
+                        type: "integer",
+                        description: "預估製作時間(分鐘)",
+                    },
+                ],
+                fieldKey: "description",
+            },
+        },
+    },
+    {
+        type: "template-dataSchema",
+        attrs: {
+            topicId: "root",
+            id: "999a5657-86d7-47b8-90fc-85e94c497389",
+            config: {
+                info: {
+                    name: "OrderedDish",
+                    type: "Object",
+                    description: "儲存下定菜品資料",
+                },
+                fields: [
+                    {
+                        name: "id",
+                        type: "string",
+                        description: "下定菜品id",
+                    },
+                    {
+                        name: "storeId",
+                        type: "string",
+                        description: "店家id",
+                    },
+                    {
+                        name: "dishId",
+                        type: "string",
+                        description: "菜品id",
+                    },
+                    {
+                        name: "dishName",
+                        type: "string",
+                        description: "菜品名稱",
+                    },
+                    {
+                        name: "price",
+                        type: "double",
+                        description: "菜品價格",
+                    },
+                    {
+                        name: "quantity",
+                        type: "integer",
+                        description: "菜品數量",
+                    },
+                    {
+                        name: "note",
+                        type: "string",
+                        description: "菜品備註",
+                    },
+                    {
+                        name: "chosenAttribute",
+                        type: "ArrayList<String>",
+                        description: "細項類別選項列表",
+                    },
+                ],
+                fieldKey: "description",
+            },
+        },
+    },
+    {
+        type: "template-dataSchema",
+        attrs: {
+            topicId: "root",
+            id: "4b69d503-d828-49e2-a75d-1676451bb0c9",
+            config: {
+                info: {
+                    name: "Customer",
+                    type: "Object",
+                    description: "儲存顧客資料",
+                },
+                fields: [
+                    {
+                        name: "storeCollection",
+                        type: "ArrayList<String>",
+                        description: "店家列表",
+                    },
+                ],
+                fieldKey: "description",
+            },
+        },
+    },
+    {
+        type: "template-dataSchema",
+        attrs: {
+            topicId: "root",
+            id: "e26fe0dd-26aa-46ac-92e3-0a29e9875029",
+            config: {
+                info: {
+                    name: "Merchant",
+                    type: "Object",
+                    description: "儲存商家資料",
+                },
+                fields: [
+                    {
+                        name: "storeId",
+                        type: "string",
+                        description: "商店id",
+                    },
+                ],
+                fieldKey: "description",
+            },
+        },
+    },
+    {
+        type: "template-dataSchema",
+        attrs: {
+            topicId: "root",
+            id: "3557a865-d8ea-4f02-a498-1d8a76267aff",
+            config: {
+                info: {
+                    name: "ChosenAttribute",
+                    type: "Object",
+                    description: "儲存下定菜品細項類別選項資料",
+                },
+                fields: [
+                    {
+                        name: "attributeName",
+                        type: "string",
+                        description: "細項類別名稱",
+                    },
+                    {
+                        name: "chosenOption",
+                        type: "string",
+                        description: "選項名稱",
+                    },
+                    {
+                        name: "extraCost",
+                        type: "double",
+                        description: "額外花費",
                     },
                 ],
                 fieldKey: "description",
@@ -100,10 +622,161 @@ const defaultContent = [
         type: "topic",
         attrs: {
             documentId: "default-document",
-            id: "2a1eb040-d29e-4e69-8ff8-917667f6638d",
+            id: "50b84d94-6212-45b7-ac2a-cfeac60d3f25",
             config: {
                 info: {
-                    name: "3. 查看結構視圖",
+                    name: "Enum Design",
+                    description: "",
+                },
+            },
+        },
+    },
+    {
+        type: "template-dataSchema",
+        attrs: {
+            topicId: "root",
+            id: "3996d62b-3e0c-4645-8912-c26c04e11b7f",
+            config: {
+                info: {
+                    name: "Role",
+                    type: "Enum",
+                    description: "角色列舉",
+                },
+                fields: [
+                    {
+                        name: "MERCHANT",
+                        type: "",
+                        description: "商家",
+                    },
+                    {
+                        name: "CUSTOMER",
+                        type: "",
+                        description: "顧客",
+                    },
+                    {
+                        name: "ADMIN",
+                        type: "",
+                        description: "管理員",
+                    },
+                ],
+                fieldKey: "description",
+            },
+        },
+    },
+    {
+        type: "template-dataSchema",
+        attrs: {
+            topicId: "root",
+            id: "16b62fa0-ede7-45cd-a443-42f0e1e9f954",
+            config: {
+                info: {
+                    name: "Gender",
+                    type: "Enum",
+                    description: "性別列舉",
+                },
+                fields: [
+                    {
+                        name: "MALE",
+                        type: "",
+                        description: "男性",
+                    },
+                    {
+                        name: "FEMALE",
+                        type: "",
+                        description: "女性",
+                    },
+                    {
+                        name: "OTHER",
+                        type: "",
+                        description: "其他",
+                    },
+                ],
+                fieldKey: "description",
+            },
+        },
+    },
+    {
+        type: "template-dataSchema",
+        attrs: {
+            topicId: "root",
+            id: "5610fe72-4451-40c2-8942-ad1e7ca4401b",
+            config: {
+                info: {
+                    name: "LoginType",
+                    type: "Enum",
+                    description: "登入方式列舉",
+                },
+                fields: [
+                    {
+                        name: "LOCAL",
+                        type: "",
+                        description: "本地端登入",
+                    },
+                    {
+                        name: "GOOGLE",
+                        type: "",
+                        description: "google登入",
+                    },
+                ],
+                fieldKey: "description",
+            },
+        },
+    },
+    {
+        type: "template-dataSchema",
+        attrs: {
+            topicId: "root",
+            id: "147c3c40-3ebb-4a94-bedd-11154b701aef",
+            config: {
+                info: {
+                    name: "OrderedStatus",
+                    type: "enum",
+                    description: "訂單狀態列舉",
+                },
+                fields: [
+                    {
+                        name: "IN_CART",
+                        type: "",
+                        description: "訂單在購物車",
+                    },
+                    {
+                        name: "PENDING",
+                        type: "",
+                        description: "顧客送出訂單，等待商家接單",
+                    },
+                    {
+                        name: "PROCESSING",
+                        type: "",
+                        description: "商家已接單，開始製作餐點",
+                    },
+                    {
+                        name: "COMPLETED",
+                        type: "",
+                        description: "商家已完成餐點",
+                    },
+                    {
+                        name: "PICKED_UP",
+                        type: "",
+                        description: "顧客已領取餐點",
+                    },
+                    {
+                        name: "CANCELED",
+                        type: "",
+                        description: "訂單已被取消",
+                    },
+                ],
+                fieldKey: "description",
+            },
+        },
+    },
+    {
+        type: "topic",
+        attrs: {
+            documentId: "default-document",
+            id: "27a7d9ba-09f2-4570-abf5-3874f3ac523d",
+            config: {
+                info: {
+                    name: "Auth API",
                     description: "",
                 },
             },
@@ -113,21 +786,248 @@ const defaultContent = [
         type: "template-apiInterface",
         attrs: {
             topicId: "root",
-            id: "42fdf011-644f-426b-9297-9cb538384339",
+            id: "33e4cbc8-45c7-4bbe-89e4-ba4f1bcdb7dd",
             config: {
                 info: {
-                    name: "GetGraphView",
+                    name: "Register",
+                    method: "post",
+                    description: "使用者輸入個人資料，建立帳戶",
+                    endPoint: "/api/v2/auth/register",
+                },
+                fields: [
+                    {
+                        name: "name",
+                        type: "string",
+                        required: true,
+                        description: "",
+                    },
+                    {
+                        name: "email",
+                        type: "string",
+                        required: "true",
+                        description: "",
+                    },
+                    {
+                        name: "password",
+                        type: "string",
+                        required: "true",
+                        description: "",
+                    },
+                    {
+                        name: "phoneNumber",
+                        type: "string",
+                        required: "",
+                        description: "",
+                    },
+                    {
+                        name: "avatarUrl",
+                        type: "string",
+                        required: "",
+                        description: "",
+                    },
+                    {
+                        name: "gender",
+                        type: "string",
+                        required: "",
+                        description: "",
+                    },
+                    {
+                        name: "role",
+                        type: "string",
+                        required: "",
+                        description: "",
+                    },
+                    {
+                        name: "loginType",
+                        type: "string",
+                        required: "",
+                        description: "",
+                    },
+                ],
+                fieldKey: "description",
+            },
+        },
+    },
+    {
+        type: "template-apiInterface",
+        attrs: {
+            topicId: "root",
+            id: "4aadbd2e-3cb1-40f1-af0b-ee1cc34fa39b",
+            config: {
+                info: {
+                    name: "Login",
+                    method: "post",
+                    description: "使用者輸入帳號密碼登入",
+                    endPoint: "/api/v2/auth/login",
+                },
+                fields: [
+                    {
+                        name: "email",
+                        type: "string",
+                        required: true,
+                        description: "",
+                    },
+                    {
+                        name: "password",
+                        type: "string",
+                        required: "true",
+                        description: "",
+                    },
+                ],
+                fieldKey: "description",
+            },
+        },
+    },
+    {
+        type: "template-apiInterface",
+        attrs: {
+            topicId: "root",
+            id: "c1c1ac82-c10c-4cd0-a870-cf1bcc1ac82a",
+            config: {
+                info: {
+                    name: "Forgot Password",
+                    method: "post",
+                    description: "This is a api interface description",
+                    endPoint: "/api/v2/auth/forgot-password",
+                },
+                fields: [
+                    {
+                        name: "email",
+                        type: "string",
+                        required: true,
+                        description: "",
+                    },
+                ],
+                fieldKey: "description",
+            },
+        },
+    },
+    {
+        type: "template-apiInterface",
+        attrs: {
+            topicId: "root",
+            id: "4a86e673-b270-4ff8-92ed-784af7652c7b",
+            config: {
+                info: {
+                    name: "Reset Password",
+                    method: "post",
+                    description: "使用者驗證成功，重設密碼",
+                    endPoint: "/api/v2/auth/forgot-password",
+                },
+                fields: [
+                    {
+                        name: "token",
+                        type: "string",
+                        required: true,
+                        description: "",
+                    },
+                    {
+                        name: "newPassword",
+                        type: "string",
+                        required: "true",
+                        description: "",
+                    },
+                ],
+                fieldKey: "description",
+            },
+        },
+    },
+    {
+        type: "template-apiInterface",
+        attrs: {
+            topicId: "root",
+            id: "a3541883-8e8c-4a30-98e8-86d6584947a4",
+            config: {
+                info: {
+                    name: "Change Password",
+                    method: "post",
+                    description: "驗證使用者密碼，成功後修改成新密碼",
+                    endPoint: "/api/v2/auth/change-password",
+                },
+                fields: [
+                    {
+                        name: "password",
+                        type: "string",
+                        required: true,
+                        description: "",
+                    },
+                    {
+                        name: "newPassword",
+                        type: "string",
+                        required: "true",
+                        description: "",
+                    },
+                ],
+                fieldKey: "description",
+            },
+        },
+    },
+    {
+        type: "topic",
+        attrs: {
+            documentId: "default-document",
+            id: "f6b4928a-b4b1-4aba-95fd-9641314e4794",
+            config: {
+                info: {
+                    name: "User API",
+                    description: "",
+                },
+            },
+        },
+    },
+    {
+        type: "template-apiInterface",
+        attrs: {
+            topicId: "root",
+            id: "8efeb382-472b-4754-873e-0a1a8892a851",
+            config: {
+                info: {
+                    name: "Get User Info",
                     method: "GET",
-                    description:
-                        "完成新增主題與模板選擇後，點擊切換至「結構圖」視窗，即可查看文件專案的視覺化結構。",
-                    endPoint: "/api/v1/graph",
+                    description: "查詢使用者基本資訊",
+                    endPoint: "/api/v1/user",
+                },
+                fields: [],
+                fieldKey: "description",
+            },
+        },
+    },
+    {
+        type: "template-apiInterface",
+        attrs: {
+            topicId: "root",
+            id: "69a0ce14-3a01-46ef-b063-15b64806eaf5",
+            config: {
+                info: {
+                    name: "Update Profile",
+                    method: "put",
+                    description: "更新使用者基本資訊",
+                    endPoint: "/api/v1/user",
                 },
                 fields: [
                     {
-                        name: "視窗",
-                        type: "Toggle",
-                        required: true,
-                        description: "左上方可以選擇不同模式進行切換",
+                        name: "name",
+                        type: "string",
+                        required: "",
+                        description: "",
+                    },
+                    {
+                        name: "phoneNumber",
+                        type: "string",
+                        required: "",
+                        description: "",
+                    },
+                    {
+                        name: "avatarUrl",
+                        type: "string",
+                        required: "",
+                        description: "",
+                    },
+                    {
+                        name: "gender",
+                        type: "Gender",
+                        required: "",
+                        description: "",
                     },
                 ],
                 fieldKey: "description",
@@ -138,10 +1038,10 @@ const defaultContent = [
         type: "topic",
         attrs: {
             documentId: "default-document",
-            id: "0781526d-a4aa-43b2-8db9-0f0c0711b8ad",
+            id: "ac53f925-9b35-4bf7-959a-0c41ef33111a",
             config: {
                 info: {
-                    name: "4. 建立關聯性",
+                    name: "Store API",
                     description: "",
                 },
             },
@@ -151,21 +1051,269 @@ const defaultContent = [
         type: "template-apiInterface",
         attrs: {
             topicId: "root",
-            id: "ca14682d-6dac-459a-a1b7-a9ebba473d44",
+            id: "a2faca9d-2bde-41ff-b198-60053f8fe339",
             config: {
                 info: {
-                    name: "CreateConnection",
-                    method: "POST",
-                    description:
-                        "在「結構圖」視窗內，透過拖拉方式即可將兩個相關節點（Node）建立關聯性。",
-                    endPoint: "/api/v1/connection",
+                    name: "Search Stores ID",
+                    method: "GET",
+                    description: "使用者搜尋特定商家",
+                    endPoint: "/api/v2/stores/query",
                 },
                 fields: [
                     {
-                        name: "關聯性",
-                        type: "Drag",
+                        name: "keyword",
+                        type: "string",
+                        required: "",
+                        description: "",
+                    },
+                    {
+                        name: "sortBy",
+                        type: "",
+                        required: "",
+                        description: "",
+                    },
+                    {
+                        name: "sortDir",
+                        type: "",
+                        required: "",
+                        description: "",
+                    },
+                ],
+                fieldKey: "description",
+            },
+        },
+    },
+    {
+        type: "template-apiInterface",
+        attrs: {
+            topicId: "root",
+            id: "67ae5011-8816-4b86-bf05-f18e7aa68c29",
+            config: {
+                info: {
+                    name: "Get Store By ID",
+                    method: "GET",
+                    description: "前端透過搜尋到的id list查詢商家物件",
+                    endPoint: "/api/v2/stores/query",
+                },
+                fields: [
+                    {
+                        name: "id",
+                        type: "string",
                         required: true,
-                        description: "只有 Template 可以建立關聯性！",
+                        description: "",
+                    },
+                ],
+                fieldKey: "description",
+            },
+        },
+    },
+    {
+        type: "template-apiInterface",
+        attrs: {
+            topicId: "root",
+            id: "31ce4df3-2576-4496-8869-7879fc27f57f",
+            config: {
+                info: {
+                    name: "Search Store",
+                    method: "GET",
+                    description: "使用者搜尋特定商家",
+                    endPoint: "/api/v3/stores/search",
+                },
+                fields: [
+                    {
+                        name: "id",
+                        type: "string",
+                        required: true,
+                        description: "Unique identifier for the resource",
+                    },
+                ],
+                fieldKey: "description",
+            },
+        },
+    },
+    {
+        type: "template-apiInterface",
+        attrs: {
+            topicId: "root",
+            id: "afe8957b-5131-4303-a9cc-196111a2b171",
+            config: {
+                info: {
+                    name: "Change Business Status",
+                    method: "patch",
+                    description: "更改商家營業狀態",
+                    endPoint: "/api/v2/stores/{storeId}/isBusiness",
+                },
+                fields: [],
+                fieldKey: "description",
+            },
+        },
+    },
+    {
+        type: "template-apiInterface",
+        attrs: {
+            topicId: "root",
+            id: "c2ecbc7b-e1d9-4491-a85b-6605dfdf6d10",
+            config: {
+                info: {
+                    name: "Get Store",
+                    method: "GET",
+                    description: "查詢店家資訊",
+                    endPoint: "/api/v2/stores/{storeId}",
+                },
+                fields: [],
+                fieldKey: "description",
+            },
+        },
+    },
+    {
+        type: "topic",
+        attrs: {
+            documentId: "default-document",
+            id: "bf5b8598-c3f1-4194-839a-def14c97f0e9",
+            config: {
+                info: {
+                    name: "Review API",
+                    description: "",
+                },
+            },
+        },
+    },
+    {
+        type: "template-apiInterface",
+        attrs: {
+            topicId: "root",
+            id: "6ef4a7ea-8040-43a7-865d-f154796d950d",
+            config: {
+                info: {
+                    name: "Update Store Information",
+                    method: "put",
+                    description: "更改店家資訊",
+                    endPoint: "/api/v2/stores/{storeId}",
+                },
+                fields: [
+                    {
+                        name: "name",
+                        type: "string",
+                        required: "",
+                        description: "",
+                    },
+                    {
+                        name: "picture",
+                        type: "string",
+                        required: "",
+                        description: "",
+                    },
+                    {
+                        name: "address",
+                        type: "string",
+                        required: "",
+                        description: "",
+                    },
+                    {
+                        name: "description",
+                        type: "string",
+                        required: "",
+                        description: "",
+                    },
+                ],
+                fieldKey: "description",
+            },
+        },
+    },
+    {
+        type: "template-apiInterface",
+        attrs: {
+            topicId: "root",
+            id: "7ba04bc1-2229-405b-9f40-998a03778282",
+            config: {
+                info: {
+                    name: "Get Reviews By ID",
+                    method: "post",
+                    description: "根據評論id list查詢評論",
+                    endPoint: "/api/v1/reviews/query",
+                },
+                fields: [],
+                fieldKey: "description",
+            },
+        },
+    },
+    {
+        type: "template-apiInterface",
+        attrs: {
+            topicId: "root",
+            id: "38d3041a-091c-47f8-b110-52081e9e5384",
+            config: {
+                info: {
+                    name: "Search Reviews",
+                    method: "GET",
+                    description: "使用者搜尋特定商家",
+                    endPoint: "/api/v1/reviews/{storeId}/query\n",
+                },
+                fields: [
+                    {
+                        name: "page",
+                        type: "int",
+                        required: true,
+                        description: "",
+                    },
+                    {
+                        name: "size",
+                        type: "int",
+                        required: "true",
+                        description: "",
+                    },
+                ],
+                fieldKey: "description",
+            },
+        },
+    },
+    {
+        type: "template-apiInterface",
+        attrs: {
+            topicId: "root",
+            id: "33c1b019-98bc-4d0e-a9bb-da077fca24aa",
+            config: {
+                info: {
+                    name: "Get Number of Reviews",
+                    method: "GET",
+                    description: "查詢商家評論數量",
+                    endPoint: "/api/v1/reviews/{storeId}",
+                },
+                fields: [],
+                fieldKey: "description",
+            },
+        },
+    },
+    {
+        type: "template-apiInterface",
+        attrs: {
+            topicId: "root",
+            id: "ec7538cd-88e1-4e1d-9de8-345fb94b9142",
+            config: {
+                info: {
+                    name: "Add Review to a Store",
+                    method: "post",
+                    description: "對商家新增評論\n",
+                    endPoint: "/api/v1/reviews/{storeId}",
+                },
+                fields: [
+                    {
+                        name: "averageSpend",
+                        type: "double",
+                        required: true,
+                        description: "",
+                    },
+                    {
+                        name: "comment",
+                        type: "string",
+                        required: "true",
+                        description: "",
+                    },
+                    {
+                        name: "rating",
+                        type: "double",
+                        required: "true",
+                        description: "",
                     },
                 ],
                 fieldKey: "description",
@@ -176,32 +1324,47 @@ const defaultContent = [
         type: "topic",
         attrs: {
             documentId: "default-document",
-            id: "261a0de7-e463-4ad1-95c7-60162c3c0596",
+            id: "5cc1ee8c-e7ba-4958-b6e3-828fc9677e53",
             config: {
                 info: {
-                    name: "5. 編輯與查看節點",
-                    description:
-                        "點擊節點（Node）即可編輯內容。點擊節點同時可查看該節點的內容與其與其他節點之間的關聯性。",
+                    name: "Menu API",
+                    description: "",
                 },
             },
         },
     },
     {
-        type: "paragraph",
+        type: "template-apiInterface",
         attrs: {
-            textAlign: null,
-        },
-        content: [
-            {
-                type: "text",
-                text: "透過以上步驟，你能輕鬆管理文件內容並即時掌握文件結構與相關脈絡。立即開始體驗吧！",
+            topicId: "root",
+            id: "2071505d-7f13-4b12-8d83-b178fcb3b225",
+            config: {
+                info: {
+                    name: "Get Store's Menu",
+                    method: "GET",
+                    description: "查詢特定商家的菜單",
+                    endPoint: "/api/v2/menu/{menuId}",
+                },
+                fields: [],
+                fieldKey: "description",
             },
-        ],
+        },
     },
     {
-        type: "paragraph",
+        type: "template-apiInterface",
         attrs: {
-            textAlign: null,
+            topicId: "root",
+            id: "2cfe382c-777b-444a-84c9-a03929d224ff",
+            config: {
+                info: {
+                    name: "Get Dishes by Category",
+                    method: "GET",
+                    description: "查詢特定類別的所有菜品",
+                    endPoint: "/api/v2/menu/{menuId}/dishes?category=categoryA",
+                },
+                fields: [],
+                fieldKey: "description",
+            },
         },
     },
 ];
