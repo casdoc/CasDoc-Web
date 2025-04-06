@@ -13,7 +13,7 @@ export const useChatViewModel = (): ChatViewModel => {
     const [isOpen, setIsOpen] = useState(false);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const componentChangeAply = (componentId: string, nodeJson: any) => {
+    const componentChangeApply = (componentId: string, nodeJson: any) => {
         // Dispatch the event to update the component
         window.dispatchEvent(
             new CustomEvent("ai-apply-update-component", {
