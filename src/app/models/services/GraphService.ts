@@ -2,6 +2,7 @@ import { ConnectionEdge } from "@/app/viewModels/GraphViewModel";
 import defaultEdges from "../default-value/defaultEdges";
 
 const LOCAL_STORAGE_KEY = "edges";
+const AFFECTED_IDS_KEY = "affectedIds";
 
 export const GraphService = {
     getEdges(): ConnectionEdge[] {
@@ -16,6 +17,18 @@ export const GraphService = {
     setEdges(edges: ConnectionEdge[]): void {
         if (typeof window !== "undefined") {
             localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(edges));
+        }
+    },
+
+    getAffectedIds(): string[] {
+        if (typeof window === "undefined") return [];
+        const stored = localStorage.getItem(AFFECTED_IDS_KEY);
+        return stored ? JSON.parse(stored) : [];
+    },
+
+    setAffectedIds(ids: string[]): void {
+        if (typeof window !== "undefined") {
+            localStorage.setItem(AFFECTED_IDS_KEY, JSON.stringify(ids));
         }
     },
 };

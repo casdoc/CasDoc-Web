@@ -9,6 +9,10 @@ export interface GraphViewModel {
     searchSource: (sourceId: string) => ConnectionEdge[];
     removeConnectionEdge: (edge: ConnectionEdge) => void;
     updateLabel: (edge: ConnectionEdge, content: string) => void;
+    affectedIds: string[];
+    updateAffectedIds: (ids: string[]) => void;
+    removeAffectedId: (id: string) => void;
+    clearAffectedIds: () => void;
 }
 
 export interface ConnectionEdge {
@@ -22,10 +26,14 @@ export function useGraphViewModel(): GraphViewModel {
     const [connectionEdges, setConnectionEdges] = useState<ConnectionEdge[]>(
         []
     );
+    const [affectedIds, setAffectedIds] = useState<string[]>([]);
 
     useEffect(() => {
         const localEdges = GraphService.getEdges();
         setConnectionEdges(localEdges);
+
+        const localAffectedIds = GraphService.getAffectedIds();
+        setAffectedIds(localAffectedIds);
     }, []);
 
     const updConnectionEdges = useCallback((edge: ConnectionEdge) => {
@@ -139,6 +147,27 @@ export function useGraphViewModel(): GraphViewModel {
         });
     };
 
+    const updateAffectedIds = useCallback((ids: string[]) => {
+        setAffectedIds((prevIds) => {
+            const newIds = Array.from(new Set([...prevIds, ...ids]));
+            GraphService.setAffectedIds(newIds);
+            return newIds;
+        });
+    }, []);
+
+    const removeAffectedId = useCallback((id: string) => {
+        setAffectedIds((prevIds) => {
+            const newIds = prevIds.filter((prevId) => prevId !== id);
+            GraphService.setAffectedIds(newIds);
+            return newIds;
+        });
+    }, []);
+
+    const clearAffectedIds = useCallback(() => {
+        setAffectedIds([]);
+        GraphService.setAffectedIds([]);
+    }, []);
+
     return {
         connectionEdges,
         updConnectionEdges,
@@ -146,5 +175,9 @@ export function useGraphViewModel(): GraphViewModel {
         searchSource,
         removeConnectionEdge,
         updateLabel,
+        affectedIds,
+        updateAffectedIds,
+        removeAffectedId,
+        clearAffectedIds,
     };
 }

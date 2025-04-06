@@ -13,7 +13,6 @@ function CustomNode({ id, data }: any) {
     const handleClick = () => {
         selectNode(isSelected ? null : id);
     };
-
     return (
         <button
             disabled={id === "root"}
@@ -23,7 +22,7 @@ function CustomNode({ id, data }: any) {
             }`}
         >
             <div
-                className={`px-4 py-2 shadow-md rounded-md bg-white border-2  ${
+                className={`relative px-4 py-2 shadow-md rounded-md bg-white border-2  ${
                     isSelected ? "border-blue-500" : "border-stone-400"
                 } ${
                     data.type.startsWith("topic")
@@ -33,6 +32,9 @@ function CustomNode({ id, data }: any) {
                         : ""
                 }`}
             >
+                {data.isAffected && data.type.startsWith("template") && (
+                    <div className="absolute -top-1 -right-1.5 w-2.5 h-2.5 rounded-full bg-red-400" />
+                )}
                 <div className="max-w-44 overflow-hidden whitespace-nowrap truncate">
                     {data.label}
                 </div>
