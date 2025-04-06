@@ -11,14 +11,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
-import {
-    Copy,
-    Trash2,
-    Pencil,
-    BrainCircuit,
-    Bot,
-    ChevronDown,
-} from "lucide-react";
+import { Copy, Trash2, Pencil, Bot, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
     Tooltip,
@@ -33,8 +26,6 @@ import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
