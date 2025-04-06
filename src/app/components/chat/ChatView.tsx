@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { FaArrowUp } from "react-icons/fa";
+import { X } from "lucide-react";
 
 interface ChatMessage {
     role: string;
@@ -12,7 +13,8 @@ interface ChatMessage {
 const ChatView = () => {
     const [inputValue, setInputValue] = useState("");
     const [messages, setMessages] = useState<ChatMessage[]>([]);
-    const { componentAddAI } = useChatContext();
+    const { componentAddAI, addToAgentNodeIds, removeNodeFromAgent } =
+        useChatContext();
     const handleOnChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setInputValue(e.target.value);
     };
@@ -214,6 +216,24 @@ const ChatView = () => {
                     );
                 })}
             </div>
+            {addToAgentNodeIds.length > 0 && (
+                <div className="flex flex-wrap gap-2 px-4">
+                    {addToAgentNodeIds.map((node) => (
+                        <div
+                            key={node.id}
+                            className="flex items-center bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm"
+                        >
+                            <span className="mr-1">{node.title}</span>
+                            <button
+                                onClick={() => removeNodeFromAgent(node.id)}
+                                className="hover:bg-blue-200 rounded-full p-0.5"
+                            >
+                                <X size={14} />
+                            </button>
+                        </div>
+                    ))}
+                </div>
+            )}
             <div className="flex flex-row min-h-30">
                 <div className="flex-grow  min-h-[120px]  my-2 ml-4 mr-0">
                     <Textarea
