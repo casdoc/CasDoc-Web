@@ -15,7 +15,7 @@ import {
 import ImportDialog from "../Dialog/ImportDialog";
 import { Editor } from "@tiptap/core";
 import ExportPopover from "../Popover/ExportPopover";
-import { FilePenLine, FolderTree, SquareSplitHorizontal } from "lucide-react";
+import { FilePenLine, Network, SquareSplitHorizontal } from "lucide-react";
 
 interface EditorHeaderProps {
     mode: DocMode;
@@ -74,7 +74,9 @@ const EditorHeader = ({ mode, setDocMode, editor }: EditorHeaderProps) => {
                                 }
                                 onClick={() => handleChangeView(DocMode.Graph)}
                             >
-                                <FolderTree />
+                                <Network
+                                    style={{ transform: "rotate(270deg)" }}
+                                />
                             </Button>
                         </TooltipTrigger>
                         <TooltipContent>

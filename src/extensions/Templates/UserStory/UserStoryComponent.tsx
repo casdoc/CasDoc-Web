@@ -1,9 +1,14 @@
 import { NodeViewWrapper } from "@tiptap/react";
 import { NodeViewProps } from "@tiptap/core";
 import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext";
-import { useCallback, useState, useRef, useEffect } from "react";
+import { useCallback, useState, useEffect } from "react";
 import NodeBubbleBar from "@/app/components/doc/Popover/NodeBubbleBar";
-import useCustomNodeActions from "@/extensions/hooks/useCustomNodeActions";
+import {
+    Collapsible,
+    CollapsibleContent,
+    CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { ChevronDown } from "lucide-react";
 
 interface Field {
     acceptance: string;
@@ -19,40 +24,27 @@ const UserStoryComponent = ({
 }: NodeViewProps) => {
     const { id, config } = node.attrs;
     const { selectedNode } = useNodeSelection();
-    const isSelected = selectedNode === id;
+    const isEditing = selectedNode === id;
     const fields = config?.fields || [];
     const info = config?.info || {};
-    const [bubbleOpen, setBubbleOpen] = useState(false);
-    const nodeRef = useRef<HTMLDivElement>(null);
+    const [showBubbleBar, setShowBubbleBar] = useState(false);
 
-    const { handleEdit, handleCopy, handleDelete, setNodeRef } =
-        useCustomNodeActions({
-            id,
-            selected,
-            getPos,
-            editor,
-        });
-
-    // Set the node ref when component mounts
+    // Reset bubble bar when component loses selection
     useEffect(() => {
-        if (nodeRef.current) {
-            setNodeRef(nodeRef.current);
+        if (!selected && showBubbleBar) {
+            setShowBubbleBar(false);
         }
-    }, [setNodeRef, nodeRef]);
+    }, [selected, showBubbleBar]);
 
-    // When selected, ensure the node can receive focus
-    useEffect(() => {
-        if (selected && nodeRef.current) {
-            nodeRef.current.setAttribute("tabindex", "0");
-            nodeRef.current.focus();
-        }
-    }, [selected]);
-
-    const handleClick = (): void => {
+    const handleClick = (e: React.MouseEvent): void => {
+        // Don't toggle if text is selected
         if (window.getSelection()?.toString()) {
             return;
         }
-        setBubbleOpen(!bubbleOpen);
+        // Toggle the bubble bar visibility
+        setShowBubbleBar(!showBubbleBar);
+        // Prevent event from propagating to parent elements
+        e.stopPropagation();
     };
 
     const toggleCheckbox = () => {
@@ -93,8 +85,8 @@ const UserStoryComponent = ({
 
     return (
         <NodeViewWrapper
-            className={`ml-8 group cursor-pointer hover:bg-gray-50 rounded-lg pt-2 border-2 relative bg-white ${
-                isSelected
+            className={`ml-8 group cursor-pointer hover:bg-gray-50 rounded-lg border-2 relative bg-white ${
+                isEditing
                     ? "border-blue-500"
                     : selected
                     ? "border-gray-500 "
@@ -102,102 +94,110 @@ const UserStoryComponent = ({
             }`}
             onClick={handleClick}
         >
-            <NodeBubbleBar
-                open={bubbleOpen}
-                onOpenChange={setBubbleOpen}
-                onCopy={handleCopy}
-                onDelete={handleDelete}
-                onEdit={handleEdit}
-            />
-            <div className="px-3 py-1 border-b rounded-sm">
-                <div className="flex justify-between items-start">
-                    <div>
-                        {info.serial.trim() !== "" && (
-                            <div className="group-hover:cursor-text">
-                                <p className="text-xs font-medium text-gray-500 mb-1 group-hover:cursor-text">
-                                    {info.serial}
-                                </p>
+            <Collapsible>
+                <NodeBubbleBar
+                    id={id}
+                    selected={showBubbleBar}
+                    getPos={getPos}
+                    editor={editor}
+                />
+                <CollapsibleTrigger className="w-full h-full pt-3 pb-1 px-3 border-b rounded-sm group/chevron">
+                    <div className="flex justify-between items-start">
+                        <div>
+                            <p className="text-xs font-medium text-gray-500 mb-1 group-hover:cursor-text w-fit">
+                                {info.serial}
+                            </p>
+                            {/* {info.serial.trim() !== "" && (
+                                <div className="group-hover:cursor-text">
+                                    <p className="text-xs font-medium text-gray-500 mb-1 group-hover:cursor-text">
+                                        {info.serial}
+                                    </p>
+                                </div>
+                            )} */}
+                            <div className="flex items-center gap-1 group-hover:cursor-text">
+                                <h2 className="text-xl font-bold text-gray-900 mt-0 group-hover:cursor-text">
+                                    {info.name || "New Story"}
+                                </h2>
+                                <ChevronDown className="w-4 h-4 opacity-0 group-hover/chevron:opacity-100 transition-all duration-200 group-data-[state=open]/chevron:rotate-180" />
                             </div>
-                        )}
+                            <div className="flex flex-wrap items-center gap-2 my-1">
+                                {info.tag.trim() !== "" && (
+                                    <div className="group-hover:cursor-text">
+                                        <span className="text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded border border-blue-300 group-hover:cursor-text">
+                                            {info.tag}
+                                        </span>
+                                    </div>
+                                )}
+                                {info.priority.trim() !== "" && (
+                                    <div className="group-hover:cursor-text">
+                                        <span
+                                            className={`text-xs px-2 py-1 rounded font-medium border ${calculatePriorityStyle(
+                                                parseInt(info.priority)
+                                            )} group-hover:cursor-text`}
+                                        >
+                                            P{info.priority}
+                                        </span>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="px-4 py-3 space-y-2">
+                    <div>
+                        <h3 className="text-sm font-semibold text-gray-600 uppercase tracking-wide">
+                            Role
+                        </h3>
                         <div className="group-hover:cursor-text">
-                            <h2 className="text-xl font-bold text-gray-900 mt-0 group-hover:cursor-text">
-                                {info.name || "New Story"}
-                            </h2>
-                        </div>
-                        <div className="flex flex-wrap items-center gap-2 my-1">
-                            {info.tag.trim() !== "" && (
-                                <div className="group-hover:cursor-text">
-                                    <span className="text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded border border-blue-300 group-hover:cursor-text">
-                                        {info.tag}
-                                    </span>
-                                </div>
-                            )}
-                            {info.priority.trim() !== "" && (
-                                <div className="group-hover:cursor-text">
-                                    <span
-                                        className={`text-xs px-2 py-1 rounded font-medium border ${calculatePriorityStyle(
-                                            parseInt(info.priority)
-                                        )} group-hover:cursor-text`}
-                                    >
-                                        P{info.priority}
-                                    </span>
-                                </div>
-                            )}
+                            <p className="text-sm text-gray-700 mt-1 mb-4 group-hover:cursor-text">
+                                {info.role}
+                            </p>
                         </div>
                     </div>
-                </div>
-            </div>
-            <div className="px-4 py-3 space-y-2">
-                <div>
-                    <h3 className="text-sm font-semibold text-gray-600 uppercase tracking-wide">
-                        Role
-                    </h3>
-                    <div className="group-hover:cursor-text">
-                        <p className="text-sm text-gray-700 mt-1 mb-4 group-hover:cursor-text">
-                            {info.role}
-                        </p>
+                    <div>
+                        <h3 className="text-sm font-semibold text-gray-600 uppercase tracking-wide">
+                            Feature
+                        </h3>
+                        <div className="group-hover:cursor-text">
+                            <p className="text-sm text-gray-700 mt-1 mb-4 group-hover:cursor-text">
+                                {info.feature}
+                            </p>
+                        </div>
                     </div>
-                </div>
-                <div>
-                    <h3 className="text-sm font-semibold text-gray-600 uppercase tracking-wide">
-                        Feature
-                    </h3>
-                    <div className="group-hover:cursor-text">
-                        <p className="text-sm text-gray-700 mt-1 mb-4 group-hover:cursor-text">
-                            {info.feature}
-                        </p>
+                    <div>
+                        <h3 className="text-sm font-semibold text-gray-600 uppercase tracking-wide">
+                            Acceptance Criteria
+                        </h3>
+                        <ul className="divide-y divide-gray-100 mt-1">
+                            {fields.map((field: Field, index: number) => (
+                                <li
+                                    key={index}
+                                    className="flex items-start py-2"
+                                >
+                                    <input
+                                        type="checkbox"
+                                        checked={isTaskDone(field.done)}
+                                        onClick={(e) => e.stopPropagation()}
+                                        onChange={toggleCheckbox}
+                                        className="mt-1 mr-2"
+                                    />
+                                    <div className="group-hover:cursor-text">
+                                        <span
+                                            className={`text-sm ${
+                                                isTaskDone(field.done)
+                                                    ? "line-through text-gray-400"
+                                                    : "text-gray-800"
+                                            }`}
+                                        >
+                                            {field.acceptance}
+                                        </span>
+                                    </div>
+                                </li>
+                            ))}
+                        </ul>
                     </div>
-                </div>
-                <div>
-                    <h3 className="text-sm font-semibold text-gray-600 uppercase tracking-wide">
-                        Acceptance Criteria
-                    </h3>
-                    <ul className="divide-y divide-gray-100 mt-1">
-                        {fields.map((field: Field, index: number) => (
-                            <li key={index} className="flex items-start py-2">
-                                <input
-                                    type="checkbox"
-                                    checked={isTaskDone(field.done)}
-                                    onClick={(e) => e.stopPropagation()}
-                                    onChange={toggleCheckbox}
-                                    className="mt-1 mr-2"
-                                />
-                                <div className="group-hover:cursor-text">
-                                    <span
-                                        className={`text-sm ${
-                                            isTaskDone(field.done)
-                                                ? "line-through text-gray-400"
-                                                : "text-gray-800"
-                                        }`}
-                                    >
-                                        {field.acceptance}
-                                    </span>
-                                </div>
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-            </div>
+                </CollapsibleContent>
+            </Collapsible>
         </NodeViewWrapper>
     );
 };
