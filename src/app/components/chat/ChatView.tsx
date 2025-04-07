@@ -1,9 +1,10 @@
 import { useChatContext } from "@/app/viewModels/context/ChatContext";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { FaArrowUp } from "react-icons/fa";
 import { X } from "lucide-react";
+import AgentRelationAdviceDialog from "../doc/Dialog/AgentRelationAdviceDialog";
 
 interface ChatMessage {
     role: string;
@@ -13,11 +14,19 @@ interface ChatMessage {
 const ChatView = () => {
     const [inputValue, setInputValue] = useState("");
     const [messages, setMessages] = useState<ChatMessage[]>([]);
+    const [adviceDialogOpen, setAdviceDialogOpen] = useState(false);
     const { componentAddAI, addToAgentNodeIds, removeNodeFromAgent } =
         useChatContext();
     const handleOnChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setInputValue(e.target.value);
     };
+    const onAdviceClick = useCallback(
+        (e: React.MouseEvent) => {
+            e.stopPropagation();
+            setAdviceDialogOpen(true);
+        },
+        [setAdviceDialogOpen]
+    );
 
     const handleOnClick = () => {
         if (inputValue.length === 0) return;
@@ -80,44 +89,55 @@ const ChatView = () => {
                                 </li>
                             </ul>
                         </div>
-                        <Button
-                            size="sm"
-                            variant="default"
-                            className="h-6 mt-1"
-                            onClick={() =>
-                                componentAddAI(
-                                    "c2ecbc7b-e1d9-4491-a85b-6605dfdf6d10",
-                                    {
-                                        type: "template-apiInterface",
-                                        attrs: {
-                                            topicId: "root",
-                                            id: "407e7cf8-c10d-4654-9ab3-a84459f08823",
-                                            config: {
-                                                info: {
-                                                    name: "刪除商店 API",
-                                                    method: "DELETE",
-                                                    description:
-                                                        "權限：僅限管理員或商店擁有者可操作，根據商店 ID                                  刪除指定商店，需進行身份驗證與權限檢查\n",
-                                                    endPoint: "/api/stores/:id",
-                                                },
-                                                fields: [
-                                                    {
-                                                        name: "status",
-                                                        type: "string",
-                                                        required: true,
+                        <div className="flex flex-row gap-1 items-center mt-2">
+                            <Button
+                                size="sm"
+                                variant="default"
+                                className="h-6 mt-1"
+                                onClick={() =>
+                                    componentAddAI(
+                                        "c2ecbc7b-e1d9-4491-a85b-6605dfdf6d10",
+                                        {
+                                            type: "template-apiInterface",
+                                            attrs: {
+                                                topicId: "root",
+                                                id: "407e7cf8-c10d-4654-9ab3-a84459f08823",
+                                                config: {
+                                                    info: {
+                                                        name: "刪除商店 API",
+                                                        method: "DELETE",
                                                         description:
-                                                            "Http request狀態碼",
+                                                            "權限：僅限管理員或商店擁有者可操作，根據商店 ID                                  刪除指定商店，需進行身份驗證與權限檢查\n",
+                                                        endPoint:
+                                                            "/api/stores/:id",
                                                     },
-                                                ],
-                                                fieldKey: "description",
+                                                    fields: [
+                                                        {
+                                                            name: "status",
+                                                            type: "string",
+                                                            required: true,
+                                                            description:
+                                                                "Http request狀態碼",
+                                                        },
+                                                    ],
+                                                    fieldKey: "description",
+                                                },
                                             },
-                                        },
-                                    }
-                                )
-                            }
-                        >
-                            Apply
-                        </Button>
+                                        }
+                                    )
+                                }
+                            >
+                                Apply
+                            </Button>
+                            <Button
+                                onClick={onAdviceClick}
+                                size="sm"
+                                variant="default"
+                                className="h-6 mt-1"
+                            >
+                                Auto Connect
+                            </Button>
+                        </div>
                     </div>
                 );
             } else if (
@@ -258,6 +278,12 @@ const ChatView = () => {
                     </Button>
                 </div>
             </div>
+            <AgentRelationAdviceDialog
+                open={adviceDialogOpen}
+                selectedNodeId={"407e7cf8-c10d-4654-9ab3-a84459f08823"}
+                onOpenChange={setAdviceDialogOpen}
+                title="AI Relationship Advice"
+            />
         </div>
     );
 };
