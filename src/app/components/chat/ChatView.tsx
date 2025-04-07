@@ -142,7 +142,6 @@ const ChatView = () => {
                 );
             } else if (
                 inputValue.includes("評估") &&
-                inputValue.includes("user schema") &&
                 inputValue.includes("開發成本")
             ) {
                 response = (
