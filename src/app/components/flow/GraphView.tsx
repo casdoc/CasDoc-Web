@@ -155,7 +155,7 @@ const GraphView = ({ docMode, graphNodes }: GraphViewProps) => {
             if (!node) return;
 
             let x = node.position.x + 280;
-            let y = node.position.y / 2;
+            let y = node.position.y;
             if (node.measured.width) {
                 x += node.measured.width / 2;
             }
