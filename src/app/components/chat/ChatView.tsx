@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useCallback, useState } from "react";
 import { FaArrowUp } from "react-icons/fa";
-import { CirclePlus, X } from "lucide-react";
+import { X } from "lucide-react";
 import AgentRelationAdviceDialog from "../doc/Dialog/AgentRelationAdviceDialog";
 
 interface ChatMessage {
