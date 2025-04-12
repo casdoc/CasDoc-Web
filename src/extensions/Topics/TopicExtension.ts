@@ -10,9 +10,10 @@ import {
 } from "../ExtensionUtils";
 
 const topicDefaultConfig = {
-    name: "Data Schema",
-    description: "This is a data schema description",
+    name: "Topic",
+    description: "This is a topic description",
 };
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const serializeTopicToMarkdown = (state: any, node: any) => {
     const { config } = node.attrs;
@@ -22,6 +23,7 @@ export const serializeTopicToMarkdown = (state: any, node: any) => {
     state.write(`## ${name}\n`);
     state.write(`${description}\n`);
 };
+
 export const TopicExtension = Node.create({
     name: "topic",
 
@@ -36,10 +38,11 @@ export const TopicExtension = Node.create({
                 default: "default-document",
             },
             id: {
-                default: "test-topic-1",
+                default: "topic",
             },
             // Update the renderHTML function in your config attribute
             config: createConfigAttribute(topicDefaultConfig),
+            level: "1",
         };
     },
 
@@ -69,8 +72,8 @@ export const TopicExtension = Node.create({
 
     addProseMirrorPlugins() {
         const pasteDefaultConfig = {
-            name: "Schema",
-            description: "This is a data schema description",
+            name: "Topic",
+            description: "This is a topic description",
         };
         // Use the generic node transformer with your specific config
         const topicTransformer = createNodeTransformer(pasteDefaultConfig);

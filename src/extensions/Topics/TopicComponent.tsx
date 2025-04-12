@@ -6,7 +6,7 @@ import NodeBubbleBar from "@/app/components/doc/Popover/NodeBubbleBar";
 import useCustomNodeActions from "../hooks/useCustomNodeActions";
 
 const TopicComponent = ({ node, selected, editor, getPos }: NodeViewProps) => {
-    const { id, config } = node.attrs;
+    const { id, config, level } = node.attrs;
     const { selectedNode } = useNodeSelection();
     const isEditing = selectedNode === id;
     const { setNodeRef } = useCustomNodeActions({
@@ -15,6 +15,7 @@ const TopicComponent = ({ node, selected, editor, getPos }: NodeViewProps) => {
         getPos,
         editor,
     });
+    const levelMargin = `ml-${8 * (level - 1)}`;
 
     const [showBubbleBar, setShowBubbleBar] = useState(false);
 
@@ -35,6 +36,7 @@ const TopicComponent = ({ node, selected, editor, getPos }: NodeViewProps) => {
         // Prevent event from propagating to parent elements
         e.stopPropagation();
     };
+
     return (
         <NodeViewWrapper
             className={`cursor-pointer group hover:bg-gray-50 rounded-lg border-2 px-1 py-2 bg-white relative  ${
@@ -43,7 +45,7 @@ const TopicComponent = ({ node, selected, editor, getPos }: NodeViewProps) => {
                     : selected
                     ? "border-gray-500 "
                     : "border-white hover:border-gray-200"
-            } `}
+            } ${levelMargin}`}
             onClick={handleClick}
             ref={setNodeRef}
         >

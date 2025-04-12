@@ -29,6 +29,7 @@ const defaultContent = [
         attrs: {
             documentId: "default-document",
             id: "6091cb7c-ac87-4111-8830-dbcd813dd626",
+            level: "1",
             config: {
                 info: {
                     name: " 1. 新增主題（Topic）",
@@ -65,6 +66,7 @@ const defaultContent = [
         attrs: {
             documentId: "default-document",
             id: "ce399f02-cb6c-46eb-9f7b-95a78d61af5f",
+            level: "1",
             config: {
                 info: {
                     name: "2. 選擇模板（Template）",
@@ -101,6 +103,7 @@ const defaultContent = [
         attrs: {
             documentId: "default-document",
             id: "2a1eb040-d29e-4e69-8ff8-917667f6638d",
+            level: "1",
             config: {
                 info: {
                     name: "3. 查看結構視圖",
@@ -139,6 +142,7 @@ const defaultContent = [
         attrs: {
             documentId: "default-document",
             id: "0781526d-a4aa-43b2-8db9-0f0c0711b8ad",
+            level: "1",
             config: {
                 info: {
                     name: "4. 建立關聯性",
@@ -177,6 +181,7 @@ const defaultContent = [
         attrs: {
             documentId: "default-document",
             id: "261a0de7-e463-4ad1-95c7-60162c3c0596",
+            level: "1",
             config: {
                 info: {
                     name: "5. 編輯與查看節點",

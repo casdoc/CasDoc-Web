@@ -21,9 +21,38 @@ export const GROUPS: Group[] = [
                             attrs: {
                                 documentId: "default-document",
                                 id: uuidv4(),
+                                level: "1",
                                 config: {
                                     info: {
                                         name: "Topic",
+                                        description:
+                                            "This is a topic description",
+                                    },
+                                },
+                            },
+                        })
+                        .run();
+                },
+            },
+            {
+                name: "topic2",
+                label: "Topic2",
+                iconName: "SquareLibrary",
+                aliases: ["topic"],
+                description: "topic component",
+                action: (editor) => {
+                    editor
+                        .chain()
+                        .focus()
+                        .insertContent({
+                            type: "topic",
+                            attrs: {
+                                documentId: "default-document",
+                                id: uuidv4(),
+                                level: "2",
+                                config: {
+                                    info: {
+                                        name: "Topic 2",
                                         description:
                                             "This is a topic description",
                                     },
