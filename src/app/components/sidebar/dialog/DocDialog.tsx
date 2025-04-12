@@ -118,13 +118,13 @@ const DocDialog = () => {
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="SRD">
-                                        Software Requirements Document (SRD)
+                                        Software Requirements Document ( SRD )
                                     </SelectItem>
                                     <SelectItem value="SDD">
-                                        Software Design Document (SDD)
+                                        Software Design Document ( SDD )
                                     </SelectItem>
                                     <SelectItem value="STD">
-                                        Software Test Document (STD)
+                                        Software Test Document ( STD )
                                     </SelectItem>
                                     <SelectItem value="OTHER">OTHER</SelectItem>
                                 </SelectContent>
