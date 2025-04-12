@@ -66,9 +66,13 @@ const DocDialog = () => {
             <DialogContent>
                 <form onSubmit={handleEditDocument}>
                     <DialogHeader>
-                        <DialogTitle>Edit Document</DialogTitle>
+                        <DialogTitle>
+                            {!doc ? "Create Document" : "Edit Document"}
+                        </DialogTitle>
                         <DialogDescription>
-                            Edit the document details.
+                            {!doc
+                                ? "Fill in the details to create a new document."
+                                : "Edit the document details."}
                         </DialogDescription>
                     </DialogHeader>
 
@@ -113,9 +117,15 @@ const DocDialog = () => {
                                     <SelectValue placeholder="Select document type" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="SRD">SRD</SelectItem>
-                                    <SelectItem value="SDD">SDD</SelectItem>
-                                    <SelectItem value="STD">STD</SelectItem>
+                                    <SelectItem value="SRD">
+                                        Software Requirements Document (SRD)
+                                    </SelectItem>
+                                    <SelectItem value="SDD">
+                                        Software Design Document (SDD)
+                                    </SelectItem>
+                                    <SelectItem value="STD">
+                                        Software Test Document (STD)
+                                    </SelectItem>
                                     <SelectItem value="OTHER">OTHER</SelectItem>
                                 </SelectContent>
                             </Select>
