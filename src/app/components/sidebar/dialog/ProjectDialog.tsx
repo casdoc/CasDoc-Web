@@ -49,9 +49,13 @@ const ProjectDialog = () => {
             <DialogContent>
                 <form onSubmit={handleSaveProject}>
                     <DialogHeader>
-                        <DialogTitle>Edit Document</DialogTitle>
+                        <DialogTitle>
+                            {!project ? "Create Project" : "Edit Project"}
+                        </DialogTitle>
                         <DialogDescription>
-                            Edit the document details.
+                            {!project
+                                ? "Fill in the details to create a new project."
+                                : "Edit the project details."}
                         </DialogDescription>
                     </DialogHeader>
 
@@ -65,7 +69,7 @@ const ProjectDialog = () => {
                                 defaultValue={
                                     project?.name ?? "Untitled Project"
                                 }
-                                placeholder="Enter project title"
+                                placeholder="Enter project name"
                                 className="col-span-3"
                             />
                         </div>
