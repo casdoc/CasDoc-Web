@@ -10,6 +10,7 @@ export interface GraphNode {
     pid: string;
     label: string;
     type: string;
+    level?: string;
 }
 
 export interface DocumentViewModel {
@@ -181,6 +182,7 @@ export function useDocumentViewModel(documentId: string): DocumentViewModel {
                 pid: lastTopicId || content.attrs.topicId,
                 label: content.attrs.config?.info.name || "",
                 type: content.type,
+                level: content.attrs.level,
             };
         }
     };

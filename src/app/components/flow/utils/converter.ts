@@ -15,6 +15,7 @@ export const convertDataToNodes = (
             label: item.label || "unknown",
             type: item.type,
             isAffected: affectedIds.includes(item.id.toString()),
+            level: item.level,
         },
         type: "custom",
         deletable: false,

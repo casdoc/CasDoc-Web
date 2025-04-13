@@ -26,7 +26,7 @@ function CustomNode({ id, data }: any) {
                     isSelected ? "border-blue-500" : "border-stone-400"
                 } ${
                     data.type.startsWith("topic")
-                        ? "shadow-cyan-200"
+                        ? `shadow-cyan-${200 * (4 - data.level)}`
                         : data.type.startsWith("template")
                         ? "shadow-amber-200"
                         : ""
