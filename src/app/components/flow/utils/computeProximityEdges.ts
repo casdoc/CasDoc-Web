@@ -19,6 +19,7 @@ export const computeProximityEdges = (
                 target: nodes[i].id,
                 arrowHeadType: MarkerType.ArrowClosed,
                 type: "custom",
+                pathOptions: { offset: 50 },
             });
         }
     }
