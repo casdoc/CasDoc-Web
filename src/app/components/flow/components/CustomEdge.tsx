@@ -52,17 +52,63 @@ const CustomEdge = (props: EdgeProps) => {
     useEffect(() => {
         updateEdge(
             id,
-            {
-                animated: edgeColor === pinkColor,
-                pathOptions: { offset: edgeColor === pinkColor ? 100 : 50 },
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            } as any,
+            { animated: edgeColor === pinkColor },
             { replace: true }
         );
     }, [edgeColor, updateEdge, id]);
 
     return (
         <>
+            <EdgeLabelRenderer>
+                <div
+                    style={{
+                        position: "absolute",
+                        transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`,
+                        cursor: "grab",
+                        width: "20px",
+                        height: "20px",
+                        backgroundColor: "blue",
+                        borderRadius: "50%",
+                        zIndex: 10,
+                        pointerEvents: "all",
+                    }}
+                    onMouseDown={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const startX = e.clientX;
+
+                        const handleMouseMove = (moveEvent: MouseEvent) => {
+                            const deltaX = moveEvent.clientX - startX;
+                            console.log("X 變化量:", deltaX);
+                            updateEdge(
+                                id,
+                                {
+                                    animated: edgeColor === pinkColor,
+                                    pathOptions: {
+                                        offset: 50 + deltaX,
+                                    },
+                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                } as any,
+                                { replace: true }
+                            );
+                        };
+
+                        const handleMouseUp = () => {
+                            window.removeEventListener(
+                                "mousemove",
+                                handleMouseMove
+                            );
+                            window.removeEventListener(
+                                "mouseup",
+                                handleMouseUp
+                            );
+                        };
+
+                        window.addEventListener("mousemove", handleMouseMove);
+                        window.addEventListener("mouseup", handleMouseUp);
+                    }}
+                />
+            </EdgeLabelRenderer>
             <BaseEdge
                 id={id}
                 path={edgePath}
@@ -72,16 +118,6 @@ const CustomEdge = (props: EdgeProps) => {
                 }
                 markerEnd={`url(#${id}-arrow)`}
             />
-            <EdgeLabelRenderer>
-                <div
-                    className="absolute text-sm font-semibold text-gray-600"
-                    style={{
-                        transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`,
-                    }}
-                >
-                    {label}
-                </div>
-            </EdgeLabelRenderer>
             <defs>
                 <marker
                     id={`${id}-arrow`}
