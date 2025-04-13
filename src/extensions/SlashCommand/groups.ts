@@ -62,6 +62,34 @@ export const GROUPS: Group[] = [
                         .run();
                 },
             },
+            {
+                name: "topic3",
+                label: "Topic3",
+                iconName: "SquareLibrary",
+                aliases: ["topic"],
+                description: "topic component",
+                action: (editor) => {
+                    editor
+                        .chain()
+                        .focus()
+                        .insertContent({
+                            type: "topic",
+                            attrs: {
+                                documentId: "default-document",
+                                id: uuidv4(),
+                                level: "3",
+                                config: {
+                                    info: {
+                                        name: "Topic 3",
+                                        description:
+                                            "This is a topic description",
+                                    },
+                                },
+                            },
+                        })
+                        .run();
+                },
+            },
         ],
     },
     {

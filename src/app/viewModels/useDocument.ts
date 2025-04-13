@@ -85,23 +85,23 @@ export function useDocumentViewModel(documentId: string): DocumentViewModel {
             },
         ];
         const newEditNodes: JsonObject[] = [];
-        let lastTopicId: string = "root";
-        let lastTopic1Id: string = "root";
+        const lastTopicId: string[] = ["root", "root", "root"];
+        let lastTopicLevel = 0;
 
         for (let i = 0; i < content.length; i++) {
-            const topicLevel = content[i].attrs.level;
-            let tmpTopicId = topicLevel === "1" ? "root" : lastTopicId;
+            const topicLevel: number = parseInt(content[i].attrs.level) ?? 0;
+            let parent = lastTopicLevel;
+
+            if (topicLevel === 1) parent = 0;
+            else if (topicLevel === lastTopicLevel) parent = lastTopicLevel - 1;
+            else if (topicLevel < lastTopicLevel) parent = topicLevel - 1;
+
             if (content[i].type.startsWith("topic")) {
-                lastTopicId = content[i].attrs.id;
-                if (topicLevel === "1") {
-                    lastTopic1Id = content[i].attrs.id;
-                    tmpTopicId = "root";
-                } else if (topicLevel === "2") {
-                    tmpTopicId = lastTopic1Id;
-                }
+                lastTopicId[topicLevel] = content[i].attrs.id;
+                lastTopicLevel = topicLevel;
             }
 
-            const graphNode = newGraphNode(content[i], tmpTopicId);
+            const graphNode = newGraphNode(content[i], lastTopicId[parent]);
             if (graphNode) newGraphNodes.push(graphNode);
 
             if (
