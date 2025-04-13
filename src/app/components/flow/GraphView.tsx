@@ -10,7 +10,7 @@ import {
     Background,
     MarkerType,
     BackgroundVariant,
-    MiniMap,
+    // MiniMap,
     ConnectionMode,
     ConnectionLineType,
     useReactFlow,
@@ -207,7 +207,7 @@ const GraphView = ({ docMode, graphNodes }: GraphViewProps) => {
                     setColorMode={setColorMode}
                 /> */}
                 <ZoomSlider position="top-left" />
-                <MiniMap />
+                {/* <MiniMap /> */}
                 {ToastComponent}
             </ReactFlow>
             <FlowScrollModeButton
