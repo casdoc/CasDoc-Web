@@ -22,6 +22,7 @@ const CustomEdge = (props: EdgeProps) => {
         source,
         label,
         data,
+        pathOptions,
     } = props;
 
     const { selectedNode, showTarget, showSource } = useNodeSelection();
@@ -34,6 +35,7 @@ const CustomEdge = (props: EdgeProps) => {
         targetX,
         targetY,
         targetPosition,
+        offset: pathOptions.offset,
     });
     const pinkColor = "#FF79BC";
     const grayColor = "#BEBEBE";
@@ -48,9 +50,15 @@ const CustomEdge = (props: EdgeProps) => {
             : grayColor;
 
     useEffect(() => {
-        updateEdge(id, {
-            animated: edgeColor === pinkColor,
-        });
+        updateEdge(
+            id,
+            {
+                animated: edgeColor === pinkColor,
+                pathOptions: { offset: edgeColor === pinkColor ? 100 : 50 },
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            } as any,
+            { replace: true }
+        );
     }, [edgeColor, updateEdge, id]);
 
     return (
