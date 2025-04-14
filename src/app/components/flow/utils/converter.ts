@@ -53,7 +53,7 @@ export const connectConnectionEdges = (
             targetHandle: Position.Right,
             label: e.label,
             data: { bidirectional: e.data.bidirectional },
-            pathOptions: { offset: 50 },
+            pathOptions: { offset: e.data.offset ?? 50 },
         };
     });
 };

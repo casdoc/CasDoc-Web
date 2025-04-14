@@ -13,6 +13,7 @@ export interface GraphViewModel {
     updateAffectedIds: (ids: string[]) => void;
     removeAffectedId: (id: string) => void;
     clearAffectedIds: () => void;
+    updateOffset: (edge: ConnectionEdge, offset: number) => void;
 }
 
 export interface ConnectionEdge {
@@ -52,7 +53,11 @@ export function useGraphViewModel(): GraphViewModel {
                     if (e.source === edge.target && e.target === edge.source) {
                         return {
                             ...e,
-                            data: { ...e.data, bidirectional: true },
+                            data: {
+                                ...e.data,
+                                bidirectional: true,
+                                offset: e.data.offset ?? 50,
+                            },
                         };
                     }
                     return e;
@@ -168,6 +173,24 @@ export function useGraphViewModel(): GraphViewModel {
         GraphService.setAffectedIds([]);
     }, []);
 
+    const updateOffset = (edge: ConnectionEdge, offset: number) => {
+        setConnectionEdges((prevEdges) => {
+            const newEdges = prevEdges.map((e) => {
+                if (
+                    (e.source === edge.source && e.target === edge.target) ||
+                    (e.source == edge.target &&
+                        e.target === edge.source &&
+                        e.data.bidirectional)
+                ) {
+                    return { ...e, data: { ...e.data, offset: offset } };
+                }
+                return e;
+            });
+            GraphService.setEdges(newEdges);
+            return newEdges;
+        });
+    };
+
     return {
         connectionEdges,
         updConnectionEdges,
@@ -179,5 +202,6 @@ export function useGraphViewModel(): GraphViewModel {
         updateAffectedIds,
         removeAffectedId,
         clearAffectedIds,
+        updateOffset,
     };
 }

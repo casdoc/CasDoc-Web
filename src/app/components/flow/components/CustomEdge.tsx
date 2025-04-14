@@ -7,6 +7,7 @@ import {
     useReactFlow,
 } from "@xyflow/react";
 import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext";
+import { useGraphContext } from "@/app/viewModels/context/GraphContext";
 
 const CustomEdge = (props: EdgeProps) => {
     const {
@@ -35,7 +36,7 @@ const CustomEdge = (props: EdgeProps) => {
         targetX,
         targetY,
         targetPosition,
-        offset: pathOptions.offset,
+        offset: pathOptions?.offset,
     });
     const pinkColor = "#FF79BC";
     const grayColor = "#BEBEBE";
@@ -48,6 +49,8 @@ const CustomEdge = (props: EdgeProps) => {
             (showSource || (showTarget && data?.bidirectional)))
             ? pinkColor
             : grayColor;
+
+    const { updateOffset } = useGraphContext();
 
     useEffect(() => {
         updateEdge(
@@ -72,9 +75,10 @@ const CustomEdge = (props: EdgeProps) => {
                             e.preventDefault();
                             e.stopPropagation();
                             const startX = e.clientX;
+                            let deltaX: number;
 
                             const handleMouseMove = (moveEvent: MouseEvent) => {
-                                const deltaX = moveEvent.clientX - startX;
+                                deltaX = moveEvent.clientX - startX;
                                 if (pathOptions.offset + deltaX > 15) {
                                     updateEdge(
                                         id,
@@ -82,7 +86,8 @@ const CustomEdge = (props: EdgeProps) => {
                                             animated: edgeColor === pinkColor,
                                             pathOptions: {
                                                 offset:
-                                                    pathOptions.offset + deltaX,
+                                                    pathOptions.offset +
+                                                    (deltaX / 5) * 4,
                                             },
                                             // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                         } as any,
@@ -100,6 +105,16 @@ const CustomEdge = (props: EdgeProps) => {
                                     "mouseup",
                                     handleMouseUp
                                 );
+                                if (pathOptions.offset + deltaX > 15) {
+                                    updateOffset(
+                                        {
+                                            source: source,
+                                            target: target,
+                                            data: data!,
+                                        },
+                                        pathOptions.offset + (deltaX / 5) * 4
+                                    );
+                                }
                             };
 
                             window.addEventListener(
@@ -114,7 +129,7 @@ const CustomEdge = (props: EdgeProps) => {
                         className="absolute text-sm font-semibold text-gray-600"
                         style={{
                             transform: `translate(-50%, -50%) translate(${
-                                Math.max(sourceX, targetX) + pathOptions.offset
+                                Math.max(sourceX, targetX) + pathOptions?.offset
                             }px, ${(sourceY + targetY) / 2}px)`,
                         }}
                     >
