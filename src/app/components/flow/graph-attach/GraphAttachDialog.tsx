@@ -9,6 +9,7 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import { Flex, TextField } from "@radix-ui/themes";
+import { useProjectContext } from "@/app/viewModels/context/ProjectContext";
 
 export const GraphAttachDialog = ({
     openAttach,
@@ -17,6 +18,8 @@ export const GraphAttachDialog = ({
     openAttach: boolean;
     setOpenAttach: (open: boolean) => void;
 }) => {
+    const { projects, getDocumentsByProjectId } = useProjectContext();
+
     return (
         <Dialog open={openAttach} onOpenChange={setOpenAttach}>
             <DialogTrigger asChild>
@@ -48,6 +51,30 @@ export const GraphAttachDialog = ({
                         <PiMagnifyingGlass size={25} className="p-1" />
                     </TextField.Slot>
                 </TextField.Root>
+                <div className="overflow-y-auto h-[200px] px-2 space-y-4">
+                    {projects?.map((project) => {
+                        const docs = getDocumentsByProjectId(project.id);
+                        return (
+                            <div key={project.id}>
+                                <h3 className="text-base font-semibold">
+                                    {project.name}
+                                </h3>
+                                <ul className="ml-4 mt-1 space-y-1">
+                                    {docs?.map((doc) => (
+                                        <li
+                                            key={doc.id}
+                                            className="hover:bg-gray-100 rounded-md px-2 py-1 cursor-pointer transition"
+                                        >
+                                            <span className="text-sm">
+                                                {doc.title}
+                                            </span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        );
+                    })}
+                </div>
             </DialogContent>
         </Dialog>
     );
