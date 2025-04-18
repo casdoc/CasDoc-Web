@@ -36,7 +36,7 @@ import ToastManager from "@/app/viewModels/ToastManager";
 import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext";
 import CustomEdge from "./components/CustomEdge";
 import { useGraphContext } from "@/app/viewModels/context/GraphContext";
-import { GraphAttach } from "./components/GraphAttach";
+import { GraphAttachButton } from "./graph-attach/GraphAttachButton";
 
 const nodeTypes = { custom: CustomNode };
 const edgeTypes = {
@@ -207,7 +207,7 @@ const GraphView = ({ docMode, graphNodes }: GraphViewProps) => {
                     colorMode={colorMode}
                     setColorMode={setColorMode}
                 /> */}
-                <GraphAttach />
+                <GraphAttachButton />
                 <ZoomSlider position="top-left" />
                 {/* <MiniMap /> */}
                 {ToastComponent}
