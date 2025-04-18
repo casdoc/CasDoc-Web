@@ -27,7 +27,7 @@ const CustomEdge = (props: EdgeProps) => {
     } = props;
 
     const { selectedNode, showTarget, showSource } = useNodeSelection();
-    const { updateEdge } = useReactFlow();
+    const { updateEdge, getZoom } = useReactFlow();
 
     const [edgePath] = getSmoothStepPath({
         sourceX,
@@ -79,7 +79,9 @@ const CustomEdge = (props: EdgeProps) => {
 
                             const handleMouseMove = (moveEvent: MouseEvent) => {
                                 deltaX = moveEvent.clientX - startX;
+                                const zoom = getZoom();
                                 if (pathOptions.offset + deltaX > 15) {
+                                    console.log("zoom:", getZoom());
                                     updateEdge(
                                         id,
                                         {
@@ -87,7 +89,7 @@ const CustomEdge = (props: EdgeProps) => {
                                             pathOptions: {
                                                 offset:
                                                     pathOptions.offset +
-                                                    (deltaX / 5) * 4,
+                                                    deltaX * (1 / zoom),
                                             },
                                             // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                         } as any,
@@ -105,14 +107,18 @@ const CustomEdge = (props: EdgeProps) => {
                                     "mouseup",
                                     handleMouseUp
                                 );
-                                if (pathOptions.offset + deltaX > 15) {
+                                const zoom = getZoom();
+                                if (
+                                    pathOptions.offset + deltaX * (1 / zoom) >
+                                    15
+                                ) {
                                     updateOffset(
                                         {
                                             source: source,
                                             target: target,
                                             data: data!,
                                         },
-                                        pathOptions.offset + (deltaX / 5) * 4
+                                        pathOptions.offset + deltaX * (1 / zoom)
                                     );
                                 }
                             };
