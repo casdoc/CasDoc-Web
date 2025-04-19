@@ -81,20 +81,14 @@ const CustomEdge = (props: EdgeProps) => {
                                 deltaX = moveEvent.clientX - startX;
                                 const zoom = getZoom();
                                 if (pathOptions.offset + deltaX > 15) {
-                                    console.log("zoom:", getZoom());
-                                    updateEdge(
-                                        id,
-                                        {
-                                            animated: edgeColor === pinkColor,
-                                            pathOptions: {
-                                                offset:
-                                                    pathOptions.offset +
-                                                    deltaX * (1 / zoom),
-                                            },
-                                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                        } as any,
-                                        { replace: true }
-                                    );
+                                    updateEdge(id, {
+                                        pathOptions: {
+                                            offset:
+                                                pathOptions.offset +
+                                                deltaX * (1 / zoom),
+                                        },
+                                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                    } as any);
                                 }
                             };
 
@@ -128,6 +122,11 @@ const CustomEdge = (props: EdgeProps) => {
                                 handleMouseMove
                             );
                             window.addEventListener("mouseup", handleMouseUp);
+                        }}
+                        onMouseUp={() => {
+                            setTimeout(() => {
+                                updateEdge(id, { selected: true });
+                            });
                         }}
                     />
                 ) : (
