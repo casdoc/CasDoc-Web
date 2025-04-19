@@ -27,7 +27,7 @@ const CustomEdge = (props: EdgeProps) => {
     } = props;
 
     const { selectedNode, showTarget, showSource } = useNodeSelection();
-    const { updateEdge } = useReactFlow();
+    const { updateEdge, getZoom } = useReactFlow();
 
     const [edgePath] = getSmoothStepPath({
         sourceX,
@@ -70,7 +70,7 @@ const CustomEdge = (props: EdgeProps) => {
                                 Math.max(sourceX, targetX) + pathOptions.offset
                             }px, ${(sourceY + targetY) / 2}px)`,
                         }}
-                        className="absolute cursor-grab w-2.5 h-6 border border-gray-800 bg-white rounded-sm z-10 pointer-events-auto"
+                        className="absolute cursor-col-resize w-2.5 h-6 border border-gray-800 bg-white rounded-sm z-10 pointer-events-auto"
                         onMouseDown={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
@@ -78,21 +78,17 @@ const CustomEdge = (props: EdgeProps) => {
                             let deltaX: number;
 
                             const handleMouseMove = (moveEvent: MouseEvent) => {
+                                const zoom = 1 / getZoom();
                                 deltaX = moveEvent.clientX - startX;
-                                if (pathOptions.offset + deltaX > 15) {
-                                    updateEdge(
-                                        id,
-                                        {
-                                            animated: edgeColor === pinkColor,
-                                            pathOptions: {
-                                                offset:
-                                                    pathOptions.offset +
-                                                    (deltaX / 5) * 4,
-                                            },
-                                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                        } as any,
-                                        { replace: true }
-                                    );
+                                if (pathOptions.offset + deltaX * zoom > 15) {
+                                    updateEdge(id, {
+                                        pathOptions: {
+                                            offset:
+                                                pathOptions.offset +
+                                                deltaX * zoom,
+                                        },
+                                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                    } as any);
                                 }
                             };
 
@@ -105,14 +101,15 @@ const CustomEdge = (props: EdgeProps) => {
                                     "mouseup",
                                     handleMouseUp
                                 );
-                                if (pathOptions.offset + deltaX > 15) {
+                                const zoom = 1 / getZoom();
+                                if (pathOptions.offset + deltaX * zoom > 15) {
                                     updateOffset(
                                         {
                                             source: source,
                                             target: target,
                                             data: data!,
                                         },
-                                        pathOptions.offset + (deltaX / 5) * 4
+                                        pathOptions.offset + deltaX * zoom
                                     );
                                 }
                             };
@@ -122,6 +119,11 @@ const CustomEdge = (props: EdgeProps) => {
                                 handleMouseMove
                             );
                             window.addEventListener("mouseup", handleMouseUp);
+                        }}
+                        onMouseUp={() => {
+                            setTimeout(() => {
+                                updateEdge(id, { selected: true });
+                            });
                         }}
                     />
                 ) : (
