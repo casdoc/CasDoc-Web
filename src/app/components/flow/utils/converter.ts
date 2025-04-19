@@ -27,7 +27,7 @@ export const convertDataToStructuralEdges = (
 ): Edge[] => {
     if (graphNodes.length === 0) return [];
     return graphNodes
-        .filter((node) => node.id !== "root")
+        .filter((node) => !node.id.startsWith("root"))
         .map((node) => {
             return {
                 id: `e-${node.pid}-${node.id}`,
