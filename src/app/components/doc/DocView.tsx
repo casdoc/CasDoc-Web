@@ -2,7 +2,7 @@ import DocMode from "@/app/models/enum/DocMode";
 import { useDocModeViewModel } from "@/app/viewModels/DocModeViewModel";
 import EditorHeader from "@/app/components/doc/BlockEditor/EditorHeader";
 import { useBlockEditor } from "@/app/viewModels/useBlockEditor";
-import { BlockEditor } from "@/app/components/doc/BlockEditor/BlockEditor";
+import BlockEditor from "@/app/components/doc/BlockEditor/BlockEditor";
 import GraphView from "../flow/GraphView";
 import { ReactFlowProvider } from "@xyflow/react";
 import { useState, useEffect, useRef } from "react";
