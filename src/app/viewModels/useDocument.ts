@@ -25,10 +25,10 @@ export function useDocumentViewModel(documentId: string): DocumentViewModel {
     const [document, setDocument] = useState<Document>();
     const [graphNodes, setGraphNodes] = useState<Array<GraphNode>>([
         {
-            id: "root",
-            pid: "root",
+            id: documentId,
+            pid: documentId,
             label: "root",
-            type: "",
+            type: "root",
         },
     ]);
     const [editNodes, setEditNodes] = useState<Array<JsonObject>>([]);
@@ -61,10 +61,10 @@ export function useDocumentViewModel(documentId: string): DocumentViewModel {
         if (!content) {
             setGraphNodes([
                 {
-                    id: "root",
-                    pid: "root",
+                    id: documentId,
+                    pid: documentId,
                     label: document.title || "Untitled",
-                    type: "",
+                    type: "root",
                 },
             ]);
             return;
@@ -79,14 +79,14 @@ export function useDocumentViewModel(documentId: string): DocumentViewModel {
 
         const newGraphNodes: GraphNode[] = [
             {
-                id: "root",
-                pid: "root",
+                id: documentId,
+                pid: documentId,
                 label: document.title || "Untitled",
-                type: "",
+                type: "root",
             },
         ];
         const newEditNodes: JsonObject[] = [];
-        const lastTopicId: string[] = ["root", "root", "root"];
+        const lastTopicId: string[] = [documentId, documentId, documentId];
         let lastTopicLevel = 0;
 
         for (let i = 0; i < content.length; i++) {
@@ -118,7 +118,7 @@ export function useDocumentViewModel(documentId: string): DocumentViewModel {
             setGraphNodes(newGraphNodes);
         }
         setEditNodes(newEditNodes);
-    }, [document, graphNodes]);
+    }, [document, graphNodes, documentId]);
 
     const updateDocument = useCallback((document: Document) => {
         DocumentService.saveDocument(document);

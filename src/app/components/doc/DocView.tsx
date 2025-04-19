@@ -12,14 +12,14 @@ import { useGraphContext } from "@/app/viewModels/context/GraphContext";
 const DocView = () => {
     const { mode, setDocMode } = useDocModeViewModel();
     const { document, graphNodes, updateDocument } = useDocumentContext();
-    const { appendGraphNodes } = useGraphContext();
+    const { setGraphNodes } = useGraphContext();
     const { editor } = useBlockEditor({ document, updateDocument });
     const [splitWidth, setSplitWidth] = useState(50);
     const isResizing = useRef(false);
 
     useEffect(() => {
-        appendGraphNodes(graphNodes);
-    }, [appendGraphNodes, graphNodes]);
+        setGraphNodes(graphNodes);
+    }, [setGraphNodes, graphNodes]);
 
     useEffect(() => {
         const handleMouseMove = (e: MouseEvent) => {

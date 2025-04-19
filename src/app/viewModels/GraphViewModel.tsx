@@ -17,6 +17,7 @@ export interface GraphViewModel {
     clearAffectedIds: () => void;
     updateOffset: (edge: ConnectionEdge, offset: number) => void;
     appendGraphNodes: (nodes: Array<GraphNode>) => void;
+    setGraphNodes: (nodes: Array<GraphNode>) => void;
 }
 
 export interface ConnectionEdge {
@@ -223,5 +224,6 @@ export function useGraphViewModel(): GraphViewModel {
         clearAffectedIds,
         updateOffset,
         appendGraphNodes,
+        setGraphNodes,
     };
 }

@@ -30,6 +30,7 @@ export interface ProjectViewModel {
     deleteDocument: (documentId: string) => void;
     editDocument: (documentId: string, update: DocumentInput) => void;
     selectDocument: (documentId: string) => void;
+    getDocumentById: (documentId: string) => Document | undefined;
 
     // Dialog actions
     openProjectDialog: (projectId?: string) => void;
@@ -225,6 +226,15 @@ export const useProjectViewModel = (): ProjectViewModel => {
         setEditingDocument(null);
     }, []);
 
+    const getDocumentById = (documentId: string): Document | undefined => {
+        for (const project of projects) {
+            const documents = getDocumentsByProjectId(project.id);
+            const doc = documents.find((d) => d.id === documentId);
+            if (doc) return doc;
+        }
+        return undefined;
+    };
+
     return {
         projects,
         documentsMap,
@@ -243,6 +253,7 @@ export const useProjectViewModel = (): ProjectViewModel => {
         deleteDocument,
         editDocument,
         selectDocument,
+        getDocumentById,
         openProjectDialog,
         openDocumentDialog,
         closeProjectDialog,
