@@ -15,7 +15,6 @@ const TopicComponent = ({ node, selected, editor, getPos }: NodeViewProps) => {
         getPos,
         editor,
     });
-    const levelMargin = `ml-${8 * (level - 1)}`;
 
     const [showBubbleBar, setShowBubbleBar] = useState(false);
 
@@ -45,7 +44,7 @@ const TopicComponent = ({ node, selected, editor, getPos }: NodeViewProps) => {
                     : selected
                     ? "border-gray-500 "
                     : "border-white hover:border-gray-200"
-            } ${levelMargin}`}
+            } ${level == 2 ? "ml-8" : level == 3 ? "ml-16" : "ml-0"}`}
             onClick={handleClick}
             ref={setNodeRef}
         >
