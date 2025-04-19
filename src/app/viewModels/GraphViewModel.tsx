@@ -1,19 +1,22 @@
 import { useState, useCallback, useEffect } from "react";
 import { GraphService } from "../models/services/GraphService";
 import { JsonObject } from "../models/types/JsonObject";
+import { GraphNode } from "./useDocument";
 
 export interface GraphViewModel {
     connectionEdges: ConnectionEdge[];
+    affectedIds: string[];
+    graphNodes: Array<GraphNode>;
     updConnectionEdges: (edge: ConnectionEdge) => void;
     searchTarget: (sourceId: string) => ConnectionEdge[];
     searchSource: (sourceId: string) => ConnectionEdge[];
     removeConnectionEdge: (edge: ConnectionEdge) => void;
     updateLabel: (edge: ConnectionEdge, content: string) => void;
-    affectedIds: string[];
     updateAffectedIds: (ids: string[]) => void;
     removeAffectedId: (id: string) => void;
     clearAffectedIds: () => void;
     updateOffset: (edge: ConnectionEdge, offset: number) => void;
+    setGraphNodes: (nodes: Array<GraphNode>) => void;
 }
 
 export interface ConnectionEdge {
@@ -28,6 +31,14 @@ export function useGraphViewModel(): GraphViewModel {
         []
     );
     const [affectedIds, setAffectedIds] = useState<string[]>([]);
+    const [graphNodes, setGraphNodes] = useState<Array<GraphNode>>([
+        {
+            id: "root",
+            pid: "root",
+            label: "root",
+            type: "",
+        },
+    ]);
 
     useEffect(() => {
         const localEdges = GraphService.getEdges();
@@ -193,15 +204,17 @@ export function useGraphViewModel(): GraphViewModel {
 
     return {
         connectionEdges,
+        affectedIds,
+        graphNodes,
         updConnectionEdges,
         searchTarget,
         searchSource,
         removeConnectionEdge,
         updateLabel,
-        affectedIds,
         updateAffectedIds,
         removeAffectedId,
         clearAffectedIds,
         updateOffset,
+        setGraphNodes,
     };
 }
