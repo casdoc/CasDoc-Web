@@ -29,7 +29,6 @@ import {
 } from "./utils/converter";
 // import { FlowSettingPanel } from "./setting-panel/FlowSettingPanel";
 import CustomNode from "./components/CustomNode";
-import { GraphNode } from "@/app/viewModels/useDocument";
 import DocMode from "@/app/models/enum/DocMode";
 import { FlowScrollModeButton } from "./setting-panel/FlowScrollModeButton";
 import ToastManager from "@/app/viewModels/ToastManager";
@@ -57,10 +56,9 @@ const defaultEdgeOptions = {
 
 interface GraphViewProps {
     docMode: DocMode | undefined;
-    graphNodes: GraphNode[];
 }
 
-const GraphView = ({ docMode, graphNodes }: GraphViewProps) => {
+const GraphView = ({ docMode }: GraphViewProps) => {
     // const [colorMode, setColorMode] = useState<"light" | "dark">("light");
     // const [selectedLayout, setSelectedLayout] = useState("LR");
     const [scrollMode, setScrollMode] = useState<"zoom" | "drag">("drag");
@@ -69,10 +67,12 @@ const GraphView = ({ docMode, graphNodes }: GraphViewProps) => {
 
     const {
         connectionEdges,
+        affectedIds,
+        graphNodes,
         updConnectionEdges,
         removeConnectionEdge,
-        affectedIds,
     } = useGraphContext();
+
     const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
     const { fitView, setCenter } = useReactFlow();

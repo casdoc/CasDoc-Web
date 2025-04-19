@@ -7,13 +7,19 @@ import GraphView from "../flow/GraphView";
 import { ReactFlowProvider } from "@xyflow/react";
 import { useState, useEffect, useRef } from "react";
 import { useDocumentContext } from "@/app/viewModels/context/DocumentContext";
+import { useGraphContext } from "@/app/viewModels/context/GraphContext";
 
 const DocView = () => {
     const { mode, setDocMode } = useDocModeViewModel();
     const { document, graphNodes, updateDocument } = useDocumentContext();
+    const { setGraphNodes } = useGraphContext();
     const { editor } = useBlockEditor({ document, updateDocument });
     const [splitWidth, setSplitWidth] = useState(50);
     const isResizing = useRef(false);
+
+    useEffect(() => {
+        setGraphNodes(graphNodes);
+    }, [setGraphNodes, graphNodes]);
 
     useEffect(() => {
         const handleMouseMove = (e: MouseEvent) => {
@@ -89,7 +95,7 @@ const DocView = () => {
                     }}
                 >
                     <ReactFlowProvider>
-                        <GraphView docMode={mode} graphNodes={graphNodes} />
+                        <GraphView docMode={mode} />
                     </ReactFlowProvider>
                 </div>
             </div>

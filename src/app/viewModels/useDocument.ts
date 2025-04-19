@@ -15,10 +15,10 @@ export interface GraphNode {
 
 export interface DocumentViewModel {
     document: Document | undefined;
-    updateDocument: (document: Document) => void;
-    updateEditNodeById: (nodeId: string, changes: Partial<JsonObject>) => void;
     graphNodes: Array<GraphNode>;
     editNodes: Array<JsonObject>;
+    updateDocument: (document: Document) => void;
+    updateEditNodeById: (nodeId: string, changes: Partial<JsonObject>) => void;
 }
 
 export function useDocumentViewModel(documentId: string): DocumentViewModel {
@@ -189,9 +189,9 @@ export function useDocumentViewModel(documentId: string): DocumentViewModel {
 
     return {
         document,
-        updateDocument,
-        updateEditNodeById,
         graphNodes,
         editNodes,
+        updateDocument,
+        updateEditNodeById,
     };
 }
