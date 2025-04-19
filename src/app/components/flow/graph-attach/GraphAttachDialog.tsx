@@ -12,7 +12,9 @@ import { Flex, TextField } from "@radix-ui/themes";
 import { useProjectContext } from "@/app/viewModels/context/ProjectContext";
 import { CircleMinus, CirclePlus } from "lucide-react";
 import { useState } from "react";
-// import { useGraphContext } from "@/app/viewModels/context/GraphContext";
+import { GraphNode } from "@/app/viewModels/useDocument";
+import { useGraphContext } from "@/app/viewModels/context/GraphContext";
+import { JsonObject } from "@/app/models/types/JsonObject";
 
 export const GraphAttachDialog = ({
     openAttach,
@@ -22,13 +24,12 @@ export const GraphAttachDialog = ({
     setOpenAttach: (open: boolean) => void;
 }) => {
     const { projects, getDocumentsByProjectId } = useProjectContext();
-    // const { appendGraphNodes } = useGraphContext();
 
     return (
         <Dialog open={openAttach} onOpenChange={setOpenAttach}>
             <DialogTrigger asChild>
                 <button
-                    className="hover:bg-gray-200 transition-colors duration-300 p-1.5 rounded-lg"
+                    className="hover:bg-gray-200 transition-colors duration-300 p-1.5 rounded-lg select-none"
                     onClick={() => setOpenAttach(true)}
                 >
                     <IoExtensionPuzzleOutline size={28} />
@@ -70,7 +71,9 @@ export const GraphAttachDialog = ({
                                             className="hover:bg-gray-100 rounded-md px-2 py-1 my-2 transition cursor-default"
                                         >
                                             <Flex className="gap-3">
-                                                <AttachActionButton />
+                                                <AttachActionButton
+                                                    id={doc.id}
+                                                />
                                                 <span className="text-sm">
                                                     {doc.title}
                                                 </span>
@@ -82,30 +85,69 @@ export const GraphAttachDialog = ({
                         );
                     })}
                 </div>
-                {/* <button
-                    className="p-1 hover:bg-gray-300 hover:text-gray-600 transition-colors duration-300 rounded"
-                    onClick={() => {
-                        appendGraphNodes([
-                            {
-                                id: "root2",
-                                pid: "root2",
-                                label: "root",
-                                type: "",
-                            },
-                        ]);
-                    }}
-                >
-                    Add
-                </button> */}
             </DialogContent>
         </Dialog>
     );
 };
 
-const AttachActionButton = () => {
+const AttachActionButton = ({ id }: { id: string }) => {
+    const { getDocumentById } = useProjectContext();
+    const { appendGraphNodes } = useGraphContext();
     const [selected, setSelected] = useState(false);
+
+    const handleClick = () => {
+        setSelected(!selected);
+        const doc = getDocumentById(id);
+        if (!doc) return;
+        const docContents = doc.content;
+        const newGraphNodes: GraphNode[] = [
+            {
+                id: doc.id,
+                pid: doc.id,
+                label: doc.title || "Untitled",
+                type: "root",
+            },
+        ];
+        const lastTopicId: string[] = [doc.id, doc.id, doc.id];
+        let lastTopicLevel = 0;
+
+        for (let i = 0; i < docContents.length; i++) {
+            const topicLevel: number =
+                parseInt(docContents[i].attrs.level) ?? 0;
+            let parent = lastTopicLevel;
+
+            if (topicLevel === 1) parent = 0;
+            else if (topicLevel === lastTopicLevel) parent = lastTopicLevel - 1;
+            else if (topicLevel < lastTopicLevel) parent = topicLevel - 1;
+
+            if (docContents[i].type.startsWith("topic")) {
+                lastTopicId[topicLevel] = docContents[i].attrs.id;
+                lastTopicLevel = topicLevel;
+            }
+
+            const graphNode = newGraphNode(docContents[i], lastTopicId[parent]);
+            if (graphNode) newGraphNodes.push(graphNode);
+        }
+        appendGraphNodes(newGraphNodes);
+    };
+
+    const newGraphNode = (content: JsonObject, lastTopicId?: string) => {
+        if (
+            content.type.startsWith("topic") ||
+            content.type.startsWith("template")
+        ) {
+            return {
+                id: content.attrs.id,
+                pid: lastTopicId || content.attrs.topicId,
+                label: content.attrs.config?.info.name || "",
+                type: content.type,
+                level: content.attrs.level,
+            };
+        }
+    };
+
     return (
-        <button onClick={() => setSelected(!selected)}>
+        <button onClick={handleClick}>
             {selected ? (
                 <CircleMinus className="h-5 w-5 text-red-500 cursor-pointer" />
             ) : (
