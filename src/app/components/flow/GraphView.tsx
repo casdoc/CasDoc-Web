@@ -113,7 +113,7 @@ const GraphView = ({ docMode, graphNodes: currentNodes }: GraphViewProps) => {
 
     useEffect(() => {
         fitView({ duration: 500 });
-    }, [docMode, fitView]);
+    }, [docMode, fitView, nodes.length]);
 
     const onConnect = useCallback(
         (params: Connection) => {
