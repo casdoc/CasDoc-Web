@@ -6,7 +6,7 @@ import { GraphNode } from "./useDocument";
 export interface GraphViewModel {
     connectionEdges: ConnectionEdge[];
     affectedIds: string[];
-    graphNodes: Array<GraphNode>;
+    attachedNodes: Array<GraphNode>;
     updConnectionEdges: (edge: ConnectionEdge) => void;
     searchTarget: (sourceId: string) => ConnectionEdge[];
     searchSource: (sourceId: string) => ConnectionEdge[];
@@ -16,8 +16,8 @@ export interface GraphViewModel {
     removeAffectedId: (id: string) => void;
     clearAffectedIds: () => void;
     updateOffset: (edge: ConnectionEdge, offset: number) => void;
-    appendGraphNodes: (nodes: Array<GraphNode>) => void;
-    setGraphNodes: (nodes: Array<GraphNode>) => void;
+    appendAttachedNodes: (nodes: Array<GraphNode>) => void;
+    setAttachedNodes: (nodes: Array<GraphNode>) => void;
 }
 
 export interface ConnectionEdge {
@@ -32,14 +32,7 @@ export function useGraphViewModel(): GraphViewModel {
         []
     );
     const [affectedIds, setAffectedIds] = useState<string[]>([]);
-    const [graphNodes, setGraphNodes] = useState<Array<GraphNode>>([
-        {
-            id: "root",
-            pid: "root",
-            label: "root",
-            type: "",
-        },
-    ]);
+    const [attachedNodes, setAttachedNodes] = useState<Array<GraphNode>>([]);
 
     useEffect(() => {
         const localEdges = GraphService.getEdges();
@@ -203,8 +196,8 @@ export function useGraphViewModel(): GraphViewModel {
         });
     };
 
-    const appendGraphNodes = useCallback((nodes: Array<GraphNode>) => {
-        setGraphNodes((prevNodes) => {
+    const appendAttachedNodes = useCallback((nodes: Array<GraphNode>) => {
+        setAttachedNodes((prevNodes) => {
             const newNodes = [...prevNodes, ...nodes];
             return newNodes;
         });
@@ -213,7 +206,7 @@ export function useGraphViewModel(): GraphViewModel {
     return {
         connectionEdges,
         affectedIds,
-        graphNodes,
+        attachedNodes,
         updConnectionEdges,
         searchTarget,
         searchSource,
@@ -223,7 +216,7 @@ export function useGraphViewModel(): GraphViewModel {
         removeAffectedId,
         clearAffectedIds,
         updateOffset,
-        appendGraphNodes,
-        setGraphNodes,
+        appendAttachedNodes,
+        setAttachedNodes,
     };
 }

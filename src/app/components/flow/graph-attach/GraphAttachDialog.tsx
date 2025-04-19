@@ -92,7 +92,7 @@ export const GraphAttachDialog = ({
 
 const AttachActionButton = ({ id }: { id: string }) => {
     const { getDocumentById } = useProjectContext();
-    const { appendGraphNodes } = useGraphContext();
+    const { appendAttachedNodes } = useGraphContext();
     const [selected, setSelected] = useState(false);
 
     const handleClick = () => {
@@ -128,7 +128,7 @@ const AttachActionButton = ({ id }: { id: string }) => {
             const graphNode = newGraphNode(docContents[i], lastTopicId[parent]);
             if (graphNode) newGraphNodes.push(graphNode);
         }
-        appendGraphNodes(newGraphNodes);
+        appendAttachedNodes(newGraphNodes);
     };
 
     const newGraphNode = (content: JsonObject, lastTopicId?: string) => {

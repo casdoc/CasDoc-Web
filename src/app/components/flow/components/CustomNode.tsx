@@ -23,10 +23,10 @@ function CustomNode({ id, data }: any) {
 
     return (
         <button
-            disabled={id === "root"}
+            disabled={data.type === "root"}
             onClick={handleClick}
             className={`${
-                id === "root" ? "cursor-not-allowed" : "hover:opacity-70"
+                data.type === "root" ? "cursor-not-allowed" : "hover:opacity-70"
             }`}
         >
             <div
