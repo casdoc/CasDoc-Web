@@ -63,8 +63,8 @@ const GraphView = ({ docMode, graphNodes }: GraphViewProps) => {
     // const [colorMode, setColorMode] = useState<"light" | "dark">("light");
     // const [selectedLayout, setSelectedLayout] = useState("LR");
     const [scrollMode, setScrollMode] = useState<"zoom" | "drag">("drag");
-    const nodeWidth = 242;
-    const nodeHeight = 12;
+    const nodeWidth = 232;
+    const nodeHeight = 36;
 
     const {
         connectionEdges,
