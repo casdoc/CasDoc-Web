@@ -79,11 +79,13 @@ const CustomEdge = (props: EdgeProps) => {
 
                             const handleMouseMove = (moveEvent: MouseEvent) => {
                                 const zoom = 1 / getZoom();
-                                deltaX = (moveEvent.clientX - startX) * zoom;
-                                if (pathOptions.offset + deltaX > 15) {
+                                deltaX = moveEvent.clientX - startX;
+                                if (pathOptions.offset + deltaX * zoom > 15) {
                                     updateEdge(id, {
                                         pathOptions: {
-                                            offset: pathOptions.offset + deltaX,
+                                            offset:
+                                                pathOptions.offset +
+                                                deltaX * zoom,
                                         },
                                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                     } as any);
@@ -99,14 +101,15 @@ const CustomEdge = (props: EdgeProps) => {
                                     "mouseup",
                                     handleMouseUp
                                 );
-                                if (pathOptions.offset + deltaX) {
+                                const zoom = 1 / getZoom();
+                                if (pathOptions.offset + deltaX * zoom > 15) {
                                     updateOffset(
                                         {
                                             source: source,
                                             target: target,
                                             data: data!,
                                         },
-                                        pathOptions.offset + deltaX
+                                        pathOptions.offset + deltaX * zoom
                                     );
                                 }
                             };
