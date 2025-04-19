@@ -55,7 +55,17 @@ const TopicComponent = ({ node, selected, editor, getPos }: NodeViewProps) => {
                 editor={editor}
             />
 
-            <div className="border-l-4 border-slate-400 pl-3">
+            <div
+                className={`border-l-4 ${
+                    level == 1
+                        ? "border-indigo-400"
+                        : level == 2
+                        ? "border-sky-400"
+                        : level == 3
+                        ? "border-teal-400"
+                        : "border-gray-400"
+                } pl-3`}
+            >
                 <h2 className="text-2xl font-bold text-black m-0 px-0 pb-1 group-hover:cursor-text w-fit">
                     {config.info.name || "Unknown"}
                 </h2>
