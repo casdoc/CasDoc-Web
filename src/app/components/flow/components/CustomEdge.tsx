@@ -78,14 +78,12 @@ const CustomEdge = (props: EdgeProps) => {
                             let deltaX: number;
 
                             const handleMouseMove = (moveEvent: MouseEvent) => {
-                                deltaX = moveEvent.clientX - startX;
-                                const zoom = getZoom();
+                                const zoom = 1 / getZoom();
+                                deltaX = (moveEvent.clientX - startX) * zoom;
                                 if (pathOptions.offset + deltaX > 15) {
                                     updateEdge(id, {
                                         pathOptions: {
-                                            offset:
-                                                pathOptions.offset +
-                                                deltaX * (1 / zoom),
+                                            offset: pathOptions.offset + deltaX,
                                         },
                                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                     } as any);
@@ -101,18 +99,14 @@ const CustomEdge = (props: EdgeProps) => {
                                     "mouseup",
                                     handleMouseUp
                                 );
-                                const zoom = getZoom();
-                                if (
-                                    pathOptions.offset + deltaX * (1 / zoom) >
-                                    15
-                                ) {
+                                if (pathOptions.offset + deltaX) {
                                     updateOffset(
                                         {
                                             source: source,
                                             target: target,
                                             data: data!,
                                         },
-                                        pathOptions.offset + deltaX * (1 / zoom)
+                                        pathOptions.offset + deltaX
                                     );
                                 }
                             };
