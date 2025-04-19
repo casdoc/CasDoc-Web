@@ -16,7 +16,7 @@ export interface GraphViewModel {
     removeAffectedId: (id: string) => void;
     clearAffectedIds: () => void;
     updateOffset: (edge: ConnectionEdge, offset: number) => void;
-    setGraphNodes: (nodes: Array<GraphNode>) => void;
+    appendGraphNodes: (nodes: Array<GraphNode>) => void;
 }
 
 export interface ConnectionEdge {
@@ -202,6 +202,13 @@ export function useGraphViewModel(): GraphViewModel {
         });
     };
 
+    const appendGraphNodes = useCallback((nodes: Array<GraphNode>) => {
+        setGraphNodes((prevNodes) => {
+            const newNodes = [...prevNodes, ...nodes];
+            return newNodes;
+        });
+    }, []);
+
     return {
         connectionEdges,
         affectedIds,
@@ -215,6 +222,6 @@ export function useGraphViewModel(): GraphViewModel {
         removeAffectedId,
         clearAffectedIds,
         updateOffset,
-        setGraphNodes,
+        appendGraphNodes,
     };
 }
