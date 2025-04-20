@@ -18,7 +18,6 @@ export interface GraphNode {
 export interface DocumentViewModel {
     document: Document | undefined;
     graphNodes: Array<GraphNode>;
-    // editNodes: Array<JsonObject>;
     updateDocument: (document: Document) => void;
     updateEditNodeById: (nodeId: string, changes: Partial<JsonObject>) => void;
 }
@@ -26,7 +25,6 @@ export interface DocumentViewModel {
 export function useDocumentViewModel(documentId: string): DocumentViewModel {
     const [document, setDocument] = useState<Document>();
     const [graphNodes, setGraphNodes] = useState<Array<GraphNode>>([]);
-    // const [editNodes, setEditNodes] = useState<Array<JsonObject>>([]);
 
     useEffect(() => {
         let doc = DocumentService.getDocumentById(documentId);
@@ -80,14 +78,12 @@ export function useDocumentViewModel(documentId: string): DocumentViewModel {
                 type: "root",
             },
         ];
-        // const newEditNodes: JsonObject[] = [];
         const lastTopicId: string[] = [documentId, documentId, documentId];
         let lastTopicLevel = 0;
 
         for (let i = 0; i < content.length; i++) {
             const topicLevel: number = parseInt(content[i].attrs.level) ?? 0;
             let parent = lastTopicLevel;
-
             if (topicLevel === 1) parent = 0;
             else if (topicLevel === lastTopicLevel) parent = lastTopicLevel - 1;
             else if (topicLevel < lastTopicLevel) parent = topicLevel - 1;
@@ -96,23 +92,12 @@ export function useDocumentViewModel(documentId: string): DocumentViewModel {
                 lastTopicId[topicLevel] = content[i].attrs.id;
                 lastTopicLevel = topicLevel;
             }
-
             const graphNode = newGraphNode(content[i], lastTopicId[parent]);
             if (graphNode) newGraphNodes.push(graphNode);
-
-            // if (
-            //     content[i].type.startsWith("topic") ||
-            //     content[i].type.startsWith("template")
-            // ) {
-            //     const editNode = newEditNode(content[i].type, content[i].attrs);
-            //     if (editNode) newEditNodes.push(editNode);
-            // }
         }
-
         if (JSON.stringify(newGraphNodes) !== JSON.stringify(graphNodes)) {
             setGraphNodes(newGraphNodes);
         }
-        // setEditNodes(newEditNodes);
     }, [document, graphNodes, documentId]);
 
     const updateDocument = useCallback((document: Document) => {
@@ -157,16 +142,6 @@ export function useDocumentViewModel(documentId: string): DocumentViewModel {
         updateDocument(document);
     };
 
-    // const newEditNode = (type: string, content: JsonObject) => {
-    //     const editNode = {
-    //         id: content.id,
-    //         type: type,
-    //         config: content.config,
-    //         fields: content.fields,
-    //     };
-    //     return editNode;
-    // };
-
     const newGraphNode = (content: JsonObject, lastTopicId?: string) => {
         if (
             content.type.startsWith("topic") ||
@@ -187,7 +162,6 @@ export function useDocumentViewModel(documentId: string): DocumentViewModel {
     return {
         document,
         graphNodes,
-        // editNodes,
         updateDocument,
         updateEditNodeById,
     };

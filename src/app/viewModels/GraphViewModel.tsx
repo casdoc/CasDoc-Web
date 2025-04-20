@@ -2,11 +2,14 @@ import { useState, useCallback, useEffect } from "react";
 import { GraphService } from "../models/services/GraphService";
 import { JsonObject } from "../models/types/JsonObject";
 import { GraphNode } from "./useDocument";
+import { useProjectContext } from "./context/ProjectContext";
 
 export interface GraphViewModel {
     connectionEdges: ConnectionEdge[];
     affectedIds: string[];
     attachedDocs: AttachedDoc[];
+
+    // Edge actions
     updConnectionEdges: (edge: ConnectionEdge) => void;
     searchTarget: (sourceId: string) => ConnectionEdge[];
     searchSource: (sourceId: string) => ConnectionEdge[];
@@ -16,10 +19,13 @@ export interface GraphViewModel {
     removeAffectedId: (id: string) => void;
     clearAffectedIds: () => void;
     updateOffset: (edge: ConnectionEdge, offset: number) => void;
+
+    // Graph actions
     appendAttachedDocs: (doc: AttachedDoc) => void;
     removeAttachedDoc: (documentId: string) => void;
     setAttachedDocs: (docs: AttachedDoc[]) => void;
     parseAttahcedDocsToNodes: () => GraphNode[];
+    appendAttachedDocsById: (documentId: string) => void;
 }
 
 interface AttachedDoc {
@@ -40,6 +46,7 @@ export function useGraphViewModel(): GraphViewModel {
     );
     const [affectedIds, setAffectedIds] = useState<string[]>([]);
     const [attachedDocs, setAttachedDocs] = useState<Array<AttachedDoc>>([]);
+    const { getDocumentById } = useProjectContext();
 
     useEffect(() => {
         const localEdges = GraphService.getEdges();
@@ -227,10 +234,71 @@ export function useGraphViewModel(): GraphViewModel {
         return nodes;
     };
 
+    const appendAttachedDocsById = useCallback(
+        (documentId: string) => {
+            const doc = getDocumentById(documentId);
+            if (!doc) return;
+            const docContents = doc.content;
+            const newGraphNodes: GraphNode[] = [
+                {
+                    id: doc.id,
+                    pid: doc.id,
+                    label: doc.title || "Untitled",
+                    type: "root",
+                },
+            ];
+            const lastTopicId: string[] = [doc.id, doc.id, doc.id];
+            let lastTopicLevel = 0;
+
+            for (let i = 0; i < docContents.length; i++) {
+                const topicLevel: number =
+                    parseInt(docContents[i].attrs.level) ?? 0;
+                let parent = lastTopicLevel;
+
+                if (topicLevel === 1) parent = 0;
+                else if (topicLevel === lastTopicLevel)
+                    parent = lastTopicLevel - 1;
+                else if (topicLevel < lastTopicLevel) parent = topicLevel - 1;
+
+                if (docContents[i].type.startsWith("topic")) {
+                    lastTopicId[topicLevel] = docContents[i].attrs.id;
+                    lastTopicLevel = topicLevel;
+                }
+
+                const graphNode = newGraphNode(
+                    docContents[i],
+                    lastTopicId[parent]
+                );
+                if (graphNode) newGraphNodes.push(graphNode);
+            }
+            appendAttachedDocs({ id: doc.id, nodes: newGraphNodes });
+        },
+        [appendAttachedDocs, getDocumentById]
+    );
+
+    const newGraphNode = (content: JsonObject, lastTopicId?: string) => {
+        if (
+            content.type.startsWith("topic") ||
+            content.type.startsWith("template")
+        ) {
+            return {
+                id: content.attrs.id,
+                pid: lastTopicId || content.attrs.topicId,
+                label: content.attrs.config?.info.name || "",
+                type: content.type,
+                level: content.attrs.level,
+                config: content.attrs.config,
+                fields: content.attrs.fileds,
+            };
+        }
+    };
+
     return {
         connectionEdges,
         affectedIds,
         attachedDocs,
+
+        // Edge actions
         updConnectionEdges,
         searchTarget,
         searchSource,
@@ -240,9 +308,12 @@ export function useGraphViewModel(): GraphViewModel {
         removeAffectedId,
         clearAffectedIds,
         updateOffset,
+
+        //Graph actions
         appendAttachedDocs,
         removeAttachedDoc,
         setAttachedDocs,
         parseAttahcedDocsToNodes,
+        appendAttachedDocsById,
     };
 }
