@@ -16,12 +16,12 @@ const EditPanelView = () => {
     const { updateEditNodeById, editNodes } = useDocumentContext();
     const { selectedNode, selectNode } = useNodeSelection();
     const {
+        affectedIds,
         searchTarget,
         searchSource,
         removeConnectionEdge,
         updateLabel,
         updateAffectedIds,
-        affectedIds,
         removeAffectedId,
     } = useGraphContext();
 

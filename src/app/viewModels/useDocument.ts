@@ -23,14 +23,7 @@ export interface DocumentViewModel {
 
 export function useDocumentViewModel(documentId: string): DocumentViewModel {
     const [document, setDocument] = useState<Document>();
-    const [graphNodes, setGraphNodes] = useState<Array<GraphNode>>([
-        {
-            id: documentId,
-            pid: documentId,
-            label: "root",
-            type: "root",
-        },
-    ]);
+    const [graphNodes, setGraphNodes] = useState<Array<GraphNode>>([]);
     const [editNodes, setEditNodes] = useState<Array<JsonObject>>([]);
 
     useEffect(() => {

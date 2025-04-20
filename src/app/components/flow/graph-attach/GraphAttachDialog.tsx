@@ -1,5 +1,4 @@
 import { IoExtensionPuzzleOutline } from "react-icons/io5";
-import { PiMagnifyingGlass } from "react-icons/pi";
 import {
     Dialog,
     DialogContent,
@@ -8,8 +7,12 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
-import { Flex, TextField } from "@radix-ui/themes";
+import { Flex } from "@radix-ui/themes";
 import { GraphAttachList } from "./GraphAttachList";
+import { useEffect, useState } from "react";
+import { useGraphContext } from "@/app/viewModels/context/GraphContext";
+import { useProjectContext } from "@/app/viewModels/context/ProjectContext";
+import { AttachedSearchBar } from "./AttachedSearchBar";
 
 export const GraphAttachDialog = ({
     openAttach,
@@ -18,6 +21,32 @@ export const GraphAttachDialog = ({
     openAttach: boolean;
     setOpenAttach: (open: boolean) => void;
 }) => {
+    const { projects, selectedDocumentId } = useProjectContext();
+    const [isSelected, setIsSelected] = useState<Record<string, boolean>>({});
+    const { setAttachedDocs } = useGraphContext();
+
+    useEffect(() => {
+        setIsSelected((prev) => {
+            const updated: Record<string, boolean> = {};
+            projects.forEach((project) => {
+                updated[project.id] = prev[project.id] ?? false;
+            });
+            return updated;
+        });
+    }, [projects]);
+
+    useEffect(() => {
+        setIsSelected({});
+        setAttachedDocs([]);
+    }, [selectedDocumentId, setAttachedDocs]);
+
+    const toggleSelected = (id: string) => {
+        setIsSelected((prev) => ({
+            ...prev,
+            [id]: !prev[id],
+        }));
+    };
+
     return (
         <Dialog open={openAttach} onOpenChange={setOpenAttach}>
             <DialogTrigger asChild>
@@ -40,16 +69,11 @@ export const GraphAttachDialog = ({
                         Search and select some documents to attach to the graph.
                     </DialogDescription>
                 </DialogHeader>
-                <TextField.Root
-                    size="2"
-                    placeholder="Search the docs…"
-                    className="rounded-md p-1"
-                >
-                    <TextField.Slot>
-                        <PiMagnifyingGlass size={25} className="p-1" />
-                    </TextField.Slot>
-                </TextField.Root>
-                <GraphAttachList />
+                <AttachedSearchBar />
+                <GraphAttachList
+                    isSelected={isSelected}
+                    toggleSelected={toggleSelected}
+                />
             </DialogContent>
         </Dialog>
     );
