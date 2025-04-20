@@ -96,16 +96,30 @@ export const GraphAttachDialog = ({
                                             className="hover:bg-gray-100 rounded-md px-2 py-1 my-2 transition cursor-default"
                                         >
                                             <Flex className="gap-3">
-                                                <AttachActionButton
-                                                    id={doc.id}
-                                                    selected={
-                                                        isSelected[doc.id]
-                                                    }
-                                                    toggleSelected={() =>
-                                                        toggleSelected(doc.id)
-                                                    }
-                                                />
-                                                <span className="text-sm">
+                                                {
+                                                    <AttachActionButton
+                                                        id={doc.id}
+                                                        isSelf={
+                                                            doc.id ===
+                                                            selectedDocumentId
+                                                        }
+                                                        selected={
+                                                            isSelected[doc.id]
+                                                        }
+                                                        toggleSelected={() =>
+                                                            toggleSelected(
+                                                                doc.id
+                                                            )
+                                                        }
+                                                    />
+                                                }
+                                                <span
+                                                    className={`text-sm ${
+                                                        doc.id ===
+                                                            selectedDocumentId &&
+                                                        "font-semibold"
+                                                    }`}
+                                                >
                                                     {doc.title}
                                                 </span>
                                             </Flex>
@@ -123,12 +137,14 @@ export const GraphAttachDialog = ({
 
 interface AttachActionButtonProps {
     id: string;
+    isSelf: boolean;
     selected: boolean;
     toggleSelected: () => void;
 }
 
 const AttachActionButton = ({
     id,
+    isSelf,
     selected,
     toggleSelected,
 }: AttachActionButtonProps) => {
@@ -193,11 +209,19 @@ const AttachActionButton = ({
     };
 
     return (
-        <button onClick={handleClick}>
-            {selected ? (
-                <CircleMinus className="h-5 w-5 text-red-500 cursor-pointer" />
+        <button
+            disabled={isSelf}
+            onClick={handleClick}
+            className={`${isSelf ? "cursor-not-allowed" : "cursor-pointer"}`}
+        >
+            {selected || isSelf ? (
+                <CircleMinus
+                    className={`h-5 w-5 ${
+                        isSelf ? "text-blue-500" : "text-red-500"
+                    }`}
+                />
             ) : (
-                <CirclePlus className="h-5 w-5 text-green-500 cursor-pointer" />
+                <CirclePlus className="h-5 w-5 text-green-500" />
             )}
         </button>
     );
