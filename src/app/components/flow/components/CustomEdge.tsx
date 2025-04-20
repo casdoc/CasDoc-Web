@@ -70,7 +70,7 @@ const CustomEdge = (props: EdgeProps) => {
                                 Math.max(sourceX, targetX) + pathOptions.offset
                             }px, ${(sourceY + targetY) / 2}px)`,
                         }}
-                        className="absolute cursor-col-resize w-2.5 h-6 border border-gray-800 bg-white z-10 pointer-events-auto"
+                        className="absolute cursor-col-resize w-2.5 h-7 border border-gray-800 bg-white rounded-sm z-10 pointer-events-auto"
                         onMouseDown={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
