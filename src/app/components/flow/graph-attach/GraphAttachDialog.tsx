@@ -11,7 +11,7 @@ import {
 import { Flex, TextField } from "@radix-ui/themes";
 import { useProjectContext } from "@/app/viewModels/context/ProjectContext";
 import { CircleMinus, CirclePlus } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { GraphNode } from "@/app/viewModels/useDocument";
 import { useGraphContext } from "@/app/viewModels/context/GraphContext";
 import { JsonObject } from "@/app/models/types/JsonObject";
@@ -23,7 +23,32 @@ export const GraphAttachDialog = ({
     openAttach: boolean;
     setOpenAttach: (open: boolean) => void;
 }) => {
-    const { projects, getDocumentsByProjectId } = useProjectContext();
+    const { projects, getDocumentsByProjectId, selectedDocumentId } =
+        useProjectContext();
+    const { setAttachedNodes } = useGraphContext();
+    const [isSelected, setIsSelected] = useState<Record<string, boolean>>({});
+
+    useEffect(() => {
+        setIsSelected((prev) => {
+            const updated: Record<string, boolean> = {};
+            projects.forEach((project) => {
+                updated[project.id] = prev[project.id] ?? false;
+            });
+            return updated;
+        });
+    }, [projects]);
+
+    useEffect(() => {
+        setIsSelected({});
+        setAttachedNodes([]);
+    }, [selectedDocumentId, setAttachedNodes]);
+
+    const toggleSelected = (id: string) => {
+        setIsSelected((prev) => ({
+            ...prev,
+            [id]: !prev[id],
+        }));
+    };
 
     return (
         <Dialog open={openAttach} onOpenChange={setOpenAttach}>
@@ -73,6 +98,12 @@ export const GraphAttachDialog = ({
                                             <Flex className="gap-3">
                                                 <AttachActionButton
                                                     id={doc.id}
+                                                    selected={
+                                                        isSelected[doc.id]
+                                                    }
+                                                    toggleSelected={() =>
+                                                        toggleSelected(doc.id)
+                                                    }
                                                 />
                                                 <span className="text-sm">
                                                     {doc.title}
@@ -90,13 +121,28 @@ export const GraphAttachDialog = ({
     );
 };
 
-const AttachActionButton = ({ id }: { id: string }) => {
+interface AttachActionButtonProps {
+    id: string;
+    selected: boolean;
+    toggleSelected: () => void;
+}
+
+const AttachActionButton = ({
+    id,
+    selected,
+    toggleSelected,
+}: AttachActionButtonProps) => {
     const { getDocumentById } = useProjectContext();
     const { appendAttachedNodes } = useGraphContext();
-    const [selected, setSelected] = useState(false);
 
     const handleClick = () => {
-        setSelected(!selected);
+        toggleSelected();
+        if (!selected) {
+            handleAttached();
+        }
+    };
+
+    const handleAttached = () => {
         const doc = getDocumentById(id);
         if (!doc) return;
         const docContents = doc.content;
