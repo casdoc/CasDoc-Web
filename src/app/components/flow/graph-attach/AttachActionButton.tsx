@@ -75,6 +75,8 @@ export const AttachActionButton = ({
                 label: content.attrs.config?.info.name || "",
                 type: content.type,
                 level: content.attrs.level,
+                config: content.attrs.config,
+                fields: content.attrs.fileds,
             };
         }
     };

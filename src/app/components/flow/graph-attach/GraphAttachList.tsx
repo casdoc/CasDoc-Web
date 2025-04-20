@@ -10,8 +10,8 @@ export const GraphAttachList = ({
     toggleSelected: (id: string) => void;
 }) => {
     const {
-        getDocumentsByProjectId,
         selectedDocumentId,
+        getDocumentsByProjectId,
         getProjectByDocumentId,
     } = useProjectContext();
 

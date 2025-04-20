@@ -13,9 +13,10 @@ import { useGraphContext } from "@/app/viewModels/context/GraphContext";
 import { ConnectionEdge } from "@/app/viewModels/GraphViewModel";
 
 const EditPanelView = () => {
-    const { updateEditNodeById, editNodes } = useDocumentContext();
+    const { updateEditNodeById, graphNodes: editNodes } = useDocumentContext();
     const { selectedNode, selectNode } = useNodeSelection();
     const {
+        attachedDocs,
         affectedIds,
         searchTarget,
         searchSource,
@@ -92,9 +93,16 @@ const EditPanelView = () => {
 
     const findNodeById = useCallback(
         (id: string) => {
-            return editNodes.find((item) => String(item.id) === id);
+            const editNode = editNodes.find((item) => String(item.id) === id);
+            if (editNode) return editNode;
+            for (const doc of attachedDocs) {
+                const node = doc.nodes.find((item) => String(item.id) === id);
+                if (node) {
+                    return node;
+                }
+            }
         },
-        [editNodes]
+        [editNodes, attachedDocs]
     );
 
     useEffect(() => {
@@ -249,7 +257,7 @@ const EditPanelView = () => {
                     {activeSection === "info" && (
                         <EditPanelInfo
                             selectedNode={selectedNode}
-                            info={node?.config.info}
+                            info={node?.config?.info}
                             handleConfigChange={handleFieldChange}
                         />
                     )}
