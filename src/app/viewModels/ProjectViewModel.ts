@@ -7,6 +7,7 @@ import { DocumentType } from "@/app/models/enum/DocumentType";
 import defaultContent from "../models/default-value/defaultContent";
 import { ProjectInput } from "../models/types/ProjectInput";
 import { DocumentInput } from "../models/types/DocumentInput";
+import { DocSelectedService } from "../models/services/DocSelectedService";
 
 export interface ProjectViewModel {
     projects: Project[];
@@ -143,6 +144,21 @@ export const useProjectViewModel = (): ProjectViewModel => {
         },
         []
     );
+
+    useEffect(() => {
+        const localSelectedDoc = DocSelectedService.getSelectedDoc();
+        if (localSelectedDoc === "") {
+            if (projects[0]) {
+                const docs = getDocumentsByProjectId(projects[0].id);
+                if (docs[0]) {
+                    setSelectedDocumentId(docs[0].id);
+                    return;
+                }
+            }
+        }
+        setSelectedDocumentId(localSelectedDoc);
+    }, [projects, getDocumentsByProjectId]);
+
     const createDocument = useCallback((input: DocumentInput): string => {
         const document = DocumentService.createDocument(input);
         if (!document) throw new Error("Failed to create document");
@@ -156,6 +172,7 @@ export const useProjectViewModel = (): ProjectViewModel => {
         }));
         return document.id;
     }, []);
+
     const deleteDocument = useCallback(
         (documentId: string) => {
             const projectId =
@@ -175,6 +192,7 @@ export const useProjectViewModel = (): ProjectViewModel => {
         },
         [selectedDocumentId]
     );
+
     const editDocument = useCallback(
         (documentId: string, update: DocumentInput) => {
             const projectId =
@@ -195,8 +213,10 @@ export const useProjectViewModel = (): ProjectViewModel => {
         },
         []
     );
+
     const selectDocument = useCallback((documentId: string) => {
         setSelectedDocumentId(documentId);
+        DocSelectedService.setSelectedDoc(documentId);
     }, []);
 
     // Dialog Actions
@@ -206,6 +226,7 @@ export const useProjectViewModel = (): ProjectViewModel => {
             projectId ? ProjectService.getProjectById(projectId) : null
         );
     }, []);
+
     const openDocumentDialog = useCallback(
         (projectId: string, documentId?: string) => {
             setIsDocumentDialogOpen(true);
@@ -216,10 +237,12 @@ export const useProjectViewModel = (): ProjectViewModel => {
         },
         []
     );
+
     const closeProjectDialog = useCallback(() => {
         setIsProjectDialogOpen(false);
         setEditingProject(null);
     }, []);
+
     const closeDocumentDialog = useCallback(() => {
         setIsDocumentDialogOpen(false);
         setEditingProject(null);
