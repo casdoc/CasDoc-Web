@@ -18,12 +18,14 @@ export const AttachActionButton = ({
     toggleSelected,
 }: AttachActionButtonProps) => {
     const { getDocumentById } = useProjectContext();
-    const { appendAttachedDocs } = useGraphContext();
+    const { appendAttachedDocs, removeAttachedDoc } = useGraphContext();
 
     const handleClick = () => {
         toggleSelected();
         if (!selected) {
             handleAttached();
+        } else {
+            removeAttachedDoc(id);
         }
     };
 
