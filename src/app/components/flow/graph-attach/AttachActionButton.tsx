@@ -18,7 +18,7 @@ export const AttachActionButton = ({
     toggleSelected,
 }: AttachActionButtonProps) => {
     const { getDocumentById } = useProjectContext();
-    const { appendAttachedNodes } = useGraphContext();
+    const { appendAttachedDocs } = useGraphContext();
 
     const handleClick = () => {
         toggleSelected();
@@ -59,7 +59,7 @@ export const AttachActionButton = ({
             const graphNode = newGraphNode(docContents[i], lastTopicId[parent]);
             if (graphNode) newGraphNodes.push(graphNode);
         }
-        appendAttachedNodes(newGraphNodes);
+        appendAttachedDocs({ id: doc.id, nodes: newGraphNodes });
     };
 
     const newGraphNode = (content: JsonObject, lastTopicId?: string) => {
@@ -86,7 +86,7 @@ export const AttachActionButton = ({
             {selected || isSelf ? (
                 <CircleMinus
                     className={`h-5 w-5 ${
-                        isSelf ? "text-blue-500" : "text-red-500"
+                        isSelf ? "text-gray-300" : "text-red-500"
                     }`}
                 />
             ) : (

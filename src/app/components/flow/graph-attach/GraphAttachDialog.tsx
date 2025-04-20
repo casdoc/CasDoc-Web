@@ -23,7 +23,7 @@ export const GraphAttachDialog = ({
 }) => {
     const { projects, getDocumentsByProjectId, selectedDocumentId } =
         useProjectContext();
-    const { setAttachedNodes } = useGraphContext();
+    const { setAttachedDocs } = useGraphContext();
     const [isSelected, setIsSelected] = useState<Record<string, boolean>>({});
 
     useEffect(() => {
@@ -38,8 +38,8 @@ export const GraphAttachDialog = ({
 
     useEffect(() => {
         setIsSelected({});
-        setAttachedNodes([]);
-    }, [selectedDocumentId, setAttachedNodes]);
+        setAttachedDocs([]);
+    }, [selectedDocumentId, setAttachedDocs]);
 
     const toggleSelected = (id: string) => {
         setIsSelected((prev) => ({

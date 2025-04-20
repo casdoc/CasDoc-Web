@@ -6,7 +6,7 @@ import { GraphNode } from "./useDocument";
 export interface GraphViewModel {
     connectionEdges: ConnectionEdge[];
     affectedIds: string[];
-    attachedNodes: Array<GraphNode>;
+    attachedDocs: AttachedDoc[];
     updConnectionEdges: (edge: ConnectionEdge) => void;
     searchTarget: (sourceId: string) => ConnectionEdge[];
     searchSource: (sourceId: string) => ConnectionEdge[];
@@ -16,8 +16,15 @@ export interface GraphViewModel {
     removeAffectedId: (id: string) => void;
     clearAffectedIds: () => void;
     updateOffset: (edge: ConnectionEdge, offset: number) => void;
-    appendAttachedNodes: (nodes: Array<GraphNode>) => void;
-    setAttachedNodes: (nodes: Array<GraphNode>) => void;
+    appendAttachedDocs: (doc: AttachedDoc) => void;
+    removeAttachedDoc: (documentId: string) => void;
+    setAttachedDocs: (docs: AttachedDoc[]) => void;
+    parseAttahcedDocsToNodes: () => GraphNode[];
+}
+
+interface AttachedDoc {
+    id: string;
+    nodes: Array<GraphNode>;
 }
 
 export interface ConnectionEdge {
@@ -32,7 +39,7 @@ export function useGraphViewModel(): GraphViewModel {
         []
     );
     const [affectedIds, setAffectedIds] = useState<string[]>([]);
-    const [attachedNodes, setAttachedNodes] = useState<Array<GraphNode>>([]);
+    const [attachedDocs, setAttachedDocs] = useState<Array<AttachedDoc>>([]);
 
     useEffect(() => {
         const localEdges = GraphService.getEdges();
@@ -196,17 +203,34 @@ export function useGraphViewModel(): GraphViewModel {
         });
     };
 
-    const appendAttachedNodes = useCallback((nodes: Array<GraphNode>) => {
-        setAttachedNodes((prevNodes) => {
-            const newNodes = [...prevNodes, ...nodes];
-            return newNodes;
+    const removeAttachedDoc = (documentId: string) => {
+        setAttachedDocs((prevDocs) => {
+            const newDocs = prevDocs.filter((doc) => doc.id !== documentId);
+            return newDocs;
+        });
+    };
+
+    const appendAttachedDocs = useCallback((doc: AttachedDoc) => {
+        setAttachedDocs((prevDocs) => {
+            const newDocs = [...prevDocs, doc];
+            return newDocs;
         });
     }, []);
+
+    const parseAttahcedDocsToNodes = () => {
+        const nodes: GraphNode[] = [];
+        attachedDocs.forEach((doc) => {
+            doc.nodes.forEach((node) => {
+                nodes.push(node);
+            });
+        });
+        return nodes;
+    };
 
     return {
         connectionEdges,
         affectedIds,
-        attachedNodes,
+        attachedDocs,
         updConnectionEdges,
         searchTarget,
         searchSource,
@@ -216,7 +240,9 @@ export function useGraphViewModel(): GraphViewModel {
         removeAffectedId,
         clearAffectedIds,
         updateOffset,
-        appendAttachedNodes,
-        setAttachedNodes,
+        appendAttachedDocs,
+        removeAttachedDoc,
+        setAttachedDocs,
+        parseAttahcedDocsToNodes,
     };
 }

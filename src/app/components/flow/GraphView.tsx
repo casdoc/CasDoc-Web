@@ -70,9 +70,9 @@ const GraphView = ({ docMode, graphNodes: currentNodes }: GraphViewProps) => {
     const {
         connectionEdges,
         affectedIds,
-        attachedNodes,
         updConnectionEdges,
         removeConnectionEdge,
+        parseAttahcedDocsToNodes,
     } = useGraphContext();
 
     const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
@@ -83,6 +83,7 @@ const GraphView = ({ docMode, graphNodes: currentNodes }: GraphViewProps) => {
     const store = useStoreApi();
 
     useEffect(() => {
+        const attachedNodes = parseAttahcedDocsToNodes();
         const graphNodes = [...currentNodes, ...attachedNodes];
         if (!graphNodes || graphNodes.length === 0) {
             setNodes([]);
@@ -104,11 +105,11 @@ const GraphView = ({ docMode, graphNodes: currentNodes }: GraphViewProps) => {
         setEdges([...newStructuralEdges, ...tmpConnectionEdges]);
     }, [
         currentNodes,
-        attachedNodes,
         connectionEdges,
         affectedIds,
         setNodes,
         setEdges,
+        parseAttahcedDocsToNodes,
     ]);
 
     useEffect(() => {
