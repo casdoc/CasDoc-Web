@@ -24,6 +24,7 @@ export interface ProjectViewModel {
     deleteProject: (projectId: string) => void;
     editProject: (projectId: string, update: ProjectInput) => void;
     selectProject: (projectId: string) => void;
+    getProjectByDocumentId: (documentId: string) => Project | undefined;
 
     // Document actions
     getDocumentsByProjectId: (projectId: string) => Document[];
@@ -136,6 +137,16 @@ export const useProjectViewModel = (): ProjectViewModel => {
     const selectProject = useCallback((projectId: string) => {
         setSelectedProjectId(projectId);
     }, []);
+
+    const getProjectByDocumentId = (
+        documentId: string
+    ): Project | undefined => {
+        for (const project of projects) {
+            const documents = getDocumentsByProjectId(project.id);
+            const doc = documents.find((d) => d.id === documentId);
+            if (doc) return project;
+        }
+    };
 
     // Document Actions
     const getDocumentsByProjectId = useCallback(
@@ -271,6 +282,7 @@ export const useProjectViewModel = (): ProjectViewModel => {
         deleteProject,
         editProject,
         selectProject,
+        getProjectByDocumentId,
         getDocumentsByProjectId,
         createDocument,
         deleteDocument,
