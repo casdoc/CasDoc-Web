@@ -16,10 +16,12 @@ export const GraphAttachButton = () => {
             <TooltipProvider>
                 <Tooltip>
                     <TooltipTrigger asChild>
-                        <GraphAttachDialog
-                            openAttach={openAttach}
-                            setOpenAttach={setOpenAttach}
-                        />
+                        <div>
+                            <GraphAttachDialog
+                                openAttach={openAttach}
+                                setOpenAttach={setOpenAttach}
+                            />
+                        </div>
                     </TooltipTrigger>
                     <TooltipContent>
                         <p>Attach more docs</p>
