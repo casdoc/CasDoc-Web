@@ -5,6 +5,7 @@ const GraphContext = createContext<GraphViewModel | undefined>(undefined);
 
 export function GraphProvider({ children }: { children: ReactNode }) {
     const documentViewModel = useGraphViewModel();
+    documentViewModel.initGraphNodes();
     return (
         <GraphContext.Provider value={documentViewModel}>
             {children}

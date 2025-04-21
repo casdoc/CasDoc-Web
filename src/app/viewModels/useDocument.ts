@@ -42,63 +42,8 @@ export function useDocumentViewModel(documentId: string): DocumentViewModel {
             DocumentService.saveDocument(emptyDoc);
             doc = emptyDoc;
         }
-
         setDocument(doc);
     }, [documentId]);
-
-    useEffect(() => {
-        if (!document) return;
-
-        const content = document.content;
-
-        if (!content) {
-            setGraphNodes([
-                {
-                    id: documentId,
-                    pid: documentId,
-                    label: document.title || "Untitled",
-                    type: "root",
-                },
-            ]);
-            return;
-        }
-        const firstChild = content[0];
-
-        if (!firstChild || !firstChild?.content) {
-            document.title = "Untitled Document";
-        } else {
-            document.title = firstChild.content[0].text;
-        }
-
-        const newGraphNodes: GraphNode[] = [
-            {
-                id: documentId,
-                pid: documentId,
-                label: document.title || "Untitled",
-                type: "root",
-            },
-        ];
-        const lastTopicId: string[] = [documentId, documentId, documentId];
-        let lastTopicLevel = 0;
-
-        for (let i = 0; i < content.length; i++) {
-            const topicLevel: number = parseInt(content[i].attrs.level) ?? 0;
-            let parent = lastTopicLevel;
-            if (topicLevel === 1) parent = 0;
-            else if (topicLevel === lastTopicLevel) parent = lastTopicLevel - 1;
-            else if (topicLevel < lastTopicLevel) parent = topicLevel - 1;
-
-            if (content[i].type.startsWith("topic")) {
-                lastTopicId[topicLevel] = content[i].attrs.id;
-                lastTopicLevel = topicLevel;
-            }
-            const graphNode = newGraphNode(content[i], lastTopicId[parent]);
-            if (graphNode) newGraphNodes.push(graphNode);
-        }
-        if (JSON.stringify(newGraphNodes) !== JSON.stringify(graphNodes)) {
-            setGraphNodes(newGraphNodes);
-        }
-    }, [document, graphNodes, documentId]);
 
     const updateDocument = useCallback((document: Document) => {
         DocumentService.saveDocument(document);
@@ -140,23 +85,6 @@ export function useDocumentViewModel(documentId: string): DocumentViewModel {
 
         document.content = newContent;
         updateDocument(document);
-    };
-
-    const newGraphNode = (content: JsonObject, lastTopicId?: string) => {
-        if (
-            content.type.startsWith("topic") ||
-            content.type.startsWith("template")
-        ) {
-            return {
-                id: content.attrs.id,
-                pid: lastTopicId || content.attrs.topicId,
-                label: content.attrs.config?.info.name || "",
-                type: content.type,
-                level: content.attrs.level,
-                config: content.attrs.config,
-                fields: content.attrs.fields,
-            };
-        }
     };
 
     return {

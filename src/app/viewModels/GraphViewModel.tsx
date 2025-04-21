@@ -26,6 +26,7 @@ export interface GraphViewModel {
     setAttachedDocs: (docs: AttachedDoc[]) => void;
     parseAttahcedDocsToNodes: () => GraphNode[];
     appendAttachedDocsById: (documentId: string) => void;
+    initGraphNodes: () => void;
 }
 
 interface AttachedDoc {
@@ -293,6 +294,13 @@ export function useGraphViewModel(): GraphViewModel {
         }
     };
 
+    const { selectedDocumentId } = useProjectContext();
+    const initGraphNodes = () => {
+        if (selectedDocumentId && attachedDocs.length === 0) {
+            appendAttachedDocsById(selectedDocumentId);
+        }
+    };
+
     return {
         connectionEdges,
         affectedIds,
@@ -315,5 +323,6 @@ export function useGraphViewModel(): GraphViewModel {
         setAttachedDocs,
         parseAttahcedDocsToNodes,
         appendAttachedDocsById,
+        initGraphNodes,
     };
 }
