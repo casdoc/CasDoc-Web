@@ -1,7 +1,7 @@
 import { Editor, EditorContent } from "@tiptap/react";
 import { ContentItemMenu } from "../DragMenu/ContentItemMenu";
 import "@/styles/index.css";
-import { useRef } from "react";
+import { memo, useRef } from "react";
 import LinkMenu from "@/app/components/Menus/LinkMenu";
 
 interface BlockEditorProps {
@@ -9,7 +9,7 @@ interface BlockEditorProps {
     title: string;
 }
 
-export const BlockEditor = ({ editor, title }: BlockEditorProps) => {
+const BlockEditor = ({ editor, title }: BlockEditorProps) => {
     const menuContainerRef = useRef(null);
     const handleAddDefaultNode = () => {
         if (!editor) return;
@@ -35,6 +35,7 @@ export const BlockEditor = ({ editor, title }: BlockEditorProps) => {
                 .run();
         }
     };
+
     return (
         <div className="flex-1 overflow-y-auto" ref={menuContainerRef}>
             <EditorContent editor={editor} />
@@ -54,3 +55,5 @@ export const BlockEditor = ({ editor, title }: BlockEditorProps) => {
         </div>
     );
 };
+
+export default memo(BlockEditor);
