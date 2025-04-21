@@ -3,6 +3,7 @@ import { GraphService } from "../models/services/GraphService";
 import { JsonObject } from "../models/types/JsonObject";
 import { GraphNode } from "./useDocument";
 import { useProjectContext } from "./context/ProjectContext";
+import { useDocumentContext } from "./context/DocumentContext";
 
 export interface GraphViewModel {
     connectionEdges: ConnectionEdge[];
@@ -27,6 +28,9 @@ export interface GraphViewModel {
     parseAttahcedDocsToNodes: () => GraphNode[];
     appendAttachedDocsById: (documentId: string) => void;
     initGraphNodes: () => void;
+
+    // Node actions
+    updateNodeById: (nodeId: string, changes: Partial<JsonObject>) => void;
 }
 
 interface AttachedDoc {
@@ -48,6 +52,7 @@ export function useGraphViewModel(): GraphViewModel {
     const [affectedIds, setAffectedIds] = useState<string[]>([]);
     const [attachedDocs, setAttachedDocs] = useState<Array<AttachedDoc>>([]);
     const { getDocumentById } = useProjectContext();
+    const { document } = useDocumentContext();
 
     useEffect(() => {
         const localEdges = GraphService.getEdges();
@@ -235,8 +240,8 @@ export function useGraphViewModel(): GraphViewModel {
         return nodes;
     };
 
-    const appendAttachedDocsById = useCallback(
-        (documentId: string) => {
+    const updateAttachedDocById = useCallback(
+        (documentId: string): AttachedDoc | undefined => {
             const doc = getDocumentById(documentId);
             if (!doc) return;
             const docContents = doc.content;
@@ -272,10 +277,30 @@ export function useGraphViewModel(): GraphViewModel {
                 );
                 if (graphNode) newGraphNodes.push(graphNode);
             }
-            appendAttachedDocs({ id: doc.id, nodes: newGraphNodes });
+            const attachedDoc = {
+                id: documentId,
+                nodes: newGraphNodes,
+            };
+            return attachedDoc;
         },
-        [appendAttachedDocs, getDocumentById]
+        [getDocumentById]
     );
+
+    const appendAttachedDocsById = useCallback(
+        (documentId: string) => {
+            const attachedDoc = updateAttachedDocById(documentId);
+            if (attachedDoc) {
+                appendAttachedDocs(attachedDoc);
+            }
+        },
+        [appendAttachedDocs, updateAttachedDocById]
+    );
+
+    useEffect(() => {
+        for (const doc of attachedDocs) {
+            updateAttachedDocById(doc.id);
+        }
+    }, [attachedDocs, updateAttachedDocById, document]);
 
     const newGraphNode = (content: JsonObject, lastTopicId?: string) => {
         if (
@@ -301,6 +326,20 @@ export function useGraphViewModel(): GraphViewModel {
         }
     };
 
+    const updateNodeById = (nodeId: string, changes: Partial<JsonObject>) => {
+        const updatedDocs = attachedDocs.map((doc) => {
+            const updatedNode = doc.nodes.find((n) => n.id === nodeId);
+            if (updatedNode) {
+                const updatedNodes = doc.nodes.map((n) =>
+                    n.id === nodeId ? { ...n, ...changes } : n
+                );
+                return { ...doc, nodes: updatedNodes };
+            }
+            return doc;
+        });
+        setAttachedDocs(updatedDocs);
+    };
+
     return {
         connectionEdges,
         affectedIds,
@@ -324,5 +363,8 @@ export function useGraphViewModel(): GraphViewModel {
         parseAttahcedDocsToNodes,
         appendAttachedDocsById,
         initGraphNodes,
+
+        // Node actions
+        updateNodeById,
     };
 }

@@ -12,7 +12,7 @@ export const convertDataToNodes = (
         id: `${item.id}`,
         position: defaultPosition,
         data: {
-            label: item.label || "unknown",
+            label: item.config?.info.name || item.label || "unknown",
             type: item.type,
             isAffected: affectedIds.includes(item.id.toString()),
             level: item.level,

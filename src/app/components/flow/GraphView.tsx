@@ -36,7 +36,6 @@ import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext"
 import CustomEdge from "./components/CustomEdge";
 import { useGraphContext } from "@/app/viewModels/context/GraphContext";
 import { GraphAttachButton } from "./graph-attach/GraphAttachButton";
-import { GraphNode } from "@/app/viewModels/useDocument";
 
 const nodeTypes = { custom: CustomNode };
 const edgeTypes = {
@@ -56,11 +55,10 @@ const defaultEdgeOptions = {
 };
 
 interface GraphViewProps {
-    graphNodes: GraphNode[];
     docMode: DocMode | undefined;
 }
 
-const GraphView = ({ docMode, graphNodes: currentNodes }: GraphViewProps) => {
+const GraphView = ({ docMode }: GraphViewProps) => {
     // const [colorMode, setColorMode] = useState<"light" | "dark">("light");
     // const [selectedLayout, setSelectedLayout] = useState("LR");
     const [scrollMode, setScrollMode] = useState<"zoom" | "drag">("drag");
@@ -84,7 +82,6 @@ const GraphView = ({ docMode, graphNodes: currentNodes }: GraphViewProps) => {
 
     useEffect(() => {
         const graphNodes = parseAttahcedDocsToNodes();
-        // const graphNodes = [...currentNodes, ...attachedNodes];
         if (!graphNodes || graphNodes.length === 0) {
             setNodes([]);
             return;
@@ -104,7 +101,6 @@ const GraphView = ({ docMode, graphNodes: currentNodes }: GraphViewProps) => {
         setNodes(layoutedNodes);
         setEdges([...newStructuralEdges, ...tmpConnectionEdges]);
     }, [
-        currentNodes,
         connectionEdges,
         affectedIds,
         setNodes,

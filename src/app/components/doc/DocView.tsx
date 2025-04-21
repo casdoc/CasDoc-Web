@@ -10,7 +10,7 @@ import { useDocumentContext } from "@/app/viewModels/context/DocumentContext";
 
 const DocView = () => {
     const { mode, setDocMode } = useDocModeViewModel();
-    const { document, graphNodes, updateDocument } = useDocumentContext();
+    const { document, updateDocument } = useDocumentContext();
     const { editor } = useBlockEditor({ document, updateDocument });
     const [splitWidth, setSplitWidth] = useState(50);
     const isResizing = useRef(false);
@@ -89,7 +89,7 @@ const DocView = () => {
                     }}
                 >
                     <ReactFlowProvider>
-                        <GraphView docMode={mode} graphNodes={graphNodes} />
+                        <GraphView docMode={mode} />
                     </ReactFlowProvider>
                 </div>
             </div>
