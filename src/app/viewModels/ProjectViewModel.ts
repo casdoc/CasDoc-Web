@@ -70,11 +70,20 @@ export const useProjectViewModel = (): ProjectViewModel => {
             } as ProjectInput);
             if (!defaultProject) return;
 
+            // Prase the doc title from default content
+            let docTitle = "Untitled Document";
+            if (
+                defaultContent[0].content &&
+                defaultContent[0].content.length > 0
+            ) {
+                docTitle = defaultContent[0].content[0].text;
+            }
+
             // Create a default document
             const defaultDoc = DocumentService.createDocument({
                 type: DocumentType.SRD,
                 projectId: defaultProject.id,
-                title: "Untitled Document",
+                title: docTitle,
                 description: "No description",
                 content: defaultContent,
             } as DocumentInput);
