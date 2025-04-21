@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useState } from "react";
 import {
     ReactFlow,
     useNodesState,
@@ -227,4 +227,4 @@ const GraphView = ({ docMode }: GraphViewProps) => {
     );
 };
 
-export default GraphView;
+export default memo(GraphView);
