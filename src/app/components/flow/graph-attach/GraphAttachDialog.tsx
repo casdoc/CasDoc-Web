@@ -77,6 +77,7 @@ export const GraphAttachDialog = ({
                 <GraphAttachList
                     isSelected={isSelected}
                     toggleSelected={toggleSelected}
+                    searchContent={searchContent}
                 />
             </DialogContent>
         </Dialog>
