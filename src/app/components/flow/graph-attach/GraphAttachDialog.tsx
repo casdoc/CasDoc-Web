@@ -23,6 +23,7 @@ export const GraphAttachDialog = ({
 }) => {
     const { projects, selectedDocumentId } = useProjectContext();
     const [isSelected, setIsSelected] = useState<Record<string, boolean>>({});
+    const [searchContent, setSearchContent] = useState("");
     const { setAttachedDocs } = useGraphContext();
 
     useEffect(() => {
@@ -69,7 +70,10 @@ export const GraphAttachDialog = ({
                         Search and select some documents to attach to the graph.
                     </DialogDescription>
                 </DialogHeader>
-                <AttachedSearchBar />
+                <AttachedSearchBar
+                    searchContent={searchContent}
+                    setSearchContent={setSearchContent}
+                />
                 <GraphAttachList
                     isSelected={isSelected}
                     toggleSelected={toggleSelected}
