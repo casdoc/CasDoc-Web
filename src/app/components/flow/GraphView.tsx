@@ -83,8 +83,8 @@ const GraphView = ({ docMode, graphNodes: currentNodes }: GraphViewProps) => {
     const store = useStoreApi();
 
     useEffect(() => {
-        const attachedNodes = parseAttahcedDocsToNodes();
-        const graphNodes = [...currentNodes, ...attachedNodes];
+        const graphNodes = parseAttahcedDocsToNodes();
+        // const graphNodes = [...currentNodes, ...attachedNodes];
         if (!graphNodes || graphNodes.length === 0) {
             setNodes([]);
             return;
