@@ -52,7 +52,7 @@ export function useGraphViewModel(): GraphViewModel {
     const [affectedIds, setAffectedIds] = useState<string[]>([]);
     const [attachedDocs, setAttachedDocs] = useState<Array<AttachedDoc>>([]);
     const { getDocumentById } = useProjectContext();
-    const { document } = useDocumentContext();
+    const { document, updateDocument } = useDocumentContext();
 
     useEffect(() => {
         const localEdges = GraphService.getEdges();
@@ -296,11 +296,15 @@ export function useGraphViewModel(): GraphViewModel {
         [appendAttachedDocs, updateAttachedDocById]
     );
 
-    useEffect(() => {
+    const refreshAttachedDocs = useCallback(() => {
         for (const doc of attachedDocs) {
             updateAttachedDocById(doc.id);
         }
-    }, [attachedDocs, updateAttachedDocById, document]);
+    }, [attachedDocs, updateAttachedDocById]);
+
+    useEffect(() => {
+        refreshAttachedDocs();
+    }, [document, refreshAttachedDocs]);
 
     const newGraphNode = (content: JsonObject, lastTopicId?: string) => {
         if (
@@ -328,16 +332,50 @@ export function useGraphViewModel(): GraphViewModel {
 
     const updateNodeById = (nodeId: string, changes: Partial<JsonObject>) => {
         const updatedDocs = attachedDocs.map((doc) => {
-            const updatedNode = doc.nodes.find((n) => n.id === nodeId);
+            let pos = 0;
+            const updatedNode = doc.nodes.find((n, idx) => {
+                if (n.id === nodeId) {
+                    pos = idx;
+                    return true;
+                }
+                return false;
+            });
             if (updatedNode) {
-                const updatedNodes = doc.nodes.map((n) =>
-                    n.id === nodeId ? { ...n, ...changes } : n
-                );
+                const updatedNodes = doc.nodes;
+                updatedNodes[pos] = {
+                    ...doc.nodes[pos],
+                    ...changes,
+                };
+                if (doc.id === selectedDocumentId) {
+                    saveModifiedToDoc(nodeId, updatedNodes[pos]);
+                }
                 return { ...doc, nodes: updatedNodes };
             }
             return doc;
         });
         setAttachedDocs(updatedDocs);
+    };
+
+    const saveModifiedToDoc = (nodeId: string, updatedNode: GraphNode) => {
+        if (!document) return;
+        const oldContent = document.content || [];
+        const newContent = oldContent.map((item) => {
+            if (item?.attrs?.id === nodeId) {
+                return {
+                    ...item,
+                    attrs: {
+                        ...item.attrs,
+                        name: updatedNode?.config?.name,
+                        fields: updatedNode?.fields,
+                        config: updatedNode?.config,
+                    },
+                };
+            }
+            return item;
+        });
+
+        document.content = newContent;
+        updateDocument(document);
     };
 
     return {
