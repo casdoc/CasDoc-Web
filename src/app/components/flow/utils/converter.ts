@@ -1,5 +1,5 @@
 import { ConnectionEdge } from "@/app/viewModels/GraphViewModel";
-import { GraphNode } from "@/app/viewModels/useDocument";
+import { GraphNode } from "@/app/viewModels/GraphViewModel";
 import { Edge, Node, Position } from "@xyflow/react";
 
 export const convertDataToNodes = (

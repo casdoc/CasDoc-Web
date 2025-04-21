@@ -1,9 +1,11 @@
 import { useState, useCallback, useEffect } from "react";
 import { GraphService } from "../models/services/GraphService";
 import { JsonObject } from "../models/types/JsonObject";
-import { GraphNode } from "./useDocument";
 import { useProjectContext } from "./context/ProjectContext";
-import { useDocumentContext } from "./context/DocumentContext";
+import { DocumentService } from "../models/services/DocumentService";
+import { Document } from "../models/entity/Document";
+import { DocumentType } from "../models/enum/DocumentType";
+import defaultContent from "../models/default-value/defaultContent";
 
 export interface GraphViewModel {
     connectionEdges: ConnectionEdge[];
@@ -31,11 +33,25 @@ export interface GraphViewModel {
 
     // Node actions
     updateNodeById: (nodeId: string, changes: Partial<JsonObject>) => void;
+
+    // Document actions
+    document: Document | undefined;
+    updateDocument: (document: Document) => void;
 }
 
 interface AttachedDoc {
     id: string;
     nodes: Array<GraphNode>;
+}
+
+export interface GraphNode {
+    id: string;
+    pid: string;
+    label: string;
+    type: string;
+    level?: string;
+    config?: JsonObject;
+    fields?: JsonObject;
 }
 
 export interface ConnectionEdge {
@@ -52,7 +68,28 @@ export function useGraphViewModel(): GraphViewModel {
     const [affectedIds, setAffectedIds] = useState<string[]>([]);
     const [attachedDocs, setAttachedDocs] = useState<Array<AttachedDoc>>([]);
     const { getDocumentById } = useProjectContext();
-    const { document, updateDocument } = useDocumentContext();
+    const { selectedDocumentId } = useProjectContext();
+    const [document, setDocument] = useState<Document>();
+
+    useEffect(() => {
+        if (!selectedDocumentId) return;
+        let doc = DocumentService.getDocumentById(selectedDocumentId);
+        if (!doc) {
+            const emptyDoc = new Document(
+                "default-document",
+                new Date(),
+                new Date(),
+                DocumentType.SRD,
+                "default-project",
+                "Untitled Document",
+                "No description",
+                defaultContent
+            );
+            DocumentService.saveDocument(emptyDoc);
+            doc = emptyDoc;
+        }
+        setDocument(doc);
+    }, [selectedDocumentId]);
 
     useEffect(() => {
         const localEdges = GraphService.getEdges();
@@ -296,15 +333,15 @@ export function useGraphViewModel(): GraphViewModel {
         [appendAttachedDocs, updateAttachedDocById]
     );
 
-    const refreshAttachedDocs = useCallback(() => {
-        for (const doc of attachedDocs) {
-            updateAttachedDocById(doc.id);
-        }
-    }, [attachedDocs, updateAttachedDocById]);
+    // const refreshAttachedDocs = useCallback(() => {
+    //     for (const doc of attachedDocs) {
+    //         updateAttachedDocById(doc.id);
+    //     }
+    // }, [attachedDocs, updateAttachedDocById]);
 
-    useEffect(() => {
-        refreshAttachedDocs();
-    }, [document, refreshAttachedDocs]);
+    // useEffect(() => {
+    //     refreshAttachedDocs();
+    // }, [document, refreshAttachedDocs]);
 
     const newGraphNode = (content: JsonObject, lastTopicId?: string) => {
         if (
@@ -323,7 +360,6 @@ export function useGraphViewModel(): GraphViewModel {
         }
     };
 
-    const { selectedDocumentId } = useProjectContext();
     const initGraphNodes = () => {
         if (selectedDocumentId && attachedDocs.length === 0) {
             appendAttachedDocsById(selectedDocumentId);
@@ -378,6 +414,25 @@ export function useGraphViewModel(): GraphViewModel {
         updateDocument(document);
     };
 
+    const updateDocument = useCallback((document: Document) => {
+        DocumentService.saveDocument(document);
+        const doc = DocumentService.getDocumentById(document.id);
+        if (doc) {
+            setDocument(doc);
+        }
+    }, []);
+
+    useEffect(() => {
+        if (!document) return;
+        const newDoc = updateAttachedDocById(document.id);
+        if (!newDoc) return;
+        setAttachedDocs((docs) => {
+            const newDocs = docs;
+            newDocs[0] = newDoc;
+            return [...newDocs];
+        });
+    }, [document, updateAttachedDocById]);
+
     return {
         connectionEdges,
         affectedIds,
@@ -404,5 +459,9 @@ export function useGraphViewModel(): GraphViewModel {
 
         // Node actions
         updateNodeById,
+
+        // Document actions
+        document,
+        updateDocument,
     };
 }

@@ -6,11 +6,11 @@ import { BlockEditor } from "@/app/components/doc/BlockEditor/BlockEditor";
 import GraphView from "../flow/GraphView";
 import { ReactFlowProvider } from "@xyflow/react";
 import { useState, useEffect, useRef } from "react";
-import { useDocumentContext } from "@/app/viewModels/context/DocumentContext";
+import { useGraphContext } from "@/app/viewModels/context/GraphContext";
 
 const DocView = () => {
     const { mode, setDocMode } = useDocModeViewModel();
-    const { document, updateDocument } = useDocumentContext();
+    const { document, updateDocument } = useGraphContext();
     const { editor } = useBlockEditor({ document, updateDocument });
     const [splitWidth, setSplitWidth] = useState(50);
     const isResizing = useRef(false);
