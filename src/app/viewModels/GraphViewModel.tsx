@@ -62,14 +62,13 @@ export interface ConnectionEdge {
 }
 
 export function useGraphViewModel(): GraphViewModel {
+    const [document, setDocument] = useState<Document>();
     const [connectionEdges, setConnectionEdges] = useState<ConnectionEdge[]>(
         []
     );
     const [affectedIds, setAffectedIds] = useState<string[]>([]);
     const [attachedDocs, setAttachedDocs] = useState<Array<AttachedDoc>>([]);
-    const { getDocumentById } = useProjectContext();
-    const { selectedDocumentId } = useProjectContext();
-    const [document, setDocument] = useState<Document>();
+    const { selectedDocumentId, getDocumentById } = useProjectContext();
 
     useEffect(() => {
         if (!selectedDocumentId) return;
@@ -333,16 +332,6 @@ export function useGraphViewModel(): GraphViewModel {
         [appendAttachedDocs, updateAttachedDocById]
     );
 
-    // const refreshAttachedDocs = useCallback(() => {
-    //     for (const doc of attachedDocs) {
-    //         updateAttachedDocById(doc.id);
-    //     }
-    // }, [attachedDocs, updateAttachedDocById]);
-
-    // useEffect(() => {
-    //     refreshAttachedDocs();
-    // }, [document, refreshAttachedDocs]);
-
     const newGraphNode = (content: JsonObject, lastTopicId?: string) => {
         if (
             content.type.startsWith("topic") ||
@@ -382,9 +371,7 @@ export function useGraphViewModel(): GraphViewModel {
                     ...doc.nodes[pos],
                     ...changes,
                 };
-                if (doc.id === selectedDocumentId) {
-                    saveModifiedToDoc(nodeId, updatedNodes[pos]);
-                }
+                saveModifiedToDoc(doc.id, nodeId, updatedNodes[pos]);
                 return { ...doc, nodes: updatedNodes };
             }
             return doc;
@@ -392,9 +379,17 @@ export function useGraphViewModel(): GraphViewModel {
         setAttachedDocs(updatedDocs);
     };
 
-    const saveModifiedToDoc = (nodeId: string, updatedNode: GraphNode) => {
-        if (!document) return;
-        const oldContent = document.content || [];
+    const saveModifiedToDoc = (
+        documentId: string,
+        nodeId: string,
+        updatedNode: GraphNode
+    ) => {
+        const doc =
+            documentId === selectedDocumentId
+                ? document
+                : getDocumentById(documentId);
+        if (!doc) return;
+        const oldContent = doc.content || [];
         const newContent = oldContent.map((item) => {
             if (item?.attrs?.id === nodeId) {
                 return {
@@ -409,19 +404,22 @@ export function useGraphViewModel(): GraphViewModel {
             }
             return item;
         });
-
-        document.content = newContent;
-        updateDocument(document);
+        doc.content = newContent;
+        updateDocument(doc);
     };
 
-    const updateDocument = useCallback((document: Document) => {
-        DocumentService.saveDocument(document);
-        const doc = DocumentService.getDocumentById(document.id);
-        if (doc) {
-            setDocument(doc);
-        }
-    }, []);
+    const updateDocument = useCallback(
+        (document: Document) => {
+            DocumentService.saveDocument(document);
+            const doc = DocumentService.getDocumentById(document.id);
+            if (doc && doc.id === selectedDocumentId) {
+                setDocument(doc);
+            }
+        },
+        [selectedDocumentId]
+    );
 
+    // update the current document's nodes data when modifying in edit panel
     useEffect(() => {
         if (!document) return;
         const newDoc = updateAttachedDocById(document.id);
