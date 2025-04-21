@@ -15,7 +15,6 @@ const TopicComponent = ({ node, selected, editor, getPos }: NodeViewProps) => {
         getPos,
         editor,
     });
-    const levelMargin = `ml-${8 * (level - 1)}`;
 
     const [showBubbleBar, setShowBubbleBar] = useState(false);
 
@@ -45,7 +44,7 @@ const TopicComponent = ({ node, selected, editor, getPos }: NodeViewProps) => {
                     : selected
                     ? "border-gray-500 "
                     : "border-white hover:border-gray-200"
-            } ${levelMargin}`}
+            } ${level == 2 ? "ml-8" : level == 3 ? "ml-10" : "ml-0"}`}
             onClick={handleClick}
             ref={setNodeRef}
         >
@@ -56,8 +55,28 @@ const TopicComponent = ({ node, selected, editor, getPos }: NodeViewProps) => {
                 editor={editor}
             />
 
-            <div className="border-l-4 border-slate-400 pl-3">
-                <h2 className="text-2xl font-bold text-black m-0 px-0 pb-1 group-hover:cursor-text w-fit">
+            <div
+                className={`border-l-4 ${
+                    level == 1
+                        ? "border-indigo-400"
+                        : level == 2
+                        ? "border-sky-400"
+                        : level == 3
+                        ? "border-teal-400"
+                        : "border-gray-400"
+                } pl-3`}
+            >
+                <h2
+                    className={`font-bold text-black m-0 px-0 pb-1 group-hover:cursor-text w-fit ${
+                        level == 1
+                            ? "text-2xl"
+                            : level == 2
+                            ? "text-xl"
+                            : level == 3
+                            ? "text-lg"
+                            : "text-base"
+                    }`}
+                >
                     {config.info.name || "Unknown"}
                 </h2>
                 <p className="m-0 p-0 text-sm text-gray-500 font-semibold group-hover:cursor-text w-fit">

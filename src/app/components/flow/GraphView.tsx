@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useState } from "react";
 import {
     ReactFlow,
     useNodesState,
@@ -63,8 +63,8 @@ const GraphView = ({ docMode, graphNodes }: GraphViewProps) => {
     // const [colorMode, setColorMode] = useState<"light" | "dark">("light");
     // const [selectedLayout, setSelectedLayout] = useState("LR");
     const [scrollMode, setScrollMode] = useState<"zoom" | "drag">("drag");
-    const nodeWidth = 242;
-    const nodeHeight = 12;
+    const nodeWidth = 232;
+    const nodeHeight = 36;
 
     const {
         connectionEdges,
@@ -218,4 +218,4 @@ const GraphView = ({ docMode, graphNodes }: GraphViewProps) => {
     );
 };
 
-export default GraphView;
+export default memo(GraphView);

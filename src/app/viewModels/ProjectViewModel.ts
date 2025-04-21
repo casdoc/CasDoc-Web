@@ -217,12 +217,16 @@ export const useProjectViewModel = (): ProjectViewModel => {
     );
     const closeProjectDialog = useCallback(() => {
         setIsProjectDialogOpen(false);
-        setEditingProject(null);
+        setTimeout(() => {
+            setEditingProject(null);
+        }, 0);
     }, []);
     const closeDocumentDialog = useCallback(() => {
         setIsDocumentDialogOpen(false);
-        setEditingProject(null);
-        setEditingDocument(null);
+        setTimeout(() => {
+            setEditingProject(null);
+            setEditingDocument(null);
+        }, 0);
     }, []);
 
     return {
