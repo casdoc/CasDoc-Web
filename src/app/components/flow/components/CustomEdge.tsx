@@ -7,6 +7,7 @@ import {
     useReactFlow,
 } from "@xyflow/react";
 import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext";
+import { useGraphContext } from "@/app/viewModels/context/GraphContext";
 
 const CustomEdge = (props: EdgeProps) => {
     const {
@@ -22,18 +23,20 @@ const CustomEdge = (props: EdgeProps) => {
         source,
         label,
         data,
+        pathOptions,
     } = props;
 
     const { selectedNode, showTarget, showSource } = useNodeSelection();
-    const { updateEdge } = useReactFlow();
+    const { updateEdge, getZoom } = useReactFlow();
 
-    const [edgePath, labelX, labelY] = getSmoothStepPath({
+    const [edgePath] = getSmoothStepPath({
         sourceX,
         sourceY,
         sourcePosition,
         targetX,
         targetY,
         targetPosition,
+        offset: pathOptions?.offset,
     });
     const pinkColor = "#FF79BC";
     const grayColor = "#BEBEBE";
@@ -47,14 +50,95 @@ const CustomEdge = (props: EdgeProps) => {
             ? pinkColor
             : grayColor;
 
+    const { updateOffset } = useGraphContext();
+
     useEffect(() => {
-        updateEdge(id, {
-            animated: edgeColor === pinkColor,
-        });
+        updateEdge(
+            id,
+            { animated: edgeColor === pinkColor },
+            { replace: true }
+        );
     }, [edgeColor, updateEdge, id]);
 
     return (
         <>
+            <EdgeLabelRenderer>
+                {edgeColor === pinkColor ? (
+                    <div
+                        style={{
+                            transform: `translate(-50%, -50%) translate(${
+                                Math.max(sourceX, targetX) + pathOptions.offset
+                            }px, ${(sourceY + targetY) / 2}px)`,
+                        }}
+                        className="absolute cursor-col-resize w-2.5 h-7 border border-gray-800 bg-white rounded-sm z-10 pointer-events-auto"
+                        onMouseDown={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            const startX = e.clientX;
+                            let deltaX: number;
+
+                            const handleMouseMove = (moveEvent: MouseEvent) => {
+                                const zoom = 1 / getZoom();
+                                deltaX = moveEvent.clientX - startX;
+                                if (pathOptions.offset + deltaX * zoom > 15) {
+                                    updateEdge(id, {
+                                        pathOptions: {
+                                            offset:
+                                                pathOptions.offset +
+                                                deltaX * zoom,
+                                        },
+                                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                    } as any);
+                                }
+                            };
+
+                            const handleMouseUp = () => {
+                                window.removeEventListener(
+                                    "mousemove",
+                                    handleMouseMove
+                                );
+                                window.removeEventListener(
+                                    "mouseup",
+                                    handleMouseUp
+                                );
+                                const zoom = 1 / getZoom();
+                                if (pathOptions.offset + deltaX * zoom > 15) {
+                                    updateOffset(
+                                        {
+                                            source: source,
+                                            target: target,
+                                            data: data!,
+                                        },
+                                        pathOptions.offset + deltaX * zoom
+                                    );
+                                }
+                            };
+
+                            window.addEventListener(
+                                "mousemove",
+                                handleMouseMove
+                            );
+                            window.addEventListener("mouseup", handleMouseUp);
+                        }}
+                        onMouseUp={() => {
+                            setTimeout(() => {
+                                updateEdge(id, { selected: true });
+                            });
+                        }}
+                    />
+                ) : (
+                    <div
+                        className="absolute text-sm font-semibold text-gray-600"
+                        style={{
+                            transform: `translate(-50%, -50%) translate(${
+                                Math.max(sourceX, targetX) + pathOptions?.offset
+                            }px, ${(sourceY + targetY) / 2}px)`,
+                        }}
+                    >
+                        {label}
+                    </div>
+                )}
+            </EdgeLabelRenderer>
             <BaseEdge
                 id={id}
                 path={edgePath}
@@ -63,17 +147,8 @@ const CustomEdge = (props: EdgeProps) => {
                     data?.bidirectional ? `url(#${id}-start-arrow)` : undefined
                 }
                 markerEnd={`url(#${id}-arrow)`}
+                interactionWidth={40}
             />
-            <EdgeLabelRenderer>
-                <div
-                    className="absolute text-sm font-semibold text-gray-600"
-                    style={{
-                        transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`,
-                    }}
-                >
-                    {label}
-                </div>
-            </EdgeLabelRenderer>
             <defs>
                 <marker
                     id={`${id}-arrow`}

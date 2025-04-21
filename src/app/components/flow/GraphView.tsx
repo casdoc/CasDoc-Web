@@ -109,7 +109,7 @@ const GraphView = ({ docMode, graphNodes }: GraphViewProps) => {
             const connectionEdge = {
                 source: params.source,
                 target: params.target,
-                data: { bidirectional: false },
+                data: { bidirectional: false, offset: 50 },
             };
             updConnectionEdges(connectionEdge);
             setEdges((eds) => addEdge(params, eds));
