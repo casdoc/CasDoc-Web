@@ -65,16 +65,14 @@ const CustomEdge = (props: EdgeProps) => {
                 markerEnd={`url(#${id}-arrow)`}
             />
             <EdgeLabelRenderer>
-                {edgeColor === grayColor && (
-                    <div
-                        className="absolute text-sm font-semibold text-gray-600"
-                        style={{
-                            transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`,
-                        }}
-                    >
-                        {label}
-                    </div>
-                )}
+                <div
+                    className="absolute text-sm font-semibold text-gray-600"
+                    style={{
+                        transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`,
+                    }}
+                >
+                    {label}
+                </div>
             </EdgeLabelRenderer>
             <defs>
                 <marker

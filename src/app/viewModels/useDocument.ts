@@ -10,6 +10,7 @@ export interface GraphNode {
     pid: string;
     label: string;
     type: string;
+    level?: string;
 }
 
 export interface DocumentViewModel {
@@ -85,14 +86,23 @@ export function useDocumentViewModel(documentId: string): DocumentViewModel {
             },
         ];
         const newEditNodes: JsonObject[] = [];
-        let lastTopicId: string | undefined = undefined;
+        const lastTopicId: string[] = ["root", "root", "root"];
+        let lastTopicLevel = 0;
 
         for (let i = 0; i < content.length; i++) {
+            const topicLevel: number = parseInt(content[i].attrs.level) ?? 0;
+            let parent = lastTopicLevel;
+
+            if (topicLevel === 1) parent = 0;
+            else if (topicLevel === lastTopicLevel) parent = lastTopicLevel - 1;
+            else if (topicLevel < lastTopicLevel) parent = topicLevel - 1;
+
             if (content[i].type.startsWith("topic")) {
-                lastTopicId = content[i].attrs.id;
+                lastTopicId[topicLevel] = content[i].attrs.id;
+                lastTopicLevel = topicLevel;
             }
 
-            const graphNode = newGraphNode(content[i], lastTopicId);
+            const graphNode = newGraphNode(content[i], lastTopicId[parent]);
             if (graphNode) newGraphNodes.push(graphNode);
 
             if (
@@ -163,19 +173,16 @@ export function useDocumentViewModel(documentId: string): DocumentViewModel {
     };
 
     const newGraphNode = (content: JsonObject, lastTopicId?: string) => {
-        if (content.type.startsWith("topic")) {
-            return {
-                id: content.attrs.id,
-                pid: "root",
-                label: content.attrs.config?.info.name || "",
-                type: content.type,
-            };
-        } else if (content.type.startsWith("template")) {
+        if (
+            content.type.startsWith("topic") ||
+            content.type.startsWith("template")
+        ) {
             return {
                 id: content.attrs.id,
                 pid: lastTopicId || content.attrs.topicId,
-                label: content.attrs.config?.info?.name || "",
+                label: content.attrs.config?.info.name || "",
                 type: content.type,
+                level: content.attrs.level,
             };
         }
     };
