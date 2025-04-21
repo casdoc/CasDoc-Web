@@ -8,8 +8,7 @@ import {
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useDocumentContext } from "@/app/viewModels/context/DocumentContext";
-import { GraphNode } from "@/app/viewModels/useDocument";
+import { GraphNode } from "@/app/viewModels/GraphViewModel";
 import { CirclePlus, CircleMinus } from "lucide-react";
 import {
     Tooltip,
@@ -43,9 +42,13 @@ const AgentRelationAdviceDialog: React.FC<AgentRelationAdviceDialogProps> = ({
 }) => {
     const [loading, setLoading] = useState(true);
     const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
-    const { graphNodes } = useDocumentContext();
-    const { updConnectionEdges, removeConnectionEdge } = useGraphContext();
+    const {
+        updConnectionEdges,
+        removeConnectionEdge,
+        parseAttahcedDocsToNodes,
+    } = useGraphContext();
     // For testing - remove this in production
+    const graphNodes = parseAttahcedDocsToNodes();
     const mockAdvice: Advice[] = graphNodes.map((node: GraphNode) => ({
         id: node.id,
         reason: `This node seems to relate to the current context because of ${node.label} characteristics.`,
