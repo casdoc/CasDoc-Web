@@ -44,7 +44,7 @@ const TopicComponent = ({ node, selected, editor, getPos }: NodeViewProps) => {
                     : selected
                     ? "border-gray-500 "
                     : "border-white hover:border-gray-200"
-            } ${level == 2 ? "ml-8" : level == 3 ? "ml-16" : "ml-0"}`}
+            } ${level == 2 ? "ml-8" : level == 3 ? "ml-10" : "ml-0"}`}
             onClick={handleClick}
             ref={setNodeRef}
         >
