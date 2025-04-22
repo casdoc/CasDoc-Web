@@ -13,6 +13,7 @@ import { ConnectionEdge, GraphNode } from "@/app/viewModels/GraphViewModel";
 import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext";
 import { useEffect, useState } from "react";
 import { AddConnectionList } from "./AddConnectionList";
+import SearchBar from "@/app/components/SearchBar";
 
 interface AddConnectionButtonProps {
     open: boolean;
@@ -33,6 +34,7 @@ export const AddConnectionButton = ({
     const { selectedNode } = useNodeSelection();
     const [nodes, setNodes] = useState<SelectedNode[]>([]);
     const [isMounted, setIsMounted] = useState(false);
+    const [searchContent, setSearchContent] = useState("");
 
     useEffect(() => {
         if (isMounted) return;
@@ -107,6 +109,10 @@ export const AddConnectionButton = ({
                             Establish some relationships starting from this node
                         </DialogDescription>
                     </DialogHeader>
+                    <SearchBar
+                        searchContent={searchContent}
+                        setSearchContent={setSearchContent}
+                    />
                     <AddConnectionList
                         nodes={nodes}
                         handleToggle={handleToggle}

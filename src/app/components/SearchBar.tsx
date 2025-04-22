@@ -1,7 +1,7 @@
 import { TextField } from "@radix-ui/themes";
 import { PiMagnifyingGlass } from "react-icons/pi";
 
-export const AttachedSearchBar = ({
+const SearchBar = ({
     searchContent,
     setSearchContent,
 }: {
@@ -22,3 +22,5 @@ export const AttachedSearchBar = ({
         </TextField.Root>
     );
 };
+
+export default SearchBar;
