@@ -104,6 +104,7 @@ const EditPanelView = () => {
         if (selectedNode) {
             const item = findNodeById(String(selectedNode));
             if (!item) {
+                selectNode(null);
                 return;
             }
             if (!item.type.startsWith("template")) {
@@ -121,7 +122,14 @@ const EditPanelView = () => {
             const _sourceEdges = searchSource(selectedNode);
             setSourceEdges(_sourceEdges);
         }
-    }, [findNodeById, searchTarget, searchSource, selectedNode, activeSection]);
+    }, [
+        findNodeById,
+        searchTarget,
+        searchSource,
+        selectedNode,
+        activeSection,
+        selectNode,
+    ]);
 
     useEffect(() => {
         setIsMounted(true);
