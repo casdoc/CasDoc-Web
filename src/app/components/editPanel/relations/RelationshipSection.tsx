@@ -5,36 +5,31 @@ import { ConnectionEdge } from "@/app/viewModels/GraphViewModel";
 import { JsonObject } from "@/app/models/types/JsonObject";
 import { FiLogIn } from "react-icons/fi";
 import { FaRegTrashAlt } from "react-icons/fa";
+import { useGraphContext } from "@/app/viewModels/context/GraphContext";
+import { useState } from "react";
 import { TextArea } from "@radix-ui/themes";
+import { AddConnectionButton } from "./AddConnectionButton";
 
 interface RelationshipSectionProps {
-    title: string;
+    type: string;
     edges: ConnectionEdge[];
+    show: boolean;
     findNodeById: (id: string) => JsonObject | undefined;
     nodeIdGetter: (edge: ConnectionEdge) => string;
-    emptyText: string;
-    show: boolean;
     toggleShow: () => void;
-    removeEdge: (edge: ConnectionEdge) => void;
-    updLabel: (edge: ConnectionEdge, content: string) => void;
 }
 
 const RelationshipSection = ({
-    title,
+    type,
     edges,
+    show,
     findNodeById,
     nodeIdGetter,
-    emptyText,
-    show,
     toggleShow,
-    removeEdge,
-    updLabel,
 }: RelationshipSectionProps) => {
     const { selectNode } = useNodeSelection();
-
-    const handleRemove = (edge: ConnectionEdge) => {
-        removeEdge(edge);
-    };
+    const { removeConnectionEdge, updateLabel } = useGraphContext();
+    const [openConnection, setOpenConnection] = useState(false);
 
     return (
         <div className="mt-5 pt-3 border-t border-gray-500">
@@ -49,7 +44,11 @@ const RelationshipSection = ({
                         <FaRegEyeSlash size={23} />
                     )}
                 </div>
-                {title}
+                {type === "target"
+                    ? "Target To:"
+                    : type === "source"
+                    ? "Source From:"
+                    : "Unknown:"}
             </div>
             {edges.length > 0 ? (
                 edges.map((edge) => {
@@ -76,7 +75,9 @@ const RelationshipSection = ({
                                             <FiLogIn size={18} />
                                         </button>
                                         <button
-                                            onClick={() => handleRemove(edge)}
+                                            onClick={() =>
+                                                removeConnectionEdge(edge)
+                                            }
                                             className="mx-2"
                                         >
                                             <FaRegTrashAlt size={18} />
@@ -87,7 +88,7 @@ const RelationshipSection = ({
                                     value={edge.label}
                                     placeholder="Describe why you connect them"
                                     onChange={(e) =>
-                                        updLabel(edge, e.target.value)
+                                        updateLabel(edge, e.target.value)
                                     }
                                     className="text-sm text-gray-500 font-normal mt-2 bg-transparent resize-none focus:outline-none"
                                 />
@@ -96,7 +97,19 @@ const RelationshipSection = ({
                     );
                 })
             ) : (
-                <p className="text-gray-400">{emptyText}</p>
+                <p className="text-gray-400">
+                    {type === "target"
+                        ? "no targets..."
+                        : type === "source"
+                        ? "no sources..."
+                        : "unknown..."}
+                </p>
+            )}
+            {type === "target" && (
+                <AddConnectionButton
+                    open={openConnection}
+                    setOpen={setOpenConnection}
+                />
             )}
         </div>
     );
