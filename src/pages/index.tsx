@@ -1,17 +1,24 @@
 "use server";
 
 import { useState } from "react";
+import { useRouter } from "next/router";
 import LogoButton from "@/app/components/LogoButton";
 import GuideButton from "@/app/components/guide/GuideButton";
 import StartButton from "@/app/components/home/StartButton";
 import Footer from "@/app/components/home/Footer";
 import "@/app/globals.css";
+import { Button } from "@/components/ui/button";
 
 const Home = () => {
     const [loading, setLoading] = useState(false);
+    const router = useRouter();
 
     const handleClick = () => {
         setLoading(true);
+    };
+
+    const handleTryLocal = () => {
+        router.push("/doc");
     };
 
     return (
@@ -31,7 +38,15 @@ const Home = () => {
                     <br className="hidden sm:block" />
                     traceability through document structure visualization.
                 </h2>
-                <StartButton handleClick={handleClick} loading={loading} />
+                <div className="flex flex-col sm:flex-row gap-4 items-center">
+                    <StartButton handleClick={handleClick} loading={loading} />
+                    <button
+                        onClick={handleTryLocal}
+                        className="bg-gray-600 text-white font-bold px-4 sm:px-6 py-2 sm:py-3 rounded-lg shadow-lg text-base sm:text-lg hover:bg-gray-700 transition-colors duration-300 select-none flex items-center justify-center min-w-[120px] sm:min-w-[140px]"
+                    >
+                        Try Local
+                    </button>
+                </div>
             </div>
             <Footer />
         </div>

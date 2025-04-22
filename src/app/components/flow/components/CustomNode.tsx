@@ -17,7 +17,7 @@ function CustomNode({ id, data }: any) {
     const getTopicShadowColor = () => {
         if (data.level == 1) return "shadow-indigo-400";
         else if (data.level == 2) return "shadow-blue-400";
-        else if (data.level == 3) return "shadow-sky-400";
+        else if (data.level == 3) return "shadow-teal-400";
         return "shadow-gray-400";
     };
 
