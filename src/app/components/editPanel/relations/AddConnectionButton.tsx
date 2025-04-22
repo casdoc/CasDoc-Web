@@ -34,8 +34,11 @@ export const AddConnectionButton = ({
     const { selectedNode } = useNodeSelection();
     const [nodes, setNodes] = useState<SelectedNode[]>([]);
     const [searchContent, setSearchContent] = useState("");
+    const [needSorted, setNeedSorted] = useState(true);
 
     const sortNodes = useCallback(() => {
+        if (!needSorted) return;
+        setNeedSorted(false);
         const attachedNodes = parseAttahcedDocsToNodes();
         const filtered = attachedNodes
             .filter((node) => node.type.startsWith("template"))
@@ -69,13 +72,25 @@ export const AddConnectionButton = ({
             ...othersWithFlag,
         ];
         setNodes(resultNodes);
-    }, [edges, parseAttahcedDocsToNodes, searchContent, selectedNode]);
+    }, [
+        edges,
+        parseAttahcedDocsToNodes,
+        searchContent,
+        selectedNode,
+        needSorted,
+    ]);
 
     useEffect(() => {
         sortNodes();
     }, [sortNodes]);
 
+    const updSearchContent = (content: string) => {
+        setSearchContent(content);
+        setNeedSorted(true);
+    };
+
     const handleToggle = (id: string) => {
+        setNeedSorted(false);
         setNodes((prevNodes) =>
             prevNodes.map((node) => {
                 if (node.id === id) {
@@ -112,7 +127,7 @@ export const AddConnectionButton = ({
                     </DialogHeader>
                     <SearchBar
                         searchContent={searchContent}
-                        setSearchContent={setSearchContent}
+                        setSearchContent={updSearchContent}
                     />
                     <AddConnectionList
                         nodes={nodes}
