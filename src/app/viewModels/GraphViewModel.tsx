@@ -344,7 +344,7 @@ export function useGraphViewModel(): GraphViewModel {
                 type: content.type,
                 level: content.attrs.level,
                 config: content.attrs.config,
-                fields: content.attrs.fileds,
+                fields: content.attrs.fields,
             };
         }
     };
