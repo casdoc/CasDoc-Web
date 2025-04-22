@@ -266,7 +266,7 @@ export function useGraphViewModel(): GraphViewModel {
         });
     }, []);
 
-    const parseAttahcedDocsToNodes = () => {
+    const parseAttachedDocsToNodes = () => {
         const nodes: GraphNode[] = [];
         attachedDocs.forEach((doc) => {
             doc.nodes.forEach((node) => {
