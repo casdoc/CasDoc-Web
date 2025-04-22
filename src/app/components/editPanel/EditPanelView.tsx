@@ -103,6 +103,9 @@ const EditPanelView = () => {
     useEffect(() => {
         if (selectedNode) {
             const item = findNodeById(String(selectedNode));
+            if (!item?.type.startsWith("template")) {
+                setActiveSection("info");
+            }
             setNode(item);
             const _targetEdges = searchTarget(selectedNode);
             setTargetEdges(_targetEdges);

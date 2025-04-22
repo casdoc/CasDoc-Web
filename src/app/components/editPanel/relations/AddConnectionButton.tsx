@@ -8,6 +8,7 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import { useGraphContext } from "@/app/viewModels/context/GraphContext";
+import { GoGitMerge } from "react-icons/go";
 
 export const AddConnectionButton = ({
     open,
@@ -33,7 +34,12 @@ export const AddConnectionButton = ({
                 </DialogTrigger>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Establish relationships</DialogTitle>
+                        <DialogTitle>
+                            <Flex className="gap-x-3">
+                                <GoGitMerge />
+                                Establish relationships
+                            </Flex>
+                        </DialogTitle>
                         <DialogDescription>
                             Establish some relationships starting from this node
                         </DialogDescription>
