@@ -27,7 +27,7 @@ export interface GraphViewModel {
     appendAttachedDocs: (doc: AttachedDoc) => void;
     removeAttachedDoc: (documentId: string) => void;
     setAttachedDocs: (docs: AttachedDoc[]) => void;
-    parseAttahcedDocsToNodes: () => GraphNode[];
+    parseAttachedDocsToNodes: () => GraphNode[];
     appendAttachedDocsById: (documentId: string) => void;
     initGraphNodes: () => void;
 
@@ -451,7 +451,7 @@ export function useGraphViewModel(): GraphViewModel {
         appendAttachedDocs,
         removeAttachedDoc,
         setAttachedDocs,
-        parseAttahcedDocsToNodes,
+        parseAttachedDocsToNodes,
         appendAttachedDocsById,
         initGraphNodes,
 
