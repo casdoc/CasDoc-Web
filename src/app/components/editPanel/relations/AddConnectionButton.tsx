@@ -11,7 +11,7 @@ import { useGraphContext } from "@/app/viewModels/context/GraphContext";
 import { GoGitMerge } from "react-icons/go";
 import { ConnectionEdge, GraphNode } from "@/app/viewModels/GraphViewModel";
 import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { AddConnectionList } from "./AddConnectionList";
 import SearchBar from "@/app/components/SearchBar";
 
@@ -33,16 +33,13 @@ export const AddConnectionButton = ({
     const { parseAttahcedDocsToNodes } = useGraphContext();
     const { selectedNode } = useNodeSelection();
     const [nodes, setNodes] = useState<SelectedNode[]>([]);
-    const [isMounted, setIsMounted] = useState(false);
     const [searchContent, setSearchContent] = useState("");
 
-    useEffect(() => {
-        if (isMounted) return;
-        else setIsMounted(true);
+    const sortNodes = useCallback(() => {
         const attachedNodes = parseAttahcedDocsToNodes();
-        const filtered = attachedNodes.filter((node) =>
-            node.type.startsWith("template")
-        );
+        const filtered = attachedNodes
+            .filter((node) => node.type.startsWith("template"))
+            .filter((node) => node.label.toLowerCase().includes(searchContent));
         if (!filtered) return;
 
         const selected = filtered.find((node) => node.id === selectedNode);
@@ -72,7 +69,11 @@ export const AddConnectionButton = ({
             ...othersWithFlag,
         ];
         setNodes(resultNodes);
-    }, [edges, parseAttahcedDocsToNodes, selectedNode, isMounted]);
+    }, [edges, parseAttahcedDocsToNodes, searchContent, selectedNode]);
+
+    useEffect(() => {
+        sortNodes();
+    }, [sortNodes]);
 
     const handleToggle = (id: string) => {
         setNodes((prevNodes) =>
