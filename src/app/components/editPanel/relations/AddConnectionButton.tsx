@@ -30,7 +30,7 @@ export const AddConnectionButton = ({
     setOpen,
     edges,
 }: AddConnectionButtonProps) => {
-    const { parseAttahcedDocsToNodes } = useGraphContext();
+    const { parseAttachedDocsToNodes } = useGraphContext();
     const { selectedNode } = useNodeSelection();
     const [nodes, setNodes] = useState<SelectedNode[]>([]);
     const [searchContent, setSearchContent] = useState("");
@@ -39,7 +39,7 @@ export const AddConnectionButton = ({
     const sortNodes = useCallback(() => {
         if (!needSorted) return;
         setNeedSorted(false);
-        const attachedNodes = parseAttahcedDocsToNodes();
+        const attachedNodes = parseAttachedDocsToNodes();
         const filtered = attachedNodes
             .filter((node) => node.type.startsWith("template"))
             .filter((node) => node.label.toLowerCase().includes(searchContent));
@@ -74,7 +74,7 @@ export const AddConnectionButton = ({
         setNodes(resultNodes);
     }, [
         edges,
-        parseAttahcedDocsToNodes,
+        parseAttachedDocsToNodes,
         searchContent,
         selectedNode,
         needSorted,

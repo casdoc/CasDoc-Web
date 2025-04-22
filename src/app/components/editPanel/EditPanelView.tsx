@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext";
 import EditPanelHeader from "./EditPanelHeader";
-import EditPanelRelationship from "./relations/EditPanelRelationship";
+import EditPanelRelationList from "./relations/EditPanelRelationList";
 import EditPanelFields from "./EditPanelFields";
 import { JsonObject } from "@/app/models/types/JsonObject";
 import EditPanelInfo from "./EditPanelInfo";
@@ -295,7 +295,7 @@ const EditPanelView = () => {
                             </>
                         )}
                     {activeSection === "relations" && (
-                        <EditPanelRelationship
+                        <EditPanelRelationList
                             targetEdges={targetEdges}
                             sourceEdges={sourceEdges}
                             findNodeById={findNodeById}

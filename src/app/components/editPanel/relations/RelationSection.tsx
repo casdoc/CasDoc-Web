@@ -10,7 +10,7 @@ import { useState } from "react";
 import { TextArea } from "@radix-ui/themes";
 import { AddConnectionButton } from "./AddConnectionButton";
 
-interface RelationshipSectionProps {
+interface RelationSectionProps {
     type: string;
     edges: ConnectionEdge[];
     show: boolean;
@@ -19,14 +19,14 @@ interface RelationshipSectionProps {
     toggleShow: () => void;
 }
 
-const RelationshipSection = ({
+const RelationSection = ({
     type,
     edges,
     show,
     findNodeById,
     nodeIdGetter,
     toggleShow,
-}: RelationshipSectionProps) => {
+}: RelationSectionProps) => {
     const { selectNode } = useNodeSelection();
     const { removeConnectionEdge, updateLabel } = useGraphContext();
     const [openConnection, setOpenConnection] = useState(false);
@@ -116,4 +116,4 @@ const RelationshipSection = ({
     );
 };
 
-export default RelationshipSection;
+export default RelationSection;

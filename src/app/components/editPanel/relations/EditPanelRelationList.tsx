@@ -1,26 +1,26 @@
 import { JsonObject } from "@/app/models/types/JsonObject";
 import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext";
 import { ConnectionEdge } from "@/app/viewModels/GraphViewModel";
-import RelationshipSection from "./RelationshipSection";
+import RelationSection from "./RelationSection";
 
-interface EditPanelRelationshipProps {
+interface EditPanelRelationListProps {
     targetEdges: ConnectionEdge[];
     sourceEdges: ConnectionEdge[];
     findNodeById: (id: string) => JsonObject | undefined;
 }
 
-const EditPanelRelationship = ({
+const EditPanelRelationList = ({
     targetEdges,
     sourceEdges,
     findNodeById,
-}: EditPanelRelationshipProps) => {
+}: EditPanelRelationListProps) => {
     const { showTarget, toggleShowTarget, showSource, toggleShowSource } =
         useNodeSelection();
 
     return (
         <div className="bg-white border border-gray-200 rounded-lg p-4 shadow">
             <h2 className="text-lg font-semibold mb-4">Relationships</h2>
-            <RelationshipSection
+            <RelationSection
                 type="target"
                 edges={targetEdges}
                 show={showTarget}
@@ -28,7 +28,7 @@ const EditPanelRelationship = ({
                 nodeIdGetter={(edge) => edge.target}
                 toggleShow={toggleShowTarget}
             />
-            <RelationshipSection
+            <RelationSection
                 type="source"
                 edges={sourceEdges}
                 show={showSource}
@@ -40,4 +40,4 @@ const EditPanelRelationship = ({
     );
 };
 
-export default EditPanelRelationship;
+export default EditPanelRelationList;
