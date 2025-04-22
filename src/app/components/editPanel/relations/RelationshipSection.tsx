@@ -99,7 +99,7 @@ const RelationshipSection = ({
             ) : (
                 <p className="text-gray-400">
                     {type === "target"
-                        ? "no targets..."
+                        ? ""
                         : type === "source"
                         ? "no sources..."
                         : "unknown..."}
@@ -109,6 +109,7 @@ const RelationshipSection = ({
                 <AddConnectionButton
                     open={openConnection}
                     setOpen={setOpenConnection}
+                    edges={edges}
                 />
             )}
         </div>
