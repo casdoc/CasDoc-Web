@@ -45,10 +45,10 @@ const AgentRelationAdviceDialog: React.FC<AgentRelationAdviceDialogProps> = ({
     const {
         updConnectionEdges,
         removeConnectionEdge,
-        parseAttahcedDocsToNodes,
+        parseAttachedDocsToNodes,
     } = useGraphContext();
     // For testing - remove this in production
-    const graphNodes = parseAttahcedDocsToNodes();
+    const graphNodes = parseAttachedDocsToNodes();
     const mockAdvice: Advice[] = graphNodes.map((node: GraphNode) => ({
         id: node.id,
         reason: `This node seems to relate to the current context because of ${node.label} characteristics.`,
