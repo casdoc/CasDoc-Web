@@ -1,6 +1,7 @@
 "use server";
 
-import Link from "next/link";
+import supabase from "@/lib/supabase";
+import { FcGoogle } from "react-icons/fc";
 
 interface StartButtonProps {
     handleClick: () => void;
@@ -8,11 +9,20 @@ interface StartButtonProps {
 }
 
 const StartButton = ({ handleClick, loading }: StartButtonProps) => {
+    const loginWithGoogle = async () => {
+        handleClick();
+        await supabase.auth.signInWithOAuth({
+            provider: "google",
+            options: {
+                redirectTo: `${window.location.origin}/auth/callback`,
+            },
+        });
+    };
+
     return (
-        <Link
-            href="/doc"
-            className="bg-black text-white font-bold px-4 sm:px-6 py-2 sm:py-3 rounded-lg shadow-lg text-base sm:text-lg hover:bg-gray-700 transition-colors duration-300 select-none flex items-center justify-center min-w-[120px] sm:min-w-[140px]"
-            onClick={handleClick}
+        <button
+            className="bg-gray-900 text-white font-bold px-4 sm:px-6 py-2 sm:py-3 rounded-lg shadow-lg text-base sm:text-lg hover:bg-gray-700 transition-colors duration-300 select-none flex items-center justify-center min-w-[120px] sm:min-w-[140px]"
+            onClick={loginWithGoogle}
         >
             {loading ? (
                 <>
@@ -39,9 +49,15 @@ const StartButton = ({ handleClick, loading }: StartButtonProps) => {
                     Launching...
                 </>
             ) : (
-                "Get Started"
+                <div className="flex gap-2">
+                    <span>Login with</span>
+                    <FcGoogle
+                        className="relative top-0.5 pr-0 mr-0"
+                        size={23}
+                    />
+                </div>
             )}
-        </Link>
+        </button>
     );
 };
 

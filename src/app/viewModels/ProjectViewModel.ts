@@ -70,7 +70,7 @@ export const useProjectViewModel = (): ProjectViewModel => {
             } as ProjectInput);
             if (!defaultProject) return;
 
-            // Prase the doc title from default content
+            // Parse the doc title from default content
             let docTitle = "Untitled Document";
             if (
                 defaultContent[0].content &&

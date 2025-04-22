@@ -27,7 +27,7 @@ export interface GraphViewModel {
     appendAttachedDocs: (doc: AttachedDoc) => void;
     removeAttachedDoc: (documentId: string) => void;
     setAttachedDocs: (docs: AttachedDoc[]) => void;
-    parseAttahcedDocsToNodes: () => GraphNode[];
+    parseAttachedDocsToNodes: () => GraphNode[];
     appendAttachedDocsById: (documentId: string) => void;
     initGraphNodes: () => void;
 
@@ -266,7 +266,7 @@ export function useGraphViewModel(): GraphViewModel {
         });
     }, []);
 
-    const parseAttahcedDocsToNodes = () => {
+    const parseAttachedDocsToNodes = () => {
         const nodes: GraphNode[] = [];
         attachedDocs.forEach((doc) => {
             doc.nodes.forEach((node) => {
@@ -344,7 +344,7 @@ export function useGraphViewModel(): GraphViewModel {
                 type: content.type,
                 level: content.attrs.level,
                 config: content.attrs.config,
-                fields: content.attrs.fileds,
+                fields: content.attrs.fields,
             };
         }
     };
@@ -451,7 +451,7 @@ export function useGraphViewModel(): GraphViewModel {
         appendAttachedDocs,
         removeAttachedDoc,
         setAttachedDocs,
-        parseAttahcedDocsToNodes,
+        parseAttachedDocsToNodes,
         appendAttachedDocsById,
         initGraphNodes,
 
