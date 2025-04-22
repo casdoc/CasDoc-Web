@@ -12,7 +12,7 @@ import { GraphAttachList } from "./GraphAttachList";
 import { useEffect, useState } from "react";
 import { useGraphContext } from "@/app/viewModels/context/GraphContext";
 import { useProjectContext } from "@/app/viewModels/context/ProjectContext";
-import { AttachedSearchBar } from "./AttachedSearchBar";
+import SearchBar from "@/app/components/SearchBar";
 
 export const GraphAttachDialog = ({
     openAttach,
@@ -70,7 +70,7 @@ export const GraphAttachDialog = ({
                         Search and select some documents to attach to the graph.
                     </DialogDescription>
                 </DialogHeader>
-                <AttachedSearchBar
+                <SearchBar
                     searchContent={searchContent}
                     setSearchContent={setSearchContent}
                 />

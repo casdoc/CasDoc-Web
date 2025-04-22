@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext";
 import EditPanelHeader from "./EditPanelHeader";
-import EditPanelRelationship from "./EditPanelRelationship";
+import EditPanelRelationList from "./relations/EditPanelRelationList";
 import EditPanelFields from "./EditPanelFields";
 import { JsonObject } from "@/app/models/types/JsonObject";
 import EditPanelInfo from "./EditPanelInfo";
@@ -18,8 +18,6 @@ const EditPanelView = () => {
         affectedIds,
         searchTarget,
         searchSource,
-        removeConnectionEdge,
-        updateLabel,
         updateAffectedIds,
         removeAffectedId,
         updateNodeById,
@@ -105,6 +103,9 @@ const EditPanelView = () => {
     useEffect(() => {
         if (selectedNode) {
             const item = findNodeById(String(selectedNode));
+            if (!item?.type.startsWith("template")) {
+                setActiveSection("info");
+            }
             setNode(item);
             const _targetEdges = searchTarget(selectedNode);
             setTargetEdges(_targetEdges);
@@ -294,12 +295,10 @@ const EditPanelView = () => {
                             </>
                         )}
                     {activeSection === "relations" && (
-                        <EditPanelRelationship
+                        <EditPanelRelationList
                             targetEdges={targetEdges}
                             sourceEdges={sourceEdges}
                             findNodeById={findNodeById}
-                            removeEdge={removeConnectionEdge}
-                            updLabel={updateLabel}
                         />
                     )}
                     <EditPanelCmdHint />

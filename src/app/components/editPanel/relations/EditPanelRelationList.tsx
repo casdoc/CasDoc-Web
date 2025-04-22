@@ -1,53 +1,43 @@
 import { JsonObject } from "@/app/models/types/JsonObject";
 import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext";
 import { ConnectionEdge } from "@/app/viewModels/GraphViewModel";
-import RelationshipSection from "./RelationshipSection";
+import RelationSection from "./RelationSection";
 
-interface EditPanelRelationshipProps {
+interface EditPanelRelationListProps {
     targetEdges: ConnectionEdge[];
     sourceEdges: ConnectionEdge[];
     findNodeById: (id: string) => JsonObject | undefined;
-    removeEdge: (edge: ConnectionEdge) => void;
-    updLabel: (edge: ConnectionEdge, content: string) => void;
 }
 
-const EditPanelRelationship = ({
+const EditPanelRelationList = ({
     targetEdges,
     sourceEdges,
     findNodeById,
-    removeEdge,
-    updLabel,
-}: EditPanelRelationshipProps) => {
+}: EditPanelRelationListProps) => {
     const { showTarget, toggleShowTarget, showSource, toggleShowSource } =
         useNodeSelection();
 
     return (
         <div className="bg-white border border-gray-200 rounded-lg p-4 shadow">
-            <h2 className="text-lg font-semibold mb-4">Relations</h2>
-            <RelationshipSection
-                title="Target To:"
+            <h2 className="text-lg font-semibold mb-4">Relationships</h2>
+            <RelationSection
+                type="target"
                 edges={targetEdges}
+                show={showTarget}
                 findNodeById={findNodeById}
                 nodeIdGetter={(edge) => edge.target}
-                emptyText="no target..."
-                show={showTarget}
                 toggleShow={toggleShowTarget}
-                removeEdge={removeEdge}
-                updLabel={updLabel}
             />
-            <RelationshipSection
-                title="Source From:"
+            <RelationSection
+                type="source"
                 edges={sourceEdges}
+                show={showSource}
                 findNodeById={findNodeById}
                 nodeIdGetter={(edge) => edge.source}
-                emptyText="no source..."
-                show={showSource}
                 toggleShow={toggleShowSource}
-                removeEdge={removeEdge}
-                updLabel={updLabel}
             />
         </div>
     );
 };
 
-export default EditPanelRelationship;
+export default EditPanelRelationList;
