@@ -1,5 +1,5 @@
 import { ConnectionEdge } from "@/app/viewModels/GraphViewModel";
-import { GraphNode } from "@/app/viewModels/useDocument";
+import { GraphNode } from "@/app/viewModels/GraphViewModel";
 import { Edge, Node, Position } from "@xyflow/react";
 
 export const convertDataToNodes = (
@@ -12,7 +12,7 @@ export const convertDataToNodes = (
         id: `${item.id}`,
         position: defaultPosition,
         data: {
-            label: item.label || "unknown",
+            label: item.config?.info.name || item.label || "unknown",
             type: item.type,
             isAffected: affectedIds.includes(item.id.toString()),
             level: item.level,
@@ -27,7 +27,7 @@ export const convertDataToStructuralEdges = (
 ): Edge[] => {
     if (graphNodes.length === 0) return [];
     return graphNodes
-        .filter((node) => node.id !== "root")
+        .filter((node) => node.type !== "root")
         .map((node) => {
             return {
                 id: `e-${node.pid}-${node.id}`,
