@@ -29,6 +29,7 @@ import {
     MarkdownPasteExtension,
     UserStoryExtension,
     TestCaseExtension,
+    WhiteBoardExtension,
 } from ".";
 
 export const ExtensionKit = () => [
@@ -82,6 +83,7 @@ export const ExtensionKit = () => [
     MarkdownPasteExtension,
     UserStoryExtension,
     TestCaseExtension,
+    WhiteBoardExtension,
 ];
 
 export default ExtensionKit;

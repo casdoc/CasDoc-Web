@@ -97,6 +97,34 @@ export const GROUPS: Group[] = [
         title: "Template",
         commands: [
             {
+                name: "whiteBoard",
+                label: "White Board",
+                iconName: "SquareLibrary",
+                aliases: ["whiteBoard"],
+                description: "white board component of templates",
+                action: (editor) => {
+                    editor
+                        .chain()
+                        .focus()
+                        .insertContent({
+                            type: "template-whiteBoard",
+                            attrs: {
+                                topicId: "root",
+                                id: uuidv4(),
+                                config: {
+                                    info: {
+                                        name: "white board",
+                                        description:
+                                            "This is a white board description",
+                                    },
+                                    fieldKey: "description",
+                                },
+                            },
+                        })
+                        .run();
+                },
+            },
+            {
                 name: "dataSchema",
                 label: "Data Schema",
                 iconName: "SquareLibrary",

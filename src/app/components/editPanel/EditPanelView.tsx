@@ -103,7 +103,17 @@ const EditPanelView = () => {
     useEffect(() => {
         if (selectedNode) {
             const item = findNodeById(String(selectedNode));
-            if (!item?.type.startsWith("template")) {
+            if (!item) {
+                selectNode(null);
+                return;
+            }
+            if (!item.type.startsWith("template")) {
+                setActiveSection("info");
+            }
+            if (
+                item.type.toLowerCase().endsWith("whiteboard") &&
+                activeSection === "fields"
+            ) {
                 setActiveSection("info");
             }
             setNode(item);
@@ -112,7 +122,14 @@ const EditPanelView = () => {
             const _sourceEdges = searchSource(selectedNode);
             setSourceEdges(_sourceEdges);
         }
-    }, [findNodeById, searchTarget, searchSource, selectedNode]);
+    }, [
+        findNodeById,
+        searchTarget,
+        searchSource,
+        selectedNode,
+        activeSection,
+        selectNode,
+    ]);
 
     useEffect(() => {
         setIsMounted(true);
