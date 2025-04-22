@@ -54,7 +54,7 @@ const WhiteBoardComponent = ({
                 editor={editor}
             />
             <div className="px-4 py-6">
-                <h2>{info.name}</h2>
+                <h3>{info.name}</h3>
                 <span className="text-sm text-gray-700 mt-1 mb-4 group-hover:cursor-text">
                     {info.description}
                 </span>
