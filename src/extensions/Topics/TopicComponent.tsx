@@ -77,10 +77,10 @@ const TopicComponent = ({ node, selected, editor, getPos }: NodeViewProps) => {
                             : "text-base"
                     }`}
                 >
-                    {config.info?.name || "Unknown"}
+                    {config.info.name || "Unknown"}
                 </h2>
                 <p className="m-0 p-0 text-sm text-gray-500 font-semibold group-hover:cursor-text w-fit">
-                    {config.info?.description}
+                    {config.info.description}
                 </p>
             </div>
         </NodeViewWrapper>

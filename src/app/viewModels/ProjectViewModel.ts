@@ -7,7 +7,6 @@ import { DocumentType } from "@/app/models/enum/DocumentType";
 import defaultContent from "../models/default-value/defaultContent";
 import { ProjectInput } from "../models/types/ProjectInput";
 import { DocumentInput } from "../models/types/DocumentInput";
-import { DocSelectedService } from "../models/services/DocSelectedService";
 
 export interface ProjectViewModel {
     projects: Project[];
@@ -24,7 +23,6 @@ export interface ProjectViewModel {
     deleteProject: (projectId: string) => void;
     editProject: (projectId: string, update: ProjectInput) => void;
     selectProject: (projectId: string) => void;
-    getProjectByDocumentId: (documentId: string) => Project | undefined;
 
     // Document actions
     getDocumentsByProjectId: (projectId: string) => Document[];
@@ -32,7 +30,6 @@ export interface ProjectViewModel {
     deleteDocument: (documentId: string) => void;
     editDocument: (documentId: string, update: DocumentInput) => void;
     selectDocument: (documentId: string) => void;
-    getDocumentById: (documentId: string) => Document | undefined;
 
     // Dialog actions
     openProjectDialog: (projectId?: string) => void;
@@ -70,20 +67,11 @@ export const useProjectViewModel = (): ProjectViewModel => {
             } as ProjectInput);
             if (!defaultProject) return;
 
-            // Parse the doc title from default content
-            let docTitle = "Untitled Document";
-            if (
-                defaultContent[0].content &&
-                defaultContent[0].content.length > 0
-            ) {
-                docTitle = defaultContent[0].content[0].text;
-            }
-
             // Create a default document
             const defaultDoc = DocumentService.createDocument({
                 type: DocumentType.SRD,
                 projectId: defaultProject.id,
-                title: docTitle,
+                title: "Untitled Document",
                 description: "No description",
                 content: defaultContent,
             } as DocumentInput);
@@ -147,16 +135,6 @@ export const useProjectViewModel = (): ProjectViewModel => {
         setSelectedProjectId(projectId);
     }, []);
 
-    const getProjectByDocumentId = (
-        documentId: string
-    ): Project | undefined => {
-        for (const project of projects) {
-            const documents = getDocumentsByProjectId(project.id);
-            const doc = documents.find((d) => d.id === documentId);
-            if (doc) return project;
-        }
-    };
-
     // Document Actions
     const getDocumentsByProjectId = useCallback(
         (projectId: string): Document[] => {
@@ -164,21 +142,6 @@ export const useProjectViewModel = (): ProjectViewModel => {
         },
         []
     );
-
-    useEffect(() => {
-        const localSelectedDoc = DocSelectedService.getSelectedDoc();
-        if (localSelectedDoc === "") {
-            if (projects[0]) {
-                const docs = getDocumentsByProjectId(projects[0].id);
-                if (docs[0]) {
-                    setSelectedDocumentId(docs[0].id);
-                    return;
-                }
-            }
-        }
-        setSelectedDocumentId(localSelectedDoc);
-    }, [projects, getDocumentsByProjectId]);
-
     const createDocument = useCallback((input: DocumentInput): string => {
         const document = DocumentService.createDocument(input);
         if (!document) throw new Error("Failed to create document");
@@ -192,7 +155,6 @@ export const useProjectViewModel = (): ProjectViewModel => {
         }));
         return document.id;
     }, []);
-
     const deleteDocument = useCallback(
         (documentId: string) => {
             const projectId =
@@ -212,7 +174,6 @@ export const useProjectViewModel = (): ProjectViewModel => {
         },
         [selectedDocumentId]
     );
-
     const editDocument = useCallback(
         (documentId: string, update: DocumentInput) => {
             const projectId =
@@ -233,10 +194,8 @@ export const useProjectViewModel = (): ProjectViewModel => {
         },
         []
     );
-
     const selectDocument = useCallback((documentId: string) => {
         setSelectedDocumentId(documentId);
-        DocSelectedService.setSelectedDoc(documentId);
     }, []);
 
     // Dialog Actions
@@ -246,7 +205,6 @@ export const useProjectViewModel = (): ProjectViewModel => {
             projectId ? ProjectService.getProjectById(projectId) : null
         );
     }, []);
-
     const openDocumentDialog = useCallback(
         (projectId: string, documentId?: string) => {
             setIsDocumentDialogOpen(true);
@@ -257,14 +215,12 @@ export const useProjectViewModel = (): ProjectViewModel => {
         },
         []
     );
-
     const closeProjectDialog = useCallback(() => {
         setIsProjectDialogOpen(false);
         setTimeout(() => {
             setEditingProject(null);
         }, 0);
     }, []);
-
     const closeDocumentDialog = useCallback(() => {
         setIsDocumentDialogOpen(false);
         setTimeout(() => {
@@ -272,15 +228,6 @@ export const useProjectViewModel = (): ProjectViewModel => {
             setEditingDocument(null);
         }, 0);
     }, []);
-
-    const getDocumentById = (documentId: string): Document | undefined => {
-        for (const project of projects) {
-            const documents = getDocumentsByProjectId(project.id);
-            const doc = documents.find((d) => d.id === documentId);
-            if (doc) return doc;
-        }
-        return undefined;
-    };
 
     return {
         projects,
@@ -295,13 +242,11 @@ export const useProjectViewModel = (): ProjectViewModel => {
         deleteProject,
         editProject,
         selectProject,
-        getProjectByDocumentId,
         getDocumentsByProjectId,
         createDocument,
         deleteDocument,
         editDocument,
         selectDocument,
-        getDocumentById,
         openProjectDialog,
         openDocumentDialog,
         closeProjectDialog,

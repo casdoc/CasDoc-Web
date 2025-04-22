@@ -29,13 +29,13 @@ import {
 } from "./utils/converter";
 // import { FlowSettingPanel } from "./setting-panel/FlowSettingPanel";
 import CustomNode from "./components/CustomNode";
+import { GraphNode } from "@/app/viewModels/useDocument";
 import DocMode from "@/app/models/enum/DocMode";
 import { FlowScrollModeButton } from "./setting-panel/FlowScrollModeButton";
 import ToastManager from "@/app/viewModels/ToastManager";
 import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext";
 import CustomEdge from "./components/CustomEdge";
 import { useGraphContext } from "@/app/viewModels/context/GraphContext";
-import { GraphAttachButton } from "./graph-attach/GraphAttachButton";
 
 const nodeTypes = { custom: CustomNode };
 const edgeTypes = {
@@ -56,9 +56,10 @@ const defaultEdgeOptions = {
 
 interface GraphViewProps {
     docMode: DocMode | undefined;
+    graphNodes: GraphNode[];
 }
 
-const GraphView = ({ docMode }: GraphViewProps) => {
+const GraphView = ({ docMode, graphNodes }: GraphViewProps) => {
     // const [colorMode, setColorMode] = useState<"light" | "dark">("light");
     // const [selectedLayout, setSelectedLayout] = useState("LR");
     const [scrollMode, setScrollMode] = useState<"zoom" | "drag">("drag");
@@ -67,12 +68,10 @@ const GraphView = ({ docMode }: GraphViewProps) => {
 
     const {
         connectionEdges,
-        affectedIds,
         updConnectionEdges,
         removeConnectionEdge,
-        parseAttahcedDocsToNodes,
+        affectedIds,
     } = useGraphContext();
-
     const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
     const { fitView, setCenter } = useReactFlow();
@@ -81,7 +80,6 @@ const GraphView = ({ docMode }: GraphViewProps) => {
     const store = useStoreApi();
 
     useEffect(() => {
-        const graphNodes = parseAttahcedDocsToNodes();
         if (!graphNodes || graphNodes.length === 0) {
             setNodes([]);
             return;
@@ -100,17 +98,11 @@ const GraphView = ({ docMode }: GraphViewProps) => {
         const tmpConnectionEdges = connectConnectionEdges(connectionEdges);
         setNodes(layoutedNodes);
         setEdges([...newStructuralEdges, ...tmpConnectionEdges]);
-    }, [
-        connectionEdges,
-        affectedIds,
-        setNodes,
-        setEdges,
-        parseAttahcedDocsToNodes,
-    ]);
+    }, [graphNodes, connectionEdges, affectedIds, setNodes, setEdges]);
 
     useEffect(() => {
         fitView({ duration: 500 });
-    }, [docMode, fitView, nodes.length]);
+    }, [docMode, fitView]);
 
     const onConnect = useCallback(
         (params: Connection) => {
@@ -214,7 +206,6 @@ const GraphView = ({ docMode }: GraphViewProps) => {
                     colorMode={colorMode}
                     setColorMode={setColorMode}
                 /> */}
-                <GraphAttachButton />
                 <ZoomSlider position="top-left" />
                 {/* <MiniMap /> */}
                 {ToastComponent}
