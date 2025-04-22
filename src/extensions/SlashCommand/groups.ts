@@ -113,7 +113,7 @@ export const GROUPS: Group[] = [
                                 id: uuidv4(),
                                 config: {
                                     info: {
-                                        name: "",
+                                        name: "white board",
                                         description:
                                             "This is a white board description",
                                     },

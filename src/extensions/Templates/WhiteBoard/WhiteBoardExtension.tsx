@@ -13,10 +13,9 @@ import {
 const whiteBoardDefaultConfig = {
     config: {
         info: {
-            title: "System Overview",
+            name: "System Overview",
             description: "A whiteboard for planning and notes.",
         },
-        items: [],
     },
 };
 
