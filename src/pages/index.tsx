@@ -7,7 +7,6 @@ import GuideButton from "@/app/components/guide/GuideButton";
 import StartButton from "@/app/components/home/StartButton";
 import Footer from "@/app/components/home/Footer";
 import "@/app/globals.css";
-import { Button } from "@/components/ui/button";
 
 const Home = () => {
     const [loading, setLoading] = useState(false);
