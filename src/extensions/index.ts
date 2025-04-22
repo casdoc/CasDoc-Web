@@ -7,6 +7,7 @@ export { MermaidExtension } from "./Templates/Mermaid/MermaidExtension";
 export { MarkdownPasteExtension } from "./MarkdownPasteExtension";
 export { UserStoryExtension } from "./Templates/UserStory/UserStoryExtension";
 export { TestCaseExtension } from "./Templates/TestCase/TestCaseExtension";
+export { WhiteBoardExtension } from "./Templates/WhiteBoard/WhiteBoardExtension";
 
 export { Heading } from "./Heading";
 export { Link } from "./Link";

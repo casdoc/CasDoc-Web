@@ -115,13 +115,6 @@ const UserStoryComponent = ({
                             <p className="text-xs font-medium text-gray-500 mb-1 group-hover:cursor-text w-fit">
                                 {info.serial}
                             </p>
-                            {/* {info.serial.trim() !== "" && (
-                                <div className="group-hover:cursor-text">
-                                    <p className="text-xs font-medium text-gray-500 mb-1 group-hover:cursor-text">
-                                        {info.serial}
-                                    </p>
-                                </div>
-                            )} */}
                             <div className="flex items-center gap-1 group-hover:cursor-text">
                                 <h2 className="text-xl font-bold text-gray-900 mt-0 group-hover:cursor-text">
                                     {info.name || "New Story"}
