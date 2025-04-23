@@ -10,7 +10,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         <Theme>
             <Head>
                 <title>CasDoc</title>
-                <link rel="icon" type="image/svg+xml" href="/spine-icon.svg" />
+                <link rel="icon" type="image/svg+xml" href="/logo.svg" />
                 <meta
                     name="description"
                     content="CasDoc is a docs-editing tool that enhances traceability through document structure visualization."

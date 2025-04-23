@@ -2,7 +2,7 @@
 
 import { useCallback } from "react";
 import DocMode from "@/app/models/enum/DocMode";
-import GuideButton from "@/app/components/guide/GuideButton";
+// import GuideButton from "@/app/components/guide/GuideButton";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import {
@@ -107,7 +107,7 @@ const EditorHeader = ({ mode, setDocMode, editor }: EditorHeaderProps) => {
             </div>
 
             {/* Right side with import button and guide button */}
-            <div className="flex items-center gap-x-4">
+            <div className="flex items-center gap-x-5 mr-3">
                 <TooltipProvider>
                     <Tooltip>
                         <TooltipTrigger asChild>
@@ -131,7 +131,7 @@ const EditorHeader = ({ mode, setDocMode, editor }: EditorHeaderProps) => {
                         </TooltipContent>
                     </Tooltip>
 
-                    <Tooltip>
+                    {/* <Tooltip>
                         <TooltipTrigger asChild>
                             <div className="flex items-center justify-center">
                                 <GuideButton />
@@ -140,7 +140,7 @@ const EditorHeader = ({ mode, setDocMode, editor }: EditorHeaderProps) => {
                         <TooltipContent>
                             <p>Guide</p>
                         </TooltipContent>
-                    </Tooltip>
+                    </Tooltip> */}
                 </TooltipProvider>
             </div>
         </div>
