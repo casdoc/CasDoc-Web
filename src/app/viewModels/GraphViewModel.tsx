@@ -71,8 +71,8 @@ export function useGraphViewModel(): GraphViewModel {
     const { selectedDocumentId, getDocumentById } = useProjectContext();
 
     useEffect(() => {
-        if (!selectedDocumentId) return;
-        let doc = DocumentService.getDocumentById(selectedDocumentId);
+        // if (!selectedDocumentId) return;
+        let doc = DocumentService.getDocumentById(selectedDocumentId || "");
         if (!doc) {
             const emptyDoc = new Document(
                 "default-document",

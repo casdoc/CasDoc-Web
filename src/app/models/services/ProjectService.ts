@@ -4,11 +4,13 @@ import { DocumentService } from "./DocumentService";
 import { ProjectInput } from "@/app/models/types/ProjectInput";
 import { v4 as uuidv4 } from "uuid";
 import { createClient } from "@supabase/supabase-js";
+
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
-const STORAGE_KEY = "PROJECTS";
 const baseUrl = process.env.BACKEND_URL || "http://localhost:8080";
+const STORAGE_KEY = "PROJECTS";
+
 interface ProjectResponseItem {
     id: number;
     createdAt: string;
@@ -23,10 +25,10 @@ interface ProjectsResponse {
     timestamp: string;
     data: ProjectResponseItem[];
 }
+
 export class ProjectService {
-    static async fetchAllProjects(signal?: AbortSignal): Promise<Project[]> {
+    static async fetchAllProjects(): Promise<Project[]> {
         try {
-            console.debug("baseUrl", baseUrl);
             const {
                 data: { session },
                 error,
@@ -36,7 +38,7 @@ export class ProjectService {
                 throw new Error("No valid session found");
             }
 
-            const token = session.access_token; // 獲取 JWT token
+            const token = session.access_token;
 
             const response = await fetch(`${baseUrl}/api/v1/public/projects`, {
                 method: "GET",
@@ -44,7 +46,6 @@ export class ProjectService {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json",
                 },
-                signal,
             });
 
             if (!response.ok) {
@@ -52,7 +53,6 @@ export class ProjectService {
             }
 
             const result: ProjectsResponse = await response.json();
-            console.debug(result);
             // Map API response to Project entities
             return result.data.map(
                 (proj) =>
@@ -99,11 +99,11 @@ export class ProjectService {
         );
     }
 
-    static async createProject(input: ProjectInput): Promise<Project | null> {
+    static createProject(input: ProjectInput): Project | null {
         if (typeof window === "undefined") return null;
         // TODO: Implement API call for creating projects
         // For now, using localStorage as fallback
-        const projects = await this.getProjectsFromLocalStorage();
+        const projects = this.getProjectsFromLocalStorage();
         const newProject = new Project(
             uuidv4(),
             new Date(),

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { Project } from "@/app/models/entity/Project";
 import { Document } from "@/app/models/entity/Document";
 import { ProjectService } from "@/app/models/services/ProjectService";
@@ -8,9 +8,10 @@ import defaultContent from "../models/default-value/defaultContent";
 import { ProjectInput } from "../models/types/ProjectInput";
 import { DocumentInput } from "../models/types/DocumentInput";
 import { DocSelectedService } from "../models/services/DocSelectedService";
+import { useProjectsQuery } from "./hooks/useProjectsQuery";
 
 export interface ProjectViewModel {
-    projects: Project[];
+    projects: Project[] | [];
     documentsMap: Record<string, Document[]>;
     selectedProjectId: string | null;
     selectedDocumentId: string | null;
@@ -42,7 +43,8 @@ export interface ProjectViewModel {
 }
 
 export const useProjectViewModel = (): ProjectViewModel => {
-    const [projects, setProjects] = useState<Project[]>([]);
+    const { data: projectsData, isLoading: isLoadingProjects } =
+        useProjectsQuery();
     const [documentsMap, setDocumentsMap] = useState<
         Record<string, Document[]>
     >({});
@@ -58,20 +60,24 @@ export const useProjectViewModel = (): ProjectViewModel => {
     const [editingDocument, setEditingDocument] = useState<Document | null>(
         null
     );
-
+    const projects: Project[] = useMemo(
+        () => projectsData || [],
+        [projectsData]
+    );
     // Load projects from localStorage and set default content
     useEffect(() => {
-        const loadedProjects = ProjectService.getAllProjects();
         // Set default content
-        if (loadedProjects.length === 0) {
+        if (!isLoadingProjects && projects?.length === 0) {
             const defaultProject = ProjectService.createProject({
                 name: "My First Project",
                 description: "Default project",
             } as ProjectInput);
+
             if (!defaultProject) return;
 
             // Parse the doc title from default content
             let docTitle = "Untitled Document";
+
             if (
                 defaultContent[0].content &&
                 defaultContent[0].content.length > 0
@@ -87,10 +93,11 @@ export const useProjectViewModel = (): ProjectViewModel => {
                 description: "No description",
                 content: defaultContent,
             } as DocumentInput);
+
             if (!defaultDoc) return;
 
             // Update local state
-            setProjects([defaultProject]);
+            // setProjects([defaultProject]);
             setDocumentsMap((prev) => ({
                 ...prev,
                 [defaultDoc.projectId]: [
@@ -98,16 +105,15 @@ export const useProjectViewModel = (): ProjectViewModel => {
                     defaultDoc,
                 ],
             }));
-        } else {
-            // Update local state
-            setProjects(loadedProjects);
-            loadedProjects.forEach((proj) => {
-                documentsMap[proj.id] = ProjectService.getDocumentsByProjectId(
-                    proj.id
-                );
+        } else if (projects) {
+            const initialDocumentsMap: Record<string, Document[]> = {};
+            projects.forEach((proj) => {
+                initialDocumentsMap[proj.id] =
+                    ProjectService.getDocumentsByProjectId(proj.id);
             });
+            setDocumentsMap(initialDocumentsMap);
         }
-    }, [documentsMap]);
+    }, [isLoadingProjects, projects]);
 
     // Project Actions
     const createProject = useCallback((input: ProjectInput): string => {
@@ -115,34 +121,37 @@ export const useProjectViewModel = (): ProjectViewModel => {
         if (!project) throw new Error("Failed to create project");
 
         // Update local state
-        setProjects((prev) => [...prev, project]);
+        // setProjects((prev) => [...prev, project]);
         return project.id;
     }, []);
+
     const deleteProject = useCallback(
         (projectId: string) => {
             if (selectedProjectId === projectId) setSelectedProjectId(null);
             ProjectService.deleteProject(projectId);
 
             // Update local state
-            setProjects((prevProjects) =>
-                prevProjects.filter((proj) => proj.id !== projectId)
-            );
+            // setProjects((prevProjects) =>
+            // prevProjects.filter((proj) => proj.id !== projectId)
+            // );
         },
         [selectedProjectId]
     );
+
     const editProject = useCallback(
         (projectId: string, update: ProjectInput) => {
             ProjectService.updateProject(projectId, update);
-            setProjects((prevProjects) =>
-                prevProjects.map((proj) =>
-                    proj.id === projectId
-                        ? ({ ...proj, ...update } as Project)
-                        : proj
-                )
-            );
+            // setProjects((prevProjects) =>
+            //     prevProjects.map((proj) =>
+            //         proj.id === projectId
+            //             ? ({ ...proj, ...update } as Project)
+            //             : proj
+            //     )
+            // );
         },
         []
     );
+
     const selectProject = useCallback((projectId: string) => {
         setSelectedProjectId(projectId);
     }, []);
@@ -168,16 +177,18 @@ export const useProjectViewModel = (): ProjectViewModel => {
     useEffect(() => {
         const localSelectedDoc = DocSelectedService.getSelectedDoc();
         if (localSelectedDoc === "") {
-            if (projects[0]) {
+            if (projects && projects[0]) {
                 const docs = getDocumentsByProjectId(projects[0].id);
-                if (docs[0]) {
+                if (docs.length > 0 && docs[0]) {
                     setSelectedDocumentId(docs[0].id);
                     return;
                 }
             }
         }
-        setSelectedDocumentId(localSelectedDoc);
-    }, [projects, getDocumentsByProjectId]);
+        if (selectedDocumentId !== localSelectedDoc) {
+            setSelectedDocumentId(localSelectedDoc);
+        }
+    }, [projects, getDocumentsByProjectId, selectedDocumentId]);
 
     const createDocument = useCallback((input: DocumentInput): string => {
         const document = DocumentService.createDocument(input);
@@ -242,15 +253,15 @@ export const useProjectViewModel = (): ProjectViewModel => {
     // Dialog Actions
     const openProjectDialog = useCallback((projectId?: string) => {
         setIsProjectDialogOpen(true);
-        setEditingProject(
-            projectId ? ProjectService.getProjectById(projectId) : null
-        );
+        // setEditingProject(
+        //     projectId ? ProjectService.getProjectById(projectId) : null
+        // );
     }, []);
 
     const openDocumentDialog = useCallback(
         (projectId: string, documentId?: string) => {
             setIsDocumentDialogOpen(true);
-            setEditingProject(ProjectService.getProjectById(projectId));
+            // setEditingProject(ProjectService.getProjectById(projectId));
             setEditingDocument(
                 documentId ? DocumentService.getDocumentById(documentId) : null
             );
@@ -274,7 +285,7 @@ export const useProjectViewModel = (): ProjectViewModel => {
     }, []);
 
     const getDocumentById = (documentId: string): Document | undefined => {
-        for (const project of projects) {
+        for (const project of projects || []) {
             const documents = getDocumentsByProjectId(project.id);
             const doc = documents.find((d) => d.id === documentId);
             if (doc) return doc;

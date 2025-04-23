@@ -18,21 +18,15 @@ import {
 const dropdownItems = ["Order"];
 
 const ProjectGroup = () => {
-    const {
-        projects,
-        selectedProjectId,
-        openProjectDialog,
-        isSuccess,
-        isLoading,
-    } = useProjectContext();
-    console.debug("ProjectGroup", projects, selectedProjectId);
+    const { projects, selectedProjectId, openProjectDialog } =
+        useProjectContext();
     const [isOpen, setIsOpen] = useState(true);
     const handleAddProject = (e: React.MouseEvent) => {
         e.stopPropagation();
         openProjectDialog();
         setIsOpen(true);
     };
-    if (!isSuccess || isLoading) {
+    if (!projects) {
         return <div className="text-gray-400 text-sm">Loading...</div>;
     }
     return (
@@ -57,7 +51,7 @@ const ProjectGroup = () => {
                 <CollapsibleContent>
                     <SidebarGroupContent>
                         <SidebarMenu>
-                            {projects?.filter(Boolean).map((project, index) => (
+                            {projects.filter(Boolean).map((project, index) => (
                                 <ProjectMenu
                                     key={index}
                                     name={project.name}
