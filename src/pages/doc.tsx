@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import "@/app/globals.css";
 import { ProjectProvider } from "@/app/viewModels/context/ProjectContext";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const DocumentContent = dynamic(
     () => import("@/app/components/DocumentContent"),
@@ -10,11 +11,13 @@ const DocumentContent = dynamic(
         ssr: false,
     }
 );
-
+const queryClient = new QueryClient();
 export default function Doc() {
     return (
-        <ProjectProvider>
-            <DocumentContent />
-        </ProjectProvider>
+        <QueryClientProvider client={queryClient}>
+            <ProjectProvider>
+                <DocumentContent />
+            </ProjectProvider>
+        </QueryClientProvider>
     );
 }

@@ -3,11 +3,75 @@ import { Document } from "@/app/models/entity/Document";
 import { DocumentService } from "./DocumentService";
 import { ProjectInput } from "@/app/models/types/ProjectInput";
 import { v4 as uuidv4 } from "uuid";
-
+import { createClient } from "@supabase/supabase-js";
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
 const STORAGE_KEY = "PROJECTS";
+const baseUrl = process.env.BACKEND_URL || "http://localhost:8080";
+interface ProjectResponseItem {
+    id: number;
+    createdAt: string;
+    updatedAt: string;
+    name: string;
+    description: string;
+}
 
+interface ProjectsResponse {
+    status: number;
+    message: string;
+    timestamp: string;
+    data: ProjectResponseItem[];
+}
 export class ProjectService {
-    static getAllProjects(): Project[] {
+    static async fetchAllProjects(signal?: AbortSignal): Promise<Project[]> {
+        try {
+            console.debug("baseUrl", baseUrl);
+            const {
+                data: { session },
+                error,
+            } = await supabase.auth.getSession();
+
+            if (error || !session) {
+                throw new Error("No valid session found");
+            }
+
+            const token = session.access_token; // 獲取 JWT token
+
+            const response = await fetch(`${baseUrl}/api/v1/public/projects`, {
+                method: "GET",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+                signal,
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to fetch projects");
+            }
+
+            const result: ProjectsResponse = await response.json();
+            console.debug(result);
+            // Map API response to Project entities
+            return result.data.map(
+                (proj) =>
+                    new Project(
+                        proj.id.toString(),
+                        new Date(proj.createdAt),
+                        new Date(proj.updatedAt),
+                        proj.name,
+                        proj.description
+                    )
+            );
+        } catch (error) {
+            console.error("Error fetching projects from API:", error);
+            // Fallback to localStorage if API fails
+            return this.getProjectsFromLocalStorage();
+        }
+    }
+
+    static getProjectsFromLocalStorage(): Project[] {
         if (typeof window === "undefined") return [];
         const data = localStorage.getItem(STORAGE_KEY);
         if (!data) return [];
@@ -29,21 +93,17 @@ export class ProjectService {
         }
     }
 
-    static getProjectById(id: string): Project | null {
-        if (typeof window === "undefined") return null;
-        const projects = this.getAllProjects();
-        return projects.find((proj) => proj.id === id) || null;
-    }
-
-    static getDocumentsByProjectId(projectId: string): Document[] {
+    static getDocumentsByProjectId(projectId: string) {
         return DocumentService.getAllDocuments().filter(
             (doc) => doc.projectId === projectId
         );
     }
 
-    static createProject(input: ProjectInput): Project | null {
+    static async createProject(input: ProjectInput): Promise<Project | null> {
         if (typeof window === "undefined") return null;
-        const projects = this.getAllProjects();
+        // TODO: Implement API call for creating projects
+        // For now, using localStorage as fallback
+        const projects = await this.getProjectsFromLocalStorage();
         const newProject = new Project(
             uuidv4(),
             new Date(),
@@ -57,9 +117,10 @@ export class ProjectService {
         return newProject;
     }
 
-    static updateProject(projectId: string, update: ProjectInput): void {
+    static updateProject(projectId: string, update: ProjectInput) {
         if (typeof window === "undefined") return;
-        const projects = this.getAllProjects();
+        // TODO: Implement API call for updating projects
+        const projects = this.getProjectsFromLocalStorage();
         const index = projects.findIndex((proj) => proj.id === projectId);
         if (index !== -1) {
             const project = projects[index];
@@ -70,14 +131,19 @@ export class ProjectService {
         }
     }
 
-    static deleteProject(id: string): void {
+    static deleteProject(id: string) {
         if (typeof window === "undefined") return;
+        // TODO: Implement API call for deleting projects
         // Delete all documents associated with this project
         const docsToDelete = this.getDocumentsByProjectId(id);
-        docsToDelete.forEach((doc) => DocumentService.deleteDocument(doc.id));
+        for (const doc of docsToDelete) {
+            DocumentService.deleteDocument(doc.id);
+        }
 
         // Delete the project
-        const projects = this.getAllProjects().filter((proj) => proj.id !== id);
+        const projects = this.getProjectsFromLocalStorage().filter(
+            (proj) => proj.id !== id
+        );
         localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
     }
 }

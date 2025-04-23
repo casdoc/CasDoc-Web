@@ -22,14 +22,19 @@ const ProjectGroup = () => {
         projects,
         selectedProjectId,
         openProjectDialog,
+        isSuccess,
+        isLoading,
     } = useProjectContext();
+    console.debug("ProjectGroup", projects, selectedProjectId);
     const [isOpen, setIsOpen] = useState(true);
     const handleAddProject = (e: React.MouseEvent) => {
         e.stopPropagation();
         openProjectDialog();
         setIsOpen(true);
     };
-
+    if (!isSuccess || isLoading) {
+        return <div className="text-gray-400 text-sm">Loading...</div>;
+    }
     return (
         <Collapsible open={isOpen} onOpenChange={setIsOpen}>
             <SidebarGroup>
@@ -52,7 +57,7 @@ const ProjectGroup = () => {
                 <CollapsibleContent>
                     <SidebarGroupContent>
                         <SidebarMenu>
-                            {projects.filter(Boolean).map((project, index) => (
+                            {projects?.filter(Boolean).map((project, index) => (
                                 <ProjectMenu
                                     key={index}
                                     name={project.name}
