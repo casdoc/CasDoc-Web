@@ -12,7 +12,7 @@ const Home = () => {
     return (
         <div className="flex flex-col h-dvh bg-gray-100 font-sans">
             <div className="relative flex-1 flex flex-col items-center justify-center px-4 text-center">
-                <div className="absolute top-4 left-0 md:left-4">
+                <div className="mb-12 mr-5">
                     <LogoButton />
                 </div>
                 {/* <div className="absolute top-4 right-4 md:right-8">

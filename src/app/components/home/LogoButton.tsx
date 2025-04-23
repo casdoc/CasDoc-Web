@@ -11,8 +11,8 @@ const LogoButton = () => {
             className="flex text-xl font-bold text-gray-800 my-2 mx-6 select-none"
         >
             <Flex gapX="2">
-                <Image src="/logo.svg" width={25} height={25} alt="casdoc" />
-                <Text size="5">CasDoc</Text>
+                <Image src="/logo.svg" width={35} height={25} alt="casdoc" />
+                <Text size="7">CasDoc</Text>
             </Flex>
         </Link>
     );
