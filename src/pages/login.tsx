@@ -28,17 +28,22 @@ const Login = () => {
                         Please choose a login method to get started
                     </p>
                 </div>
-                <div className="flex flex-col sm:flex-row gap-4 items-center justify-center">
+                <div className="flex flex-col sm:flex-row gap-4 items-start justify-center">
                     <LoginButton
                         handleClick={handleLoginClick}
                         loading={loginLoading}
                         disabled={buttonDisabled}
                     />
-                    <TryLocalButton
-                        handleClick={handleLocalClick}
-                        loading={localLoading}
-                        disabled={buttonDisabled}
-                    />
+                    <div className="flex flex-col items-center">
+                        <TryLocalButton
+                            handleClick={handleLocalClick}
+                            loading={localLoading}
+                            disabled={buttonDisabled}
+                        />
+                        <span className="text-xs text-gray-500 mt-1">
+                            {"Your data won't be saved."}
+                        </span>
+                    </div>
                 </div>
                 <div className="mt-10 text-center">
                     <button
