@@ -1,14 +1,15 @@
-"use server";
+"use client";
 
 import supabase from "@/lib/supabase";
 import { FcGoogle } from "react-icons/fc";
 
-interface StartButtonProps {
+interface LoginButtonProps {
     handleClick: () => void;
     loading: boolean;
+    disabled: boolean;
 }
 
-const StartButton = ({ handleClick, loading }: StartButtonProps) => {
+const LoginButton = ({ handleClick, loading, disabled }: LoginButtonProps) => {
     const loginWithGoogle = async () => {
         handleClick();
         await supabase.auth.signInWithOAuth({
@@ -21,7 +22,10 @@ const StartButton = ({ handleClick, loading }: StartButtonProps) => {
 
     return (
         <button
-            className="bg-gray-900 text-white font-bold px-4 sm:px-6 py-2 sm:py-3 rounded-lg shadow-lg text-base sm:text-lg hover:bg-gray-700 transition-colors duration-300 select-none flex items-center justify-center min-w-[120px] sm:min-w-[140px]"
+            disabled={disabled}
+            className={`bg-gray-900 text-white font-bold px-4 sm:px-6 py-2 sm:py-3 rounded-lg shadow-lg text-base sm:text-lg hover:bg-gray-700 transition-colors duration-300 select-none flex items-center justify-center min-w-[120px] sm:min-w-[140px] ${
+                disabled ? "cursor-not-allowed" : "cursor-pointer"
+            }`}
             onClick={loginWithGoogle}
         >
             {loading ? (
@@ -61,4 +65,4 @@ const StartButton = ({ handleClick, loading }: StartButtonProps) => {
     );
 };
 
-export default StartButton;
+export default LoginButton;
