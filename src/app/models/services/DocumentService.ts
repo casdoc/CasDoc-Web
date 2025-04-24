@@ -15,8 +15,6 @@ export class DocumentService {
                 (doc: any) =>
                     new Document(
                         doc.id,
-                        new Date(doc.createdAt),
-                        new Date(doc.updatedAt),
                         doc._type,
                         doc._projectId,
                         doc._title,
@@ -41,8 +39,7 @@ export class DocumentService {
         const documents = this.getAllDocuments();
         const newDocument = new Document(
             uuidv4(),
-            new Date(),
-            new Date(),
+
             input.type,
             input.projectId,
             input.title,
@@ -77,7 +74,6 @@ export class DocumentService {
             document.title = update.title;
             document.description = update.description;
             document.type = update.type;
-            document._updatedAt = new Date();
             localStorage.setItem(STORAGE_KEY, JSON.stringify(documents));
         }
     }

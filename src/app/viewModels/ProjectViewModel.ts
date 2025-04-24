@@ -1,20 +1,22 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { Project } from "@/app/models/entity/Project";
-import { Document } from "@/app/models/entity/Document";
+import { Document } from "@/app/models/types/Document";
 import { ProjectService } from "@/app/models/services/ProjectService";
 import { DocumentService } from "@/app/models/services/DocumentService";
-import { DocumentType } from "@/app/models/enum/DocumentType";
 import defaultContent from "../models/default-value/defaultContent";
 import { DocumentInput } from "../models/types/DocumentInput";
 import { DocSelectedService } from "../models/services/DocSelectedService";
 import { useProjectsQuery } from "./hooks/useProjectsQuery";
+import { useDocumentsQuery } from "./hooks/useDocumentsQuery";
 import { ProjectApiRequest } from "../models/dto/ProjectApiRequest";
 import { useCreateProjectMutation } from "./hooks/useCreateProjectMutation";
 import { useDeleteProjectMutation } from "./hooks/useDeleteProjectMutation";
 import { useUpdateProjectMutation } from "./hooks/useUpdateProjectMutation";
+import { useQueryClient } from "@tanstack/react-query";
+
 export interface ProjectViewModel {
     projects: Project[] | [];
-    documentsMap: Record<string, Document[]>;
+    // documentsMap: Record<string, Document[]>;
     selectedProjectId: string | null;
     selectedDocumentId: string | null;
     isProjectDialogOpen: boolean;
@@ -27,10 +29,10 @@ export interface ProjectViewModel {
     deleteProject: (projectId: string) => void;
     editProject: (projectId: string, input: ProjectApiRequest) => void;
     selectProject: (projectId: string) => void;
-    getProjectByDocumentId: (documentId: string) => Project | undefined;
+    // getProjectByDocumentId: (documentId: string) => Project | undefined;
 
     // Document actions
-    getDocumentsByProjectId: (projectId: string) => Document[];
+    // getDocumentsByProjectId: (projectId: string) => Document[];
     createDocument: (input: DocumentInput) => string;
     deleteDocument: (documentId: string) => void;
     editDocument: (documentId: string, update: DocumentInput) => void;
@@ -50,9 +52,10 @@ export const useProjectViewModel = (): ProjectViewModel => {
     const { mutateAsync: createProjectMutation } = useCreateProjectMutation();
     const { mutateAsync: deleteProjectMutation } = useDeleteProjectMutation();
     const { mutateAsync: updateProjectMutation } = useUpdateProjectMutation();
-    const [documentsMap, setDocumentsMap] = useState<
-        Record<string, Document[]>
-    >({});
+    const { getQueryData } = useQueryClient();
+    // const [documentsMap, setDocumentsMap] = useState<
+    //     Record<string, Document[]>
+    // >({});
     const [selectedProjectId, setSelectedProjectId] = useState<string | null>(
         null
     );
@@ -105,12 +108,13 @@ export const useProjectViewModel = (): ProjectViewModel => {
             //     ],
             // }));
         } else if (projects) {
-            const initialDocumentsMap: Record<string, Document[]> = {};
-            projects.forEach((proj) => {
-                initialDocumentsMap[proj.id] =
-                    ProjectService.getDocumentsByProjectId(proj.id);
-            });
-            setDocumentsMap(initialDocumentsMap);
+            // getDocumentsByProjectId(projects[0].id);
+            // const initialDocumentsMap: Record<string, Document[]> = {};
+            // projects.forEach((proj) => {
+            //     initialDocumentsMap[proj.id] =
+            //         ProjectService.getDocumentsByProjectId(proj.id);
+            // });
+            // setDocumentsMap(initialDocumentsMap);
         }
     }, [isLoadingProjects, projects]);
 
@@ -157,51 +161,52 @@ export const useProjectViewModel = (): ProjectViewModel => {
         setSelectedProjectId(projectId);
     }, []);
 
-    const getProjectByDocumentId = (
-        documentId: string
-    ): Project | undefined => {
-        for (const project of projects) {
-            const documents = getDocumentsByProjectId(project.id);
-            const doc = documents.find((d) => d.id === documentId);
-            if (doc) return project;
-        }
-    };
+    // const getProjectByDocumentId = (
+    //     documentId: string
+    // ): Project | undefined => {
+    //     for (const project of projects) {
+    //         const { data: documents } = useDocumentsQuery(project.id);
+    //         const doc = documents?.find((d) => d.id === documentId);
+    //         if (doc) return project;
+    //     }
+    // };
 
-    // Document Actions
-    const getDocumentsByProjectId = useCallback(
-        (projectId: string): Document[] => {
-            return ProjectService.getDocumentsByProjectId(projectId);
-        },
-        []
-    );
+    // // Document Actions
+    // const getDocumentsByProjectId = useCallback(
+    //     (projectId: string): Document[] => {
+    //         const { data } = useDocumentsQuery(projectId);
+    //         return data || [];
+    //     },
+    //     []
+    // );
 
     useEffect(() => {
         const localSelectedDoc = DocSelectedService.getSelectedDoc();
-        if (localSelectedDoc === "") {
-            if (projects && projects[0]) {
-                const docs = getDocumentsByProjectId(projects[0].id);
-                if (docs.length > 0 && docs[0]) {
-                    setSelectedDocumentId(docs[0].id);
-                    return;
-                }
-            }
-        }
+        // if (localSelectedDoc === "") {
+        //     if (projects && projects[0]) {
+        //         const { data: docs } = useDocumentsQuery(projects[0].id);
+        //         if (docs && docs?.length > 0) {
+        //             setSelectedDocumentId(docs[0].id);
+        //             return;
+        //         }
+        //     }
+        // }
         if (selectedDocumentId !== localSelectedDoc) {
             setSelectedDocumentId(localSelectedDoc);
         }
-    }, [projects, getDocumentsByProjectId, selectedDocumentId]);
+    }, [projects, selectedDocumentId]);
 
     const createDocument = useCallback((input: DocumentInput): string => {
         const document = DocumentService.createDocument(input);
         if (!document) throw new Error("Failed to create document");
 
-        setDocumentsMap((prev) => ({
-            ...prev,
-            [document.projectId]: [
-                ...(prev[document.projectId] || []),
-                document,
-            ],
-        }));
+        // setDocumentsMap((prev) => ({
+        //     ...prev,
+        //     [document.projectId]: [
+        //         ...(prev[document.projectId] || []),
+        //         document,
+        //     ],
+        // }));
         return document.id;
     }, []);
 
@@ -215,12 +220,12 @@ export const useProjectViewModel = (): ProjectViewModel => {
 
             // Update local state
             if (selectedDocumentId === documentId) setSelectedDocumentId(null);
-            setDocumentsMap((prev) => ({
-                ...prev,
-                [projectId]: (prev[projectId] || []).filter(
-                    (doc) => doc.id !== documentId
-                ),
-            }));
+            // setDocumentsMap((prev) => ({
+            //     ...prev,
+            //     [projectId]: (prev[projectId] || []).filter(
+            //         (doc) => doc.id !== documentId
+            //     ),
+            // }));
         },
         [selectedDocumentId]
     );
@@ -234,14 +239,14 @@ export const useProjectViewModel = (): ProjectViewModel => {
             DocumentService.updateDocument(documentId, update);
 
             // Update local state
-            setDocumentsMap((prev) => ({
-                ...prev,
-                [projectId]: (prev[projectId] || []).map((doc) =>
-                    doc.id === documentId
-                        ? ({ ...doc, ...update } as Document)
-                        : doc
-                ),
-            }));
+            // setDocumentsMap((prev) => ({
+            //     ...prev,
+            //     [projectId]: (prev[projectId] || []).map((doc) =>
+            //         doc.id === documentId
+            //             ? ({ ...doc, ...update } as Document)
+            //             : doc
+            //     ),
+            // }));
         },
         []
     );
@@ -287,8 +292,10 @@ export const useProjectViewModel = (): ProjectViewModel => {
 
     const getDocumentById = (documentId: string): Document | undefined => {
         for (const project of projects || []) {
-            const documents = getDocumentsByProjectId(project.id);
-            const doc = documents.find((d) => d.id === documentId);
+            const documents = getQueryData(["documents", project.id]) as
+                | Document[]
+                | undefined;
+            const doc = documents?.find((d) => d.id === documentId);
             if (doc) return doc;
         }
         return undefined;
@@ -296,7 +303,6 @@ export const useProjectViewModel = (): ProjectViewModel => {
 
     return {
         projects,
-        documentsMap,
         selectedProjectId,
         selectedDocumentId,
         isProjectDialogOpen,
@@ -307,8 +313,7 @@ export const useProjectViewModel = (): ProjectViewModel => {
         deleteProject,
         editProject,
         selectProject,
-        getProjectByDocumentId,
-        getDocumentsByProjectId,
+        // getProjectByDocumentId,
         createDocument,
         deleteDocument,
         editDocument,

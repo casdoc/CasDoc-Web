@@ -10,6 +10,8 @@ import {
 import { useProjectContext } from "@/app/viewModels/context/ProjectContext";
 import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
 import { CollapsibleTrigger } from "@radix-ui/react-collapsible";
+import { useQueryClient } from "@tanstack/react-query";
+import { useDocumentsQuery } from "@/app/viewModels/hooks/useDocumentsQuery";
 
 const dropdownItems = ["Edit", "Delete"];
 
@@ -21,14 +23,14 @@ interface ProjectMenuProps {
 
 const ProjectMenu = ({ name, projectId }: ProjectMenuProps) => {
     const {
-        documentsMap,
         deleteProject,
         selectProject,
         openProjectDialog,
         openDocumentDialog,
     } = useProjectContext();
 
-    const documents = documentsMap[projectId] ?? [];
+    const { data: documents, isLoading: isDocumentsLoading } =
+        useDocumentsQuery(projectId);
     const [isOpen, setIsOpen] = useState(true);
 
     const handleAddDocument = (e: React.MouseEvent) => {
@@ -46,7 +48,9 @@ const ProjectMenu = ({ name, projectId }: ProjectMenuProps) => {
             openProjectDialog(projectId);
         }
     };
-
+    if (isDocumentsLoading) {
+        return null;
+    }
     return (
         <Collapsible open={isOpen} onOpenChange={setIsOpen}>
             <SidebarMenuItem>
@@ -79,7 +83,7 @@ const ProjectMenu = ({ name, projectId }: ProjectMenuProps) => {
 
                 <CollapsibleContent>
                     <SidebarMenuSub className="w-11/12">
-                        {documents.filter(Boolean).map((doc, index) => (
+                        {documents?.filter(Boolean).map((doc, index) => (
                             <DocMenu
                                 key={index}
                                 projectId={projectId}

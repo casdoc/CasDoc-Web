@@ -278,7 +278,8 @@ export function useGraphViewModel(): GraphViewModel {
 
     const updateAttachedDocById = useCallback(
         (documentId: string): AttachedDoc | undefined => {
-            const doc = getDocumentById(documentId);
+            // const doc = getDocumentById(documentId);
+            const doc = null;
             if (!doc) return;
             const docContents = doc.content;
             const newGraphNodes: GraphNode[] = [

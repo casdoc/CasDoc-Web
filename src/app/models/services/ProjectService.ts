@@ -1,6 +1,5 @@
 import { Project } from "@/app/models/entity/Project";
 import { Document } from "@/app/models/entity/Document";
-import { DocumentService } from "./DocumentService";
 import { createClient } from "@supabase/supabase-js";
 import {
     ProjectListResponse,
@@ -9,6 +8,7 @@ import {
     ProjectResponseSchema,
 } from "@/app/models/dto/ProjectApiResponse";
 import { ProjectApiRequest } from "../dto/ProjectApiRequest";
+import { DocumentListResponse } from "../dto/DocumentApiResponse";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
@@ -100,10 +100,50 @@ export class ProjectService {
         }
     }
 
-    static getDocumentsByProjectId(projectId: string) {
-        return DocumentService.getAllDocuments().filter(
-            (doc) => doc.projectId === projectId
-        );
+    static async fetchDocumentsByProjectId(
+        projectId: string
+    ): Promise<Document[] | undefined> {
+        try {
+            const {
+                data: { session },
+                error,
+            } = await supabase.auth.getSession();
+
+            if (error || !session) {
+                throw new Error("No valid session found");
+            }
+
+            const token = session.access_token;
+            const response = await fetch(
+                `${baseUrl}/api/v1/public/projects/${projectId}/documents`,
+                {
+                    method: "GET",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error("Failed to fetch documents");
+            }
+            const result: DocumentListResponse = await response.json();
+            return result.data.map(
+                (doc) =>
+                    new Document(
+                        doc.id.toString(),
+                        doc.type,
+                        projectId,
+                        doc.title,
+                        doc.description ?? "",
+                        []
+                    )
+            );
+        } catch (error) {
+            console.error("Error fetching documents from API:", error);
+            // Fallback to localStorage if API fails
+        }
     }
 
     static async createProject(

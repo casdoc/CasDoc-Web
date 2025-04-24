@@ -11,14 +11,11 @@ export const GraphAttachList = ({
     toggleSelected: (id: string) => void;
     searchContent: string;
 }) => {
-    const {
-        selectedDocumentId,
-        getDocumentsByProjectId,
-        getProjectByDocumentId,
-    } = useProjectContext();
+    const { selectedDocumentId, getDocumentsByProjectId } = useProjectContext();
 
     if (!selectedDocumentId) return;
-    const project = getProjectByDocumentId(selectedDocumentId);
+    // const project = getProjectByDocumentId(selectedDocumentId);
+    const project = null;
     if (!project) return;
     const docs = getDocumentsByProjectId(project.id);
 
