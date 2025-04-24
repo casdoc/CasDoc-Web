@@ -13,10 +13,15 @@ interface LoginButtonProps {
 const LoginButton = ({ handleClick, loading, disabled }: LoginButtonProps) => {
     const loginWithGoogle = async () => {
         handleClick();
+        const redirectTo =
+            typeof window !== "undefined"
+                ? `${window.location.origin}/auth/callback`
+                : "https://casdoc.io/auth/callback";
+
         await supabase.auth.signInWithOAuth({
             provider: "google",
             options: {
-                redirectTo: `${window.location.origin}/auth/callback`,
+                redirectTo,
             },
         });
     };

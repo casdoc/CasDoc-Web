@@ -18,23 +18,26 @@ export default function CallbackPage() {
             if (!accessToken) {
                 return;
             }
-
-            const res = await fetch("http://localhost:8080/me", {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                },
-            });
-
-            if (res.ok) {
-                const text = await res.text();
-                setUser(text);
-            } else {
-                setUser("驗證失敗");
+            try {
+                const res = await fetch("http://localhost:8080/me", {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                });
+                if (res.ok) {
+                    const text = await res.text();
+                    setUser(text);
+                } else {
+                    setUser("驗證失敗");
+                }
+            } catch (err) {
+                console.debug("failed to fetch callback:", err);
+                router.push("/");
             }
         };
 
         fetchUser();
-    }, []);
+    }, [router]);
 
     useEffect(() => {
         if (user) {
