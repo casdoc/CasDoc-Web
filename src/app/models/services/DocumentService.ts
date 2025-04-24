@@ -153,9 +153,40 @@ export class DocumentService {
         }
     }
 
-    static deleteDocument(id: string): void {
-        if (typeof window === "undefined") return;
-        const documents = this.getAllDocuments().filter((doc) => doc.id !== id);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(documents));
+    static async deleteDocument(
+        id: string,
+        signal?: AbortSignal
+    ): Promise<void> {
+        try {
+            const {
+                data: { session },
+                error,
+            } = await supabase.auth.getSession();
+
+            if (error || !session) {
+                throw new Error("No valid session found");
+            }
+
+            const token = session.access_token;
+            const response = await fetch(
+                `${baseUrl}/api/v1/public/documents/${id}`,
+                {
+                    method: "DELETE",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
+                    signal,
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error("Failed to delete document");
+            }
+        } catch (error) {
+            console.error("Error deleting document via API:", error);
+
+            throw error;
+        }
     }
 }

@@ -5,6 +5,7 @@ import {
     SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 import { useProjectContext } from "@/app/viewModels/context/ProjectContext";
+import { useDeleteDocumentMutation } from "@/app/viewModels/hooks/useDeleteDocumentMutation";
 
 const dropdownItems = ["Edit", "Delete"];
 
@@ -15,12 +16,9 @@ interface DocMenuProps {
 }
 
 const DocMenu = ({ projectId, documentId, title }: DocMenuProps) => {
-    const {
-        selectedDocumentId,
-        deleteDocument,
-        selectDocument,
-        openDocumentDialog,
-    } = useProjectContext();
+    const { mutateAsync: deleteDocumentMutation } = useDeleteDocumentMutation();
+    const { selectedDocumentId, selectDocument, openDocumentDialog } =
+        useProjectContext();
 
     const isSelected = selectedDocumentId === documentId;
 
@@ -29,7 +27,7 @@ const DocMenu = ({ projectId, documentId, title }: DocMenuProps) => {
 
         console.log(action);
         if (action === "Delete") {
-            deleteDocument(documentId);
+            deleteDocumentMutation(documentId);
         } else if (action === "Edit") {
             openDocumentDialog(projectId, documentId);
         }

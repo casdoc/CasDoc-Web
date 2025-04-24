@@ -112,12 +112,13 @@ export const useProjectViewModel = (): ProjectViewModel => {
                 setSelectedProjectId(projects[0].id);
                 if (documents && documents.length > 0) {
                     setSelectedDocumentId(documents[0]?.id || null);
+                    console.debug("selectDocument", selectedDocumentId);
                 }
             }
         } else if (selectedDocumentId !== localSelectedDoc) {
             setSelectedDocumentId(localSelectedDoc);
         }
-    }, [projects, selectedDocumentId, queryClient]);
+    }, [projects, documents, selectedDocumentId, queryClient]);
 
     const deleteDocument = useCallback(
         (documentId: string) => {
