@@ -6,6 +6,7 @@ import {
     DocumentResponse,
     DocumentResponseSchema,
 } from "@/app/models/dto/DocumentApiResponse";
+import { DocumentApiRequest } from "../dto/DocumentApiRequest";
 const STORAGE_KEY = "DOCUMENTS";
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
@@ -80,29 +81,50 @@ export class DocumentService {
         }
     }
 
-    // Keep the existing getDocumentById as a fallback for now
-    static getDocumentById(id: string): Document | null {
-        if (typeof window === "undefined") return null;
-        const documents = this.getAllDocuments();
-        return documents.find((doc) => doc.id === id) || null;
-    }
+    static async createDocument(
+        input: DocumentApiRequest
+    ): Promise<Document | null> {
+        try {
+            const {
+                data: { session },
+                error,
+            } = await supabase.auth.getSession();
 
-    static createDocument(input: DocumentInput): Document | null {
-        if (typeof window === "undefined") return null;
-        const documents = this.getAllDocuments();
-        const newDocument = new Document(
-            uuidv4(),
+            if (error || !session) {
+                throw new Error("No valid session found");
+            }
 
-            input.type,
-            input.projectId,
-            input.title,
-            input.description,
-            input.content ?? []
-        );
+            const token = session.access_token;
+            const response = await fetch(`${baseUrl}/api/v1/public/documents`, {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(input),
+            });
 
-        documents.push(newDocument);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(documents));
-        return newDocument;
+            if (!response.ok) {
+                throw new Error("Failed to create document");
+            }
+
+            const result: DocumentResponse = await response.json();
+            DocumentResponseSchema.parse(result); // Validate the response
+
+            const newDocument = new Document(
+                result.data.id.toString(),
+                result.data.type,
+                result.data.projectId.toString(),
+                result.data.title,
+                result.data.description ?? "",
+                []
+            );
+
+            return newDocument;
+        } catch (error) {
+            console.error("Error creating document via API:", error);
+            return null;
+        }
     }
 
     static saveDocument(document: Document): void {

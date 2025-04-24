@@ -187,7 +187,7 @@ export const useProjectViewModel = (): ProjectViewModel => {
                     null
             );
         },
-        []
+        [projects, documents]
     );
 
     const closeProjectDialog = useCallback(() => {

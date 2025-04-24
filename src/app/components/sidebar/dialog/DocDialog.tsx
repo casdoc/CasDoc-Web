@@ -21,16 +21,18 @@ import { useState } from "react";
 import { DocumentInput } from "@/app/models/types/DocumentInput";
 import { DocumentType } from "@/app/models/enum/DocumentType";
 import { useProjectContext } from "@/app/viewModels/context/ProjectContext";
+import { useCreateDocumentMutation } from "@/app/viewModels/hooks/useCreateDocumentMutation";
 
 const DocDialog = () => {
     const {
         editingProject: project,
         editingDocument: doc,
         isDocumentDialogOpen,
-        createDocument,
         editDocument,
         closeDocumentDialog,
     } = useProjectContext();
+
+    const { mutateAsync: createDocumentMutation } = useCreateDocumentMutation();
     const [type, setType] = useState<DocumentType>(
         doc?.type ?? DocumentType.SRD
     );
@@ -52,8 +54,12 @@ const DocDialog = () => {
         };
 
         if (!doc) {
-            // Create document
-            createDocument(input);
+            createDocumentMutation({
+                title,
+                description,
+                type,
+                projectId: project.id,
+            });
         } else {
             // Edit document
             editDocument(doc.id, input);
