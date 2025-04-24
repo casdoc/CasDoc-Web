@@ -11,7 +11,11 @@ import { useGraphContext } from "@/app/viewModels/context/GraphContext";
 const DocView = () => {
     const { mode, setDocMode } = useDocModeViewModel();
     const { document, updateDocument } = useGraphContext();
-    const { editor } = useBlockEditor({ document, updateDocument });
+    // Initialize editor only when document is available
+    const { editor } = useBlockEditor({
+        document: document ?? undefined, // Pass undefined if document is null
+        updateDocument,
+    });
     const [splitWidth, setSplitWidth] = useState(50);
     const isResizing = useRef(false);
 
@@ -37,8 +41,10 @@ const DocView = () => {
         };
     }, []);
 
-    if (!editor || !document) {
-        return null;
+    // Render loading or null state if document or editor is not ready
+    if (!document || !editor) {
+        // You might want a more sophisticated loading indicator
+        return <div>Loading Document...</div>;
     }
 
     return (

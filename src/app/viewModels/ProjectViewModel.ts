@@ -9,7 +9,8 @@ import { ProjectInput } from "../models/types/ProjectInput";
 import { DocumentInput } from "../models/types/DocumentInput";
 import { DocSelectedService } from "../models/services/DocSelectedService";
 import { useProjectsQuery } from "./hooks/useProjectsQuery";
-
+import { ProjectApiRequest } from "../models/dto/ProjectApiRequest";
+import { useCreateProjectMutation } from "./hooks/useCreateProjectMutation";
 export interface ProjectViewModel {
     projects: Project[] | [];
     documentsMap: Record<string, Document[]>;
@@ -21,7 +22,7 @@ export interface ProjectViewModel {
     editingDocument: Document | null;
 
     // Project actions
-    createProject: (input: ProjectInput) => string;
+    createProject: (input: ProjectInput) => void;
     deleteProject: (projectId: string) => void;
     editProject: (projectId: string, update: ProjectInput) => void;
     selectProject: (projectId: string) => void;
@@ -45,6 +46,7 @@ export interface ProjectViewModel {
 export const useProjectViewModel = (): ProjectViewModel => {
     const { data: projectsData, isLoading: isLoadingProjects } =
         useProjectsQuery();
+    const { mutateAsync: createProjectMutation } = useCreateProjectMutation();
     const [documentsMap, setDocumentsMap] = useState<
         Record<string, Document[]>
     >({});
@@ -68,43 +70,37 @@ export const useProjectViewModel = (): ProjectViewModel => {
     useEffect(() => {
         // Set default content
         if (!isLoadingProjects && projects?.length === 0) {
-            const defaultProject = ProjectService.createProject({
-                name: "My First Project",
-                description: "Default project",
-            } as ProjectInput);
-
-            if (!defaultProject) return;
-
-            // Parse the doc title from default content
-            let docTitle = "Untitled Document";
-
-            if (
-                defaultContent[0].content &&
-                defaultContent[0].content.length > 0
-            ) {
-                docTitle = defaultContent[0].content[0].text;
-            }
-
-            // Create a default document
-            const defaultDoc = DocumentService.createDocument({
-                type: DocumentType.SRD,
-                projectId: defaultProject.id,
-                title: docTitle,
-                description: "No description",
-                content: defaultContent,
-            } as DocumentInput);
-
-            if (!defaultDoc) return;
-
-            // Update local state
-            // setProjects([defaultProject]);
-            setDocumentsMap((prev) => ({
-                ...prev,
-                [defaultDoc.projectId]: [
-                    ...(prev[defaultDoc.projectId] || []),
-                    defaultDoc,
-                ],
-            }));
+            // const defaultProject = ProjectService.createProject({
+            //     name: "My First Project",
+            //     description: "Default project",
+            // } as ProjectApiRequest);
+            // if (!defaultProject) return;
+            // // Parse the doc title from default content
+            // let docTitle = "Untitled Document";
+            // if (
+            //     defaultContent[0].content &&
+            //     defaultContent[0].content.length > 0
+            // ) {
+            //     docTitle = defaultContent[0].content[0].text;
+            // }
+            // // Create a default document
+            // const defaultDoc = DocumentService.createDocument({
+            //     type: DocumentType.SRD,
+            //     projectId: defaultProject.id,
+            //     title: docTitle,
+            //     description: "No description",
+            //     content: defaultContent,
+            // } as DocumentInput);
+            // if (!defaultDoc) return;
+            // // Update local state
+            // // setProjects([defaultProject]);
+            // setDocumentsMap((prev) => ({
+            //     ...prev,
+            //     [defaultDoc.projectId]: [
+            //         ...(prev[defaultDoc.projectId] || []),
+            //         defaultDoc,
+            //     ],
+            // }));
         } else if (projects) {
             const initialDocumentsMap: Record<string, Document[]> = {};
             projects.forEach((proj) => {
@@ -115,15 +111,18 @@ export const useProjectViewModel = (): ProjectViewModel => {
         }
     }, [isLoadingProjects, projects]);
 
-    // Project Actions
-    const createProject = useCallback((input: ProjectInput): string => {
-        const project = ProjectService.createProject(input);
-        if (!project) throw new Error("Failed to create project");
-
-        // Update local state
-        // setProjects((prev) => [...prev, project]);
-        return project.id;
-    }, []);
+    const createProject = useCallback(
+        (input: ProjectApiRequest): void => {
+            try {
+                // Use the mutation to handle optimistic updates and rollbacks
+                createProjectMutation(input);
+            } catch (error) {
+                console.error("Failed to create project:", error);
+                throw new Error("Failed to create project");
+            }
+        },
+        [createProjectMutation]
+    );
 
     const deleteProject = useCallback(
         (projectId: string) => {
