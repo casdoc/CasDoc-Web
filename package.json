@@ -72,7 +72,8 @@
     "tailwindcss-animate": "^1.0.7",
     "tailwindcss-animated": "^2.0.0",
     "tailwindcss-radix": "^4.0.2",
-    "uuid": "^11.1.0"
+    "uuid": "^11.1.0",
+    "zod": "4.0.0-beta.20250420T053007"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
