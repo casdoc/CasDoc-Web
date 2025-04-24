@@ -8,7 +8,7 @@ import { createClient } from "@supabase/supabase-js";
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
-const baseUrl = process.env.BACKEND_URL || "http://localhost:8080";
+const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 const STORAGE_KEY = "PROJECTS";
 
 interface ProjectResponseItem {
@@ -39,7 +39,6 @@ export class ProjectService {
             }
 
             const token = session.access_token;
-
             const response = await fetch(`${baseUrl}/api/v1/public/projects`, {
                 method: "GET",
                 headers: {
@@ -68,6 +67,50 @@ export class ProjectService {
             console.error("Error fetching projects from API:", error);
             // Fallback to localStorage if API fails
             return this.getProjectsFromLocalStorage();
+        }
+    }
+
+    static async fetchProjectById(id: string): Promise<Project | null> {
+        try {
+            const {
+                data: { session },
+                error,
+            } = await supabase.auth.getSession();
+
+            if (error || !session) {
+                throw new Error("No valid session found");
+            }
+
+            const token = session.access_token;
+            const response = await fetch(
+                `${baseUrl}/api/v1/public/projects/${id}`,
+                {
+                    method: "GET",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error("Failed to fetch project");
+            }
+
+            const result: ProjectResponseItem = await response.json();
+
+            return new Project(
+                result.id.toString(),
+                new Date(result.createdAt),
+                new Date(result.updatedAt),
+                result.name,
+                result.description
+            );
+        } catch (error) {
+            console.error("Error fetching project from API:", error);
+            // Fallback to localStorage if API fails
+            const projects = this.getProjectsFromLocalStorage();
+            return projects.find((proj) => proj.id === id) || null;
         }
     }
 
