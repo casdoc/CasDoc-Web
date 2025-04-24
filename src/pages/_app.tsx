@@ -2,15 +2,18 @@ import Head from "next/head";
 import { AppProps } from "next/app";
 import NextTopLoader from "nextjs-toploader";
 import { Theme } from "@radix-ui/themes";
-import "@/app/globals.css";
 import { Toaster } from "@/components/ui/toaster";
+import "@/app/globals.css";
 
 function MyApp({ Component, pageProps }: AppProps) {
     return (
         <Theme>
             <Head>
                 <title>CasDoc</title>
-                <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+                <link rel="icon" href="/favicon.ico" sizes="any" />
+                <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+                <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+                <meta name="theme-color" content="#ffffff" />
                 <meta
                     name="description"
                     content="CasDoc is a docs-editing tool that enhances traceability through document structure visualization."
