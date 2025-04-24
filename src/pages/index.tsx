@@ -1,4 +1,4 @@
-"use client";
+"use server";
 
 import LogoButton from "@/app/components/home/LogoButton";
 // import GuideButton from "@/app/components/guide/GuideButton";

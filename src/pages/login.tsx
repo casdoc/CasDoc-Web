@@ -1,3 +1,5 @@
+"use server";
+
 // import LoginButton from "@/app/components/home/LoginButton";
 import TryLocalButton from "@/app/components/home/TryLocalButton";
 import { useState } from "react";

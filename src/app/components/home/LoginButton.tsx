@@ -1,4 +1,4 @@
-"use client";
+"use server";
 
 import supabase from "@/lib/supabase";
 import { Flex } from "@radix-ui/themes";
