@@ -1,16 +1,16 @@
-import LoginButton from "@/app/components/home/LoginButton";
+// import LoginButton from "@/app/components/home/LoginButton";
 import TryLocalButton from "@/app/components/home/TryLocalButton";
 import { useState } from "react";
 
 const Login = () => {
-    const [loginLoading, setLoginLoading] = useState(false);
+    // const [loginLoading, setLoginLoading] = useState(false);
     const [localLoading, setLocalLoading] = useState(false);
     const [buttonDisabled, setButtonDisabled] = useState(false);
 
-    const handleLoginClick = () => {
-        setButtonDisabled(true);
-        setLoginLoading(true);
-    };
+    // const handleLoginClick = () => {
+    //     setButtonDisabled(true);
+    //     setLoginLoading(true);
+    // };
 
     const handleLocalClick = () => {
         setButtonDisabled(true);
@@ -19,7 +19,7 @@ const Login = () => {
 
     return (
         <div className="h-screen w-screen flex flex-col justify-center items-center bg-gradient-to-b from-gray-100 to-gray-200 px-4">
-            <div className="w-full max-w-md">
+            <div className="w-full max-w-fit lg:max-w-md">
                 <div className="text-center mb-10">
                     <h1 className="text-4xl font-bold text-gray-800 mb-2">
                         Welcome to CasDoc
@@ -28,12 +28,12 @@ const Login = () => {
                         Please choose a login method to get started
                     </p>
                 </div>
-                <div className="flex flex-col sm:flex-row gap-4 items-start justify-center">
-                    <LoginButton
+                <div className="flex flex-col sm:flex-row gap-4 items-center lg:items-start justify-center">
+                    {/* <LoginButton
                         handleClick={handleLoginClick}
                         loading={loginLoading}
                         disabled={buttonDisabled}
-                    />
+                    /> */}
                     <div className="flex flex-col items-center">
                         <TryLocalButton
                             handleClick={handleLocalClick}
