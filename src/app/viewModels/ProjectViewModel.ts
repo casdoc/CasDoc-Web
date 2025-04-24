@@ -1,14 +1,11 @@
 import { useState, useEffect, useCallback } from "react";
 import { Project } from "@/app/models/entity/Project";
 import { Document } from "@/app/models/types/Document";
-import { DocumentService } from "@/app/models/services/DocumentService";
 import defaultContent from "../models/default-value/defaultContent";
-import { DocumentInput } from "../models/types/DocumentInput";
 import { DocSelectedService } from "../models/services/DocSelectedService";
 import { useProjectsQuery } from "./hooks/useProjectsQuery";
 import { useDocumentsQuery } from "./hooks/useDocumentsQuery";
 import { useQueryClient } from "@tanstack/react-query";
-import { DocumentListResponse } from "../models/dto/DocumentApiResponse";
 
 export interface ProjectViewModel {
     selectedProjectId: string | null;
@@ -22,8 +19,6 @@ export interface ProjectViewModel {
     selectProject: (projectId: string) => void;
 
     // Document actions
-    deleteDocument: (documentId: string) => void;
-    editDocument: (documentId: string, update: DocumentInput) => void;
     selectDocument: (documentId: string) => void;
 
     // Dialog actions
@@ -53,6 +48,7 @@ export const useProjectViewModel = (): ProjectViewModel => {
     const [editingDocument, setEditingDocument] = useState<Document | null>(
         null
     );
+    console.debug("documents", documents);
 
     // Load projects from localStorage and set default content
     useEffect(() => {
@@ -108,6 +104,7 @@ export const useProjectViewModel = (): ProjectViewModel => {
         if (localSelectedDoc === "") {
             if (projects && projects.length > 0 && projects[0].id) {
                 console.debug("selectProjectId", projects[0].id);
+                setSelectedProjectId(projects[0].id);
                 // Use the first project to get documents
                 setSelectedProjectId(projects[0].id);
                 if (documents && documents.length > 0) {
@@ -119,47 +116,6 @@ export const useProjectViewModel = (): ProjectViewModel => {
             setSelectedDocumentId(localSelectedDoc);
         }
     }, [projects, documents, selectedDocumentId, queryClient]);
-
-    const deleteDocument = useCallback(
-        (documentId: string) => {
-            const projectId =
-                DocumentService.getDocumentById(documentId)?.projectId;
-            if (!projectId) return;
-
-            DocumentService.deleteDocument(documentId);
-
-            // Update local state
-            if (selectedDocumentId === documentId) setSelectedDocumentId(null);
-            // setDocumentsMap((prev) => ({
-            //     ...prev,
-            //     [projectId]: (prev[projectId] || []).filter(
-            //         (doc) => doc.id !== documentId
-            //     ),
-            // }));
-        },
-        [selectedDocumentId]
-    );
-
-    const editDocument = useCallback(
-        (documentId: string, update: DocumentInput) => {
-            const projectId =
-                DocumentService.getDocumentById(documentId)?.projectId;
-            if (!projectId) return;
-
-            DocumentService.updateDocument(documentId, update);
-
-            // Update local state
-            // setDocumentsMap((prev) => ({
-            //     ...prev,
-            //     [projectId]: (prev[projectId] || []).map((doc) =>
-            //         doc.id === documentId
-            //             ? ({ ...doc, ...update } as Document)
-            //             : doc
-            //     ),
-            // }));
-        },
-        []
-    );
 
     const selectDocument = useCallback((documentId: string) => {
         setSelectedDocumentId(documentId);
@@ -183,6 +139,7 @@ export const useProjectViewModel = (): ProjectViewModel => {
             setEditingProject(
                 projects?.find((project) => project.id === projectId) || null
             );
+            console.debug("openDocumentDialog", documentId);
             setEditingDocument(
                 documents?.find((document) => document.id === documentId) ||
                     null
@@ -214,8 +171,6 @@ export const useProjectViewModel = (): ProjectViewModel => {
         editingProject,
         editingDocument,
         selectProject,
-        deleteDocument,
-        editDocument,
         selectDocument,
         openProjectDialog,
         openDocumentDialog,

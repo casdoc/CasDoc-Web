@@ -140,16 +140,53 @@ export class DocumentService {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(documents));
     }
 
-    static updateDocument(documentId: string, update: DocumentInput): void {
-        if (typeof window === "undefined") return;
-        const documents = this.getAllDocuments();
-        const index = documents.findIndex((doc) => doc.id === documentId);
-        if (index !== -1) {
-            const document = documents[index];
-            document.title = update.title;
-            document.description = update.description;
-            document.type = update.type;
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(documents));
+    static async updateDocument(
+        documentId: string,
+        documentInput: DocumentApiRequest,
+        signal?: AbortSignal
+    ): Promise<Document | null> {
+        try {
+            const {
+                data: { session },
+                error,
+            } = await supabase.auth.getSession();
+
+            if (error || !session) {
+                throw new Error("No valid session found");
+            }
+
+            const token = session.access_token;
+            const response = await fetch(
+                `${baseUrl}/api/v1/public/documents/${documentId}`,
+                {
+                    method: "PUT",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(documentInput),
+                    signal,
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error("Failed to update document");
+            }
+
+            const result: DocumentResponse = await response.json();
+            DocumentResponseSchema.parse(result); // Validate the response
+
+            return new Document(
+                result.data.id.toString(),
+                result.data.type,
+                result.data.projectId.toString(),
+                result.data.title,
+                result.data.description ?? "",
+                [] // content will need to be filled in if your API returns it
+            );
+        } catch (error) {
+            console.error("Error updating document via API:", error);
+            return null;
         }
     }
 

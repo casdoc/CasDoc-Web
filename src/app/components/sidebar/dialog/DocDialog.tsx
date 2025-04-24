@@ -18,21 +18,21 @@ import {
 } from "@/components/ui/select";
 
 import { useState } from "react";
-import { DocumentInput } from "@/app/models/types/DocumentInput";
 import { DocumentType } from "@/app/models/enum/DocumentType";
 import { useProjectContext } from "@/app/viewModels/context/ProjectContext";
 import { useCreateDocumentMutation } from "@/app/viewModels/hooks/useCreateDocumentMutation";
+import { useUpdateDocumentMutation } from "@/app/viewModels/hooks/useUpdateDocumentMutation";
 
 const DocDialog = () => {
     const {
         editingProject: project,
         editingDocument: doc,
         isDocumentDialogOpen,
-        editDocument,
         closeDocumentDialog,
     } = useProjectContext();
-
+    console.debug("editingDocument", doc);
     const { mutateAsync: createDocumentMutation } = useCreateDocumentMutation();
+    const { mutateAsync: updateDocumentMutation } = useUpdateDocumentMutation();
     const [type, setType] = useState<DocumentType>(
         doc?.type ?? DocumentType.SRD
     );
@@ -46,13 +46,6 @@ const DocDialog = () => {
         const description =
             formData.get("description")?.toString().trim() ?? "";
 
-        const input: DocumentInput = {
-            title,
-            description,
-            type,
-            projectId: project.id,
-        };
-
         if (!doc) {
             createDocumentMutation({
                 title,
@@ -61,8 +54,15 @@ const DocDialog = () => {
                 projectId: project.id,
             });
         } else {
-            // Edit document
-            editDocument(doc.id, input);
+            updateDocumentMutation({
+                documentId: doc.id.toString(),
+                documentInput: {
+                    title,
+                    description,
+                    type,
+                    projectId: project.id,
+                },
+            });
         }
         closeDocumentDialog();
     };
