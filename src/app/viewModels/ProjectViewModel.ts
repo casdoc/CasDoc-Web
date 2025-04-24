@@ -5,13 +5,13 @@ import { ProjectService } from "@/app/models/services/ProjectService";
 import { DocumentService } from "@/app/models/services/DocumentService";
 import { DocumentType } from "@/app/models/enum/DocumentType";
 import defaultContent from "../models/default-value/defaultContent";
-import { ProjectInput } from "../models/types/ProjectInput";
 import { DocumentInput } from "../models/types/DocumentInput";
 import { DocSelectedService } from "../models/services/DocSelectedService";
 import { useProjectsQuery } from "./hooks/useProjectsQuery";
 import { ProjectApiRequest } from "../models/dto/ProjectApiRequest";
 import { useCreateProjectMutation } from "./hooks/useCreateProjectMutation";
 import { useDeleteProjectMutation } from "./hooks/useDeleteProjectMutation";
+import { useUpdateProjectMutation } from "./hooks/useUpdateProjectMutation";
 export interface ProjectViewModel {
     projects: Project[] | [];
     documentsMap: Record<string, Document[]>;
@@ -23,9 +23,9 @@ export interface ProjectViewModel {
     editingDocument: Document | null;
 
     // Project actions
-    createProject: (input: ProjectInput) => void;
+    createProject: (input: ProjectApiRequest) => void;
     deleteProject: (projectId: string) => void;
-    editProject: (projectId: string, update: ProjectInput) => void;
+    editProject: (projectId: string, input: ProjectApiRequest) => void;
     selectProject: (projectId: string) => void;
     getProjectByDocumentId: (documentId: string) => Project | undefined;
 
@@ -49,6 +49,7 @@ export const useProjectViewModel = (): ProjectViewModel => {
         useProjectsQuery();
     const { mutateAsync: createProjectMutation } = useCreateProjectMutation();
     const { mutateAsync: deleteProjectMutation } = useDeleteProjectMutation();
+    const { mutateAsync: updateProjectMutation } = useUpdateProjectMutation();
     const [documentsMap, setDocumentsMap] = useState<
         Record<string, Document[]>
     >({});
@@ -140,17 +141,16 @@ export const useProjectViewModel = (): ProjectViewModel => {
     );
 
     const editProject = useCallback(
-        (projectId: string, update: ProjectInput) => {
-            ProjectService.updateProject(projectId, update);
-            // setProjects((prevProjects) =>
-            //     prevProjects.map((proj) =>
-            //         proj.id === projectId
-            //             ? ({ ...proj, ...update } as Project)
-            //             : proj
-            //     )
-            // );
+        (projectId: string, input: ProjectApiRequest) => {
+            try {
+                // Use the mutation to handle optimistic updates and rollbacks
+                updateProjectMutation({ projectId, projectInput: input });
+            } catch (error) {
+                console.error("Failed to update project:", error);
+                throw new Error("Failed to update project");
+            }
         },
-        []
+        [updateProjectMutation]
     );
 
     const selectProject = useCallback((projectId: string) => {
