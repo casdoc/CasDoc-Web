@@ -3,6 +3,7 @@ import { DocumentType } from "@/app/models/enum/DocumentType";
 
 export const DocumentSchema = z.object({
     id: z.number().int(),
+    projectId: z.number().int(),
     title: z.string(),
     description: z.string(),
     type: z.enum(DocumentType),

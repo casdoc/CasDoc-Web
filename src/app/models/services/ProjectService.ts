@@ -113,7 +113,7 @@ export class ProjectService {
             if (error || !session) {
                 throw new Error("No valid session found");
             }
-            console.debug("projectId", projectId);
+
             const token = session.access_token;
             const response = await fetch(
                 `${baseUrl}/api/v1/public/projects/${projectId}/documents`,

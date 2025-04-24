@@ -6,6 +6,7 @@ import { DocumentService } from "../models/services/DocumentService";
 import { Document } from "../models/entity/Document";
 import { DocumentType } from "../models/enum/DocumentType";
 import defaultContent from "../models/default-value/defaultContent";
+import { useDocumentQuery } from "./hooks/useDocumentQuery";
 
 export interface GraphViewModel {
     connectionEdges: ConnectionEdge[];
@@ -62,30 +63,34 @@ export interface ConnectionEdge {
 }
 
 export function useGraphViewModel(): GraphViewModel {
-    const [document, setDocument] = useState<Document>();
+    // const [document, setDocument] = useState<Document>();
     const [connectionEdges, setConnectionEdges] = useState<ConnectionEdge[]>(
         []
     );
     const [affectedIds, setAffectedIds] = useState<string[]>([]);
     const [attachedDocs, setAttachedDocs] = useState<Array<AttachedDoc>>([]);
-    const { selectedDocumentId, getDocumentById } = useProjectContext();
-
+    const { selectedDocumentId } = useProjectContext();
+    const { data: document, isLoading: isDocumentLoading } = useDocumentQuery(
+        selectedDocumentId,
+        true
+    );
     useEffect(() => {
         // if (!selectedDocumentId) return;
-        let doc = DocumentService.getDocumentById(selectedDocumentId || "");
-        if (!doc) {
-            const emptyDoc = new Document(
-                "default-document",
-                DocumentType.SRD,
-                "default-project",
-                "Untitled Document",
-                "No description",
-                defaultContent
-            );
-            DocumentService.saveDocument(emptyDoc);
-            doc = emptyDoc;
-        }
-        setDocument(doc);
+        // let doc = DocumentService.getDocumentById(selectedDocumentId || "");
+        // if (!doc) {
+        //     const emptyDoc = new Document(
+        //         "default-document",
+        //         DocumentType.SRD,
+        //         "default-project",
+        //         "Untitled Document",
+        //         "No description",
+        //         defaultContent
+        //     );
+        //     DocumentService.saveDocument(emptyDoc);
+        //     // doc = emptyDoc;
+        // }
+        // setDocument(doc);
+        console.debug("Selected document ID:", selectedDocumentId);
     }, [selectedDocumentId]);
 
     useEffect(() => {
@@ -277,18 +282,22 @@ export function useGraphViewModel(): GraphViewModel {
     const updateAttachedDocById = useCallback(
         (documentId: string): AttachedDoc | undefined => {
             // const doc = getDocumentById(documentId);
-            const doc = null;
-            if (!doc) return;
-            const docContents = doc.content;
+            // const doc = null;
+            if (!document) return;
+            const docContents = document.content;
             const newGraphNodes: GraphNode[] = [
                 {
-                    id: doc.id,
-                    pid: doc.id,
-                    label: doc.title || "Untitled",
+                    id: document.id,
+                    pid: document.id,
+                    label: document.title || "Untitled",
                     type: "root",
                 },
             ];
-            const lastTopicId: string[] = [doc.id, doc.id, doc.id];
+            const lastTopicId: string[] = [
+                document.id,
+                document.id,
+                document.id,
+            ];
             let lastTopicLevel = 0;
 
             for (let i = 0; i < docContents.length; i++) {
@@ -318,7 +327,7 @@ export function useGraphViewModel(): GraphViewModel {
             };
             return attachedDoc;
         },
-        [getDocumentById]
+        []
     );
 
     const appendAttachedDocsById = useCallback(
@@ -383,12 +392,12 @@ export function useGraphViewModel(): GraphViewModel {
         nodeId: string,
         updatedNode: GraphNode
     ) => {
-        const doc =
-            documentId === selectedDocumentId
-                ? document
-                : getDocumentById(documentId);
-        if (!doc) return;
-        const oldContent = doc.content || [];
+        // const doc =
+        //     documentId === selectedDocumentId
+        //         ? document
+        //         : getDocumentById(documentId);
+        if (!document) return;
+        const oldContent = document.content || [];
         const newContent = oldContent.map((item) => {
             if (item?.attrs?.id === nodeId) {
                 return {
@@ -403,17 +412,17 @@ export function useGraphViewModel(): GraphViewModel {
             }
             return item;
         });
-        doc.content = newContent;
-        updateDocument(doc);
+        document.content = newContent;
+        updateDocument(document);
     };
 
     const updateDocument = useCallback(
         (document: Document) => {
             DocumentService.saveDocument(document);
-            const doc = DocumentService.getDocumentById(document.id);
-            if (doc && doc.id === selectedDocumentId) {
-                setDocument(doc);
-            }
+            // const doc = DocumentService.getDocumentById(document.id);
+            // if (document && document.id === selectedDocumentId) {
+            //     setDocument(doc);
+            // }
         },
         [selectedDocumentId]
     );

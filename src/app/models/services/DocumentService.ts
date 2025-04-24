@@ -1,8 +1,16 @@
 import { Document } from "@/app/models/entity/Document";
 import { DocumentInput } from "@/app/models/types/DocumentInput";
 import { v4 as uuidv4 } from "uuid";
-
+import { createClient } from "@supabase/supabase-js";
+import {
+    DocumentResponse,
+    DocumentResponseSchema,
+} from "@/app/models/dto/DocumentApiResponse";
 const STORAGE_KEY = "DOCUMENTS";
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
+const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export class DocumentService {
     static getAllDocuments(): Document[] {
@@ -28,6 +36,51 @@ export class DocumentService {
         }
     }
 
+    static async fetchDocumentById(id: string): Promise<Document | undefined> {
+        try {
+            const {
+                data: { session },
+                error,
+            } = await supabase.auth.getSession();
+
+            if (error || !session) {
+                throw new Error("No valid session found");
+            }
+
+            const token = session.access_token;
+            const response = await fetch(
+                `${baseUrl}/api/v1/public/documents/${id}`,
+                {
+                    method: "GET",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error("Failed to fetch document");
+            }
+
+            const result: DocumentResponse = await response.json();
+            DocumentResponseSchema.parse(result); // Validate the response
+
+            return new Document(
+                result.data.id.toString(),
+                result.data.type,
+                result.data.projectId.toString(),
+                result.data.title,
+                result.data.description ?? "",
+                [] // content will need to be filled in if your API returns it
+            );
+        } catch (error) {
+            console.error("Error fetching document from API:", error);
+            // Fallback to localStorage if API fails
+        }
+    }
+
+    // Keep the existing getDocumentById as a fallback for now
     static getDocumentById(id: string): Document | null {
         if (typeof window === "undefined") return null;
         const documents = this.getAllDocuments();

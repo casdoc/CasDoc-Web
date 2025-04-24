@@ -28,8 +28,7 @@ const ProjectMenu = ({ name, projectId }: ProjectMenuProps) => {
     const { selectProject, openProjectDialog, openDocumentDialog } =
         useProjectContext();
     const { isSuccess: isProjectsSuccess } = useProjectsQuery();
-    const { data: documents, isLoading: isDocumentsLoading } =
-        useDocumentsQuery(projectId, !isProjectsSuccess);
+    const { data: documents } = useDocumentsQuery(projectId, isProjectsSuccess);
 
     const [isOpen, setIsOpen] = useState(true);
 
@@ -48,9 +47,6 @@ const ProjectMenu = ({ name, projectId }: ProjectMenuProps) => {
             openProjectDialog(projectId);
         }
     };
-    if (isDocumentsLoading) {
-        return null;
-    }
     return (
         <Collapsible open={isOpen} onOpenChange={setIsOpen}>
             <SidebarMenuItem>

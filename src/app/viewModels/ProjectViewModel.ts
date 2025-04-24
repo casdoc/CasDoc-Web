@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { Project } from "@/app/models/entity/Project";
 import { Document } from "@/app/models/types/Document";
-import { ProjectService } from "@/app/models/services/ProjectService";
 import { DocumentService } from "@/app/models/services/DocumentService";
 import defaultContent from "../models/default-value/defaultContent";
 import { DocumentInput } from "../models/types/DocumentInput";
@@ -9,6 +8,8 @@ import { DocSelectedService } from "../models/services/DocSelectedService";
 import { useProjectsQuery } from "./hooks/useProjectsQuery";
 import { useDocumentsQuery } from "./hooks/useDocumentsQuery";
 import { useQueryClient } from "@tanstack/react-query";
+import { DocumentListResponse } from "../models/dto/DocumentApiResponse";
+import { set } from "lodash";
 
 export interface ProjectViewModel {
     selectedProjectId: string | null;
@@ -20,14 +21,12 @@ export interface ProjectViewModel {
 
     // Project actions
     selectProject: (projectId: string) => void;
-    // getProjectByDocumentId: (documentId: string) => Project | undefined;
 
     // Document actions
     createDocument: (input: DocumentInput) => string;
     deleteDocument: (documentId: string) => void;
     editDocument: (documentId: string, update: DocumentInput) => void;
     selectDocument: (documentId: string) => void;
-    getDocumentById: (documentId: string) => Document | undefined;
 
     // Dialog actions
     openProjectDialog: (projectId?: string) => void;
@@ -38,7 +37,7 @@ export interface ProjectViewModel {
 
 export const useProjectViewModel = (): ProjectViewModel => {
     const { data: projects, isLoading: isLoadingProjects } = useProjectsQuery();
-    const { getQueryData } = useQueryClient();
+    const queryClient = useQueryClient();
 
     const [selectedProjectId, setSelectedProjectId] = useState<string | null>(
         null
@@ -46,16 +45,17 @@ export const useProjectViewModel = (): ProjectViewModel => {
     const [selectedDocumentId, setSelectedDocumentId] = useState<string | null>(
         null
     );
+    const { data: documents } = useDocumentsQuery(
+        selectedProjectId || "",
+        !isLoadingProjects
+    );
     const [isProjectDialogOpen, setIsProjectDialogOpen] = useState(false);
     const [isDocumentDialogOpen, setIsDocumentDialogOpen] = useState(false);
     const [editingProject, setEditingProject] = useState<Project | null>(null);
     const [editingDocument, setEditingDocument] = useState<Document | null>(
         null
     );
-    // const projects: Project[] = useMemo(
-    //     () => projectsData || [],
-    //     [projectsData]
-    // );
+
     // Load projects from localStorage and set default content
     useEffect(() => {
         // Set default content
@@ -106,31 +106,21 @@ export const useProjectViewModel = (): ProjectViewModel => {
         setSelectedProjectId(projectId);
     }, []);
 
-    // const getProjectByDocumentId = (
-    //     documentId: string
-    // ): Project | undefined => {
-    //     for (const project of projects) {
-    //         const { data: documents } = useDocumentsQuery(project.id);
-    //         const doc = documents?.find((d) => d.id === documentId);
-    //         if (doc) return project;
-    //     }
-    // };
-
     useEffect(() => {
         const localSelectedDoc = DocSelectedService.getSelectedDoc();
-        // if (localSelectedDoc === "") {
-        //     if (projects && projects[0]) {
-        //         const { data: docs } = useDocumentsQuery(projects[0].id);
-        //         if (docs && docs?.length > 0) {
-        //             setSelectedDocumentId(docs[0].id);
-        //             return;
-        //         }
-        //     }
-        // }
-        if (selectedDocumentId !== localSelectedDoc) {
+        if (localSelectedDoc === "") {
+            if (projects && projects.length > 0 && projects[0].id) {
+                console.debug("selectProjectId", projects[0].id);
+                // Use the first project to get documents
+                setSelectedProjectId(projects[0].id);
+                if (documents && documents.length > 0) {
+                    setSelectedDocumentId(documents[0]?.id || null);
+                }
+            }
+        } else if (selectedDocumentId !== localSelectedDoc) {
             setSelectedDocumentId(localSelectedDoc);
         }
-    }, [projects, selectedDocumentId]);
+    }, [projects, selectedDocumentId, queryClient]);
 
     const createDocument = useCallback((input: DocumentInput): string => {
         const document = DocumentService.createDocument(input);
@@ -226,17 +216,6 @@ export const useProjectViewModel = (): ProjectViewModel => {
         }, 0);
     }, []);
 
-    const getDocumentById = (documentId: string): Document | undefined => {
-        for (const project of projects || []) {
-            const documents = getQueryData(["documents", project.id]) as
-                | Document[]
-                | undefined;
-            const doc = documents?.find((d) => d.id === documentId);
-            if (doc) return doc;
-        }
-        return undefined;
-    };
-
     return {
         selectedProjectId,
         selectedDocumentId,
@@ -245,12 +224,10 @@ export const useProjectViewModel = (): ProjectViewModel => {
         editingProject,
         editingDocument,
         selectProject,
-        // getProjectByDocumentId,
         createDocument,
         deleteDocument,
         editDocument,
         selectDocument,
-        getDocumentById,
         openProjectDialog,
         openDocumentDialog,
         closeProjectDialog,
