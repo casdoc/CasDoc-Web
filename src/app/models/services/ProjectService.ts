@@ -180,19 +180,38 @@ export class ProjectService {
         }
     }
 
-    static deleteProject(id: string) {
-        if (typeof window === "undefined") return;
-        // TODO: Implement API call for deleting projects
-        // Delete all documents associated with this project
-        const docsToDelete = this.getDocumentsByProjectId(id);
-        for (const doc of docsToDelete) {
-            DocumentService.deleteDocument(doc.id);
-        }
+    static async deleteProject(
+        id: string,
+        signal?: AbortSignal
+    ): Promise<void> {
+        try {
+            const {
+                data: { session },
+                error,
+            } = await supabase.auth.getSession();
 
-        // Delete the project
-        const projects = this.getProjectsFromLocalStorage().filter(
-            (proj) => proj.id !== id
-        );
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
+            if (error || !session) {
+                throw new Error("No valid session found");
+            }
+
+            const token = session.access_token;
+            const response = await fetch(
+                `${baseUrl}/api/v1/public/projects/${id}`,
+                {
+                    method: "DELETE",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
+                    signal: signal,
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error("Failed to delete project");
+            }
+        } catch (error) {
+            console.error("Error deleting project:", error);
+        }
     }
 }

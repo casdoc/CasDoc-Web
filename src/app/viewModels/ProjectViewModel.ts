@@ -11,6 +11,7 @@ import { DocSelectedService } from "../models/services/DocSelectedService";
 import { useProjectsQuery } from "./hooks/useProjectsQuery";
 import { ProjectApiRequest } from "../models/dto/ProjectApiRequest";
 import { useCreateProjectMutation } from "./hooks/useCreateProjectMutation";
+import { useDeleteProjectMutation } from "./hooks/useDeleteProjectMutation";
 export interface ProjectViewModel {
     projects: Project[] | [];
     documentsMap: Record<string, Document[]>;
@@ -47,6 +48,7 @@ export const useProjectViewModel = (): ProjectViewModel => {
     const { data: projectsData, isLoading: isLoadingProjects } =
         useProjectsQuery();
     const { mutateAsync: createProjectMutation } = useCreateProjectMutation();
+    const { mutateAsync: deleteProjectMutation } = useDeleteProjectMutation();
     const [documentsMap, setDocumentsMap] = useState<
         Record<string, Document[]>
     >({});
@@ -125,16 +127,16 @@ export const useProjectViewModel = (): ProjectViewModel => {
     );
 
     const deleteProject = useCallback(
-        (projectId: string) => {
-            if (selectedProjectId === projectId) setSelectedProjectId(null);
-            ProjectService.deleteProject(projectId);
-
-            // Update local state
-            // setProjects((prevProjects) =>
-            // prevProjects.filter((proj) => proj.id !== projectId)
-            // );
+        (projectId: string): void => {
+            try {
+                // Use the mutation to handle optimistic updates and rollbacks
+                deleteProjectMutation(projectId);
+            } catch (error) {
+                console.error("Failed to delete project:", error);
+                throw new Error("Failed to delete project");
+            }
         },
-        [selectedProjectId]
+        [deleteProjectMutation]
     );
 
     const editProject = useCallback(
