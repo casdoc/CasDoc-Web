@@ -21,6 +21,7 @@ const ProjectDialog = () => {
         isProjectDialogOpen,
         closeProjectDialog,
     } = useProjectContext();
+
     const handleSaveProject = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Project } from "@/app/models/entity/Project";
 import { Document } from "@/app/models/types/Document";
 import { DocumentService } from "@/app/models/services/DocumentService";
@@ -9,7 +9,6 @@ import { useProjectsQuery } from "./hooks/useProjectsQuery";
 import { useDocumentsQuery } from "./hooks/useDocumentsQuery";
 import { useQueryClient } from "@tanstack/react-query";
 import { DocumentListResponse } from "../models/dto/DocumentApiResponse";
-import { set } from "lodash";
 
 export interface ProjectViewModel {
     selectedProjectId: string | null;
@@ -23,7 +22,6 @@ export interface ProjectViewModel {
     selectProject: (projectId: string) => void;
 
     // Document actions
-    createDocument: (input: DocumentInput) => string;
     deleteDocument: (documentId: string) => void;
     editDocument: (documentId: string, update: DocumentInput) => void;
     selectDocument: (documentId: string) => void;
@@ -101,7 +99,6 @@ export const useProjectViewModel = (): ProjectViewModel => {
             // setDocumentsMap(initialDocumentsMap);
         }
     }, [isLoadingProjects, projects]);
-
     const selectProject = useCallback((projectId: string) => {
         setSelectedProjectId(projectId);
     }, []);
@@ -121,20 +118,6 @@ export const useProjectViewModel = (): ProjectViewModel => {
             setSelectedDocumentId(localSelectedDoc);
         }
     }, [projects, selectedDocumentId, queryClient]);
-
-    const createDocument = useCallback((input: DocumentInput): string => {
-        const document = DocumentService.createDocument(input);
-        if (!document) throw new Error("Failed to create document");
-
-        // setDocumentsMap((prev) => ({
-        //     ...prev,
-        //     [document.projectId]: [
-        //         ...(prev[document.projectId] || []),
-        //         document,
-        //     ],
-        // }));
-        return document.id;
-    }, []);
 
     const deleteDocument = useCallback(
         (documentId: string) => {
@@ -183,19 +166,25 @@ export const useProjectViewModel = (): ProjectViewModel => {
     }, []);
 
     // Dialog Actions
-    const openProjectDialog = useCallback((projectId?: string) => {
-        setIsProjectDialogOpen(true);
-        // setEditingProject(
-        //     projectId ? ProjectService.getProjectById(projectId) : null
-        // );
-    }, []);
+    const openProjectDialog = useCallback(
+        (projectId?: string) => {
+            setIsProjectDialogOpen(true);
+            setEditingProject(
+                projects?.find((project) => project.id == projectId) || null
+            );
+        },
+        [projects]
+    );
 
     const openDocumentDialog = useCallback(
         (projectId: string, documentId?: string) => {
             setIsDocumentDialogOpen(true);
-            // setEditingProject(ProjectService.getProjectById(projectId));
+            setEditingProject(
+                projects?.find((project) => project.id === projectId) || null
+            );
             setEditingDocument(
-                documentId ? DocumentService.getDocumentById(documentId) : null
+                documents?.find((document) => document.id === documentId) ||
+                    null
             );
         },
         []
@@ -224,7 +213,6 @@ export const useProjectViewModel = (): ProjectViewModel => {
         editingProject,
         editingDocument,
         selectProject,
-        createDocument,
         deleteDocument,
         editDocument,
         selectDocument,
