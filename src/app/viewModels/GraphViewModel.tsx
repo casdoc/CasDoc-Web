@@ -76,8 +76,6 @@ export function useGraphViewModel(): GraphViewModel {
         if (!doc) {
             const emptyDoc = new Document(
                 "default-document",
-                new Date(),
-                new Date(),
                 DocumentType.SRD,
                 "default-project",
                 "Untitled Document",

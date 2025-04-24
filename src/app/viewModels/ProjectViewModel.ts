@@ -8,15 +8,9 @@ import { DocumentInput } from "../models/types/DocumentInput";
 import { DocSelectedService } from "../models/services/DocSelectedService";
 import { useProjectsQuery } from "./hooks/useProjectsQuery";
 import { useDocumentsQuery } from "./hooks/useDocumentsQuery";
-import { ProjectApiRequest } from "../models/dto/ProjectApiRequest";
-import { useCreateProjectMutation } from "./hooks/useCreateProjectMutation";
-import { useDeleteProjectMutation } from "./hooks/useDeleteProjectMutation";
-import { useUpdateProjectMutation } from "./hooks/useUpdateProjectMutation";
 import { useQueryClient } from "@tanstack/react-query";
 
 export interface ProjectViewModel {
-    projects: Project[] | [];
-    // documentsMap: Record<string, Document[]>;
     selectedProjectId: string | null;
     selectedDocumentId: string | null;
     isProjectDialogOpen: boolean;
@@ -25,14 +19,10 @@ export interface ProjectViewModel {
     editingDocument: Document | null;
 
     // Project actions
-    createProject: (input: ProjectApiRequest) => void;
-    deleteProject: (projectId: string) => void;
-    editProject: (projectId: string, input: ProjectApiRequest) => void;
     selectProject: (projectId: string) => void;
     // getProjectByDocumentId: (documentId: string) => Project | undefined;
 
     // Document actions
-    // getDocumentsByProjectId: (projectId: string) => Document[];
     createDocument: (input: DocumentInput) => string;
     deleteDocument: (documentId: string) => void;
     editDocument: (documentId: string, update: DocumentInput) => void;
@@ -47,15 +37,9 @@ export interface ProjectViewModel {
 }
 
 export const useProjectViewModel = (): ProjectViewModel => {
-    const { data: projectsData, isLoading: isLoadingProjects } =
-        useProjectsQuery();
-    const { mutateAsync: createProjectMutation } = useCreateProjectMutation();
-    const { mutateAsync: deleteProjectMutation } = useDeleteProjectMutation();
-    const { mutateAsync: updateProjectMutation } = useUpdateProjectMutation();
+    const { data: projects, isLoading: isLoadingProjects } = useProjectsQuery();
     const { getQueryData } = useQueryClient();
-    // const [documentsMap, setDocumentsMap] = useState<
-    //     Record<string, Document[]>
-    // >({});
+
     const [selectedProjectId, setSelectedProjectId] = useState<string | null>(
         null
     );
@@ -68,10 +52,10 @@ export const useProjectViewModel = (): ProjectViewModel => {
     const [editingDocument, setEditingDocument] = useState<Document | null>(
         null
     );
-    const projects: Project[] = useMemo(
-        () => projectsData || [],
-        [projectsData]
-    );
+    // const projects: Project[] = useMemo(
+    //     () => projectsData || [],
+    //     [projectsData]
+    // );
     // Load projects from localStorage and set default content
     useEffect(() => {
         // Set default content
@@ -118,45 +102,6 @@ export const useProjectViewModel = (): ProjectViewModel => {
         }
     }, [isLoadingProjects, projects]);
 
-    const createProject = useCallback(
-        (input: ProjectApiRequest): void => {
-            try {
-                // Use the mutation to handle optimistic updates and rollbacks
-                createProjectMutation(input);
-            } catch (error) {
-                console.error("Failed to create project:", error);
-                throw new Error("Failed to create project");
-            }
-        },
-        [createProjectMutation]
-    );
-
-    const deleteProject = useCallback(
-        (projectId: string): void => {
-            try {
-                // Use the mutation to handle optimistic updates and rollbacks
-                deleteProjectMutation(projectId);
-            } catch (error) {
-                console.error("Failed to delete project:", error);
-                throw new Error("Failed to delete project");
-            }
-        },
-        [deleteProjectMutation]
-    );
-
-    const editProject = useCallback(
-        (projectId: string, input: ProjectApiRequest) => {
-            try {
-                // Use the mutation to handle optimistic updates and rollbacks
-                updateProjectMutation({ projectId, projectInput: input });
-            } catch (error) {
-                console.error("Failed to update project:", error);
-                throw new Error("Failed to update project");
-            }
-        },
-        [updateProjectMutation]
-    );
-
     const selectProject = useCallback((projectId: string) => {
         setSelectedProjectId(projectId);
     }, []);
@@ -170,15 +115,6 @@ export const useProjectViewModel = (): ProjectViewModel => {
     //         if (doc) return project;
     //     }
     // };
-
-    // // Document Actions
-    // const getDocumentsByProjectId = useCallback(
-    //     (projectId: string): Document[] => {
-    //         const { data } = useDocumentsQuery(projectId);
-    //         return data || [];
-    //     },
-    //     []
-    // );
 
     useEffect(() => {
         const localSelectedDoc = DocSelectedService.getSelectedDoc();
@@ -302,16 +238,12 @@ export const useProjectViewModel = (): ProjectViewModel => {
     };
 
     return {
-        projects,
         selectedProjectId,
         selectedDocumentId,
         isProjectDialogOpen,
         isDocumentDialogOpen,
         editingProject,
         editingDocument,
-        createProject,
-        deleteProject,
-        editProject,
         selectProject,
         // getProjectByDocumentId,
         createDocument,

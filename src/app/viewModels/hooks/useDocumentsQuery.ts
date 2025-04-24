@@ -2,7 +2,10 @@ import { useQuery } from "@tanstack/react-query";
 import { ProjectService } from "@/app/models/services/ProjectService";
 import { Document } from "@/app/models/entity/Document";
 
-export const useDocumentsQuery = (projectId: string | null) => {
+export const useDocumentsQuery = (
+    projectId: string | null,
+    enable: boolean
+) => {
     return useQuery<Document[], Error>({
         queryKey: ["documents", projectId],
         queryFn: async () => {
@@ -13,7 +16,7 @@ export const useDocumentsQuery = (projectId: string | null) => {
             console.debug("Fetched documents:", documents);
             return documents ?? [];
         },
-        enabled: !!projectId, // Only run the query if projectId is provided
+        enabled: !!projectId && enable,
         staleTime: 5 * 60 * 1000, // 5 minutes
     });
 };

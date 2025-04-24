@@ -14,12 +14,13 @@ import {
     CollapsibleContent,
     CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { useProjectsQuery } from "@/app/viewModels/hooks/useProjectsQuery";
 
 const dropdownItems = ["Order"];
 
 const ProjectGroup = () => {
-    const { projects, selectedProjectId, openProjectDialog } =
-        useProjectContext();
+    const { data: projects } = useProjectsQuery();
+    const { selectedProjectId, openProjectDialog } = useProjectContext();
     const [isOpen, setIsOpen] = useState(true);
     const handleAddProject = (e: React.MouseEvent) => {
         e.stopPropagation();

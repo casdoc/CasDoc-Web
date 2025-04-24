@@ -10,13 +10,15 @@ import {
     Dialog,
 } from "@/components/ui/dialog";
 import { useProjectContext } from "@/app/viewModels/context/ProjectContext";
+import { useCreateProjectMutation } from "@/app/viewModels/hooks/useCreateProjectMutation";
+import { useUpdateProjectMutation } from "@/app/viewModels/hooks/useUpdateProjectMutation";
 
 const ProjectDialog = () => {
+    const { mutateAsync: createProjectMutation } = useCreateProjectMutation();
+    const { mutateAsync: updateProjectMutation } = useUpdateProjectMutation();
     const {
         editingProject: project,
         isProjectDialogOpen,
-        createProject,
-        editProject,
         closeProjectDialog,
     } = useProjectContext();
     const handleSaveProject = (e: React.FormEvent<HTMLFormElement>) => {
@@ -29,11 +31,12 @@ const ProjectDialog = () => {
             formData.get("description")?.toString().trim() ?? "";
 
         if (!project) {
-            // Create project
-            createProject({ name, description });
+            createProjectMutation({ name, description });
         } else {
-            // Update project
-            editProject(project.id, { name, description });
+            updateProjectMutation({
+                projectId: project.id,
+                projectInput: { name, description },
+            });
         }
         closeProjectDialog();
     };

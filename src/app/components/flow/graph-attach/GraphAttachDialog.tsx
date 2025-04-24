@@ -13,6 +13,7 @@ import { useEffect, useState } from "react";
 import { useGraphContext } from "@/app/viewModels/context/GraphContext";
 import { useProjectContext } from "@/app/viewModels/context/ProjectContext";
 import SearchBar from "@/app/components/SearchBar";
+import { useProjectsQuery } from "@/app/viewModels/hooks/useProjectsQuery";
 
 export const GraphAttachDialog = ({
     openAttach,
@@ -21,7 +22,8 @@ export const GraphAttachDialog = ({
     openAttach: boolean;
     setOpenAttach: (open: boolean) => void;
 }) => {
-    const { projects, selectedDocumentId } = useProjectContext();
+    const { data: projects } = useProjectsQuery();
+    const { selectedDocumentId } = useProjectContext();
     const [isSelected, setIsSelected] = useState<Record<string, boolean>>({});
     const [searchContent, setSearchContent] = useState("");
     const { setAttachedDocs } = useGraphContext();
@@ -29,7 +31,7 @@ export const GraphAttachDialog = ({
     useEffect(() => {
         setIsSelected((prev) => {
             const updated: Record<string, boolean> = {};
-            projects.forEach((project) => {
+            projects?.forEach((project) => {
                 updated[project.id] = prev[project.id] ?? false;
             });
             return updated;

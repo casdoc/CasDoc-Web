@@ -103,6 +103,7 @@ export class ProjectService {
     static async fetchDocumentsByProjectId(
         projectId: string
     ): Promise<Document[] | undefined> {
+        if (projectId === "") return [];
         try {
             const {
                 data: { session },
@@ -112,7 +113,7 @@ export class ProjectService {
             if (error || !session) {
                 throw new Error("No valid session found");
             }
-
+            console.debug("projectId", projectId);
             const token = session.access_token;
             const response = await fetch(
                 `${baseUrl}/api/v1/public/projects/${projectId}/documents`,
