@@ -1,18 +1,18 @@
 "use server";
 
-// import LoginButton from "@/app/components/home/LoginButton";
+import LoginButton from "@/app/components/home/LoginButton";
 import TryLocalButton from "@/app/components/home/TryLocalButton";
 import { useState } from "react";
 
 const Login = () => {
-    // const [loginLoading, setLoginLoading] = useState(false);
+    const [loginLoading, setLoginLoading] = useState(false);
     const [localLoading, setLocalLoading] = useState(false);
     const [buttonDisabled, setButtonDisabled] = useState(false);
 
-    // const handleLoginClick = () => {
-    //     setButtonDisabled(true);
-    //     setLoginLoading(true);
-    // };
+    const handleLoginClick = () => {
+        setButtonDisabled(true);
+        setLoginLoading(true);
+    };
 
     const handleLocalClick = () => {
         setButtonDisabled(true);
@@ -31,11 +31,11 @@ const Login = () => {
                     </p>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-4 items-center lg:items-start justify-center">
-                    {/* <LoginButton
+                    <LoginButton
                         handleClick={handleLoginClick}
                         loading={loginLoading}
                         disabled={buttonDisabled}
-                    /> */}
+                    />
                     <div className="flex flex-col items-center">
                         <TryLocalButton
                             handleClick={handleLocalClick}
