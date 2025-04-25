@@ -10,10 +10,11 @@ import {
 import { useProjectContext } from "@/app/viewModels/context/ProjectContext";
 import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
 import { CollapsibleTrigger } from "@radix-ui/react-collapsible";
-import { useQueryClient } from "@tanstack/react-query";
 import { useDocumentsQuery } from "@/app/viewModels/hooks/useDocumentsQuery";
 import { useDeleteProjectMutation } from "@/app/viewModels/hooks/useDeleteProjectMutation";
 import { useProjectsQuery } from "@/app/viewModels/hooks/useProjectsQuery";
+import { useCreateProjectMutation } from "@/app/viewModels/hooks/useCreateProjectMutation";
+import z from "zod";
 
 const dropdownItems = ["Edit", "Delete"];
 
@@ -27,9 +28,17 @@ const ProjectMenu = ({ name, projectId }: ProjectMenuProps) => {
     const { mutateAsync: deleteProjectMutation } = useDeleteProjectMutation();
     const { selectProject, openProjectDialog, openDocumentDialog } =
         useProjectContext();
-    const { isSuccess: isProjectsSuccess } = useProjectsQuery();
-    const { data: documents } = useDocumentsQuery(projectId, isProjectsSuccess);
-
+    const { isSuccess: isProjectsSuccess, isLoading } = useProjectsQuery();
+    const { isSuccess: isCreateProjectSuccess, isIdle } =
+        useCreateProjectMutation();
+    console.debug("isCreateProjectSuccess", isCreateProjectSuccess);
+    const uuidSchema = z.uuid({ version: "v4" });
+    const { data: documents } = useDocumentsQuery(
+        projectId,
+        //prevent create project from being called when projectId is not valid
+        isProjectsSuccess && !uuidSchema.safeParse(projectId).success
+    );
+    console.debug("documents", documents);
     const [isOpen, setIsOpen] = useState(true);
 
     const handleAddDocument = (e: React.MouseEvent) => {
@@ -47,6 +56,7 @@ const ProjectMenu = ({ name, projectId }: ProjectMenuProps) => {
             openProjectDialog(projectId);
         }
     };
+
     return (
         <Collapsible open={isOpen} onOpenChange={setIsOpen}>
             <SidebarMenuItem>

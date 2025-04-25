@@ -48,7 +48,8 @@ export const useProjectViewModel = (): ProjectViewModel => {
     const [editingDocument, setEditingDocument] = useState<Document | null>(
         null
     );
-    console.debug("documents", documents);
+
+    // console.debug("documents", documents);
 
     // Load projects from localStorage and set default content
     useEffect(() => {
