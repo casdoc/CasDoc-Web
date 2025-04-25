@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import supabase from "@/lib/supabase";
 import { useRouter } from "next/router";
-
+const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 export default function CallbackPage() {
     const [user, setUser] = useState<string | null>(null);
     const router = useRouter();
@@ -19,7 +19,7 @@ export default function CallbackPage() {
                 return;
             }
             try {
-                const res = await fetch("http://localhost:8080/me", {
+                const res = await fetch(`${baseUrl}/me`, {
                     headers: {
                         Authorization: `Bearer ${accessToken}`,
                     },
