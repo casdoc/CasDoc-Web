@@ -4,11 +4,9 @@ import LogoButton from "@/app/components/home/LogoButton";
 // import GuideButton from "@/app/components/guide/GuideButton";
 import Footer from "@/app/components/home/Footer";
 import GetStartedButton from "@/app/components/home/GetStartedButton";
-import { useState } from "react";
 import "@/app/globals.css";
 
 const Home = () => {
-    const [loading, setLoading] = useState(false);
     return (
         <div className="flex flex-col h-dvh bg-gray-100 font-sans">
             <div className="relative flex-1 flex flex-col items-center justify-center px-4 text-center">
@@ -26,10 +24,7 @@ const Home = () => {
                     <br className="hidden sm:block" />
                     traceability through document structure visualization.
                 </h2>
-                <GetStartedButton
-                    loading={loading}
-                    handleClick={() => setLoading(true)}
-                />
+                <GetStartedButton />
             </div>
             <Footer />
         </div>
