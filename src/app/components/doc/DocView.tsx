@@ -7,13 +7,22 @@ import GraphView from "../flow/GraphView";
 import { ReactFlowProvider } from "@xyflow/react";
 import { useState, useEffect, useRef } from "react";
 import { useGraphContext } from "@/app/viewModels/context/GraphContext";
+import { useProjectContext } from "@/app/viewModels/context/ProjectContext";
+import { useDocumentQuery } from "@/app/viewModels/hooks/useDocumentQuery";
 
 const DocView = () => {
     const { mode, setDocMode } = useDocModeViewModel();
-    const { document, updateDocument } = useGraphContext();
+    const { updateDocument } = useGraphContext();
+    const { selectedDocumentId } = useProjectContext();
+    const { data: document } = useDocumentQuery(
+        selectedDocumentId,
+        selectedDocumentId !== null
+    );
     // Initialize editor only when document is available
     const { editor } = useBlockEditor({
-        document: document ?? undefined, // Pass undefined if document is null
+        // document: document ?? undefined, // Pass undefined if document is null
+        // docContent: docContent?.allContent,
+        documentId: selectedDocumentId || "",
         updateDocument,
     });
     const [splitWidth, setSplitWidth] = useState(50);

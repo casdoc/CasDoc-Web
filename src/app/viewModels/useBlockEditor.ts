@@ -3,35 +3,46 @@ import { Editor, useEditor } from "@tiptap/react";
 import { Document } from "@/app/models/entity/Document";
 import { useCallback, useEffect, useRef } from "react";
 import { NodeSelection } from "@tiptap/pm/state";
+import { DocumentContent } from "@/app/models/types/DocumentContent";
+import { useDocumentContentQueries } from "./hooks/useDocumentContentQueries";
 
 interface BlockEditorProps {
-    document?: Document;
+    documentId?: string;
+    // docContent?: DocumentContent[] | undefined;
     updateDocument: (document: Document) => void;
 }
 
 export const useBlockEditor = ({
-    document,
+    documentId,
+    // docContent,
     updateDocument,
     ...editorOptions
 }: BlockEditorProps) => {
+    const { data: docContent, isSuccess } = useDocumentContentQueries(
+        documentId || "",
+        documentId !== null
+    );
     const isInternalUpdate = useRef(false);
     const prevDocumentId = useRef<string | null>(null);
-    const onUpdate = useCallback(
-        ({ editor }: { editor: Editor }) => {
-            isInternalUpdate.current = true;
-            const updatedContent = editor.getJSON().content;
+    // const onUpdate = useCallback(
+    //     ({ editor }: { editor: Editor }) => {
+    //         isInternalUpdate.current = true;
+    //         const updatedContent = editor.getJSON().content;
 
-            if (document && updatedContent) {
-                document.content = updatedContent;
-                updateDocument(document);
-            }
-            //next tick to avoid state update in render
-            setTimeout(() => {
-                isInternalUpdate.current = false;
-            }, 0);
-        },
-        [document, updateDocument]
-    );
+    //         if (document && updatedContent) {
+    //             document.content = updatedContent;
+    //             updateDocument(document);
+    //         }
+    //         //next tick to avoid state update in render
+    //         setTimeout(() => {
+    //             isInternalUpdate.current = false;
+    //         }, 0);
+    //     },
+    //     [document, updateDocument]
+    // );
+
+    console.debug("Document content:", docContent?.allContent);
+
     const editor = useEditor({
         ...editorOptions,
         autofocus: true,
@@ -45,58 +56,58 @@ export const useBlockEditor = ({
                 spellcheck: "false",
             },
         },
-        onUpdate: onUpdate,
-        onCreate({ editor }) {
-            // Only set content if editor is empty or if document has content
-            if (!editor.isEmpty || (document && document.content.length > 0)) {
-                editor.commands.setContent(
-                    { type: "doc", content: document?.content },
-                    false
-                );
-                // Save initial document ID
-                if (document) {
-                    prevDocumentId.current = document.id;
-                }
-            } else {
-                // Explicitly set an empty heading
-                editor.commands.setNode("heading", { level: 1 });
-            }
-        },
+        // onUpdate: onUpdate,
+        // onCreate({ editor }) {
+        //     // Only set content if editor is empty or if document has content
+        //     if (!editor.isEmpty || (document && document.content.length > 0)) {
+        //         editor.commands.setContent(
+        //             { type: "doc", content: document?.content },
+        //             false
+        //         );
+        //         // Save initial document ID
+        //         if (document) {
+        //             prevDocumentId.current = document.id;
+        //         }
+        //     } else {
+        //         // Explicitly set an empty heading
+        //         editor.commands.setNode("heading", { level: 1 });
+        //     }
+        // },
     });
 
     // Enhanced effect to handle document changes
     useEffect(() => {
-        if (!editor || !document) return;
+        if (!editor || !isSuccess) return;
 
         // Skip if this is an update triggered by the editor itself
         if (isInternalUpdate.current) return;
 
-        const currentDocId = document.id;
+        const currentDocId = documentId;
 
         // Only update content if document ID has changed
-        if (currentDocId !== prevDocumentId.current) {
+        if (currentDocId && currentDocId !== prevDocumentId.current) {
             // Need to use setTimeout to ensure the clear completes first
             setTimeout(() => {
                 editor.commands.clearContent();
                 editor.commands.setContent(
-                    { type: "doc", content: document.content },
+                    { type: "doc", content: docContent?.allContent as any },
                     false
                 );
                 prevDocumentId.current = currentDocId;
             }, 0);
         }
-    }, [editor, document?.id, document]);
+    }, [editor, documentId, isSuccess]);
 
     useEffect(() => {
-        const currentDocId = document?.id;
+        const currentDocId = documentId;
         if (currentDocId !== prevDocumentId.current) return;
-        if (document && editor && !isInternalUpdate.current) {
+        if (editor && !isInternalUpdate.current && isSuccess) {
             editor.commands.setContent(
-                { type: "doc", content: document.content },
+                { type: "doc", content: docContent?.allContent as any },
                 false
             );
         }
-    }, [document, editor]);
+    }, [editor, isSuccess]);
 
     useEffect(() => {
         if (!editor) return;
@@ -128,7 +139,7 @@ export const useBlockEditor = ({
         return () => {
             window.removeEventListener("copy", handleCopy);
         };
-    }, [document, editor]);
+    }, [editor]);
 
     return { editor };
 };

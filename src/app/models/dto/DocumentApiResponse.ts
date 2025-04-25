@@ -23,3 +23,47 @@ export const DocumentResponseSchema = z.object({
     data: DocumentSchema,
 });
 export type DocumentResponse = z.infer<typeof DocumentResponseSchema>;
+
+export const DocumentBlockContentSchema = z.record(z.string(), z.any());
+
+export const DocumentBlockSchema = z.object({
+    id: z.number(),
+    content: DocumentBlockContentSchema,
+});
+
+export const DocumentBlocksResponseSchema = z.object({
+    status: z.number(),
+    message: z.string(),
+    data: z.object({
+        totalPages: z.number(),
+        totalElements: z.number(),
+        size: z.number(),
+        content: z.array(DocumentBlockSchema),
+        number: z.number(),
+        sort: z.object({
+            empty: z.boolean(),
+            sorted: z.boolean(),
+            unsorted: z.boolean(),
+        }),
+        first: z.boolean(),
+        last: z.boolean(),
+        numberOfElements: z.number(),
+        pageable: z.object({
+            offset: z.number(),
+            sort: z.object({
+                empty: z.boolean(),
+                sorted: z.boolean(),
+                unsorted: z.boolean(),
+            }),
+            pageSize: z.number(),
+            paged: z.boolean(),
+            pageNumber: z.number(),
+            unpaged: z.boolean(),
+        }),
+        empty: z.boolean(),
+    }),
+});
+
+export type DocumentBlocksResponse = z.infer<
+    typeof DocumentBlocksResponseSchema
+>;

@@ -103,7 +103,9 @@ export const useProjectViewModel = (): ProjectViewModel => {
     useEffect(() => {
         const localSelectedDoc = DocSelectedService.getSelectedDoc();
         if (localSelectedDoc === "") {
+            console.debug("localSelectedDoc is empty");
             if (projects && projects.length > 0 && projects[0].id) {
+                console.debug("projects is not empty");
                 console.debug("selectProjectId", projects[0].id);
                 setSelectedProjectId(projects[0].id);
                 // Use the first project to get documents
@@ -114,6 +116,8 @@ export const useProjectViewModel = (): ProjectViewModel => {
                 }
             }
         } else if (selectedDocumentId !== localSelectedDoc) {
+            console.debug("loclalSelectedDoc is not empty");
+            // setSelectedProjectId(projects[0].id);
             setSelectedDocumentId(localSelectedDoc);
         }
     }, [projects, documents, selectedDocumentId, queryClient]);

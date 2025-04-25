@@ -5,8 +5,11 @@ import { createClient } from "@supabase/supabase-js";
 import {
     DocumentResponse,
     DocumentResponseSchema,
+    DocumentBlocksResponse,
+    DocumentBlocksResponseSchema,
 } from "@/app/models/dto/DocumentApiResponse";
 import { DocumentApiRequest } from "../dto/DocumentApiRequest";
+import { PaginatedDocumentContent } from "@/app/models/types/DocumentContent";
 const STORAGE_KEY = "DOCUMENTS";
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
@@ -78,6 +81,49 @@ export class DocumentService {
         } catch (error) {
             console.error("Error fetching document from API:", error);
             // Fallback to localStorage if API fails
+        }
+    }
+
+    static async fetchDocumentContent(
+        id: string,
+        page: number = 0,
+        size: number = 10,
+        signal?: AbortSignal
+    ): Promise<PaginatedDocumentContent | null> {
+        try {
+            const {
+                data: { session },
+                error,
+            } = await supabase.auth.getSession();
+
+            if (error || !session) {
+                throw new Error("No valid session found");
+            }
+
+            const token = session.access_token;
+            const response = await fetch(
+                `${baseUrl}/api/v1/public/documents/${id}/blocks?page=${page}&size=${size}`,
+                {
+                    method: "GET",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
+                    signal,
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error("Failed to fetch document content");
+            }
+
+            const result: DocumentBlocksResponse = await response.json();
+            DocumentBlocksResponseSchema.parse(result); // Validate the response
+
+            return result.data;
+        } catch (error) {
+            console.error("Error fetching document content from API:", error);
+            return null;
         }
     }
 
