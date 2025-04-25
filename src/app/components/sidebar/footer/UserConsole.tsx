@@ -6,24 +6,40 @@ import supabase from "@/lib/supabase";
 import { useRouter } from "next/router";
 
 const UserConsole = () => {
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [userName, setUserName] = useState("User");
     const [userEmail, setUserEmail] = useState("user@gmail.com");
+    const [userAvatar, setUserAvatar] = useState("/user-avatar.png");
     const router = useRouter();
 
     useEffect(() => {
+        let mounted = true;
+
         const getUser = async () => {
             const {
                 data: { user },
             } = await supabase.auth.getUser();
-            if (user) {
-                setUserName(user.user_metadata.name ?? "User");
-                setUserEmail(user.email ?? "user@email.com");
+            if (mounted && user) {
+                setIsLoggedIn(true);
+                setUserName(user.user_metadata?.name || "User");
+                setUserEmail(user.email || "user@email.com");
+                setUserAvatar(
+                    user.user_metadata?.avatar_url || "/user-avatar.png"
+                );
+            } else {
+                setIsLoggedIn(false);
             }
         };
+
         getUser();
+
+        return () => {
+            mounted = false;
+        };
     }, []);
 
     const handleSignOut = async () => {
+        if (!isLoggedIn) return;
         const { error } = await supabase.auth.signOut();
         if (!error) {
             router.push("/");
@@ -36,7 +52,7 @@ const UserConsole = () => {
         <div className="flex items-center justify-between p-3 rounded-lg hover:bg-neutral-200 transition cursor-pointer">
             <div className="flex items-center gap-3">
                 <Avatar className="h-9 w-9">
-                    <AvatarImage src="/user-avatar.png" alt="User" />
+                    <AvatarImage src={userAvatar} alt="User" />
                     <AvatarFallback>
                         {userName?.[0]?.toUpperCase() || "U"}
                     </AvatarFallback>
@@ -45,17 +61,24 @@ const UserConsole = () => {
                     <p className="text-sm font-medium leading-none">
                         {userName}
                     </p>
-                    <p className="text-xs text-muted-foreground">{userEmail}</p>
+                    <p
+                        className="text-xs text-muted-foreground truncate max-w-[130px]"
+                        title={userEmail}
+                    >
+                        {userEmail}
+                    </p>
                 </div>
             </div>
-            <Button
-                variant="ghost"
-                size="icon"
-                className="text-muted-foreground hover:text-red-500"
-                onClick={handleSignOut}
-            >
-                <LogOut className="h-4 w-4" />
-            </Button>
+            {isLoggedIn && (
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    className="text-muted-foreground hover:text-red-500"
+                    onClick={handleSignOut}
+                >
+                    <LogOut className="h-4 w-4" />
+                </Button>
+            )}
         </div>
     );
 };
