@@ -1,5 +1,6 @@
 "use client";
 
+import { Text } from "@radix-ui/themes";
 import { useRouter } from "next/router";
 
 interface TryLocalButtonProps {
@@ -23,7 +24,7 @@ const TryLocalButton = ({
     return (
         <button
             disabled={disabled}
-            className={`text-gray-700 border border-gray-500 font-bold px-4 sm:px-6 py-2 sm:py-3 rounded-lg text-base sm:text-lg hover:bg-gray-200 transition-colors duration-300 select-none flex items-center justify-center min-w-[120px] sm:min-w-[140px] ${
+            className={`border border-gray-500 px-4 sm:px-6 py-2 sm:py-3 rounded-lg hover:bg-gray-200 transition-colors duration-300 select-none flex items-center justify-center min-w-[120px] sm:min-w-[140px] ${
                 disabled ? "cursor-not-allowed" : "cursor-pointer"
             }`}
             onClick={handleLocalClick}
@@ -50,10 +51,17 @@ const TryLocalButton = ({
                             d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8z"
                         ></path>
                     </svg>
-                    Launching...
+                    Launching
                 </>
             ) : (
-                <div>Quick Start</div>
+                <Text
+                    weight="bold"
+                    size="5"
+                    className="lg:text-lg"
+                    color="gray"
+                >
+                    Quick Start
+                </Text>
             )}
         </button>
     );

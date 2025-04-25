@@ -1,18 +1,21 @@
 "use server";
 
-// import LoginButton from "@/app/components/home/LoginButton";
+import LoginButton from "@/app/components/home/LoginButton";
 import TryLocalButton from "@/app/components/home/TryLocalButton";
+import { Flex } from "@radix-ui/themes";
+import Link from "next/link";
 import { useState } from "react";
+import { PiTestTube } from "react-icons/pi";
 
 const Login = () => {
-    // const [loginLoading, setLoginLoading] = useState(false);
+    const [loginLoading, setLoginLoading] = useState(false);
     const [localLoading, setLocalLoading] = useState(false);
     const [buttonDisabled, setButtonDisabled] = useState(false);
 
-    // const handleLoginClick = () => {
-    //     setButtonDisabled(true);
-    //     setLoginLoading(true);
-    // };
+    const handleLoginClick = () => {
+        setButtonDisabled(true);
+        setLoginLoading(true);
+    };
 
     const handleLocalClick = () => {
         setButtonDisabled(true);
@@ -30,13 +33,19 @@ const Login = () => {
                         Please choose a login method to get started
                     </p>
                 </div>
-                <div className="flex flex-col sm:flex-row gap-4 items-center lg:items-start justify-center">
-                    {/* <LoginButton
+                <Flex
+                    direction="column"
+                    className="sm:flex-row lg:items-start"
+                    gap="4"
+                    align="center"
+                    justify="center"
+                >
+                    <LoginButton
                         handleClick={handleLoginClick}
                         loading={loginLoading}
-                        disabled={buttonDisabled}
-                    /> */}
-                    <div className="flex flex-col items-center">
+                        disabled={true}
+                    />
+                    <Flex direction="column" align="center">
                         <TryLocalButton
                             handleClick={handleLocalClick}
                             loading={localLoading}
@@ -45,16 +54,33 @@ const Login = () => {
                         <span className="text-xs text-gray-500 mt-1">
                             {"Your data won't be saved."}
                         </span>
-                    </div>
-                </div>
-                <div className="mt-10 text-center">
-                    <button
+                    </Flex>
+                </Flex>
+                <Flex
+                    gapX="7"
+                    gapY="2"
+                    justify="center"
+                    align="center"
+                    className="mt-8 md:ml-6 md:flex-row"
+                    direction="column"
+                >
+                    <Link
+                        href="/"
                         className="text-sm text-blue-600 hover:underline"
-                        onClick={() => (window.location.href = "/")}
                     >
                         ← Back to Home
-                    </button>
-                </div>
+                    </Link>
+                    <Link
+                        href="https://forms.gle/oDBCT3b9L9VnSWH3A"
+                        target="_blank"
+                        className="text-sm text-blue-600 hover:underline"
+                    >
+                        <Flex gapX="1">
+                            <PiTestTube className="mt-0.5" />
+                            Apply for Beta
+                        </Flex>
+                    </Link>
+                </Flex>
             </div>
         </div>
     );
