@@ -30,7 +30,7 @@ const Login = () => {
                         Please choose a login method to get started
                     </p>
                 </div>
-                <div className="flex flex-col sm:flex-row gap-4 items-center lg:items-start justify-center">
+                <div className="flex flex-col sm:flex-row gap-4 items-start lg:items-start justify-center">
                     <LoginButton
                         handleClick={handleLoginClick}
                         loading={loginLoading}
