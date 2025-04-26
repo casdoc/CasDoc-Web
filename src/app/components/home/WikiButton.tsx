@@ -7,7 +7,7 @@ const WikiButton = () => {
         <Link
             href="/wiki"
             target="_blank"
-            className="bg-white border text-gray-500 border-gray-300 font-bold px-4 sm:px-6 py-2 sm:py-3 rounded-lg shadow-lg text-base sm:text-lg hover:opacity-50 transition-opacity select-none flex items-center justify-center min-w-[120px] sm:min-w-[140px]"
+            className="bg-white border text-gray-500 border-gray-300 font-bold px-4 sm:px-6 py-2 sm:py-3 rounded-lg shadow-lg text-base sm:text-lg hover:opacity-50 transition-opacity select-none flex items-center justify-center min-w-fit"
         >
             <Flex gapX="3">
                 <MdMenuBook

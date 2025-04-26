@@ -32,8 +32,8 @@ const Home = () => {
                     traceability through document structure visualization.
                 </h2>
                 <Flex gapX="5">
-                    <GetStartedButton />
                     <WikiButton />
+                    <GetStartedButton />
                 </Flex>
             </Flex>
             <Footer />
