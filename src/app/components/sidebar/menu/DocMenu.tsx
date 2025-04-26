@@ -39,8 +39,8 @@ const DocMenu = ({ projectId, documentId, title }: DocMenuProps) => {
         <SidebarMenuSubItem>
             <SidebarMenuSubButton
                 asChild
-                className={`hover:bg-gray-200 ${
-                    isSelected ? "bg-gray-200" : ""
+                className={`hover:bg-neutral-200 ${
+                    isSelected ? "bg-neutral-200" : ""
                 }`}
                 onClick={() => selectDocument(documentId)}
             >
