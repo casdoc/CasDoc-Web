@@ -53,7 +53,7 @@ const ProjectMenu = ({ name, projectId }: ProjectMenuProps) => {
                 <CollapsibleTrigger asChild className="w-full group/chevron">
                     <SidebarMenuButton
                         asChild
-                        className=" hover:bg-gray-200 hover:cursor-pointer"
+                        className=" hover:bg-neutral-200 hover:cursor-pointer"
                         onClick={() => selectProject(projectId)}
                     >
                         <div>
@@ -66,7 +66,7 @@ const ProjectMenu = ({ name, projectId }: ProjectMenuProps) => {
                             <div className="ml-auto flex items-center gap-1">
                                 <Plus
                                     onClick={handleAddDocument}
-                                    className="hover:bg-gray-300 rounded-md w-6 h-6 p-1"
+                                    className="hover:bg-neutral-300 rounded-md w-6 h-6 p-1"
                                 />
                                 <DropDownMenu
                                     dropdownItems={dropdownItems}
