@@ -31,7 +31,12 @@ const Home = () => {
                     <br className="hidden sm:block" />
                     traceability through document structure visualization.
                 </h2>
-                <Flex gapX="5">
+                <Flex
+                    direction="column"
+                    gapX="5"
+                    gapY="2"
+                    className="md:flex-row"
+                >
                     <WikiButton />
                     <GetStartedButton />
                 </Flex>
