@@ -8,16 +8,24 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import { Flex } from "@radix-ui/themes";
+import { useState } from "react";
 
 const SignOutButton = ({
     open,
     setOpen,
-    handleSignOut,
+    signOut,
 }: {
     open: boolean;
     setOpen: (open: boolean) => void;
-    handleSignOut: () => void;
+    signOut: () => void;
 }) => {
+    const [onSignOut, setOnSignOut] = useState(false);
+
+    const handleSignOut = () => {
+        signOut();
+        setOnSignOut(true);
+    };
+
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger>
@@ -46,7 +54,7 @@ const SignOutButton = ({
                             className="w-2/3 hover:bg-gray-200"
                             onClick={handleSignOut}
                         >
-                            Sign Out
+                            {onSignOut ? "Processing..." : "Sign Out"}
                         </Button>
                         <Button
                             variant="outline"

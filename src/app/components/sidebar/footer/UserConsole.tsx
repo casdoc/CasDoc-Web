@@ -73,7 +73,7 @@ const UserConsole = () => {
                 <SignOutButton
                     open={openSignOut}
                     setOpen={setOpenSignOut}
-                    handleSignOut={handleSignOut}
+                    signOut={handleSignOut}
                 />
             )}
         </div>
