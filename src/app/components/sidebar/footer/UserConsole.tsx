@@ -1,15 +1,15 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { LogOut } from "lucide-react";
 import { useEffect, useState } from "react";
 import supabase from "@/lib/supabase";
 import { useRouter } from "next/router";
+import SignOutButton from "./SignOutButton";
 
 const UserConsole = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [userName, setUserName] = useState("User");
     const [userEmail, setUserEmail] = useState("user@gmail.com");
     const [userAvatar, setUserAvatar] = useState("/user-avatar.png");
+    const [openSignOut, setOpenSignOut] = useState(false);
     const router = useRouter();
 
     useEffect(() => {
@@ -21,7 +21,7 @@ const UserConsole = () => {
             } = await supabase.auth.getUser();
             if (mounted && user) {
                 setIsLoggedIn(true);
-                setUserName(user.user_metadata?.name || "User");
+                setUserName(user.user_metadata?.name || "Guest");
                 setUserEmail(user.email || "user@email.com");
                 setUserAvatar(
                     user.user_metadata?.avatar_url || "/user-avatar.png"
@@ -70,14 +70,11 @@ const UserConsole = () => {
                 </div>
             </div>
             {isLoggedIn && (
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    className="text-muted-foreground hover:text-red-500"
-                    onClick={handleSignOut}
-                >
-                    <LogOut className="h-4 w-4" />
-                </Button>
+                <SignOutButton
+                    open={openSignOut}
+                    setOpen={setOpenSignOut}
+                    handleSignOut={handleSignOut}
+                />
             )}
         </div>
     );
