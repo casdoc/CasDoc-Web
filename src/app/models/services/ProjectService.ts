@@ -103,7 +103,7 @@ export class ProjectService {
     static async fetchDocumentsByProjectId(
         projectId: string
     ): Promise<Document[] | undefined> {
-        if (projectId === "") return [];
+        if (!projectId) return [];
         try {
             const {
                 data: { session },

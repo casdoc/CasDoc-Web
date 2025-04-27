@@ -38,10 +38,7 @@ export const useProjectViewModel = (): ProjectViewModel => {
     const [selectedDocumentId, setSelectedDocumentId] = useState<string | null>(
         null
     );
-    const { data: documents } = useDocumentsQuery(
-        selectedProjectId || "",
-        !isLoadingProjects
-    );
+    const { data: documents } = useDocumentsQuery(selectedProjectId || "");
     const [isProjectDialogOpen, setIsProjectDialogOpen] = useState(false);
     const [isDocumentDialogOpen, setIsDocumentDialogOpen] = useState(false);
     const [editingProject, setEditingProject] = useState<Project | null>(null);
@@ -49,7 +46,33 @@ export const useProjectViewModel = (): ProjectViewModel => {
         null
     );
 
-    // console.debug("documents", documents);
+    console.debug("documents", documents);
+    console.debug("projects", projects);
+    console.debug("selectedProjectId", selectedProjectId);
+    useEffect(() => {
+        const localSelectedDoc = DocSelectedService.getSelectedDoc();
+        if (localSelectedDoc === "") {
+            console.debug("localSelectedDoc is empty");
+            if (projects && projects.length > 0 && projects[0].id) {
+                console.debug("projects is not empty");
+                // console.debug("selectProjectId", projects[0].id);
+                setSelectedProjectId(projects[0].id);
+                // Use the first project to get documents
+                // setSelectedProjectId(projects[0].id);
+
+                // console.debug("selectedProjectId", selectedProjectId);
+                if (documents && documents.length > 0) {
+                    setSelectedDocumentId(documents[0]?.id || null);
+                    setEditingDocument(documents[0] || null);
+                    console.debug("selectDocument", selectedDocumentId);
+                }
+            }
+        } else if (selectedDocumentId !== localSelectedDoc) {
+            console.debug("loclalSelectedDoc is not empty");
+            // setSelectedProjectId(projects[0].id);
+            setSelectedDocumentId(localSelectedDoc);
+        }
+    }, [projects, documents, selectedDocumentId, selectedProjectId]);
 
     // Load projects from localStorage and set default content
     useEffect(() => {
@@ -99,29 +122,6 @@ export const useProjectViewModel = (): ProjectViewModel => {
     const selectProject = useCallback((projectId: string) => {
         setSelectedProjectId(projectId);
     }, []);
-
-    useEffect(() => {
-        const localSelectedDoc = DocSelectedService.getSelectedDoc();
-        if (localSelectedDoc === "") {
-            console.debug("localSelectedDoc is empty");
-            if (projects && projects.length > 0 && projects[0].id) {
-                console.debug("projects is not empty");
-                console.debug("selectProjectId", projects[0].id);
-                setSelectedProjectId(projects[0].id);
-                // Use the first project to get documents
-                setSelectedProjectId(projects[0].id);
-                if (documents && documents.length > 0) {
-                    setSelectedDocumentId(documents[0]?.id || null);
-                    console.debug("selectDocument", selectedDocumentId);
-                }
-            }
-        } else if (selectedDocumentId !== localSelectedDoc) {
-            console.debug("loclalSelectedDoc is not empty");
-            // setSelectedProjectId(projects[0].id);
-            setSelectedDocumentId(localSelectedDoc);
-        }
-    }, [projects, documents, selectedDocumentId, queryClient]);
-
     const selectDocument = useCallback((documentId: string) => {
         setSelectedDocumentId(documentId);
         DocSelectedService.setSelectedDoc(documentId);

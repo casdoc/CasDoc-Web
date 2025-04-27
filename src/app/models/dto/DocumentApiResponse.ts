@@ -26,10 +26,19 @@ export type DocumentResponse = z.infer<typeof DocumentResponseSchema>;
 
 export const DocumentBlockContentSchema = z.record(z.string(), z.any());
 
+export type DocumentBlockContent = z.infer<typeof DocumentBlockContentSchema>;
+
 export const DocumentBlockSchema = z.object({
     id: z.number(),
     content: DocumentBlockContentSchema,
 });
+
+export const BlocksResponseSchema = z.object({
+    status: z.number().int(),
+    message: z.string(),
+    data: DocumentBlockSchema,
+});
+export type BlockResponse = z.infer<typeof BlocksResponseSchema>;
 
 export const DocumentBlocksResponseSchema = z.object({
     status: z.number(),
@@ -66,4 +75,14 @@ export const DocumentBlocksResponseSchema = z.object({
 
 export type DocumentBlocksResponse = z.infer<
     typeof DocumentBlocksResponseSchema
+>;
+
+// Add schema for the position update response
+export const UpdateBlockPositionsResponseSchema = z.object({
+    status: z.number().int(),
+    message: z.string(),
+    data: z.boolean(), // Assuming the API returns true on success
+});
+export type UpdateBlockPositionsResponse = z.infer<
+    typeof UpdateBlockPositionsResponseSchema
 >;

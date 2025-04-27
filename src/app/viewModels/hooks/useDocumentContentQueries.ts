@@ -1,6 +1,39 @@
 import { useQuery, useQueries } from "@tanstack/react-query";
 import { DocumentService } from "../../models/services/DocumentService";
-import { DocumentContent } from "@/app/models/types/DocumentContent";
+import {
+    DocumentBlockContent,
+    DocumentBlocksResponse,
+} from "@/app/models/dto/DocumentApiResponse";
+
+// Replace inner id with outer id
+const transformContent = (pageData: DocumentBlocksResponse | undefined) => {
+    if (!pageData) return pageData;
+    const blockPostList: number[] = [];
+    const transformedContent = pageData.data.content.map((item) => {
+        if (item.content && item.content.attrs) {
+            blockPostList.push(item.id);
+            return {
+                ...item,
+                content: {
+                    ...item.content,
+                    attrs: {
+                        ...item.content.attrs,
+                        id: item.id,
+                    },
+                },
+            };
+        }
+        return item;
+    });
+
+    return {
+        ...pageData,
+        data: {
+            ...pageData.data,
+            content: transformedContent,
+        },
+    };
+};
 
 export const useDocumentContentQueries = (
     documentId: string,
@@ -22,7 +55,15 @@ export const useDocumentContentQueries = (
                 );
             }
 
-            return firstPage;
+            // Transform the content
+            const transformedPage = transformContent(firstPage);
+            if (!transformedPage) {
+                throw new Error(
+                    `Failed to transform initial content for document ${documentId}`
+                );
+            }
+
+            return transformedPage.data;
         },
         enabled: isEnabled && !!documentId,
         staleTime: 5 * 60 * 1000, // 5 minutes
@@ -35,7 +76,7 @@ export const useDocumentContentQueries = (
                 ? initialQuery.data.totalPages - 1
                 : 0,
         }).map((_, index) => ({
-            queryKey: ["documentContent", documentId],
+            queryKey: ["documentContent", documentId, index + 1],
             queryFn: async () => {
                 const pageContent = await DocumentService.fetchDocumentContent(
                     documentId,
@@ -51,7 +92,14 @@ export const useDocumentContentQueries = (
                     );
                 }
 
-                return pageContent;
+                // Transform the content
+                const transformedPage = transformContent(pageContent);
+                if (!transformedPage) {
+                    throw new Error(
+                        `Failed to transform initial content for document ${documentId}`
+                    );
+                }
+                return transformedPage.data;
             },
             enabled:
                 !!initialQuery.data?.totalPages && isEnabled && !!documentId,
@@ -68,7 +116,7 @@ export const useDocumentContentQueries = (
         initialQuery.error || pageQueries.find((query) => query.error)?.error;
 
     // Combine all content when everything is loaded
-    let allContent: DocumentContent[] = [];
+    let allContent: DocumentBlockContent[] = [];
     if (initialQuery.data && !isLoading && !isError) {
         allContent = [
             ...initialQuery.data.content.flatMap((block) => block.content),

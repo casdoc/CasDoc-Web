@@ -20,8 +20,6 @@ const DocView = () => {
     );
     // Initialize editor only when document is available
     const { editor } = useBlockEditor({
-        // document: document ?? undefined, // Pass undefined if document is null
-        // docContent: docContent?.allContent,
         documentId: selectedDocumentId || "",
         updateDocument,
     });
