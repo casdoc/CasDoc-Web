@@ -7,7 +7,8 @@ interface LayoutedElementReturn {
 }
 
 export const getLayoutedElements = (
-    nodes: Node[],
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    nodes: any[],
     structuralEdges: Edge[],
     direction = "LR",
     nodeWidth: number,
@@ -19,7 +20,8 @@ export const getLayoutedElements = (
     dagreGraph.setGraph({ rankdir: direction });
 
     nodes.forEach((node) => {
-        dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
+        const height = node.data.type.startsWith("template") ? 12 : nodeHeight;
+        dagreGraph.setNode(node.id, { width: nodeWidth, height: height });
     });
 
     structuralEdges.forEach((edge) => {

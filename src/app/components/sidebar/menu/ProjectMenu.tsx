@@ -10,6 +10,11 @@ import {
 import { useProjectContext } from "@/app/viewModels/context/ProjectContext";
 import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
 import { CollapsibleTrigger } from "@radix-ui/react-collapsible";
+import { useDocumentsQuery } from "@/app/viewModels/hooks/useDocumentsQuery";
+import { useDeleteProjectMutation } from "@/app/viewModels/hooks/useDeleteProjectMutation";
+import { useProjectsQuery } from "@/app/viewModels/hooks/useProjectsQuery";
+
+import z from "zod";
 
 const dropdownItems = ["Edit", "Delete"];
 
@@ -20,15 +25,17 @@ interface ProjectMenuProps {
 }
 
 const ProjectMenu = ({ name, projectId }: ProjectMenuProps) => {
-    const {
-        documentsMap,
-        deleteProject,
-        selectProject,
-        openProjectDialog,
-        openDocumentDialog,
-    } = useProjectContext();
+    const { mutateAsync: deleteProjectMutation } = useDeleteProjectMutation();
+    const { selectProject, openProjectDialog, openDocumentDialog } =
+        useProjectContext();
+    const { isSuccess: isProjectsSuccess, isLoading } = useProjectsQuery();
+    const uuidSchema = z.uuid({ version: "v4" });
+    const { data: documents } = useDocumentsQuery(
+        projectId,
+        //prevent create project from being called when projectId is not valid
+        isProjectsSuccess && !uuidSchema.safeParse(projectId).success
+    );
 
-    const documents = documentsMap[projectId] ?? [];
     const [isOpen, setIsOpen] = useState(true);
 
     const handleAddDocument = (e: React.MouseEvent) => {
@@ -41,7 +48,7 @@ const ProjectMenu = ({ name, projectId }: ProjectMenuProps) => {
         e.stopPropagation();
 
         if (action === "Delete") {
-            deleteProject(projectId);
+            deleteProjectMutation(projectId);
         } else if (action === "Edit") {
             openProjectDialog(projectId);
         }
@@ -79,7 +86,7 @@ const ProjectMenu = ({ name, projectId }: ProjectMenuProps) => {
 
                 <CollapsibleContent>
                     <SidebarMenuSub className="w-11/12">
-                        {documents.filter(Boolean).map((doc, index) => (
+                        {documents?.filter(Boolean).map((doc, index) => (
                             <DocMenu
                                 key={index}
                                 projectId={projectId}

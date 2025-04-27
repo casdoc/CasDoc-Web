@@ -3,26 +3,24 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext";
 import EditPanelHeader from "./EditPanelHeader";
-import EditPanelRelationship from "./EditPanelRelationship";
+import EditPanelRelationList from "./relations/EditPanelRelationList";
 import EditPanelFields from "./EditPanelFields";
 import { JsonObject } from "@/app/models/types/JsonObject";
 import EditPanelInfo from "./EditPanelInfo";
 import EditPanelCmdHint from "./EditPanelCmdHint";
-import { useDocumentContext } from "@/app/viewModels/context/DocumentContext";
 import { useGraphContext } from "@/app/viewModels/context/GraphContext";
 import { ConnectionEdge } from "@/app/viewModels/GraphViewModel";
 
 const EditPanelView = () => {
-    const { updateEditNodeById, editNodes } = useDocumentContext();
     const { selectedNode, selectNode } = useNodeSelection();
     const {
+        attachedDocs,
+        affectedIds,
         searchTarget,
         searchSource,
-        removeConnectionEdge,
-        updateLabel,
         updateAffectedIds,
-        affectedIds,
         removeAffectedId,
+        updateNodeById,
     } = useGraphContext();
 
     const [node, setNode] = useState<JsonObject>();
@@ -92,21 +90,46 @@ const EditPanelView = () => {
 
     const findNodeById = useCallback(
         (id: string) => {
-            return editNodes.find((item) => String(item.id) === id);
+            for (const doc of attachedDocs) {
+                const node = doc.nodes.find((item) => String(item.id) === id);
+                if (node) {
+                    return node;
+                }
+            }
         },
-        [editNodes]
+        [attachedDocs]
     );
 
     useEffect(() => {
         if (selectedNode) {
             const item = findNodeById(String(selectedNode));
+            if (!item) {
+                selectNode(null);
+                return;
+            }
+            if (!item.type.startsWith("template")) {
+                setActiveSection("info");
+            }
+            if (
+                item.type.toLowerCase().endsWith("whiteboard") &&
+                activeSection === "fields"
+            ) {
+                setActiveSection("info");
+            }
             setNode(item);
             const _targetEdges = searchTarget(selectedNode);
             setTargetEdges(_targetEdges);
             const _sourceEdges = searchSource(selectedNode);
             setSourceEdges(_sourceEdges);
         }
-    }, [findNodeById, searchTarget, searchSource, selectedNode]);
+    }, [
+        findNodeById,
+        searchTarget,
+        searchSource,
+        selectedNode,
+        activeSection,
+        selectNode,
+    ]);
 
     useEffect(() => {
         setIsMounted(true);
@@ -154,7 +177,7 @@ const EditPanelView = () => {
                 config: updatedConfig,
             };
             setNode(updatedNode);
-            updateEditNodeById(updatedNode.id, { config: updatedConfig });
+            updateNodeById(updatedNode.id, { config: updatedConfig });
 
             // Update affected IDs when fields change
             if (selectedNode) {
@@ -165,7 +188,7 @@ const EditPanelView = () => {
                 updateAffectedIds(affectedTargetIds);
             }
         },
-        [node, updateEditNodeById, selectedNode, targetEdges, updateAffectedIds]
+        [node, updateNodeById, selectedNode, targetEdges, updateAffectedIds]
     );
 
     const handleAddField = () => {
@@ -189,7 +212,7 @@ const EditPanelView = () => {
         };
 
         setNode(updatedNode);
-        updateEditNodeById(updatedNode.id, { config: updatedConfig });
+        updateNodeById(updatedNode.id, { config: updatedConfig });
     };
 
     const handleRemoveField = (index: number) => {
@@ -208,7 +231,7 @@ const EditPanelView = () => {
         };
 
         setNode(updatedNode);
-        updateEditNodeById(updatedNode.id, { config: updatedConfig });
+        updateNodeById(updatedNode.id, { config: updatedConfig });
     };
 
     return (
@@ -249,7 +272,7 @@ const EditPanelView = () => {
                     {activeSection === "info" && (
                         <EditPanelInfo
                             selectedNode={selectedNode}
-                            info={node?.config.info}
+                            info={node?.config?.info}
                             handleConfigChange={handleFieldChange}
                         />
                     )}
@@ -289,12 +312,10 @@ const EditPanelView = () => {
                             </>
                         )}
                     {activeSection === "relations" && (
-                        <EditPanelRelationship
+                        <EditPanelRelationList
                             targetEdges={targetEdges}
                             sourceEdges={sourceEdges}
                             findNodeById={findNodeById}
-                            removeEdge={removeConnectionEdge}
-                            updLabel={updateLabel}
                         />
                     )}
                     <EditPanelCmdHint />

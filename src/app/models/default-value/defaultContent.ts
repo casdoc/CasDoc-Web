@@ -16,10 +16,48 @@ const defaultContent = [
         type: "topic",
         attrs: {
             documentId: "default-document",
-            id: "579a3b2f-d323-4e87-9d57-49aa5714380d",
+            id: "6091cb7c-ac87-4111-8830-dbcd813dd626",
+            level: "1",
             config: {
                 info: {
-                    name: "Data Design",
+                    name: " 1. 新增主題（Topic）",
+                    description:
+                        "在編輯區輸入「/」，會跳出命令選單。 \n選擇「新增 Topic」以建立新的主題元件（Component）。",
+                },
+            },
+        },
+    },
+    {
+        type: "template-dataSchema",
+        attrs: {
+            topicId: "root",
+            id: "2bf47ade-e294-4641-87b1-8068a45b4354",
+            config: {
+                info: {
+                    name: "Topic",
+                    type: "Component",
+                    description: "建議先新增 Topic 再新增 Template。",
+                },
+                fields: [
+                    {
+                        name: "Click me",
+                        type: "Edit",
+                        description: "點擊以編輯元件內容",
+                    },
+                ],
+                fieldKey: "description",
+            },
+        },
+    },
+    {
+        type: "topic",
+        attrs: {
+            documentId: "default-document",
+            id: "ce399f02-cb6c-46eb-9f7b-95a78d61af5f",
+            level: "1",
+            config: {
+                info: {
+                    name: "2. 選擇模板（Template）",
                     description: "",
                 },
             },
@@ -622,7 +660,8 @@ const defaultContent = [
         type: "topic",
         attrs: {
             documentId: "default-document",
-            id: "50b84d94-6212-45b7-ac2a-cfeac60d3f25",
+            id: "2a1eb040-d29e-4e69-8ff8-917667f6638d",
+            level: "1",
             config: {
                 info: {
                     name: "Enum Design",
@@ -1038,7 +1077,8 @@ const defaultContent = [
         type: "topic",
         attrs: {
             documentId: "default-document",
-            id: "ac53f925-9b35-4bf7-959a-0c41ef33111a",
+            id: "0781526d-a4aa-43b2-8db9-0f0c0711b8ad",
+            level: "1",
             config: {
                 info: {
                     name: "Store API",
@@ -1324,7 +1364,8 @@ const defaultContent = [
         type: "topic",
         attrs: {
             documentId: "default-document",
-            id: "5cc1ee8c-e7ba-4958-b6e3-828fc9677e53",
+            id: "261a0de7-e463-4ad1-95c7-60162c3c0596",
+            level: "1",
             config: {
                 info: {
                     name: "Menu API",

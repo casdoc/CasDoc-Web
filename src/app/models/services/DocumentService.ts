@@ -1,8 +1,19 @@
 import { Document } from "@/app/models/entity/Document";
 import { DocumentInput } from "@/app/models/types/DocumentInput";
 import { v4 as uuidv4 } from "uuid";
-
+import { createClient } from "@supabase/supabase-js";
+import {
+    DocumentResponse,
+    DocumentResponseSchema,
+    DocumentBlocksResponse,
+    DocumentBlocksResponseSchema,
+} from "@/app/models/dto/DocumentApiResponse";
+import { DocumentApiRequest } from "../dto/DocumentApiRequest";
 const STORAGE_KEY = "DOCUMENTS";
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
+const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export class DocumentService {
     static getAllDocuments(): Document[] {
@@ -15,8 +26,6 @@ export class DocumentService {
                 (doc: any) =>
                     new Document(
                         doc.id,
-                        new Date(doc.createdAt),
-                        new Date(doc.updatedAt),
                         doc._type,
                         doc._projectId,
                         doc._title,
@@ -30,29 +39,137 @@ export class DocumentService {
         }
     }
 
-    static getDocumentById(id: string): Document | null {
-        if (typeof window === "undefined") return null;
-        const documents = this.getAllDocuments();
-        return documents.find((doc) => doc.id === id) || null;
+    static async fetchDocumentById(id: string): Promise<Document | undefined> {
+        try {
+            const {
+                data: { session },
+                error,
+            } = await supabase.auth.getSession();
+
+            if (error || !session) {
+                throw new Error("No valid session found");
+            }
+
+            const token = session.access_token;
+            const response = await fetch(
+                `${baseUrl}/api/v1/public/documents/${id}`,
+                {
+                    method: "GET",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error("Failed to fetch document");
+            }
+
+            const result: DocumentResponse = await response.json();
+            DocumentResponseSchema.parse(result); // Validate the response
+
+            return new Document(
+                result.data.id.toString(),
+                result.data.type,
+                result.data.projectId.toString(),
+                result.data.title,
+                result.data.description ?? "",
+                [] // content will need to be filled in if your API returns it
+            );
+        } catch (error) {
+            console.error("Error fetching document from API:", error);
+            // Fallback to localStorage if API fails
+        }
     }
 
-    static createDocument(input: DocumentInput): Document | null {
-        if (typeof window === "undefined") return null;
-        const documents = this.getAllDocuments();
-        const newDocument = new Document(
-            uuidv4(),
-            new Date(),
-            new Date(),
-            input.type,
-            input.projectId,
-            input.title,
-            input.description,
-            input.content ?? []
-        );
+    static async fetchDocumentContent(
+        id: string,
+        page: number = 0,
+        size: number = 10,
+        signal?: AbortSignal
+    ): Promise<DocumentBlocksResponse | null> {
+        try {
+            const {
+                data: { session },
+                error,
+            } = await supabase.auth.getSession();
 
-        documents.push(newDocument);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(documents));
-        return newDocument;
+            if (error || !session) {
+                throw new Error("No valid session found");
+            }
+
+            const token = session.access_token;
+            const response = await fetch(
+                `${baseUrl}/api/v1/public/documents/${id}/blocks?page=${page}&size=${size}`,
+                {
+                    method: "GET",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
+                    signal,
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error("Failed to fetch document content");
+            }
+
+            const result: DocumentBlocksResponse = await response.json();
+            DocumentBlocksResponseSchema.parse(result); // Validate the response
+
+            return result;
+        } catch (error) {
+            console.error("Error fetching document content from API:", error);
+            return null;
+        }
+    }
+
+    static async createDocument(
+        input: DocumentApiRequest
+    ): Promise<Document | null> {
+        try {
+            const {
+                data: { session },
+                error,
+            } = await supabase.auth.getSession();
+
+            if (error || !session) {
+                throw new Error("No valid session found");
+            }
+
+            const token = session.access_token;
+            const response = await fetch(`${baseUrl}/api/v1/public/documents`, {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(input),
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to create document");
+            }
+
+            const result: DocumentResponse = await response.json();
+            DocumentResponseSchema.parse(result); // Validate the response
+
+            const newDocument = new Document(
+                result.data.id.toString(),
+                result.data.type,
+                result.data.projectId.toString(),
+                result.data.title,
+                result.data.description ?? "",
+                []
+            );
+
+            return newDocument;
+        } catch (error) {
+            console.error("Error creating document via API:", error);
+            return null;
+        }
     }
 
     static saveDocument(document: Document): void {
@@ -68,23 +185,90 @@ export class DocumentService {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(documents));
     }
 
-    static updateDocument(documentId: string, update: DocumentInput): void {
-        if (typeof window === "undefined") return;
-        const documents = this.getAllDocuments();
-        const index = documents.findIndex((doc) => doc.id === documentId);
-        if (index !== -1) {
-            const document = documents[index];
-            document.title = update.title;
-            document.description = update.description;
-            document.type = update.type;
-            document._updatedAt = new Date();
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(documents));
+    static async updateDocument(
+        documentId: string,
+        documentInput: DocumentApiRequest,
+        signal?: AbortSignal
+    ): Promise<Document | null> {
+        try {
+            const {
+                data: { session },
+                error,
+            } = await supabase.auth.getSession();
+
+            if (error || !session) {
+                throw new Error("No valid session found");
+            }
+
+            const token = session.access_token;
+            const response = await fetch(
+                `${baseUrl}/api/v1/public/documents/${documentId}`,
+                {
+                    method: "PUT",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(documentInput),
+                    signal,
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error("Failed to update document");
+            }
+
+            const result: DocumentResponse = await response.json();
+            DocumentResponseSchema.parse(result); // Validate the response
+
+            return new Document(
+                result.data.id.toString(),
+                result.data.type,
+                result.data.projectId.toString(),
+                result.data.title,
+                result.data.description ?? "",
+                [] // content will need to be filled in if your API returns it
+            );
+        } catch (error) {
+            console.error("Error updating document via API:", error);
+            return null;
         }
     }
 
-    static deleteDocument(id: string): void {
-        if (typeof window === "undefined") return;
-        const documents = this.getAllDocuments().filter((doc) => doc.id !== id);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(documents));
+    static async deleteDocument(
+        id: string,
+        signal?: AbortSignal
+    ): Promise<void> {
+        try {
+            const {
+                data: { session },
+                error,
+            } = await supabase.auth.getSession();
+
+            if (error || !session) {
+                throw new Error("No valid session found");
+            }
+
+            const token = session.access_token;
+            const response = await fetch(
+                `${baseUrl}/api/v1/public/documents/${id}`,
+                {
+                    method: "DELETE",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
+                    signal,
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error("Failed to delete document");
+            }
+        } catch (error) {
+            console.error("Error deleting document via API:", error);
+
+            throw error;
+        }
     }
 }

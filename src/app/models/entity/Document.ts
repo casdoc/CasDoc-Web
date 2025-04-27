@@ -11,15 +11,13 @@ export class Document extends BaseEntity {
 
     constructor(
         id: string,
-        createdAt: Date,
-        updatedAt: Date,
         type: DocumentType,
         projectId: string,
         title: string,
         description: string,
         content: JsonObject[]
     ) {
-        super(id, createdAt, updatedAt);
+        super(id);
         this._type = type;
         this._projectId = projectId;
         this._title = title;
@@ -33,7 +31,6 @@ export class Document extends BaseEntity {
 
     set type(value: DocumentType) {
         this._type = value;
-        this._updatedAt = new Date();
     }
 
     get projectId(): string {
@@ -45,7 +42,6 @@ export class Document extends BaseEntity {
             throw new Error("Project ID cannot be empty.");
         }
         this._projectId = value;
-        this._updatedAt = new Date();
     }
 
     get title(): string {
@@ -57,7 +53,6 @@ export class Document extends BaseEntity {
             throw new Error("Title cannot be empty.");
         }
         this._title = value;
-        this._updatedAt = new Date();
     }
 
     get description(): string {
@@ -66,23 +61,12 @@ export class Document extends BaseEntity {
 
     set description(value: string) {
         this._description = value;
-        this._updatedAt = new Date();
     }
 
     get content(): JsonObject[] {
         return this._content;
     }
-
     set content(value: JsonObject[]) {
-        if (!Array.isArray(value)) {
-            throw new Error("Content must be an array of JsonObject.");
-        }
         this._content = value;
-        this._updatedAt = new Date();
     }
-
-    getTopicById = (id: string) => {
-        const topic = this._content.find((item) => item.attrs?.id === id);
-        return topic?.attrs;
-    };
 }

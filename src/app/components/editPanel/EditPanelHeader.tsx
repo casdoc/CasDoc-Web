@@ -1,5 +1,3 @@
-import React from "react";
-
 interface EditPanelHeaderProps {
     type: string;
     onClose: () => void;
@@ -16,10 +14,12 @@ const EditPanelHeader = ({
     const tabs: { key: string; label: string }[] = [
         { key: "info", label: "Info" },
         ...(type.startsWith("template")
-            ? [
-                  { key: "fields", label: "Fields" },
-                  { key: "relations", label: "Relations" },
-              ]
+            ? type.toLowerCase().endsWith("whiteboard")
+                ? [{ key: "relations", label: "Relations" }]
+                : [
+                      { key: "fields", label: "Fields" },
+                      { key: "relations", label: "Relations" },
+                  ]
             : []),
     ];
 

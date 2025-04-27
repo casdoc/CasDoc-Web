@@ -2,18 +2,27 @@ import DocMode from "@/app/models/enum/DocMode";
 import { useDocModeViewModel } from "@/app/viewModels/DocModeViewModel";
 import EditorHeader from "@/app/components/doc/BlockEditor/EditorHeader";
 import { useBlockEditor } from "@/app/viewModels/useBlockEditor";
-import { BlockEditor } from "@/app/components/doc/BlockEditor/BlockEditor";
+import BlockEditor from "@/app/components/doc/BlockEditor/BlockEditor";
 import GraphView from "../flow/GraphView";
 import { ReactFlowProvider } from "@xyflow/react";
 import { useState, useEffect, useRef } from "react";
-import { useDocumentContext } from "@/app/viewModels/context/DocumentContext";
+import { useGraphContext } from "@/app/viewModels/context/GraphContext";
+import { useProjectContext } from "@/app/viewModels/context/ProjectContext";
+import { useDocumentQuery } from "@/app/viewModels/hooks/useDocumentQuery";
 import { useChatContext } from "@/app/viewModels/context/ChatContext";
 import ChatView from "../chat/ChatView";
 
 const DocView = () => {
     const { mode, setDocMode } = useDocModeViewModel();
-    const { document, graphNodes, updateDocument } = useDocumentContext();
-    const { editor } = useBlockEditor({ document, updateDocument });
+    const { selectedDocumentId } = useProjectContext();
+    const { data: document } = useDocumentQuery(
+        selectedDocumentId,
+        selectedDocumentId !== null
+    );
+    // Initialize editor only when document is available
+    const { editor, currentStatus } = useBlockEditor({
+        documentId: selectedDocumentId || "",
+    });
     const [splitWidth, setSplitWidth] = useState(50);
     const isResizing = useRef(false);
     const { isOpen } = useChatContext();
@@ -39,8 +48,10 @@ const DocView = () => {
         };
     }, []);
 
-    if (!editor || !document) {
-        return null;
+    // Render loading or null state if document or editor is not ready
+    if (!document || !editor) {
+        // You might want a more sophisticated loading indicator
+        return <div>Loading Document...</div>;
     }
 
     return (
@@ -52,6 +63,7 @@ const DocView = () => {
                 mode={mode as DocMode}
                 setDocMode={setDocMode}
                 editor={editor}
+                editorStatus={currentStatus}
             />
             <div className="flex flex-row overflow-y-auto h-full">
                 <div
@@ -91,11 +103,7 @@ const DocView = () => {
                     }}
                 >
                     <ReactFlowProvider>
-                        {isOpen ? (
-                            <ChatView />
-                        ) : (
-                            <GraphView docMode={mode} graphNodes={graphNodes} />
-                        )}
+                        {isOpen ? <ChatView /> : <GraphView docMode={mode} />}
                     </ReactFlowProvider>
                 </div>
             </div>

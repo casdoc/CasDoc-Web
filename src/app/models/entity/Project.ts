@@ -4,14 +4,8 @@ export class Project extends BaseEntity {
     private _name: string;
     private _description: string;
 
-    constructor(
-        id: string,
-        createdAt: Date,
-        updatedAt: Date,
-        name: string,
-        description: string
-    ) {
-        super(id, createdAt, updatedAt);
+    constructor(id: string, name: string, description: string) {
+        super(id);
         this._name = name;
         this._description = description;
     }
@@ -25,7 +19,6 @@ export class Project extends BaseEntity {
             throw new Error("Name cannot be empty.");
         }
         this._name = value;
-        this._updatedAt = new Date();
     }
 
     get description(): string {
@@ -37,6 +30,5 @@ export class Project extends BaseEntity {
             throw new Error("Description is too long (max 500 characters).");
         }
         this._description = value;
-        this._updatedAt = new Date();
     }
 }

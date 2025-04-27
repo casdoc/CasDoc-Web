@@ -1,28 +1,23 @@
-"use server";
+"use client";
 
-import { useState } from "react";
-import LogoButton from "@/app/components/LogoButton";
-import GuideButton from "@/app/components/guide/GuideButton";
-import StartButton from "@/app/components/home/StartButton";
+import LogoButton from "@/app/components/home/LogoButton";
+// import GuideButton from "@/app/components/guide/GuideButton";
 import Footer from "@/app/components/home/Footer";
+import GetStartedButton from "@/app/components/home/GetStartedButton";
+import { useState } from "react";
 import "@/app/globals.css";
 
 const Home = () => {
     const [loading, setLoading] = useState(false);
-
-    const handleClick = () => {
-        setLoading(true);
-    };
-
     return (
         <div className="flex flex-col h-dvh bg-gray-100 font-sans">
             <div className="relative flex-1 flex flex-col items-center justify-center px-4 text-center">
-                <div className="absolute top-4 left-0 md:left-4">
+                <div className="mb-12 mr-5">
                     <LogoButton />
                 </div>
-                <div className="absolute top-4 right-4 md:right-8">
+                {/* <div className="absolute top-4 right-4 md:right-8">
                     <GuideButton />
-                </div>
+                </div> */}
                 <h1 className="text-4xl sm:text-6xl font-bold mb-6 sm:mb-8 text-gray-800 select-none">
                     Trace text relationships.
                 </h1>
@@ -31,7 +26,10 @@ const Home = () => {
                     <br className="hidden sm:block" />
                     traceability through document structure visualization.
                 </h2>
-                <StartButton handleClick={handleClick} loading={loading} />
+                <GetStartedButton
+                    loading={loading}
+                    handleClick={() => setLoading(true)}
+                />
             </div>
             <Footer />
         </div>

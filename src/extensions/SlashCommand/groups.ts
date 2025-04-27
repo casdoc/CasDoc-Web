@@ -21,9 +21,66 @@ export const GROUPS: Group[] = [
                             attrs: {
                                 documentId: "default-document",
                                 id: uuidv4(),
+                                level: "1",
                                 config: {
                                     info: {
                                         name: "Topic",
+                                        description:
+                                            "This is a topic description",
+                                    },
+                                },
+                            },
+                        })
+                        .run();
+                },
+            },
+            {
+                name: "topic2",
+                label: "Topic2",
+                iconName: "SquareLibrary",
+                aliases: ["topic"],
+                description: "topic component",
+                action: (editor) => {
+                    editor
+                        .chain()
+                        .focus()
+                        .insertContent({
+                            type: "topic",
+                            attrs: {
+                                documentId: "default-document",
+                                id: uuidv4(),
+                                level: "2",
+                                config: {
+                                    info: {
+                                        name: "Topic 2",
+                                        description:
+                                            "This is a topic description",
+                                    },
+                                },
+                            },
+                        })
+                        .run();
+                },
+            },
+            {
+                name: "topic3",
+                label: "Topic3",
+                iconName: "SquareLibrary",
+                aliases: ["topic"],
+                description: "topic component",
+                action: (editor) => {
+                    editor
+                        .chain()
+                        .focus()
+                        .insertContent({
+                            type: "topic",
+                            attrs: {
+                                documentId: "default-document",
+                                id: uuidv4(),
+                                level: "3",
+                                config: {
+                                    info: {
+                                        name: "Topic 3",
                                         description:
                                             "This is a topic description",
                                     },
@@ -39,6 +96,34 @@ export const GROUPS: Group[] = [
         name: "template",
         title: "Template",
         commands: [
+            {
+                name: "whiteBoard",
+                label: "White Board",
+                iconName: "SquareLibrary",
+                aliases: ["whiteBoard"],
+                description: "white board component of templates",
+                action: (editor) => {
+                    editor
+                        .chain()
+                        .focus()
+                        .insertContent({
+                            type: "template-whiteBoard",
+                            attrs: {
+                                topicId: "root",
+                                id: uuidv4(),
+                                config: {
+                                    info: {
+                                        name: "white board",
+                                        description:
+                                            "This is a white board description",
+                                    },
+                                    fieldKey: "description",
+                                },
+                            },
+                        })
+                        .run();
+                },
+            },
             {
                 name: "dataSchema",
                 label: "Data Schema",

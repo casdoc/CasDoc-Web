@@ -2,7 +2,6 @@
 
 import { useCallback } from "react";
 import DocMode from "@/app/models/enum/DocMode";
-import GuideButton from "@/app/components/guide/GuideButton";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,14 +21,22 @@ import {
     SquareSplitHorizontal,
 } from "lucide-react";
 import { useChatContext } from "@/app/viewModels/context/ChatContext";
+import SaveStatusBadge from "./SaveStatusBadge"; // Import the new component
+import SaveStatus from "@/app/models/enum/SaveStatus";
 
 interface EditorHeaderProps {
     mode: DocMode;
     setDocMode: (newMode: DocMode) => void;
     editor: Editor;
+    editorStatus: () => SaveStatus;
 }
 
-const EditorHeader = ({ mode, setDocMode, editor }: EditorHeaderProps) => {
+const EditorHeader = ({
+    mode,
+    setDocMode,
+    editor,
+    editorStatus,
+}: EditorHeaderProps) => {
     const handleChangeView = useCallback(
         (newMode: DocMode) => {
             setDocMode(newMode);
@@ -111,10 +118,18 @@ const EditorHeader = ({ mode, setDocMode, editor }: EditorHeaderProps) => {
                         </TooltipContent>
                     </Tooltip>
                 </TooltipProvider>
+                {/* Render the SaveStatusBadge without passing status */}
+                <div className="ml-2">
+                    {" "}
+                    {/* Add some margin */}
+                    <SaveStatusBadge
+                        editorStatus={editorStatus} // Pass the function to get status
+                    />
+                </div>
             </div>
 
             {/* Right side with import button and guide button */}
-            <div className="flex items-center gap-x-4">
+            <div className="flex items-center gap-x-5 mr-3">
                 <TooltipProvider>
                     <Button
                         variant="default"
@@ -149,7 +164,7 @@ const EditorHeader = ({ mode, setDocMode, editor }: EditorHeaderProps) => {
                         </TooltipContent>
                     </Tooltip>
 
-                    <Tooltip>
+                    {/* <Tooltip>
                         <TooltipTrigger asChild>
                             <div className="flex items-center justify-center">
                                 <GuideButton />
@@ -158,7 +173,7 @@ const EditorHeader = ({ mode, setDocMode, editor }: EditorHeaderProps) => {
                         <TooltipContent>
                             <p>Guide</p>
                         </TooltipContent>
-                    </Tooltip>
+                    </Tooltip> */}
                 </TooltipProvider>
             </div>
         </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useState } from "react";
 import {
     ReactFlow,
     useNodesState,
@@ -10,7 +10,7 @@ import {
     Background,
     MarkerType,
     BackgroundVariant,
-    MiniMap,
+    // MiniMap,
     ConnectionMode,
     ConnectionLineType,
     useReactFlow,
@@ -29,13 +29,13 @@ import {
 } from "./utils/converter";
 // import { FlowSettingPanel } from "./setting-panel/FlowSettingPanel";
 import CustomNode from "./components/CustomNode";
-import { GraphNode } from "@/app/viewModels/useDocument";
 import DocMode from "@/app/models/enum/DocMode";
 import { FlowScrollModeButton } from "./setting-panel/FlowScrollModeButton";
 import ToastManager from "@/app/viewModels/ToastManager";
 import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext";
 import CustomEdge from "./components/CustomEdge";
 import { useGraphContext } from "@/app/viewModels/context/GraphContext";
+import { GraphAttachButton } from "./graph-attach/GraphAttachButton";
 
 const nodeTypes = { custom: CustomNode };
 const edgeTypes = {
@@ -56,22 +56,23 @@ const defaultEdgeOptions = {
 
 interface GraphViewProps {
     docMode: DocMode | undefined;
-    graphNodes: GraphNode[];
 }
 
-const GraphView = ({ docMode, graphNodes }: GraphViewProps) => {
+const GraphView = ({ docMode }: GraphViewProps) => {
     // const [colorMode, setColorMode] = useState<"light" | "dark">("light");
     // const [selectedLayout, setSelectedLayout] = useState("LR");
     const [scrollMode, setScrollMode] = useState<"zoom" | "drag">("drag");
-    const nodeWidth = 242;
-    const nodeHeight = 12;
+    const nodeWidth = 232;
+    const nodeHeight = 36;
 
     const {
         connectionEdges,
+        affectedIds,
         updConnectionEdges,
         removeConnectionEdge,
-        affectedIds,
+        parseAttachedDocsToNodes,
     } = useGraphContext();
+
     const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
     const { fitView, setCenter } = useReactFlow();
@@ -80,6 +81,7 @@ const GraphView = ({ docMode, graphNodes }: GraphViewProps) => {
     const store = useStoreApi();
 
     useEffect(() => {
+        const graphNodes = parseAttachedDocsToNodes();
         if (!graphNodes || graphNodes.length === 0) {
             setNodes([]);
             return;
@@ -98,18 +100,24 @@ const GraphView = ({ docMode, graphNodes }: GraphViewProps) => {
         const tmpConnectionEdges = connectConnectionEdges(connectionEdges);
         setNodes(layoutedNodes);
         setEdges([...newStructuralEdges, ...tmpConnectionEdges]);
-    }, [graphNodes, connectionEdges, affectedIds, setNodes, setEdges]);
+    }, [
+        connectionEdges,
+        affectedIds,
+        setNodes,
+        setEdges,
+        parseAttachedDocsToNodes,
+    ]);
 
     useEffect(() => {
         fitView({ duration: 500 });
-    }, [docMode, fitView]);
+    }, [docMode, fitView, nodes.length]);
 
     const onConnect = useCallback(
         (params: Connection) => {
             const connectionEdge = {
                 source: params.source,
                 target: params.target,
-                data: { bidirectional: false },
+                data: { bidirectional: false, offset: 50 },
             };
             updConnectionEdges(connectionEdge);
             setEdges((eds) => addEdge(params, eds));
@@ -206,8 +214,9 @@ const GraphView = ({ docMode, graphNodes }: GraphViewProps) => {
                     colorMode={colorMode}
                     setColorMode={setColorMode}
                 /> */}
+                <GraphAttachButton />
                 <ZoomSlider position="top-left" />
-                <MiniMap />
+                {/* <MiniMap /> */}
                 {ToastComponent}
             </ReactFlow>
             <FlowScrollModeButton
@@ -218,4 +227,4 @@ const GraphView = ({ docMode, graphNodes }: GraphViewProps) => {
     );
 };
 
-export default GraphView;
+export default memo(GraphView);

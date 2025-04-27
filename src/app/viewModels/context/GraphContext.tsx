@@ -4,9 +4,10 @@ import { GraphViewModel, useGraphViewModel } from "../GraphViewModel";
 const GraphContext = createContext<GraphViewModel | undefined>(undefined);
 
 export function GraphProvider({ children }: { children: ReactNode }) {
-    const documentViewModel = useGraphViewModel();
+    const graphViewModel = useGraphViewModel();
+    graphViewModel.initGraphNodes();
     return (
-        <GraphContext.Provider value={documentViewModel}>
+        <GraphContext.Provider value={graphViewModel}>
             {children}
         </GraphContext.Provider>
     );

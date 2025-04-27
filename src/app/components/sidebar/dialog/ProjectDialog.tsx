@@ -10,16 +10,18 @@ import {
     Dialog,
 } from "@/components/ui/dialog";
 import { useProjectContext } from "@/app/viewModels/context/ProjectContext";
-import { ProjectInput } from "@/app/models/types/ProjectInput";
+import { useCreateProjectMutation } from "@/app/viewModels/hooks/useCreateProjectMutation";
+import { useUpdateProjectMutation } from "@/app/viewModels/hooks/useUpdateProjectMutation";
 
 const ProjectDialog = () => {
+    const { mutateAsync: createProjectMutation } = useCreateProjectMutation();
+    const { mutateAsync: updateProjectMutation } = useUpdateProjectMutation();
     const {
         editingProject: project,
         isProjectDialogOpen,
-        createProject,
-        editProject,
         closeProjectDialog,
     } = useProjectContext();
+
     const handleSaveProject = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
@@ -29,17 +31,13 @@ const ProjectDialog = () => {
         const description =
             formData.get("description")?.toString().trim() ?? "";
 
-        const input: ProjectInput = {
-            name,
-            description,
-        };
-
         if (!project) {
-            // Create project
-            createProject(input);
+            createProjectMutation({ name, description });
         } else {
-            // Update project
-            editProject(project.id, input);
+            updateProjectMutation({
+                projectId: project.id,
+                projectInput: { name, description },
+            });
         }
         closeProjectDialog();
     };
@@ -49,9 +47,13 @@ const ProjectDialog = () => {
             <DialogContent>
                 <form onSubmit={handleSaveProject}>
                     <DialogHeader>
-                        <DialogTitle>Edit Document</DialogTitle>
+                        <DialogTitle>
+                            {!project ? "Create Project" : "Edit Project"}
+                        </DialogTitle>
                         <DialogDescription>
-                            Edit the document details.
+                            {!project
+                                ? "Fill in the details to create a new project."
+                                : "Edit the project details."}
                         </DialogDescription>
                     </DialogHeader>
 
@@ -65,7 +67,7 @@ const ProjectDialog = () => {
                                 defaultValue={
                                     project?.name ?? "Untitled Project"
                                 }
-                                placeholder="Enter project title"
+                                placeholder="Enter project name"
                                 className="col-span-3"
                             />
                         </div>

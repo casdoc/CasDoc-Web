@@ -1,83 +1,268 @@
 import { Project } from "@/app/models/entity/Project";
 import { Document } from "@/app/models/entity/Document";
-import { DocumentService } from "./DocumentService";
-import { ProjectInput } from "@/app/models/types/ProjectInput";
-import { v4 as uuidv4 } from "uuid";
+import { createClient } from "@supabase/supabase-js";
+import {
+    ProjectListResponse,
+    ProjectListResponseSchema,
+    ProjectResponse,
+    ProjectResponseSchema,
+} from "@/app/models/dto/ProjectApiResponse";
+import { ProjectApiRequest } from "../dto/ProjectApiRequest";
+import { DocumentListResponse } from "../dto/DocumentApiResponse";
 
-const STORAGE_KEY = "PROJECTS";
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
+const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export class ProjectService {
-    static getAllProjects(): Project[] {
-        if (typeof window === "undefined") return [];
-        const data = localStorage.getItem(STORAGE_KEY);
-        if (!data) return [];
+    static async fetchAllProjects(): Promise<Project[] | undefined> {
         try {
-            return JSON.parse(data).map(
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                (proj: any) =>
+            const {
+                data: { session },
+                error,
+            } = await supabase.auth.getSession();
+
+            if (error || !session) {
+                throw new Error("No valid session found");
+            }
+
+            const token = session.access_token;
+            const response = await fetch(`${baseUrl}/api/v1/public/projects`, {
+                method: "GET",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to fetch projects");
+            }
+
+            const result: ProjectListResponse = await response.json();
+
+            ProjectListResponseSchema.parse(result); // Use parse directly now
+
+            // Map API response to Project entities
+            return result.data.map(
+                (proj) =>
                     new Project(
-                        proj.id,
-                        new Date(proj._createdAt),
-                        new Date(proj._updatedAt),
-                        proj._name,
-                        proj._description
+                        proj.id.toString(),
+                        proj.name,
+                        proj.description ?? "" // Handle nullish description
                     )
             );
         } catch (error) {
-            console.error("Error parsing projects from localStorage:", error);
-            return [];
+            console.error("Error fetching projects from API:", error);
+            // Fallback to localStorage if API fails
         }
     }
 
-    static getProjectById(id: string): Project | null {
-        if (typeof window === "undefined") return null;
-        const projects = this.getAllProjects();
-        return projects.find((proj) => proj.id === id) || null;
-    }
+    static async fetchProjectById(id: string): Promise<Project | undefined> {
+        try {
+            const {
+                data: { session },
+                error,
+            } = await supabase.auth.getSession();
 
-    static getDocumentsByProjectId(projectId: string): Document[] {
-        return DocumentService.getAllDocuments().filter(
-            (doc) => doc.projectId === projectId
-        );
-    }
+            if (error || !session) {
+                throw new Error("No valid session found");
+            }
 
-    static createProject(input: ProjectInput): Project | null {
-        if (typeof window === "undefined") return null;
-        const projects = this.getAllProjects();
-        const newProject = new Project(
-            uuidv4(),
-            new Date(),
-            new Date(),
-            input.name,
-            input.description
-        );
+            const token = session.access_token;
+            const response = await fetch(
+                `${baseUrl}/api/v1/public/projects/${id}`,
+                {
+                    method: "GET",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
 
-        projects.push(newProject);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
-        return newProject;
-    }
+            if (!response.ok) {
+                throw new Error("Failed to fetch project");
+            }
 
-    static updateProject(projectId: string, update: ProjectInput): void {
-        if (typeof window === "undefined") return;
-        const projects = this.getAllProjects();
-        const index = projects.findIndex((proj) => proj.id === projectId);
-        if (index !== -1) {
-            const project = projects[index];
-            project.name = update.name;
-            project.description = update.description;
-            project._updatedAt = new Date();
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
+            const result: ProjectResponse = await response.json();
+            ProjectResponseSchema.parse(result); // Validate the response
+
+            return new Project(
+                result.data.id.toString(),
+                result.data.name,
+                result.data.description ?? "" // Handle nullish description
+            );
+        } catch (error) {
+            console.error("Error fetching project from API:", error);
+            // Fallback to localStorage if API fails
         }
     }
 
-    static deleteProject(id: string): void {
-        if (typeof window === "undefined") return;
-        // Delete all documents associated with this project
-        const docsToDelete = this.getDocumentsByProjectId(id);
-        docsToDelete.forEach((doc) => DocumentService.deleteDocument(doc.id));
+    static async fetchDocumentsByProjectId(
+        projectId: string
+    ): Promise<Document[] | undefined> {
+        if (!projectId) return [];
+        try {
+            const {
+                data: { session },
+                error,
+            } = await supabase.auth.getSession();
 
-        // Delete the project
-        const projects = this.getAllProjects().filter((proj) => proj.id !== id);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
+            if (error || !session) {
+                throw new Error("No valid session found");
+            }
+
+            const token = session.access_token;
+            const response = await fetch(
+                `${baseUrl}/api/v1/public/projects/${projectId}/documents`,
+                {
+                    method: "GET",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error("Failed to fetch documents");
+            }
+            const result: DocumentListResponse = await response.json();
+            return result.data.map(
+                (doc) =>
+                    new Document(
+                        doc.id.toString(),
+                        doc.type,
+                        projectId,
+                        doc.title,
+                        doc.description ?? "",
+                        []
+                    )
+            );
+        } catch (error) {
+            console.error("Error fetching documents from API:", error);
+            // Fallback to localStorage if API fails
+        }
+    }
+
+    static async createProject(
+        input: ProjectApiRequest
+    ): Promise<Project | undefined> {
+        try {
+            const {
+                data: { session },
+                error,
+            } = await supabase.auth.getSession();
+
+            if (error || !session) {
+                throw new Error("No valid session found");
+            }
+
+            const token = session.access_token;
+            const response = await fetch(`${baseUrl}/api/v1/public/projects`, {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(input),
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to create project");
+            }
+
+            const result: ProjectResponse = await response.json();
+            ProjectResponseSchema.parse(result); // Validate the response
+
+            return new Project(
+                result.data.id.toString(),
+                result.data.name,
+                result.data.description ?? ""
+            );
+        } catch (error) {
+            console.error("Error creating project:", error);
+        }
+    }
+
+    static async updateProject(
+        id: string,
+        input: ProjectApiRequest
+    ): Promise<Project | undefined> {
+        try {
+            const {
+                data: { session },
+                error,
+            } = await supabase.auth.getSession();
+
+            if (error || !session) {
+                throw new Error("No valid session found");
+            }
+
+            const token = session.access_token;
+            const response = await fetch(
+                `${baseUrl}/api/v1/public/projects/${id}`,
+                {
+                    method: "PUT",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(input),
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error("Failed to update project");
+            }
+
+            const result: ProjectResponse = await response.json();
+            ProjectResponseSchema.parse(result); // Validate the response
+
+            return new Project(
+                result.data.id.toString(),
+                result.data.name,
+                result.data.description ?? ""
+            );
+        } catch (error) {
+            console.error("Error updating project:", error);
+        }
+    }
+
+    static async deleteProject(
+        id: string,
+        signal?: AbortSignal
+    ): Promise<void> {
+        try {
+            const {
+                data: { session },
+                error,
+            } = await supabase.auth.getSession();
+
+            if (error || !session) {
+                throw new Error("No valid session found");
+            }
+
+            const token = session.access_token;
+            const response = await fetch(
+                `${baseUrl}/api/v1/public/projects/${id}`,
+                {
+                    method: "DELETE",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
+                    signal: signal,
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error("Failed to delete project");
+            }
+        } catch (error) {
+            console.error("Error deleting project:", error);
+        }
     }
 }

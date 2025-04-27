@@ -18,19 +18,21 @@ import {
 } from "@/components/ui/select";
 
 import { useState } from "react";
-import { DocumentInput } from "@/app/models/types/DocumentInput";
 import { DocumentType } from "@/app/models/enum/DocumentType";
 import { useProjectContext } from "@/app/viewModels/context/ProjectContext";
+import { useCreateDocumentMutation } from "@/app/viewModels/hooks/useCreateDocumentMutation";
+import { useUpdateDocumentMutation } from "@/app/viewModels/hooks/useUpdateDocumentMutation";
 
 const DocDialog = () => {
     const {
         editingProject: project,
         editingDocument: doc,
         isDocumentDialogOpen,
-        createDocument,
-        editDocument,
         closeDocumentDialog,
     } = useProjectContext();
+    console.debug("editingDocument", doc);
+    const { mutateAsync: createDocumentMutation } = useCreateDocumentMutation();
+    const { mutateAsync: updateDocumentMutation } = useUpdateDocumentMutation();
     const [type, setType] = useState<DocumentType>(
         doc?.type ?? DocumentType.SRD
     );
@@ -44,19 +46,23 @@ const DocDialog = () => {
         const description =
             formData.get("description")?.toString().trim() ?? "";
 
-        const input: DocumentInput = {
-            title,
-            description,
-            type,
-            projectId: project.id,
-        };
-
         if (!doc) {
-            // Create document
-            createDocument(input);
+            createDocumentMutation({
+                title,
+                description,
+                type,
+                projectId: project.id,
+            });
         } else {
-            // Edit document
-            editDocument(doc.id, input);
+            updateDocumentMutation({
+                documentId: doc.id.toString(),
+                documentInput: {
+                    title,
+                    description,
+                    type,
+                    projectId: project.id,
+                },
+            });
         }
         closeDocumentDialog();
     };
@@ -66,9 +72,13 @@ const DocDialog = () => {
             <DialogContent>
                 <form onSubmit={handleEditDocument}>
                     <DialogHeader>
-                        <DialogTitle>Edit Document</DialogTitle>
+                        <DialogTitle>
+                            {!doc ? "Create Document" : "Edit Document"}
+                        </DialogTitle>
                         <DialogDescription>
-                            Edit the document details.
+                            {!doc
+                                ? "Fill in the details to create a new document."
+                                : "Edit the document details."}
                         </DialogDescription>
                     </DialogHeader>
 
@@ -113,9 +123,15 @@ const DocDialog = () => {
                                     <SelectValue placeholder="Select document type" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="SRD">SRD</SelectItem>
-                                    <SelectItem value="SDD">SDD</SelectItem>
-                                    <SelectItem value="STD">STD</SelectItem>
+                                    <SelectItem value="SRD">
+                                        Software Requirements Document ( SRD )
+                                    </SelectItem>
+                                    <SelectItem value="SDD">
+                                        Software Design Document ( SDD )
+                                    </SelectItem>
+                                    <SelectItem value="STD">
+                                        Software Test Document ( STD )
+                                    </SelectItem>
                                     <SelectItem value="OTHER">OTHER</SelectItem>
                                 </SelectContent>
                             </Select>

@@ -13,12 +13,20 @@ function CustomNode({ id, data }: any) {
     const handleClick = () => {
         selectNode(isSelected ? null : id);
     };
+
+    const getTopicShadowColor = () => {
+        if (data.level == 1) return "shadow-indigo-400";
+        else if (data.level == 2) return "shadow-blue-400";
+        else if (data.level == 3) return "shadow-teal-400";
+        return "shadow-gray-400";
+    };
+
     return (
         <button
-            disabled={id === "root"}
+            disabled={data.type === "root"}
             onClick={handleClick}
             className={`${
-                id === "root" ? "cursor-not-allowed" : "hover:opacity-70"
+                data.type === "root" ? "cursor-not-allowed" : "hover:opacity-70"
             }`}
         >
             <div
@@ -26,7 +34,7 @@ function CustomNode({ id, data }: any) {
                     isSelected ? "border-blue-500" : "border-stone-400"
                 } ${
                     data.type.startsWith("topic")
-                        ? "shadow-cyan-200"
+                        ? `${getTopicShadowColor()}`
                         : data.type.startsWith("template")
                         ? "shadow-amber-200"
                         : ""
