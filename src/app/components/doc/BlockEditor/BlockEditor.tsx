@@ -4,13 +4,31 @@ import "@/styles/index.css";
 import { memo, useRef } from "react";
 import LinkMenu from "@/app/components/Menus/LinkMenu";
 import { Document } from "@/app/models/entity/Document";
+import { useDocumentContentQueries } from "@/app/viewModels/hooks/useDocumentContentQueries";
+import z from "zod";
 
 interface BlockEditorProps {
     editor: Editor;
+    selectedDocumentId: string | null;
     document: Document | undefined;
 }
 
-const BlockEditor = ({ editor, document }: BlockEditorProps) => {
+const BlockEditor = ({
+    editor,
+    selectedDocumentId,
+    document,
+}: BlockEditorProps) => {
+    const uuidSchema = z.uuid();
+    const {
+        data: docContent,
+        isLoading: isDocumentLoading,
+        isError: isDocumentError,
+        isSuccess: isDocumentSuccess,
+    } = useDocumentContentQueries(
+        selectedDocumentId || "",
+        !!selectedDocumentId &&
+            !uuidSchema.safeParse(selectedDocumentId).success
+    );
     const menuContainerRef = useRef(null);
     const handleAddDefaultNode = () => {
         if (!editor) return;
@@ -36,7 +54,25 @@ const BlockEditor = ({ editor, document }: BlockEditorProps) => {
                 .run();
         }
     };
-
+    if (!selectedDocumentId) {
+        console.debug("selectedDocumentId is null");
+        return null;
+        // <div className="flex-1 overflow-y-auto">
+        //     <div className="flex items-center justify-center h-full text-gray-500">
+        //         Select a document to start editing.
+        //     </div>
+        // </div>;
+    }
+    if (isDocumentLoading || !isDocumentSuccess) {
+        return null;
+        return (
+            <div className="flex-1 overflow-y-auto">
+                <div className="flex items-center justify-center h-full text-gray-500">
+                    Loading document content...
+                </div>
+            </div>
+        );
+    }
     return (
         <div className="flex-1 overflow-y-auto" ref={menuContainerRef}>
             <EditorContent editor={editor} />

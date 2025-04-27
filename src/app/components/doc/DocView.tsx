@@ -11,13 +11,16 @@ import EditorHeader from "@/app/components/doc/BlockEditor/EditorHeader";
 import BlockEditor from "@/app/components/doc/BlockEditor/BlockEditor";
 import GraphView from "../flow/GraphView";
 import DocMode from "@/app/models/enum/DocMode";
+import z from "zod";
 
 const DocView = () => {
+    const uuidSchema = z.uuid({ version: "v4" });
     const { mode, setDocMode } = useDocModeViewModel();
     const { selectedDocumentId } = useProjectContext();
     const { data: document } = useDocumentQuery(
         selectedDocumentId,
-        selectedDocumentId !== null
+        selectedDocumentId !== null &&
+            !uuidSchema.safeParse(selectedDocumentId).success
     );
     // Initialize editor only when document is available
     const { editor, currentStatus } = useBlockEditor({
@@ -74,7 +77,11 @@ const DocView = () => {
                             mode === DocMode.Split ? `${splitWidth}%` : "100%",
                     }}
                 >
-                    <BlockEditor editor={editor} document={document} />
+                    <BlockEditor
+                        editor={editor}
+                        selectedDocumentId={selectedDocumentId}
+                        document={document}
+                    />
                 </div>
                 {mode === DocMode.Split && (
                     <div

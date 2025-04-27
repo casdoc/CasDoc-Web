@@ -22,9 +22,9 @@ const LoadingMask = () => {
                 if (prev >= 100) return 100;
                 if (prev >= 90) return prev + 0.2;
                 if (prev >= 70) return prev + 0.5;
-                return prev + 2;
+                return prev + 40;
             });
-        }, 50);
+        }, 5);
 
         return () => clearTimeout(timer);
     }, [progress]);

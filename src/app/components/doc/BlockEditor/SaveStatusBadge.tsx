@@ -1,15 +1,9 @@
-import React, { useCallback, useMemo } from "react";
+import React from "react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { Loader2, Check, Wifi, AlertCircle } from "lucide-react";
 import SaveStatus from "@/app/models/enum/SaveStatus";
-import { useDocumentContentQueries } from "@/app/viewModels/hooks/useDocumentContentQueries";
-import { useProjectContext } from "@/app/viewModels/context/ProjectContext";
-// Import mutation hooks
-import { useDeleteBlockMutation } from "@/app/viewModels/hooks/useDeleteBlockMutation";
-import { useCreateBlockMutation } from "@/app/viewModels/hooks/useCreateBlockMutation";
-import { useUpdateBlockMutation } from "@/app/viewModels/hooks/useUpdateBlockMutation";
-import { useUpdateBlockPositionsMutation } from "@/app/viewModels/hooks/useUpdateBlockPositionsMutation";
+
 interface SaveStatusBadgeProps {
     editorStatus: () => SaveStatus;
 }

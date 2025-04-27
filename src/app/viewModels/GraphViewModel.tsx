@@ -4,6 +4,7 @@ import { JsonObject } from "../models/types/JsonObject";
 import { useProjectContext } from "./context/ProjectContext";
 import defaultContent from "../models/default-value/defaultContent";
 import { useDocumentQuery } from "./hooks/useDocumentQuery";
+import z, { uuid } from "zod";
 
 export interface GraphViewModel {
     connectionEdges: ConnectionEdge[];
@@ -56,6 +57,7 @@ export interface ConnectionEdge {
 }
 
 export function useGraphViewModel(): GraphViewModel {
+    const uuidSchema = z.uuid({ version: "v4" });
     const [connectionEdges, setConnectionEdges] = useState<ConnectionEdge[]>(
         []
     );
@@ -64,7 +66,8 @@ export function useGraphViewModel(): GraphViewModel {
     const { selectedDocumentId } = useProjectContext();
     const { data: document, isLoading: isDocumentLoading } = useDocumentQuery(
         selectedDocumentId,
-        selectedDocumentId !== null
+        selectedDocumentId !== null &&
+            !uuidSchema.safeParse(selectedDocumentId).success
     );
 
     useEffect(() => {

@@ -2,10 +2,13 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ProjectService } from "@/app/models/services/ProjectService";
 import { Project } from "@/app/models/entity/Project";
 import { useRef } from "react";
+import { useProjectContext } from "../context/ProjectContext";
+import { useEditorContext } from "../context/EditorContext";
 
 export const useDeleteProjectMutation = () => {
     const queryClient = useQueryClient();
     const abortControllerRef = useRef<AbortController | null>(null);
+    const { selectProject } = useProjectContext();
 
     return useMutation({
         mutationFn: async (projectId: string) => {
@@ -63,6 +66,8 @@ export const useDeleteProjectMutation = () => {
         // After success or error, refetch the projects
         onSettled: () => {
             queryClient.invalidateQueries({ queryKey: ["projects"] });
+
+            selectProject("");
         },
     });
 };

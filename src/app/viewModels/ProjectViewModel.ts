@@ -4,6 +4,7 @@ import { Document } from "@/app/models/types/Document";
 import { DocSelectedService } from "../models/services/DocSelectedService";
 import { useProjectsQuery } from "./hooks/useProjectsQuery";
 import { useDocumentsQuery } from "./hooks/useDocumentsQuery";
+import z from "zod";
 // import defaultContent from "../models/default-value/defaultContent";
 
 export interface ProjectViewModel {
@@ -28,14 +29,22 @@ export interface ProjectViewModel {
 }
 
 export const useProjectViewModel = (): ProjectViewModel => {
-    const { data: projects, isLoading: isLoadingProjects } = useProjectsQuery();
+    const uuidSchema = z.uuid({ version: "v4" });
+    const {
+        data: projects,
+        isLoading: isLoadingProjects,
+        isSuccess: isProjectsSuccess,
+    } = useProjectsQuery();
     const [selectedProjectId, setSelectedProjectId] = useState<string | null>(
         null
     );
     const [selectedDocumentId, setSelectedDocumentId] = useState<string | null>(
         null
     );
-    const { data: documents } = useDocumentsQuery(selectedProjectId || "");
+    const { data: documents } = useDocumentsQuery(
+        selectedProjectId || "",
+        isProjectsSuccess && !uuidSchema.safeParse(selectedProjectId).success
+    );
     const [isProjectDialogOpen, setIsProjectDialogOpen] = useState(false);
     const [isDocumentDialogOpen, setIsDocumentDialogOpen] = useState(false);
     const [editingProject, setEditingProject] = useState<Project | null>(null);

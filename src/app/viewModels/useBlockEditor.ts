@@ -133,7 +133,10 @@ export const useBlockEditor = ({
         isLoading: isDocumentLoading,
         isError: isDocumentError,
         isSuccess: isDocumentSuccess,
-    } = useDocumentContentQueries(documentId || "", !!documentId); // Ensure query is enabled only with ID
+    } = useDocumentContentQueries(
+        documentId || "",
+        !!documentId && !uuidSchema.safeParse(documentId).success
+    ); // Ensure query is enabled only with ID
 
     const {
         mutateAsync: deleteBlock,

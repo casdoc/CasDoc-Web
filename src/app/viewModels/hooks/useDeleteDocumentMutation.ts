@@ -2,10 +2,13 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { DocumentService } from "@/app/models/services/DocumentService";
 import { Document } from "@/app/models/entity/Document";
 import { useRef } from "react";
+import { useProjectContext } from "../context/ProjectContext";
+import { useEditorContext } from "../context/EditorContext";
 
 export const useDeleteDocumentMutation = () => {
     const queryClient = useQueryClient();
     const abortControllerRef = useRef<AbortController | null>(null);
+    const { selectDocument } = useProjectContext();
 
     return useMutation({
         mutationFn: async (documentId: string) => {
@@ -107,6 +110,7 @@ export const useDeleteDocumentMutation = () => {
                     queryKey: ["documents", data.projectId],
                 });
             }
+            selectDocument("");
         },
     });
 };
