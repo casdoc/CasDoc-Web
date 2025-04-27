@@ -17,7 +17,6 @@ import SaveStatus from "../models/enum/SaveStatus";
 
 interface BlockEditorProps {
     documentId?: string;
-    updateDocument: (document: Document) => void;
 }
 
 function diffNodes(prevDoc: ProsemirrorNode, currentDoc: ProsemirrorNode) {
@@ -119,7 +118,6 @@ function diffNodes(prevDoc: ProsemirrorNode, currentDoc: ProsemirrorNode) {
 
 export const useBlockEditor = ({
     documentId,
-    updateDocument,
     ...editorOptions
 }: BlockEditorProps) => {
     // Get states from hooks

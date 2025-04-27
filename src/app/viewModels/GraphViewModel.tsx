@@ -2,9 +2,6 @@ import { useState, useCallback, useEffect } from "react";
 import { GraphService } from "../models/services/GraphService";
 import { JsonObject } from "../models/types/JsonObject";
 import { useProjectContext } from "./context/ProjectContext";
-import { DocumentService } from "../models/services/DocumentService";
-import { Document } from "../models/entity/Document";
-import { DocumentType } from "../models/enum/DocumentType";
 import defaultContent from "../models/default-value/defaultContent";
 import { useDocumentQuery } from "./hooks/useDocumentQuery";
 
@@ -34,10 +31,6 @@ export interface GraphViewModel {
 
     // Node actions
     updateNodeById: (nodeId: string, changes: Partial<JsonObject>) => void;
-
-    // Document actions
-    document: Document | undefined;
-    updateDocument: (document: Document) => void;
 }
 
 interface AttachedDoc {
@@ -63,7 +56,6 @@ export interface ConnectionEdge {
 }
 
 export function useGraphViewModel(): GraphViewModel {
-    // const [document, setDocument] = useState<Document>();
     const [connectionEdges, setConnectionEdges] = useState<ConnectionEdge[]>(
         []
     );
@@ -72,10 +64,11 @@ export function useGraphViewModel(): GraphViewModel {
     const { selectedDocumentId } = useProjectContext();
     const { data: document, isLoading: isDocumentLoading } = useDocumentQuery(
         selectedDocumentId,
-        true
+        selectedDocumentId !== null
     );
+
     useEffect(() => {
-        // if (!selectedDocumentId) return;
+        if (!selectedDocumentId || isDocumentLoading) return;
         // let doc = DocumentService.getDocumentById(selectedDocumentId || "");
         // if (!doc) {
         //     const emptyDoc = new Document(
@@ -283,7 +276,7 @@ export function useGraphViewModel(): GraphViewModel {
         (documentId: string): AttachedDoc | undefined => {
             // const doc = getDocumentById(documentId);
             // const doc = null;
-            if (!document) return;
+            if (!document || selectedDocumentId) return;
             const docContents = document.content;
             const newGraphNodes: GraphNode[] = [
                 {
@@ -327,7 +320,7 @@ export function useGraphViewModel(): GraphViewModel {
             };
             return attachedDoc;
         },
-        []
+        [document, selectedDocumentId]
     );
 
     const appendAttachedDocsById = useCallback(
@@ -392,10 +385,6 @@ export function useGraphViewModel(): GraphViewModel {
         nodeId: string,
         updatedNode: GraphNode
     ) => {
-        // const doc =
-        //     documentId === selectedDocumentId
-        //         ? document
-        //         : getDocumentById(documentId);
         if (!document) return;
         const oldContent = document.content || [];
         const newContent = oldContent.map((item) => {
@@ -413,31 +402,20 @@ export function useGraphViewModel(): GraphViewModel {
             return item;
         });
         document.content = newContent;
-        updateDocument(document);
+        // updateDocument(document);
     };
-
-    const updateDocument = useCallback(
-        (document: Document) => {
-            DocumentService.saveDocument(document);
-            // const doc = DocumentService.getDocumentById(document.id);
-            // if (document && document.id === selectedDocumentId) {
-            //     setDocument(doc);
-            // }
-        },
-        [selectedDocumentId]
-    );
 
     // update the current document's nodes data when modifying in edit panel
     useEffect(() => {
-        if (!document) return;
-        const newDoc = updateAttachedDocById(document.id);
+        if (!document || isDocumentLoading || !selectedDocumentId) return;
+        const newDoc = updateAttachedDocById(selectedDocumentId);
         if (!newDoc) return;
         setAttachedDocs((docs) => {
             const newDocs = docs;
             newDocs[0] = newDoc;
             return [...newDocs];
         });
-    }, [document, updateAttachedDocById]);
+    }, [document, updateAttachedDocById, selectedDocumentId]);
 
     return {
         connectionEdges,
@@ -465,9 +443,5 @@ export function useGraphViewModel(): GraphViewModel {
 
         // Node actions
         updateNodeById,
-
-        // Document actions
-        document,
-        updateDocument,
     };
 }

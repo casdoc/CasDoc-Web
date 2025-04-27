@@ -12,7 +12,6 @@ import { useDocumentQuery } from "@/app/viewModels/hooks/useDocumentQuery";
 
 const DocView = () => {
     const { mode, setDocMode } = useDocModeViewModel();
-    const { updateDocument } = useGraphContext();
     const { selectedDocumentId } = useProjectContext();
     const { data: document } = useDocumentQuery(
         selectedDocumentId,
@@ -21,7 +20,6 @@ const DocView = () => {
     // Initialize editor only when document is available
     const { editor, currentStatus } = useBlockEditor({
         documentId: selectedDocumentId || "",
-        updateDocument,
     });
     const [splitWidth, setSplitWidth] = useState(50);
     const isResizing = useRef(false);
