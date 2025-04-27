@@ -144,7 +144,7 @@ const ChatView = () => {
                             <div
                                 className={`${bubbleClasses} ${
                                     msg.role === "user" && `max-w-xs`
-                                } px-4 py-2.5 rounded-xl shadow-sm`}
+                                } px-4 py-2.5 rounded-xl shadow-sm whitespace-pre-wrap`}
                             >
                                 {msg.content}
                             </div>
