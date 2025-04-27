@@ -20,7 +20,7 @@ export default function Doc() {
             <ProjectProvider>
                 <EditorProvider>
                     <DocumentContent />
-                    <ReactQueryDevtools initialIsOpen={false} />
+                    {/* <ReactQueryDevtools initialIsOpen={false} /> */}
                 </EditorProvider>
             </ProjectProvider>
         </QueryClientProvider>

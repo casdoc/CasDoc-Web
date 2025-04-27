@@ -1,9 +1,8 @@
 import { useChatContext } from "@/app/viewModels/context/ChatContext";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { useCallback, useState } from "react";
-import { FaArrowUp } from "react-icons/fa";
-import { X } from "lucide-react";
+import { useCallback, useState, useRef, useEffect } from "react";
+import { SendHorizontal, X } from "lucide-react";
 import AgentRelationAdviceDialog from "../doc/Dialog/AgentRelationAdviceDialog";
 
 interface ChatMessage {
@@ -15,8 +14,12 @@ const ChatView = () => {
     const [inputValue, setInputValue] = useState("");
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [adviceDialogOpen, setAdviceDialogOpen] = useState(false);
-    const { componentAddAI, addToAgentNodeIds, removeNodeFromAgent } =
-        useChatContext();
+    const {
+        componentAddAI,
+        addToAgentNodeIds,
+        removeNodeFromAgent,
+        setIsOpen,
+    } = useChatContext();
     const handleOnChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setInputValue(e.target.value);
     };
@@ -27,6 +30,10 @@ const ChatView = () => {
         },
         [setAdviceDialogOpen]
     );
+
+    const handleCloseChat = () => {
+        setIsOpen(false);
+    };
 
     const handleOnClick = () => {
         if (inputValue.length === 0) return;
@@ -54,134 +61,6 @@ const ChatView = () => {
             });
 
             let response: React.ReactNode = "Hello! This is a demo message.";
-            if (
-                inputValue.includes("新增") &&
-                inputValue.includes("刪除商店 API")
-            ) {
-                response = (
-                    <div>
-                        <div className="flex flex-row justify-between items-center mb-2">
-                            <p className="font-semibold">
-                                功能名稱：刪除商店 API
-                            </p>
-                        </div>
-                        <div className="hover:opacity-70 transition-opacity">
-                            <ul className="list-disc pl-5 space-y-1 text-sm">
-                                <li>
-                                    方法：<code>DELETE</code>
-                                </li>
-                                <li>
-                                    路由：<code>/api/stores/:id</code>
-                                </li>
-                                <li>權限：僅限管理員或商店擁有者可操作</li>
-                                <li>
-                                    描述：根據商店 ID
-                                    刪除指定商店，需進行身份驗證與權限檢查
-                                </li>
-                                <li>
-                                    回傳結果：
-                                    <ul className="list-disc pl-5">
-                                        <li>200：刪除成功</li>
-                                        <li>404：找不到商店</li>
-                                        <li>403：無權限</li>
-                                        <li>500：伺服器錯誤</li>
-                                    </ul>
-                                </li>
-                            </ul>
-                        </div>
-                        <div className="flex flex-row gap-1 items-center mt-2">
-                            <Button
-                                size="sm"
-                                variant="default"
-                                className="h-6 mt-1"
-                                onClick={() =>
-                                    componentAddAI(
-                                        "c2ecbc7b-e1d9-4491-a85b-6605dfdf6d10",
-                                        {
-                                            type: "template-apiInterface",
-                                            attrs: {
-                                                topicId: "root",
-                                                id: "407e7cf8-c10d-4654-9ab3-a84459f08823",
-                                                config: {
-                                                    info: {
-                                                        name: "刪除商店 API",
-                                                        method: "DELETE",
-                                                        description:
-                                                            "權限：僅限管理員或商店擁有者可操作，根據商店 ID                                  刪除指定商店，需進行身份驗證與權限檢查\n",
-                                                        endPoint:
-                                                            "/api/stores/:id",
-                                                    },
-                                                    fields: [
-                                                        {
-                                                            name: "status",
-                                                            type: "string",
-                                                            required: true,
-                                                            description:
-                                                                "Http request狀態碼",
-                                                        },
-                                                    ],
-                                                    fieldKey: "description",
-                                                },
-                                            },
-                                        }
-                                    )
-                                }
-                            >
-                                Apply
-                            </Button>
-                            <Button
-                                onClick={onAdviceClick}
-                                size="sm"
-                                variant="default"
-                                className="h-6 mt-1"
-                            >
-                                Auto Connect
-                            </Button>
-                        </div>
-                    </div>
-                );
-            } else if (
-                inputValue.includes("評估") &&
-                inputValue.includes("開發成本")
-            ) {
-                response = (
-                    <div className="relative">
-                        <div className="flex justify-between items-center mb-2">
-                            <p>
-                                你需要在 <code>User Schema</code> 新增{" "}
-                                <code>birth</code> 屬性，並修改兩隻 API。
-                            </p>
-                        </div>
-                        <p className="mb-2">
-                            如果有需要，我可以告訴你需要修改的實際對象，或是幫您進行修改供您套用。
-                        </p>
-                        <div className="hover:opacity-70 transition-opacity">
-                            <ul className="list-disc pl-5 space-y-1 text-sm">
-                                <li>
-                                    Schema 路徑：<code>models/User.ts</code>
-                                </li>
-                                <li>
-                                    API UpdateUserProfile：
-                                    <code>PUT /api/users/:id</code>
-                                    （更新使用者）
-                                </li>
-                                <li>
-                                    API GetUserById：
-                                    <code>GET /api/users/:id</code>
-                                    （取得使用者）
-                                </li>
-                            </ul>
-                        </div>
-                        <Button
-                            size="sm"
-                            variant="default"
-                            className="h-6 mt-1"
-                        >
-                            Apply
-                        </Button>
-                    </div>
-                );
-            }
 
             typedChatReply(response);
         }, 2500);
@@ -196,9 +75,46 @@ const ChatView = () => {
         setMessages((prev) => [...prev, chatMsg]);
     }
 
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+    // Auto-resize textarea function
+    const autoResizeTextarea = () => {
+        const textarea = textareaRef.current;
+        if (textarea) {
+            textarea.style.height = "auto";
+            const newHeight = Math.min(
+                Math.max(textarea.scrollHeight, 40),
+                150
+            );
+            textarea.style.height = `${newHeight}px`;
+        }
+    };
+
+    // Call autoResize when input value changes
+    useEffect(() => {
+        autoResizeTextarea();
+    }, [inputValue]);
+
     return (
-        <div className="flex flex-col justify-center w-full h-full bg-neutral-50 gap-3">
-            <div className=" w-auto m-4 p-4 bg-white h-full rounded-md overflow-auto">
+        // Main container - remove specific background/blur, ensure it fills the parent
+        <div className="flex flex-col justify-between w-full h-full gap-3 relative overflow-hidden">
+            {/* Header with title and close button - adjust background for better contrast */}
+            <div className="flex-shrink-0 flex justify-between items-center px-4 py-2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-b border-gray-200/50 dark:border-gray-700/50 z-10">
+                <h3 className="font-medium text-gray-800 dark:text-gray-200">
+                    CasDoc Agent
+                </h3>
+                <Button
+                    onClick={handleCloseChat}
+                    variant="ghost"
+                    size="icon"
+                    className="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-100 hover:bg-gray-200/50 dark:hover:bg-gray-700/50 rounded-full"
+                >
+                    <X size={20} />
+                </Button>
+            </div>
+
+            {/* Messages container - adjust padding, remove specific background */}
+            <div className="flex-grow w-auto mx-4 p-4 overflow-auto rounded-md bg-transparent">
                 {messages.map((msg, index) => {
                     if (msg.role === "spinner") {
                         return (
@@ -206,8 +122,8 @@ const ChatView = () => {
                                 key={index}
                                 className="flex justify-start my-2"
                             >
-                                <div className="text-black max-w-xs px-3 py-2 rounded-xl flex items-center">
-                                    <div className="w-5 h-5 border-2 border-gray-500 border-t-transparent border-b-transparent rounded-full animate-spin mr-2"></div>
+                                <div className="text-black dark:text-white max-w-xs px-3 py-2 rounded-xl flex items-center">
+                                    <div className="w-5 h-5 border-2 border-blue-400 dark:border-blue-500 border-t-transparent border-b-transparent rounded-full animate-spin mr-2"></div>
                                     <span className="text-sm">Thinking...</span>
                                 </div>
                             </div>
@@ -218,16 +134,17 @@ const ChatView = () => {
                     const containerClasses = isUser
                         ? "flex justify-end my-2"
                         : "flex justify-start my-2";
+                    // Use slightly more opaque backgrounds for bubbles if needed
                     const bubbleClasses = isUser
                         ? "bg-blue-500 text-white"
-                        : "text-black";
+                        : "bg-gray-100 dark:bg-gray-700 text-black dark:text-white";
 
                     return (
                         <div key={index} className={containerClasses}>
                             <div
                                 className={`${bubbleClasses} ${
                                     msg.role === "user" && `max-w-xs`
-                                } px-3 py-2 rounded-xl`}
+                                } px-4 py-2.5 rounded-xl shadow-sm`}
                             >
                                 {msg.content}
                             </div>
@@ -235,31 +152,39 @@ const ChatView = () => {
                     );
                 })}
             </div>
-            {addToAgentNodeIds.length > 0 && (
-                <div className="flex flex-wrap gap-2 px-4">
-                    {addToAgentNodeIds.map((node) => (
-                        <div
-                            key={node.id}
-                            className="flex items-center bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm"
-                        >
-                            <span className="mr-1">{node.title}</span>
-                            <button
-                                onClick={() => removeNodeFromAgent(node.id)}
-                                className="hover:bg-blue-200 rounded-full p-0.5"
+
+            {/* Input area - adjust background/padding */}
+            <div className="flex-shrink-0 flex rounded-lg flex-col p-3 m-1 bg-neutral-100 dark:bg-gray-800/80 backdrop-blur-sm border-t border-gray-200/50 dark:border-gray-700/50">
+                {/* Node selection pills - moved here to be above input */}
+                {addToAgentNodeIds.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mb-2">
+                        {addToAgentNodeIds.map((node) => (
+                            <div
+                                key={node.id}
+                                className="flex items-center bg-blue-100/80 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 px-2 py-1 rounded-full text-sm shadow-sm"
                             >
-                                <X size={14} />
-                            </button>
-                        </div>
-                    ))}
-                </div>
-            )}
-            <div className="flex flex-row min-h-30">
-                <div className="flex-grow  min-h-[120px]  my-2 ml-4 mr-0">
+                                <span className="mr-1">{node.title}</span>
+                                <button
+                                    onClick={() => removeNodeFromAgent(node.id)}
+                                    className="hover:bg-blue-200/70 dark:hover:bg-blue-800/30 rounded-full p-0.5"
+                                >
+                                    <X size={14} />
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                )}
+
+                {/* Input with internal send button */}
+                <div className="relative">
                     <Textarea
-                        placeholder="enter some message..."
+                        ref={textareaRef}
+                        placeholder="Type your message..."
                         value={inputValue}
-                        className="bg-white h-full"
-                        onChange={(e) => handleOnChange(e)}
+                        className="w-full min-h-[80px] max-h-[150px] pr-12 bg-white/70 dark:bg-gray-700/50 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-1 focus:ring-blue-300 dark:focus:ring-blue-600 resize-none"
+                        onChange={(e) => {
+                            handleOnChange(e);
+                        }}
                         onKeyDown={(e) => {
                             if (e.key === "Enter" && !e.shiftKey) {
                                 e.preventDefault();
@@ -269,14 +194,20 @@ const ChatView = () => {
                         onPaste={(e) => {
                             e.persist();
                         }}
+                        rows={1} // Start with 1 row and let auto-resize handle it
                     />
-                </div>
-                <div className="flex items-center  justify-center w-auto m-2">
-                    <Button onClick={handleOnClick} variant="ghost">
-                        <FaArrowUp size={20} />
+
+                    {/* Send button inside the textarea */}
+                    <Button
+                        onClick={handleOnClick}
+                        variant="ghost"
+                        className="absolute bottom-1 right-3 p-1 h-8 w-8 rounded-md  hover:bg-neutral-200 dark:bg-blue-600 dark:hover:bg-blue-700 text-zinc-600 flex items-center justify-center"
+                    >
+                        <SendHorizontal size={16} />
                     </Button>
                 </div>
             </div>
+
             <AgentRelationAdviceDialog
                 open={adviceDialogOpen}
                 selectedNodeId={"407e7cf8-c10d-4654-9ab3-a84459f08823"}

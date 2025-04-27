@@ -56,8 +56,7 @@ const DocView = () => {
 
     return (
         <div
-            className={`overflow-y-hidden relative flex flex-col flex-1 h-full w-full bg-white transition-all duration-500
-               `}
+            className={`overflow-y-hidden relative flex flex-col flex-1 h-full w-full bg-white transition-all duration-500`}
         >
             <EditorHeader
                 mode={mode as DocMode}
@@ -65,7 +64,7 @@ const DocView = () => {
                 editor={editor}
                 editorStatus={currentStatus}
             />
-            <div className="flex flex-row overflow-y-auto h-full">
+            <div className="flex flex-row overflow-y-auto h-full relative">
                 <div
                     className={`overflow-y-auto h-full ${
                         mode === DocMode.Edit ? "w-full" : ""
@@ -103,7 +102,7 @@ const DocView = () => {
                     }}
                 >
                     <ReactFlowProvider>
-                        {isOpen ? <ChatView /> : <GraphView docMode={mode} />}
+                        <GraphView docMode={mode} />
                     </ReactFlowProvider>
                 </div>
             </div>
