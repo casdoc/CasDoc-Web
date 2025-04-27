@@ -20,9 +20,6 @@ export const useDeleteBlockMutation = () => {
                 const previousController =
                     controllersMapRef.current.get(blockId);
                 if (previousController) {
-                    console.debug(
-                        `Aborting previous delete request for block ${blockId}`
-                    );
                     previousController.abort();
                 }
             }
@@ -57,10 +54,6 @@ export const useDeleteBlockMutation = () => {
             // Don't log abort errors as they're expected when canceling requests
             if (!(err instanceof DOMException && err.name === "AbortError")) {
                 console.error("Delete block error:", err, variables);
-            } else {
-                console.debug(
-                    `Delete request for block ${variables.blockId} was aborted`
-                );
             }
         },
         // After success or error, refetch the document content
@@ -70,7 +63,6 @@ export const useDeleteBlockMutation = () => {
                 data?.documentId &&
                 !(error instanceof DOMException && error.name === "AbortError")
             ) {
-                console.debug("Block deleted successfully:", data);
                 queryClient.invalidateQueries({
                     queryKey: ["documentContent", data.documentId],
                 });

@@ -1,11 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
 import { Project } from "@/app/models/entity/Project";
 import { Document } from "@/app/models/types/Document";
-import defaultContent from "../models/default-value/defaultContent";
 import { DocSelectedService } from "../models/services/DocSelectedService";
 import { useProjectsQuery } from "./hooks/useProjectsQuery";
 import { useDocumentsQuery } from "./hooks/useDocumentsQuery";
-import { useQueryClient } from "@tanstack/react-query";
+// import defaultContent from "../models/default-value/defaultContent";
 
 export interface ProjectViewModel {
     selectedProjectId: string | null;
@@ -30,8 +29,6 @@ export interface ProjectViewModel {
 
 export const useProjectViewModel = (): ProjectViewModel => {
     const { data: projects, isLoading: isLoadingProjects } = useProjectsQuery();
-    const queryClient = useQueryClient();
-
     const [selectedProjectId, setSelectedProjectId] = useState<string | null>(
         null
     );
@@ -46,15 +43,15 @@ export const useProjectViewModel = (): ProjectViewModel => {
         null
     );
 
-    console.debug("documents", documents);
-    console.debug("projects", projects);
-    console.debug("selectedProjectId", selectedProjectId);
+    // console.debug("documents", documents);
+    // console.debug("projects", projects);
+    // console.debug("selectedProjectId", selectedProjectId);
     useEffect(() => {
         const localSelectedDoc = DocSelectedService.getSelectedDoc();
         if (localSelectedDoc === "") {
-            console.debug("localSelectedDoc is empty");
+            // console.debug("localSelectedDoc is empty");
             if (projects && projects.length > 0 && projects[0].id) {
-                console.debug("projects is not empty");
+                // console.debug("projects is not empty");
                 // console.debug("selectProjectId", projects[0].id);
                 setSelectedProjectId(projects[0].id);
                 // Use the first project to get documents
@@ -64,11 +61,11 @@ export const useProjectViewModel = (): ProjectViewModel => {
                 if (documents && documents.length > 0) {
                     setSelectedDocumentId(documents[0]?.id || null);
                     setEditingDocument(documents[0] || null);
-                    console.debug("selectDocument", selectedDocumentId);
+                    // console.debug("selectDocument", selectedDocumentId);
                 }
             }
         } else if (selectedDocumentId !== localSelectedDoc) {
-            console.debug("loclalSelectedDoc is not empty");
+            // console.debug("loclalSelectedDoc is not empty");
             // setSelectedProjectId(projects[0].id);
             setSelectedDocumentId(localSelectedDoc);
         }

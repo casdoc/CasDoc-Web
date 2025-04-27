@@ -41,9 +41,6 @@ export const useCreateBlockMutation = (
                 const previousController =
                     controllersMapRef.current.get(requestId);
                 if (previousController) {
-                    console.debug(
-                        `Aborting previous create request for content ID ${requestId}`
-                    );
                     previousController.abort();
                 }
             }
@@ -59,7 +56,6 @@ export const useCreateBlockMutation = (
                     content,
                     controller.signal
                 );
-                console.debug("useCreateBlockMutation result:", result);
 
                 // Clean up on success
                 controllersMapRef.current.delete(requestId);
@@ -79,7 +75,6 @@ export const useCreateBlockMutation = (
             }
         },
         onSuccess: (data, variables, context) => {
-            console.debug("Block created successfully:", data);
             // No need to return data here as it doesn't affect the Promise chain
 
             // Optional: invalidate related queries
@@ -99,12 +94,6 @@ export const useCreateBlockMutation = (
                 if (options?.onError) {
                     options.onError(error, variables, context);
                 }
-            } else {
-                console.debug(
-                    `Create request for content ID ${
-                        variables.content.attrs?.id || "unknown"
-                    } was aborted`
-                );
             }
         },
     });

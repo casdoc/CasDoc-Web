@@ -19,7 +19,7 @@ const DocView = () => {
         selectedDocumentId !== null
     );
     // Initialize editor only when document is available
-    const { editor } = useBlockEditor({
+    const { editor, currentStatus } = useBlockEditor({
         documentId: selectedDocumentId || "",
         updateDocument,
     });
@@ -63,6 +63,7 @@ const DocView = () => {
                 mode={mode as DocMode}
                 setDocMode={setDocMode}
                 editor={editor}
+                editorStatus={currentStatus}
             />
             <div className="flex flex-row overflow-y-auto h-full">
                 <div

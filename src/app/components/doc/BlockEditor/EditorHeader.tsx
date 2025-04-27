@@ -2,7 +2,6 @@
 
 import { useCallback } from "react";
 import DocMode from "@/app/models/enum/DocMode";
-// import GuideButton from "@/app/components/guide/GuideButton";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,14 +15,22 @@ import ImportDialog from "../Dialog/ImportDialog";
 import { Editor } from "@tiptap/core";
 import ExportPopover from "../Popover/ExportPopover";
 import { FilePenLine, Network, SquareSplitHorizontal } from "lucide-react";
+import SaveStatusBadge from "./SaveStatusBadge"; // Import the new component
+import SaveStatus from "@/app/models/enum/SaveStatus";
 
 interface EditorHeaderProps {
     mode: DocMode;
     setDocMode: (newMode: DocMode) => void;
     editor: Editor;
+    editorStatus: () => SaveStatus;
 }
 
-const EditorHeader = ({ mode, setDocMode, editor }: EditorHeaderProps) => {
+const EditorHeader = ({
+    mode,
+    setDocMode,
+    editor,
+    editorStatus,
+}: EditorHeaderProps) => {
     const handleChangeView = useCallback(
         (newMode: DocMode) => {
             setDocMode(newMode);
@@ -104,6 +111,14 @@ const EditorHeader = ({ mode, setDocMode, editor }: EditorHeaderProps) => {
                         </TooltipContent>
                     </Tooltip>
                 </TooltipProvider>
+                {/* Render the SaveStatusBadge without passing status */}
+                <div className="ml-2">
+                    {" "}
+                    {/* Add some margin */}
+                    <SaveStatusBadge
+                        editorStatus={editorStatus} // Pass the function to get status
+                    />
+                </div>
             </div>
 
             {/* Right side with import button and guide button */}

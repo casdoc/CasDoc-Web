@@ -22,9 +22,6 @@ export const useUpdateBlockMutation = () => {
                 const previousController =
                     controllersMapRef.current.get(blockId);
                 if (previousController) {
-                    console.debug(
-                        `Aborting previous update request for block ${blockId}`
-                    );
                     previousController.abort();
                 }
             }
@@ -63,10 +60,6 @@ export const useUpdateBlockMutation = () => {
             // Don't log abort errors as they're expected when canceling requests
             if (!(err instanceof DOMException && err.name === "AbortError")) {
                 console.error("Update block error:", err, variables);
-            } else {
-                console.debug(
-                    `Update request for block ${variables.blockId} was aborted`
-                );
             }
         },
         // After success or error, refetch the document content
