@@ -22,7 +22,7 @@ import SaveStatus from "../models/enum/SaveStatus";
 interface BlockEditorProps {
     documentId?: string;
 }
-
+const uuidSchema = z.uuid();
 function diffNodes(prevDoc: ProsemirrorNode, currentDoc: ProsemirrorNode) {
     const prevNodesMap = new Map<
         string,
@@ -83,7 +83,10 @@ function diffNodes(prevDoc: ProsemirrorNode, currentDoc: ProsemirrorNode) {
                 JSON.stringify(prevData.node.attrs);
             const positionChanged = currentData.index !== prevData.index;
 
-            if (contentChanged || attrsChanged) {
+            if (
+                !uuidSchema.safeParse(currentData.node.attrs.id).success &&
+                (contentChanged || attrsChanged)
+            ) {
                 modified.push({ ...currentData, prevNode: prevData.node });
             }
             if (positionChanged) {
@@ -189,7 +192,7 @@ export const useBlockEditor = ({
     const isInternalUpdate = useRef(false);
     const prevDocumentId = useRef<string | null>(null);
     const lastProcessedDoc = useRef<ProsemirrorNode | null>(null); // to track last processed state
-    const uuidSchema = z.uuid();
+    const isInitialLoad = useRef(true); // Track if this is the initial load
 
     const processTransaction = useCallback(
         debounce(
@@ -205,12 +208,21 @@ export const useBlockEditor = ({
 
                 if (!docToCompare) return;
 
+                // Ensure we're not comparing identical states during initial edits
+                if (docToCompare === currentDoc && !isInitialLoad.current) {
+                    console.debug("Skipping identical document comparison");
+                    return;
+                }
+
+                // Reset initial load flag after first transaction
+                isInitialLoad.current = false;
+
                 const promises: Promise<any>[] = [];
                 const changes = diffNodes(docToCompare, currentDoc);
                 const idUpdates = new Map<string, string>();
                 const { added, deleted, modified, needsPositionUpdate } =
                     changes;
-                // console.debug("addeds added);
+                // console.debug("addeds", added);
                 // console.debug("deleted:", deleted);
                 // console.debug("modified:", modified);
                 // console.debug("needsPositionUpdate:", needsPositionUpdate);
@@ -265,9 +277,12 @@ export const useBlockEditor = ({
                             content: modData.node.toJSON(),
                             documentId,
                         }).then((response) => {
-                            // Although update response has ID, it should match blockId.
-                            // We mainly care about success here. If the backend *could* change ID on update, handle like create.
-                            if (!response) {
+                            if (response?.data?.id) {
+                                const backendId = String(response.data.id);
+                                // Store mapping from temp ID (or newId for duplicates) to backend ID
+                                const idToUpdate = modData.node.attrs?.id;
+                                idUpdates.set(idToUpdate, backendId);
+                            } else {
                                 toast({
                                     title: "Error",
                                     description: "Failed to update content.",
@@ -451,6 +466,9 @@ export const useBlockEditor = ({
                     false
                 );
                 prevDocumentId.current = currentDocId;
+                // Set initial state for proper comparison
+                lastProcessedDoc.current = editor.state.doc;
+                isInitialLoad.current = true;
                 setTimeout(() => {
                     isInternalUpdate.current = false;
                 }, 0);
@@ -458,6 +476,7 @@ export const useBlockEditor = ({
         }
     }, [editor, documentId, isDocumentSuccess]);
 
+    // Effect to handle updates when document ID is the same
     useEffect(() => {
         const currentDocId = documentId;
         if (currentDocId !== prevDocumentId.current) return;
@@ -465,9 +484,12 @@ export const useBlockEditor = ({
             setTimeout(() => {
                 isInternalUpdate.current = true;
                 editor.commands.setContent(
-                    { type: "doc", content: docContent?.allContent as any },
-                    false // Don't trigger transaction
+                    { type: "doc", content: docContent?.allContent as any }
+                    // false // Don't trigger transaction
                 );
+                // Set the processed document to match the fresh content
+                lastProcessedDoc.current = editor.state.doc;
+                isInitialLoad.current = true;
                 // Reset the flag after the update has likely processed
                 setTimeout(() => {
                     isInternalUpdate.current = false;

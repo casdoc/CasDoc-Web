@@ -10,7 +10,7 @@ export const useDocumentsQuery = (projectId: string, enable?: boolean) => {
             const documents = await ProjectService.fetchDocumentsByProjectId(
                 projectId
             );
-            console.debug("useDocumentsQuery", projectId, documents);
+
             return documents ?? [];
         },
         enabled: !!projectId && enable,

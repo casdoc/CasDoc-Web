@@ -92,7 +92,7 @@ export const UniqueID = Extension.create<UniqueIDOptions>({
                 node.attrs[attributeName] === null
             // !uuidSchema.safeParse(node.attrs[attributeName]).success)
         );
-        console.debug("onCreate: ", tmp);
+
         findChildren(
             doc,
             (node) =>
@@ -100,7 +100,6 @@ export const UniqueID = Extension.create<UniqueIDOptions>({
                 (node.attrs[attributeName] === null ||
                     !uuidSchema.safeParse(node.attrs[attributeName]).success)
         ).forEach(({ node, pos }) => {
-            console.log("Assigning ID to node:", node.type.name, pos);
             tr.setNodeMarkup(pos, undefined, {
                 ...node.attrs,
                 [attributeName]: generateID(),

@@ -92,7 +92,7 @@ export class BlockService {
             }
 
             const result = await response.json();
-            return result.data;
+            return result;
         } catch (error) {
             console.error("Error updating block via API:", error);
             return null;
