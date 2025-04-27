@@ -71,54 +71,10 @@ export const useProjectViewModel = (): ProjectViewModel => {
         }
     }, [projects, documents, selectedDocumentId, selectedProjectId]);
 
-    // Load projects from localStorage and set default content
-    useEffect(() => {
-        // Set default content
-        if (!isLoadingProjects && projects?.length === 0) {
-            // const defaultProject = ProjectService.createProject({
-            //     name: "My First Project",
-            //     description: "Default project",
-            // } as ProjectApiRequest);
-            // if (!defaultProject) return;
-            // // Parse the doc title from default content
-            // let docTitle = "Untitled Document";
-            // if (
-            //     defaultContent[0].content &&
-            //     defaultContent[0].content.length > 0
-            // ) {
-            //     docTitle = defaultContent[0].content[0].text;
-            // }
-            // // Create a default document
-            // const defaultDoc = DocumentService.createDocument({
-            //     type: DocumentType.SRD,
-            //     projectId: defaultProject.id,
-            //     title: docTitle,
-            //     description: "No description",
-            //     content: defaultContent,
-            // } as DocumentInput);
-            // if (!defaultDoc) return;
-            // // Update local state
-            // // setProjects([defaultProject]);
-            // setDocumentsMap((prev) => ({
-            //     ...prev,
-            //     [defaultDoc.projectId]: [
-            //         ...(prev[defaultDoc.projectId] || []),
-            //         defaultDoc,
-            //     ],
-            // }));
-        } else if (projects) {
-            // getDocumentsByProjectId(projects[0].id);
-            // const initialDocumentsMap: Record<string, Document[]> = {};
-            // projects.forEach((proj) => {
-            //     initialDocumentsMap[proj.id] =
-            //         ProjectService.getDocumentsByProjectId(proj.id);
-            // });
-            // setDocumentsMap(initialDocumentsMap);
-        }
-    }, [isLoadingProjects, projects]);
     const selectProject = useCallback((projectId: string) => {
         setSelectedProjectId(projectId);
     }, []);
+
     const selectDocument = useCallback((documentId: string) => {
         setSelectedDocumentId(documentId);
         DocSelectedService.setSelectedDoc(documentId);
@@ -141,7 +97,6 @@ export const useProjectViewModel = (): ProjectViewModel => {
             setEditingProject(
                 projects?.find((project) => project.id === projectId) || null
             );
-            console.debug("openDocumentDialog", documentId);
             setEditingDocument(
                 documents?.find((document) => document.id === documentId) ||
                     null

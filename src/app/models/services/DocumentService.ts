@@ -1,6 +1,4 @@
 import { Document } from "@/app/models/entity/Document";
-import { DocumentInput } from "@/app/models/types/DocumentInput";
-import { v4 as uuidv4 } from "uuid";
 import { createClient } from "@supabase/supabase-js";
 import {
     DocumentResponse,

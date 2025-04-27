@@ -135,7 +135,7 @@ const EditorHeader = ({
                         variant="default"
                         onClick={() => setIsOpen(!isOpen)}
                     >
-                        <div className="flex items-center gap-3 px-1">
+                        <div className="flex items-center gap-3 px-1 select-none">
                             <BotMessageSquare color="#fafafa" />
                             <div className="text-neutral-50 font-semibold text-sm">
                                 CasDoc Agent

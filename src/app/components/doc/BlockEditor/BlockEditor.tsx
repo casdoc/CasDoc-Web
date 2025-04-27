@@ -3,13 +3,14 @@ import { ContentItemMenu } from "../DragMenu/ContentItemMenu";
 import "@/styles/index.css";
 import { memo, useRef } from "react";
 import LinkMenu from "@/app/components/Menus/LinkMenu";
+import { Document } from "@/app/models/entity/Document";
 
 interface BlockEditorProps {
     editor: Editor;
-    title: string;
+    document: Document | undefined;
 }
 
-const BlockEditor = ({ editor, title }: BlockEditorProps) => {
+const BlockEditor = ({ editor, document }: BlockEditorProps) => {
     const menuContainerRef = useRef(null);
     const handleAddDefaultNode = () => {
         if (!editor) return;
@@ -49,7 +50,7 @@ const BlockEditor = ({ editor, title }: BlockEditorProps) => {
             />
             <div className=" border-t-2 border-gray-200 bg-white h-16 px-4 mx-auto flex justify-end items-start pb-1 max-w-2xl">
                 <span className="text-sm text-gray-400 font-medium py-1 truncate max-w-xs cursor-default">
-                    {title}
+                    {document?.title ?? "Untitled Document"}
                 </span>
             </div>
         </div>

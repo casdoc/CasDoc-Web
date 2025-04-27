@@ -1,16 +1,16 @@
-import DocMode from "@/app/models/enum/DocMode";
+"use client";
+
 import { useDocModeViewModel } from "@/app/viewModels/DocModeViewModel";
-import EditorHeader from "@/app/components/doc/BlockEditor/EditorHeader";
 import { useBlockEditor } from "@/app/viewModels/useBlockEditor";
-import BlockEditor from "@/app/components/doc/BlockEditor/BlockEditor";
-import GraphView from "../flow/GraphView";
 import { ReactFlowProvider } from "@xyflow/react";
 import { useState, useEffect, useRef } from "react";
-import { useGraphContext } from "@/app/viewModels/context/GraphContext";
 import { useProjectContext } from "@/app/viewModels/context/ProjectContext";
 import { useDocumentQuery } from "@/app/viewModels/hooks/useDocumentQuery";
 import { useChatContext } from "@/app/viewModels/context/ChatContext";
-import ChatView from "../chat/ChatView";
+import EditorHeader from "@/app/components/doc/BlockEditor/EditorHeader";
+import BlockEditor from "@/app/components/doc/BlockEditor/BlockEditor";
+import GraphView from "../flow/GraphView";
+import DocMode from "@/app/models/enum/DocMode";
 
 const DocView = () => {
     const { mode, setDocMode } = useDocModeViewModel();
@@ -25,7 +25,8 @@ const DocView = () => {
     });
     const [splitWidth, setSplitWidth] = useState(50);
     const isResizing = useRef(false);
-    const { isOpen } = useChatContext();
+
+    //handle mouse move and mouse up events for resizing the split view
     useEffect(() => {
         const handleMouseMove = (e: MouseEvent) => {
             if (!isResizing.current) return;
@@ -48,15 +49,14 @@ const DocView = () => {
         };
     }, []);
 
-    // Render loading or null state if document or editor is not ready
-    if (!document || !editor) {
-        // You might want a more sophisticated loading indicator
-        return <div>Loading Document...</div>;
+    // Return null if editor is not loaded - DocumentContent will handle the loading UI
+    if (!editor) {
+        return null;
     }
 
     return (
         <div
-            className={`overflow-y-hidden relative flex flex-col flex-1 h-full w-full bg-white transition-all duration-500`}
+            className={`overflow-y-hidden relative flex flex-col flex-1 h-full w-full bg-white`}
         >
             <EditorHeader
                 mode={mode as DocMode}
@@ -74,7 +74,7 @@ const DocView = () => {
                             mode === DocMode.Split ? `${splitWidth}%` : "100%",
                     }}
                 >
-                    <BlockEditor editor={editor} title={document.title} />
+                    <BlockEditor editor={editor} document={document} />
                 </div>
                 {mode === DocMode.Split && (
                     <div
