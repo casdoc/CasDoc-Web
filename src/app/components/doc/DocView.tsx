@@ -7,6 +7,7 @@ import GraphView from "../flow/GraphView";
 import { ReactFlowProvider } from "@xyflow/react";
 import { useState, useEffect, useRef } from "react";
 import { useGraphContext } from "@/app/viewModels/context/GraphContext";
+import { Flex } from "@radix-ui/themes";
 
 const DocView = () => {
     const { mode, setDocMode } = useDocModeViewModel();
@@ -42,16 +43,16 @@ const DocView = () => {
     }
 
     return (
-        <div
-            className={`overflow-y-hidden relative flex flex-col flex-1 h-full w-full bg-white transition-all duration-500
-               `}
+        <Flex
+            direction="column"
+            className="overflow-y-hidden relative flex-1 h-full w-full bg-white transition-all duration-500"
         >
             <EditorHeader
                 mode={mode as DocMode}
                 setDocMode={setDocMode}
                 editor={editor}
             />
-            <div className="flex flex-row overflow-y-auto h-full">
+            <Flex className="overflow-y-auto h-full">
                 <div
                     className={`overflow-y-auto h-full ${
                         mode === DocMode.Edit ? "w-full" : ""
@@ -92,8 +93,8 @@ const DocView = () => {
                         <GraphView docMode={mode} />
                     </ReactFlowProvider>
                 </div>
-            </div>
-        </div>
+            </Flex>
+        </Flex>
     );
 };
 

@@ -18,22 +18,34 @@ export default function WikiPage({ title, contentHtml, slugs }: WikiPageProps) {
     const currentSlug = router.query.slug;
 
     return (
-        <div>
-            <header className="w-full h-16 flex items-center px-6 border-b sticky top-0 bg-white z-50">
-                <Link href="/wiki/overview">
-                    <Flex gapX="3">
-                        <Image
-                            src="/icon.svg"
-                            width={25}
-                            height={10}
-                            alt="CasDoc"
-                            loading="lazy"
-                        />
-                        <span className="text-xl font-semibold">
-                            CasDoc Wiki
-                        </span>
-                    </Flex>
-                </Link>
+        <>
+            <header className="w-full sticky top-0 bg-white z-50">
+                <Flex
+                    align="center"
+                    justify="between"
+                    className="h-16 px-6 border-b"
+                >
+                    <Link href="/wiki/overview">
+                        <Flex gapX="3">
+                            <Image
+                                src="/icon.svg"
+                                width={25}
+                                height={10}
+                                alt="CasDoc"
+                                loading="lazy"
+                            />
+                            <span className="text-xl font-semibold">
+                                CasDoc Wiki
+                            </span>
+                        </Flex>
+                    </Link>
+                    <Link
+                        href="/"
+                        className="bg-blue-500 text-white rounded-md py-2 px-2 font-medium hover:opacity-80 transition-opacity"
+                    >
+                        Try CasDoc
+                    </Link>
+                </Flex>
             </header>
             <Flex>
                 <aside className="w-64 border-r h-screen p-6 sticky top-16">
@@ -61,7 +73,7 @@ export default function WikiPage({ title, contentHtml, slugs }: WikiPageProps) {
                     />
                 </main>
             </Flex>
-        </div>
+        </>
     );
 }
 

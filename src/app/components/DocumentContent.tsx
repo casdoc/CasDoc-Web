@@ -6,6 +6,7 @@ import { NodeSelectionProvider } from "@/app/viewModels/context/NodeSelectionCon
 import { SidebarProvider } from "@/components/ui/sidebar";
 import AppSidebar from "@/app/components/sidebar/AppSidebar";
 import { GraphProvider } from "@/app/viewModels/context/GraphContext";
+import { Flex } from "@radix-ui/themes";
 
 export default function DocumentContent() {
     return (
@@ -13,10 +14,14 @@ export default function DocumentContent() {
             <NodeSelectionProvider>
                 <SidebarProvider defaultOpen={false}>
                     <AppSidebar />
-                    <div className="h-dvh w-dvw flex flex-col items-center bg-gray-100 text-black">
+                    <Flex
+                        direction="column"
+                        align="center"
+                        className="h-dvh w-dvw bg-gray-100 text-black"
+                    >
                         <DocView />
                         <EditPanel />
-                    </div>
+                    </Flex>
                 </SidebarProvider>
             </NodeSelectionProvider>
         </GraphProvider>
