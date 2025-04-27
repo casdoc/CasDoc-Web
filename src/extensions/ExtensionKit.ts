@@ -30,6 +30,7 @@ import {
     UserStoryExtension,
     TestCaseExtension,
     WhiteBoardExtension,
+    UniqueID,
 } from ".";
 
 export const ExtensionKit = () => [
@@ -84,6 +85,9 @@ export const ExtensionKit = () => [
     UserStoryExtension,
     TestCaseExtension,
     WhiteBoardExtension,
+    UniqueID.configure({
+        types: ["heading", "paragraph"],
+    }),
 ];
 
 export default ExtensionKit;
