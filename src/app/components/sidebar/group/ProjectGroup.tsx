@@ -33,7 +33,7 @@ const ProjectGroup = () => {
     return (
         <Collapsible open={isOpen} onOpenChange={setIsOpen}>
             <SidebarGroup>
-                <CollapsibleTrigger className="hover:bg-gray-200 rounded-md group/chevron">
+                <CollapsibleTrigger className="hover:bg-neutral-200 rounded-md group/chevron">
                     <SidebarGroupLabel className=" text-gray-400 hover:text-black text-sm border-b border-gray-200 rounded-none py-5 my-1">
                         <div className="flex items-center gap-1">
                             My Projects
@@ -42,7 +42,7 @@ const ProjectGroup = () => {
                         <div className="ml-auto flex items-center gap-1 text-black">
                             <Plus
                                 onClick={handleAddProject}
-                                className="hover:bg-gray-300 rounded-md w-6 h-6 p-1"
+                                className="hover:bg-neutral-300 rounded-md w-6 h-6 p-1"
                             />
                             <DropDownMenu dropdownItems={dropdownItems} />
                         </div>

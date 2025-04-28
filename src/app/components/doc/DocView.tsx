@@ -10,9 +10,9 @@ import { useDocumentQuery } from "@/app/viewModels/hooks/useDocumentQuery";
 import EditorHeader from "@/app/components/doc/BlockEditor/EditorHeader";
 import BlockEditor from "@/app/components/doc/BlockEditor/BlockEditor";
 import GraphView from "../flow/GraphView";
+import { Button, Flex, Text } from "@radix-ui/themes";
 import DocMode from "@/app/models/enum/DocMode";
 import z from "zod";
-import { Button, Flex, Text } from "@radix-ui/themes";
 
 const DocView = () => {
     const uuidSchema = z.uuid({ version: "v4" });
@@ -64,8 +64,9 @@ const DocView = () => {
     }
 
     return (
-        <div
-            className={`overflow-y-hidden relative flex flex-col flex-1 h-full w-full bg-white`}
+        <Flex
+            direction="column"
+            className="overflow-y-hidden relative flex-1 h-full w-full bg-white transition-all duration-500"
         >
             <EditorHeader
                 mode={mode as DocMode}
@@ -74,7 +75,7 @@ const DocView = () => {
                 editorStatus={currentStatus}
             />
             {selectedDocumentId ? (
-                <div className="flex flex-row overflow-y-auto h-full relative">
+                <Flex className="overflow-y-auto h-full relative">
                     <div
                         className={`overflow-y-auto h-full ${
                             mode === DocMode.Edit ? "w-full" : ""
@@ -121,7 +122,7 @@ const DocView = () => {
                             <GraphView docMode={mode} />
                         </ReactFlowProvider>
                     </div>
-                </div>
+                </Flex>
             ) : (
                 <Flex
                     direction="column"
@@ -158,7 +159,7 @@ const DocView = () => {
                     </Button>
                 </Flex>
             )}
-        </div>
+        </Flex>
     );
 };
 
