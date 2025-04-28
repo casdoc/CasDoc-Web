@@ -15,7 +15,13 @@ import {
 import ImportDialog from "../Dialog/ImportDialog";
 import { Editor } from "@tiptap/core";
 import ExportPopover from "../Popover/ExportPopover";
-import { FilePenLine, Network, SquareSplitHorizontal } from "lucide-react";
+import {
+    BotMessageSquare,
+    FilePenLine,
+    Network,
+    SquareSplitHorizontal,
+} from "lucide-react";
+import { useChatContext } from "@/app/viewModels/context/ChatContext";
 
 interface EditorHeaderProps {
     mode: DocMode;

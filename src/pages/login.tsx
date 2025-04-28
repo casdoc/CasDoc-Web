@@ -1,13 +1,14 @@
-"use server";
+"use client";
 
 import LoginButton from "@/app/components/home/LoginButton";
 // import TryLocalButton from "@/app/components/home/TryLocalButton";
 import { Flex } from "@radix-ui/themes";
-import Link from "next/link";
+import { useRouter } from "next/router";
 import { useState } from "react";
 import { PiTestTube } from "react-icons/pi";
 
 const Login = () => {
+    const router = useRouter();
     const [loginLoading, setLoginLoading] = useState(false);
     // const [localLoading, setLocalLoading] = useState(false);
     // const [buttonDisabled, setButtonDisabled] = useState(false);
@@ -21,6 +22,14 @@ const Login = () => {
     //     setButtonDisabled(true);
     //     setLocalLoading(true);
     // };
+
+    const goToHome = () => {
+        router.push("/");
+    };
+
+    const openBetaForm = () => {
+        window.open("https://forms.gle/oDBCT3b9L9VnSWH3A", "_blank");
+    };
 
     return (
         <div className="h-screen w-screen flex flex-col justify-center items-center bg-gradient-to-b from-gray-100 to-gray-200 px-4">
@@ -64,22 +73,21 @@ const Login = () => {
                     className="mt-8 md:ml-6 md:flex-row"
                     direction="column"
                 >
-                    <Link
-                        href="/"
+                    <button
+                        onClick={goToHome}
                         className="text-sm text-blue-600 hover:underline"
                     >
                         ← Back to Home
-                    </Link>
-                    <Link
-                        href="https://forms.gle/oDBCT3b9L9VnSWH3A"
-                        target="_blank"
+                    </button>
+                    <button
+                        onClick={openBetaForm}
                         className="text-sm text-blue-600 hover:underline"
                     >
                         <Flex gapX="1">
                             <PiTestTube className="mt-0.5" />
                             Apply for Beta
                         </Flex>
-                    </Link>
+                    </button>
                 </Flex>
             </div>
         </div>
