@@ -1,7 +1,7 @@
 "use server";
 
 import LoginButton from "@/app/components/home/LoginButton";
-import TryLocalButton from "@/app/components/home/TryLocalButton";
+// import TryLocalButton from "@/app/components/home/TryLocalButton";
 import { Flex } from "@radix-ui/themes";
 import Link from "next/link";
 import { useState } from "react";
@@ -9,18 +9,18 @@ import { PiTestTube } from "react-icons/pi";
 
 const Login = () => {
     const [loginLoading, setLoginLoading] = useState(false);
-    const [localLoading, setLocalLoading] = useState(false);
-    const [buttonDisabled, setButtonDisabled] = useState(false);
+    // const [localLoading, setLocalLoading] = useState(false);
+    // const [buttonDisabled, setButtonDisabled] = useState(false);
 
     const handleLoginClick = () => {
-        setButtonDisabled(true);
+        // setButtonDisabled(true);
         setLoginLoading(true);
     };
 
-    const handleLocalClick = () => {
-        setButtonDisabled(true);
-        setLocalLoading(true);
-    };
+    // const handleLocalClick = () => {
+    //     setButtonDisabled(true);
+    //     setLocalLoading(true);
+    // };
 
     return (
         <div className="h-screen w-screen flex flex-col justify-center items-center bg-gradient-to-b from-gray-100 to-gray-200 px-4">
@@ -43,18 +43,18 @@ const Login = () => {
                     <LoginButton
                         handleClick={handleLoginClick}
                         loading={loginLoading}
-                        disabled={true}
+                        disabled={false}
                     />
-                    <Flex direction="column" align="center">
+                    {/* <Flex direction="column" align="center">
                         <TryLocalButton
                             handleClick={handleLocalClick}
                             loading={localLoading}
-                            disabled={buttonDisabled}
+                            disabled={true}
                         />
                         <span className="text-xs text-gray-500 mt-1">
                             {"Your data won't be saved."}
                         </span>
-                    </Flex>
+                    </Flex> */}
                 </Flex>
                 <Flex
                     gapX="7"
