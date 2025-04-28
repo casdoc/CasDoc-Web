@@ -1,10 +1,9 @@
 import ExtensionKit from "@/extensions/ExtensionKit";
 import { Editor, useEditor } from "@tiptap/react";
-import { Document } from "@/app/models/entity/Document";
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { NodeSelection } from "@tiptap/pm/state";
 import {
-    setupAIEventHandlers,
+    // setupAIEventHandlers,
     cleanupAIEventHandlers,
 } from "@/extensions/ExtensionUtils";
 import { useDocumentContentQueries } from "./hooks/useDocumentContentQueries";
@@ -82,12 +81,18 @@ function diffNodes(prevDoc: ProsemirrorNode, currentDoc: ProsemirrorNode) {
                 JSON.stringify(currentData.node.attrs) !==
                 JSON.stringify(prevData.node.attrs);
             const positionChanged = currentData.index !== prevData.index;
-
             if (
                 !uuidSchema.safeParse(currentData.node.attrs.id).success &&
                 (contentChanged || attrsChanged)
             ) {
                 modified.push({ ...currentData, prevNode: prevData.node });
+            }
+            // If id is uuid && content has changed
+            else if (contentChanged || attrsChanged) {
+                added.push({
+                    ...currentData,
+                    newId: currentData.node.attrs.id,
+                });
             }
             if (positionChanged) {
                 moved = true;
@@ -197,203 +202,218 @@ export const useBlockEditor = ({
     const lastProcessedDoc = useRef<ProsemirrorNode | null>(null); // to track last processed state
     const isInitialLoad = useRef(true); // Track if this is the initial load
 
-    const processTransaction = useCallback(
-        debounce(
-            async (
-                editor: Editor,
-                prevDoc: ProsemirrorNode | null,
-                currentDoc: ProsemirrorNode
-            ) => {
-                if (!documentId || !isDocumentSuccess || !currentDoc) return;
+    const processTransaction = useMemo(
+        () =>
+            debounce(
+                async (
+                    editor: Editor,
+                    prevDoc: ProsemirrorNode | null,
+                    currentDoc: ProsemirrorNode
+                ) => {
+                    if (!documentId || !isDocumentSuccess || !currentDoc)
+                        return;
 
-                // Use the stored last processed doc or the provided prevDoc
-                const docToCompare = lastProcessedDoc.current || prevDoc;
+                    // Use the stored last processed doc or the provided prevDoc
+                    const docToCompare = lastProcessedDoc.current || prevDoc;
 
-                if (!docToCompare) return;
+                    if (!docToCompare) return;
 
-                // Ensure we're not comparing identical states during initial edits
-                if (docToCompare === currentDoc && !isInitialLoad.current) {
-                    console.debug("Skipping identical document comparison");
-                    return;
-                }
+                    // // Ensure we're not comparing identical states during initial edits
+                    // if (docToCompare === currentDoc && !isInitialLoad.current) {
+                    //     console.debug("Skipping identical document comparison");
+                    //     return;
+                    // }
 
-                // Reset initial load flag after first transaction
-                isInitialLoad.current = false;
+                    // Reset initial load flag after first transaction
+                    isInitialLoad.current = false;
 
-                const promises: Promise<any>[] = [];
-                const changes = diffNodes(docToCompare, currentDoc);
-                const idUpdates = new Map<string, string>();
-                const { added, deleted, modified, needsPositionUpdate } =
-                    changes;
-                // console.debug("addeds", added);
-                // console.debug("deleted:", deleted);
-                // console.debug("modified:", modified);
-                // console.debug("needsPositionUpdate:", needsPositionUpdate);
-                // Handle Deletions
-                deleted.forEach((id) => {
-                    if (!uuidSchema.safeParse(id).success)
-                        promises.push(deleteBlock({ blockId: id, documentId }));
-                });
-
-                // Handle Additions
-                added.forEach((addData) => {
-                    // Check if this node has a new ID assigned due to being a duplicate
-                    const tempId = addData.node.attrs.id; // The original ID
-                    const contentToSend = addData.node.toJSON();
-
-                    // If this is a duplicate node that needs a new ID, update it before sending
-                    if (addData.newId) {
-                        contentToSend.attrs = {
-                            ...contentToSend.attrs,
-                            id: addData.newId,
-                        };
-                    }
-
-                    promises.push(
-                        createBlock({
-                            documentId,
-                            content: contentToSend, // Send node JSON with possibly updated ID
-                        }).then((response) => {
-                            if (response?.data?.id) {
-                                const backendId = String(response.data.id);
-                                // Store mapping from temp ID (or newId for duplicates) to backend ID
-                                const idToUpdate = addData.newId || tempId;
-                                idUpdates.set(idToUpdate, backendId);
-                            } else {
-                                toast({
-                                    title: "Error",
-                                    description: "Failed to update content.",
-                                    variant: "destructive",
-                                });
-                            }
-                        })
-                    );
-                });
-
-                // Handle Modifications
-                modified.forEach((modData) => {
-                    const blockId = modData.node.attrs.id;
-                    if (uuidSchema.safeParse(blockId).success) return;
-                    promises.push(
-                        updateBlock({
-                            blockId,
-                            content: modData.node.toJSON(),
-                            documentId,
-                        }).then((response) => {
-                            if (response?.data?.id) {
-                                const backendId = String(response.data.id);
-                                // Store mapping from temp ID (or newId for duplicates) to backend ID
-                                const idToUpdate = modData.node.attrs?.id;
-                                idUpdates.set(idToUpdate, backendId);
-                            } else {
-                                toast({
-                                    title: "Error",
-                                    description: "Failed to update content.",
-                                    variant: "destructive",
-                                });
-                            }
-                        })
-                    );
-                });
-
-                try {
-                    // Wait for all individual add/update/delete API calls
-                    await Promise.all(promises);
-                    //  Update Editor Node IDs if necessary (after successful creates)
-                    if (idUpdates.size > 0) {
-                        let idUpdateTr = editor.state.tr;
-                        let idUpdated = false;
-                        // Use the *current* document state which reflects the transaction being processed
-                        currentDoc.descendants((node, pos) => {
-                            if (!node.attrs.id || !node.type.isBlock) return; // Skip nodes without ID or non-blocks
-
-                            const currentId = node.attrs.id;
-                            if (idUpdates.has(currentId)) {
-                                const backendId = idUpdates.get(currentId)!;
-
-                                // Ensure we don't try to update the same node multiple times in one transaction if duplicates exist
-                                idUpdates.delete(currentId);
-                                // Create a new node object with updated attributes
-                                const newNodeAttrs = {
-                                    ...node.attrs,
-                                    id: backendId,
-                                };
-                                // Replace the node with a new one having the updated attributes
-                                // Using setNodeMarkup is generally safer than setNodeAttribute for complex changes or potential schema issues
-                                idUpdateTr = idUpdateTr.setNodeMarkup(
-                                    pos,
-                                    undefined,
-                                    newNodeAttrs
-                                );
-                                idUpdated = true;
-                            }
-                        });
-
-                        if (idUpdated) {
-                            // Mark as internal update before dispatching to prevent infinite loop
-                            isInternalUpdate.current = true;
-                            // Dispatch synchronously to update the editor state with backend IDs
-                            editor.view.dispatch(idUpdateTr);
-                        }
-                    }
-
-                    //Update Block Positions if needed
-                    if (needsPositionUpdate) {
-                        const finalBlockIds: string[] = [];
-                        // Get IDs from the *latest* editor state after potential ID updates
-                        const invalidIds: string[] = [];
-                        editor.state.doc.content.forEach((node) => {
-                            if (node.attrs.id && node.type.isBlock) {
-                                // Skip nodes with UUID format instead of throwing error
-                                if (
-                                    uuidSchema.safeParse(node.attrs.id).success
-                                ) {
-                                    console.warn(
-                                        `Skipping temporary UUID in position update: ${node.attrs.id}`
-                                    );
-                                    invalidIds.push(node.attrs.id);
-                                } else {
-                                    finalBlockIds.push(node.attrs.id);
-                                }
-                            }
-                        });
-
-                        if (invalidIds.length > 0) {
-                            console.warn(
-                                `Found ${invalidIds.length} unprocessed UUID(s) during position update`,
-                                invalidIds
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    const promises: Promise<any>[] = [];
+                    const changes = diffNodes(docToCompare, currentDoc);
+                    const idUpdates = new Map<string, string>();
+                    const { added, deleted, modified, needsPositionUpdate } =
+                        changes;
+                    // console.debug("addeds", added);
+                    // console.debug("deleted:", deleted);
+                    // console.debug("modified:", modified);
+                    // console.debug("needsPositionUpdate:", needsPositionUpdate);
+                    // Handle Deletions
+                    deleted.forEach((id) => {
+                        if (!uuidSchema.safeParse(id).success)
+                            promises.push(
+                                deleteBlock({ blockId: id, documentId })
                             );
+                    });
+
+                    // Handle Additions
+                    added.forEach((addData) => {
+                        // Check if this node has a new ID assigned due to being a duplicate
+                        const tempId = addData.node.attrs.id; // The original ID
+                        const contentToSend = addData.node.toJSON();
+
+                        // If this is a duplicate node that needs a new ID, update it before sending
+                        if (addData.newId) {
+                            contentToSend.attrs = {
+                                ...contentToSend.attrs,
+                                id: addData.newId,
+                            };
                         }
 
-                        if (finalBlockIds.length > 0) {
-                            await updateBlockPos({
+                        promises.push(
+                            createBlock({
                                 documentId,
-                                blockIds: finalBlockIds,
-                            });
-                        }
-                    }
-                } catch (error) {
-                    toast({
-                        title: "Error",
-                        description: "Content update failed.",
-                        variant: "destructive",
+                                content: contentToSend, // Send node JSON with possibly updated ID
+                            }).then((response) => {
+                                if (response?.data?.id) {
+                                    const backendId = String(response.data.id);
+                                    // Store mapping from temp ID (or newId for duplicates) to backend ID
+                                    const idToUpdate = addData.newId || tempId;
+                                    idUpdates.set(idToUpdate, backendId);
+                                } else {
+                                    toast({
+                                        title: "Error",
+                                        description:
+                                            "Failed to update content.",
+                                        variant: "destructive",
+                                    });
+                                }
+                            })
+                        );
                     });
-                    // queryClient.invalidateQueries({
-                    //     queryKey: ["documentContent", documentId],
-                    // });
-                } finally {
-                    // Use setTimeout to ensure this runs *after* the current execution context
-                    // and any synchronous dispatches within this function.
-                    setTimeout(() => {
-                        // Store the current doc as the last processed state
-                        lastProcessedDoc.current = editor.state.doc;
-                        isInternalUpdate.current = false;
-                    }, 0);
-                }
-            },
-            1000 // Reduce debounce time for better responsiveness while still batching
-        ),
-        [documentId, isDocumentSuccess]
+
+                    // Handle Modifications
+                    modified.forEach((modData) => {
+                        const blockId = modData.node.attrs.id;
+                        if (uuidSchema.safeParse(blockId).success) return;
+                        promises.push(
+                            updateBlock({
+                                blockId,
+                                content: modData.node.toJSON(),
+                                documentId,
+                            }).then((response) => {
+                                if (response?.data?.id) {
+                                    const backendId = String(response.data.id);
+                                    // Store mapping from temp ID (or newId for duplicates) to backend ID
+                                    const idToUpdate = modData.node.attrs?.id;
+                                    idUpdates.set(idToUpdate, backendId);
+                                } else {
+                                    toast({
+                                        title: "Error",
+                                        description:
+                                            "Failed to update content.",
+                                        variant: "destructive",
+                                    });
+                                }
+                            })
+                        );
+                    });
+
+                    try {
+                        // Wait for all individual add/update/delete API calls
+                        await Promise.all(promises);
+                        //  Update Editor Node IDs if necessary (after successful creates)
+                        if (idUpdates.size > 0) {
+                            let idUpdateTr = editor.state.tr;
+                            let idUpdated = false;
+                            // Use the *current* document state which reflects the transaction being processed
+                            currentDoc.descendants((node, pos) => {
+                                if (!node.attrs.id || !node.type.isBlock)
+                                    return; // Skip nodes without ID or non-blocks
+
+                                const currentId = node.attrs.id;
+                                if (idUpdates.has(currentId)) {
+                                    const backendId = idUpdates.get(currentId)!;
+
+                                    // Ensure we don't try to update the same node multiple times in one transaction if duplicates exist
+                                    idUpdates.delete(currentId);
+                                    // Create a new node object with updated attributes
+                                    const newNodeAttrs = {
+                                        ...node.attrs,
+                                        id: backendId,
+                                    };
+                                    // Replace the node with a new one having the updated attributes
+                                    // Using setNodeMarkup is generally safer than setNodeAttribute for complex changes or potential schema issues
+                                    idUpdateTr = idUpdateTr.setNodeMarkup(
+                                        pos,
+                                        undefined,
+                                        newNodeAttrs
+                                    );
+                                    idUpdated = true;
+                                }
+                            });
+
+                            if (idUpdated) {
+                                // Mark as internal update before dispatching to prevent infinite loop
+                                isInternalUpdate.current = true;
+                                // Dispatch synchronously to update the editor state with backend IDs
+                                editor.view.dispatch(idUpdateTr);
+                            }
+                        }
+
+                        //Update Block Positions if needed
+                        if (needsPositionUpdate) {
+                            const finalBlockIds: string[] = [];
+                            // Get IDs from the *latest* editor state after potential ID updates
+                            const invalidIds: string[] = [];
+                            editor.state.doc.content.forEach((node) => {
+                                if (node.attrs.id && node.type.isBlock) {
+                                    // Skip nodes with UUID format instead of throwing error
+                                    if (
+                                        uuidSchema.safeParse(node.attrs.id)
+                                            .success
+                                    ) {
+                                        console.warn(
+                                            `Skipping temporary UUID in position update: ${node.attrs.id}`
+                                        );
+                                        invalidIds.push(node.attrs.id);
+                                    } else {
+                                        finalBlockIds.push(node.attrs.id);
+                                    }
+                                }
+                            });
+
+                            if (invalidIds.length > 0) {
+                                console.warn(
+                                    `Found ${invalidIds.length} unprocessed UUID(s) during position update`,
+                                    invalidIds
+                                );
+                            }
+
+                            if (finalBlockIds.length > 0) {
+                                await updateBlockPos({
+                                    documentId,
+                                    blockIds: finalBlockIds,
+                                });
+                            }
+                        }
+                    } catch {
+                        toast({
+                            title: "Error",
+                            description: "Content update failed.",
+                            variant: "destructive",
+                        });
+                    } finally {
+                        // Use setTimeout to ensure this runs *after* the current execution context
+                        // and any synchronous dispatches within this function.
+                        setTimeout(() => {
+                            // Store the current doc as the last processed state
+                            lastProcessedDoc.current = editor.state.doc;
+                            isInternalUpdate.current = false;
+                        }, 0);
+                    }
+                },
+
+                1000 // Reduce debounce time for better responsiveness while still batching
+            ),
+        [
+            createBlock,
+            deleteBlock,
+            documentId,
+            isDocumentSuccess,
+            toast,
+            updateBlock,
+            updateBlockPos,
+        ]
     );
 
     const editor = useEditor({
@@ -410,28 +430,32 @@ export const useBlockEditor = ({
                 spellcheck: "false",
             },
         },
-        onCreate({ editor }) {
-            setupAIEventHandlers(editor, editor.storage);
-            if (
-                editor.isEmpty &&
-                documentId &&
-                !isDocumentLoading &&
-                isDocumentSuccess &&
-                docContent?.allContent.length == 0
-            ) {
-                // Explicitly set an empty heading
-                editor.commands.setNode("heading", { level: 1 });
-            }
-        },
+        // onCreate({ editor }) {
+        //     setupAIEventHandlers(editor, editor.storage);
+        //     if (
+        //         editor.isEmpty &&
+        //         documentId &&
+        //         !isDocumentLoading &&
+        //         isDocumentSuccess &&
+        //         docContent?.allContent.length == 0
+        //     ) {
+        //         // Explicitly set an empty heading
+        //         editor.commands.setNode("heading", { level: 1 });
+        //     }
+        // },
         onTransaction: ({ editor, transaction }) => {
             // If the document didn't change or it's an internal update, do nothing
-            if (!transaction.docChanged || isInternalUpdate.current) {
+            if (
+                !transaction.docChanged ||
+                isInternalUpdate.current ||
+                isDocumentLoading ||
+                documentId !== prevDocumentId.current //block change from different document
+            ) {
                 return;
             }
-
+            // console.debug("start transaction");
             // Get current document state
             const currentDoc = editor.state.doc;
-
             // Call the debounced processing function, always comparing with lastProcessedDoc
             processTransaction(editor, transaction.before, currentDoc);
         },
@@ -447,46 +471,38 @@ export const useBlockEditor = ({
         if (editor && documentId) {
             lastProcessedDoc.current = null;
         }
-    }, [documentId]);
+    }, [documentId, editor]);
 
     // Enhanced effect to handle document changes
     useEffect(() => {
-        if (!editor || !isDocumentSuccess) return;
-
-        // Skip if this is an update triggered by the editor itself
-        if (isInternalUpdate.current) return;
-
-        const currentDocId = documentId;
+        if (!editor || !isDocumentSuccess || isDocumentLoading) return;
 
         // Only update content if document ID has changed
-        if (currentDocId && currentDocId !== prevDocumentId.current) {
+        if (documentId && documentId !== prevDocumentId.current) {
             // Need to use setTimeout to ensure the clear completes first
             setTimeout(() => {
-                isInternalUpdate.current = true;
                 editor.commands.clearContent();
                 editor.commands.setContent(
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     { type: "doc", content: docContent?.allContent as any },
                     false
                 );
-                prevDocumentId.current = currentDocId;
+                prevDocumentId.current = documentId;
                 // Set initial state for proper comparison
                 lastProcessedDoc.current = editor.state.doc;
-                isInitialLoad.current = true;
-                setTimeout(() => {
-                    isInternalUpdate.current = false;
-                }, 0);
             }, 0);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [editor, documentId, isDocumentSuccess]);
 
     // Effect to handle updates when document ID is the same
     useEffect(() => {
-        const currentDocId = documentId;
-        if (currentDocId !== prevDocumentId.current) return;
+        if (documentId !== prevDocumentId.current) return;
         if (editor && !isInternalUpdate.current && isDocumentSuccess) {
             setTimeout(() => {
                 isInternalUpdate.current = true;
                 editor.commands.setContent(
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     { type: "doc", content: docContent?.allContent as any }
                     // false // Don't trigger transaction
                 );
@@ -499,7 +515,8 @@ export const useBlockEditor = ({
                 }, 0);
             });
         }
-    }, [editor, isDocumentSuccess]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [editor, isDocumentSuccess, documentId]);
 
     useEffect(() => {
         if (!editor) return;
