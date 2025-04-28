@@ -163,17 +163,6 @@ const EditorHeader = ({
                             <p>Export</p>
                         </TooltipContent>
                     </Tooltip>
-
-                    {/* <Tooltip>
-                        <TooltipTrigger asChild>
-                            <div className="flex items-center justify-center">
-                                <GuideButton />
-                            </div>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                            <p>Guide</p>
-                        </TooltipContent>
-                    </Tooltip> */}
                 </TooltipProvider>
             </div>
         </div>
