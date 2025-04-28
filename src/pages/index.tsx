@@ -2,7 +2,6 @@
 
 import "@/app/globals.css";
 import LogoButton from "@/app/components/home/LogoButton";
-// import GuideButton from "@/app/components/guide/GuideButton";
 import Footer from "@/app/components/home/Footer";
 import GetStartedButton from "@/app/components/home/GetStartedButton";
 import { Flex } from "@radix-ui/themes";
@@ -20,9 +19,7 @@ const Home = () => {
                 <div className="mb-12 mr-5">
                     <LogoButton />
                 </div>
-                {/* <div className="absolute top-4 right-4 md:right-8">
-                    <GuideButton />
-                </div> */}
+
                 <h1 className="text-4xl sm:text-6xl font-bold mb-6 sm:mb-8 text-gray-800 select-none">
                     Trace text relationships.
                 </h1>

@@ -21,7 +21,7 @@ import {
     SquareSplitHorizontal,
 } from "lucide-react";
 import { useChatContext } from "@/app/viewModels/context/ChatContext";
-import SaveStatusBadge from "./SaveStatusBadge"; // Import the new component
+import SaveStatusBadge from "./SaveStatusBadge";
 import SaveStatus from "@/app/models/enum/SaveStatus";
 
 interface EditorHeaderProps {
