@@ -2,21 +2,24 @@ import {
     Sidebar,
     // SidebarHeader,
     SidebarContent,
-    // SidebarFooter,
+    SidebarFooter,
 } from "@/components/ui/sidebar";
 import ProjectGroup from "./group/ProjectGroup";
 import ProjectDialog from "./dialog/ProjectDialog";
 import DocDialog from "./dialog/DocDialog";
+import UserConsole from "./footer/UserConsole";
 
 const AppSidebar = () => (
-    <Sidebar>
+    <Sidebar className="bg-neutral-50">
         {/* <SidebarHeader /> */}
-        <SidebarContent className="bg-neutral-50">
+        <SidebarContent>
             <ProjectGroup />
             <ProjectDialog />
             <DocDialog />
         </SidebarContent>
-        {/* <SidebarFooter /> */}
+        <SidebarFooter>
+            <UserConsole />
+        </SidebarFooter>
     </Sidebar>
 );
 

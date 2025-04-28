@@ -21,7 +21,7 @@ import {
     SquareSplitHorizontal,
 } from "lucide-react";
 import { useChatContext } from "@/app/viewModels/context/ChatContext";
-import SaveStatusBadge from "./SaveStatusBadge"; // Import the new component
+import SaveStatusBadge from "./SaveStatusBadge";
 import SaveStatus from "@/app/models/enum/SaveStatus";
 
 interface EditorHeaderProps {
@@ -163,17 +163,6 @@ const EditorHeader = ({
                             <p>Export</p>
                         </TooltipContent>
                     </Tooltip>
-
-                    {/* <Tooltip>
-                        <TooltipTrigger asChild>
-                            <div className="flex items-center justify-center">
-                                <GuideButton />
-                            </div>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                            <p>Guide</p>
-                        </TooltipContent>
-                    </Tooltip> */}
                 </TooltipProvider>
             </div>
         </div>

@@ -1,23 +1,25 @@
-"use client";
+"use server";
 
+import "@/app/globals.css";
 import LogoButton from "@/app/components/home/LogoButton";
-// import GuideButton from "@/app/components/guide/GuideButton";
 import Footer from "@/app/components/home/Footer";
 import GetStartedButton from "@/app/components/home/GetStartedButton";
-import { useState } from "react";
-import "@/app/globals.css";
+import { Flex } from "@radix-ui/themes";
+import WikiButton from "@/app/components/home/WikiButton";
 
 const Home = () => {
-    const [loading, setLoading] = useState(false);
     return (
-        <div className="flex flex-col h-dvh bg-gray-100 font-sans">
-            <div className="relative flex-1 flex flex-col items-center justify-center px-4 text-center">
+        <Flex direction="column" className="h-dvh bg-gray-100 font-sans">
+            <Flex
+                direction="column"
+                justify="center"
+                align="center"
+                className="relative flex-1 px-4 text-center"
+            >
                 <div className="mb-12 mr-5">
                     <LogoButton />
                 </div>
-                {/* <div className="absolute top-4 right-4 md:right-8">
-                    <GuideButton />
-                </div> */}
+
                 <h1 className="text-4xl sm:text-6xl font-bold mb-6 sm:mb-8 text-gray-800 select-none">
                     Trace text relationships.
                 </h1>
@@ -26,13 +28,18 @@ const Home = () => {
                     <br className="hidden sm:block" />
                     traceability through document structure visualization.
                 </h2>
-                <GetStartedButton
-                    loading={loading}
-                    handleClick={() => setLoading(true)}
-                />
-            </div>
+                <Flex
+                    direction="column"
+                    gapX="5"
+                    gapY="2"
+                    className="md:flex-row"
+                >
+                    <WikiButton />
+                    <GetStartedButton />
+                </Flex>
+            </Flex>
             <Footer />
-        </div>
+        </Flex>
     );
 };
 

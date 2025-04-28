@@ -6,6 +6,7 @@ import { NodeSelectionProvider } from "@/app/viewModels/context/NodeSelectionCon
 import { SidebarProvider } from "@/components/ui/sidebar";
 import AppSidebar from "@/app/components/sidebar/AppSidebar";
 import { GraphProvider } from "@/app/viewModels/context/GraphContext";
+import { Flex } from "@radix-ui/themes";
 import { ChatProvider } from "@/app/viewModels/context/ChatContext";
 import ChatView from "./chat/ChatView";
 import { useChatContext } from "@/app/viewModels/context/ChatContext";
@@ -17,13 +18,17 @@ export default function DocumentContent() {
                 <SidebarProvider defaultOpen={false}>
                     <ChatProvider>
                         <AppSidebar />
-                        <div className="h-dvh w-dvw flex flex-col items-center bg-gray-100 text-black relative">
+                        <Flex
+                            direction="column"
+                            align="center"
+                            className="h-dvh w-dvw bg-gray-100 text-black relative"
+                        >
                             <DocView />
                             <EditPanel />
 
                             {/* Chat panel overlay with slide transition */}
                             <ChatOverlay />
-                        </div>
+                        </Flex>
                     </ChatProvider>
                 </SidebarProvider>
             </NodeSelectionProvider>
