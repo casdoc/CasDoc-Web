@@ -6,7 +6,6 @@ import { ReactFlowProvider } from "@xyflow/react";
 import { useState, useEffect, useRef } from "react";
 import { useProjectContext } from "@/app/viewModels/context/ProjectContext";
 import { useDocumentQuery } from "@/app/viewModels/hooks/useDocumentQuery";
-// import { useChatContext } from "@/app/viewModels/context/ChatContext";
 import EditorHeader from "@/app/components/doc/BlockEditor/EditorHeader";
 import BlockEditor from "@/app/components/doc/BlockEditor/BlockEditor";
 import GraphView from "../flow/GraphView";

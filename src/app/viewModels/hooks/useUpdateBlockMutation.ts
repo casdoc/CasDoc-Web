@@ -14,6 +14,7 @@ export const useUpdateBlockMutation = () => {
             documentId,
         }: {
             blockId: string;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             content: any;
             documentId: string;
         }) => {

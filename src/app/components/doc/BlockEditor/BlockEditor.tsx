@@ -20,9 +20,9 @@ const BlockEditor = ({
 }: BlockEditorProps) => {
     const uuidSchema = z.uuid();
     const {
-        data: docContent,
+        // data: docContent,
         isLoading: isDocumentLoading,
-        isError: isDocumentError,
+        // isError: isDocumentError,
         isSuccess: isDocumentSuccess,
     } = useDocumentContentQueries(
         selectedDocumentId || "",
@@ -57,21 +57,9 @@ const BlockEditor = ({
     if (!selectedDocumentId) {
         console.debug("selectedDocumentId is null");
         return null;
-        // <div className="flex-1 overflow-y-auto">
-        //     <div className="flex items-center justify-center h-full text-gray-500">
-        //         Select a document to start editing.
-        //     </div>
-        // </div>;
     }
     if (isDocumentLoading || !isDocumentSuccess) {
         return null;
-        return (
-            <div className="flex-1 overflow-y-auto">
-                <div className="flex items-center justify-center h-full text-gray-500">
-                    Loading document content...
-                </div>
-            </div>
-        );
     }
     return (
         <div className="flex-1 overflow-y-auto" ref={menuContainerRef}>

@@ -3,7 +3,6 @@ import { ProjectService } from "@/app/models/services/ProjectService";
 import { Project } from "@/app/models/entity/Project";
 import { useRef } from "react";
 import { useProjectContext } from "../context/ProjectContext";
-import { useEditorContext } from "../context/EditorContext";
 
 export const useDeleteProjectMutation = () => {
     const queryClient = useQueryClient();

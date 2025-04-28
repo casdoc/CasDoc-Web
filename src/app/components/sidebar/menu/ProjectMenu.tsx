@@ -28,7 +28,7 @@ const ProjectMenu = ({ name, projectId }: ProjectMenuProps) => {
     const { mutateAsync: deleteProjectMutation } = useDeleteProjectMutation();
     const { selectProject, openProjectDialog, openDocumentDialog } =
         useProjectContext();
-    const { isSuccess: isProjectsSuccess, isLoading } = useProjectsQuery();
+    const { isSuccess: isProjectsSuccess } = useProjectsQuery();
     const uuidSchema = z.uuid({ version: "v4" });
     const { data: documents } = useDocumentsQuery(
         projectId,

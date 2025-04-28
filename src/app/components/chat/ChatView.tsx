@@ -1,7 +1,7 @@
 import { useChatContext } from "@/app/viewModels/context/ChatContext";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { useCallback, useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { SendHorizontal, X } from "lucide-react";
 import AgentRelationAdviceDialog from "../doc/Dialog/AgentRelationAdviceDialog";
 
@@ -15,7 +15,7 @@ const ChatView = () => {
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [adviceDialogOpen, setAdviceDialogOpen] = useState(false);
     const {
-        componentAddAI,
+        // componentAddAI,
         addToAgentNodeIds,
         removeNodeFromAgent,
         setIsOpen,
@@ -23,13 +23,13 @@ const ChatView = () => {
     const handleOnChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setInputValue(e.target.value);
     };
-    const onAdviceClick = useCallback(
-        (e: React.MouseEvent) => {
-            e.stopPropagation();
-            setAdviceDialogOpen(true);
-        },
-        [setAdviceDialogOpen]
-    );
+    // const onAdviceClick = useCallback(
+    //     (e: React.MouseEvent) => {
+    //         e.stopPropagation();
+    //         setAdviceDialogOpen(true);
+    //     },
+    //     [setAdviceDialogOpen]
+    // );
 
     const handleCloseChat = () => {
         setIsOpen(false);
@@ -60,7 +60,7 @@ const ChatView = () => {
                 return updated;
             });
 
-            let response: React.ReactNode = "Hello! This is a demo message.";
+            const response: React.ReactNode = "Hello! This is a demo message.";
 
             typedChatReply(response);
         }, 2500);

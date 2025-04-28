@@ -1,8 +1,4 @@
-import {
-    useMutation,
-    UseMutationOptions,
-    useQueryClient,
-} from "@tanstack/react-query";
+import { useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { BlockService } from "@/app/models/services/BlockService";
 import {
     BlockResponse,
@@ -17,7 +13,6 @@ export const useCreateBlockMutation = (
         { documentId: string; content: DocumentBlockContent }
     >
 ) => {
-    const queryClient = useQueryClient();
     // Use a Map to store multiple controllers by temporary ID
     const controllersMapRef = useRef<Map<string, AbortController>>(new Map());
 

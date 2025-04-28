@@ -61,7 +61,7 @@ export const useUpdateBlockPositionsMutation = () => {
                 throw error;
             }
         },
-        onSuccess: (data, variables) => {
+        onSuccess: (data) => {
             console.debug("Block positions updated successfully:", data);
             // Optionally invalidate queries if needed, though content query might already cover order changes
             // queryClient.invalidateQueries({ queryKey: ["documentContent", variables.documentId] });

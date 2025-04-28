@@ -3,7 +3,6 @@ import { DocumentService } from "@/app/models/services/DocumentService";
 import { Document } from "@/app/models/entity/Document";
 import { useRef } from "react";
 import { useProjectContext } from "../context/ProjectContext";
-import { useEditorContext } from "../context/EditorContext";
 
 export const useDeleteDocumentMutation = () => {
     const queryClient = useQueryClient();

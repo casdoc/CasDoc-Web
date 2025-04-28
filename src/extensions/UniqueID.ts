@@ -4,13 +4,13 @@ import {
     findChildrenInRange,
     getChangedRanges,
     combineTransactionSteps,
-    Editor,
-    Range,
+    // Editor,
+    // Range,
 } from "@tiptap/core";
 import { Node as ProseMirrorNode, Slice, Fragment } from "@tiptap/pm/model";
-import { Plugin, PluginKey, Transaction, EditorState } from "@tiptap/pm/state";
+import { Plugin, PluginKey, Transaction } from "@tiptap/pm/state";
 import { v4 as uuidv4 } from "uuid";
-import { EditorView } from "@tiptap/pm/view";
+// import { EditorView } from "@tiptap/pm/view";
 import z from "zod";
 
 export interface UniqueIDOptions {
@@ -85,13 +85,13 @@ export const UniqueID = Extension.create<UniqueIDOptions>({
         const { types, attributeName, generateID } = this.options;
         const uuidSchema = z.uuid();
         // Find nodes of specified types that are missing the ID attribute
-        const tmp = findChildren(
-            doc,
-            (node) =>
-                types.includes(node.type.name) &&
-                node.attrs[attributeName] === null
-            // !uuidSchema.safeParse(node.attrs[attributeName]).success)
-        );
+        // const tmp = findChildren(
+        //     doc,
+        //     (node) =>
+        //         types.includes(node.type.name) &&
+        //         node.attrs[attributeName] === null
+        //     // !uuidSchema.safeParse(node.attrs[attributeName]).success)
+        // );
 
         findChildren(
             doc,
@@ -143,7 +143,7 @@ export const UniqueID = Extension.create<UniqueIDOptions>({
                         oldState.doc,
                         Array.from(transactions)
                     );
-                    const { mapping } = transform;
+                    // const { mapping } = transform;
 
                     // Get ranges affected by the transactions
                     getChangedRanges(transform).forEach(({ newRange }) => {
@@ -209,7 +209,7 @@ export const UniqueID = Extension.create<UniqueIDOptions>({
                 props: {
                     handleDOMEvents: {
                         // Set flag if content is dropped within the same editor instance
-                        drop: (view, event: DragEvent) => {
+                        drop: (view) => {
                             if (dragSourceElement === view.dom) {
                                 pastedOrDropped = true;
                             }

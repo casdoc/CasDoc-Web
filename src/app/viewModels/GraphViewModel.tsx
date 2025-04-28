@@ -2,9 +2,9 @@ import { useState, useCallback, useEffect } from "react";
 import { GraphService } from "../models/services/GraphService";
 import { JsonObject } from "../models/types/JsonObject";
 import { useProjectContext } from "./context/ProjectContext";
-import defaultContent from "../models/default-value/defaultContent";
+// import defaultContent from "../models/default-value/defaultContent";
 import { useDocumentQuery } from "./hooks/useDocumentQuery";
-import z, { uuid } from "zod";
+import z from "zod";
 
 export interface GraphViewModel {
     connectionEdges: ConnectionEdge[];
@@ -87,7 +87,7 @@ export function useGraphViewModel(): GraphViewModel {
         // }
         // setDocument(doc);
         console.debug("Selected document ID:", selectedDocumentId);
-    }, [selectedDocumentId]);
+    }, [isDocumentLoading, selectedDocumentId]);
 
     useEffect(() => {
         const localEdges = GraphService.getEdges();
@@ -418,7 +418,12 @@ export function useGraphViewModel(): GraphViewModel {
             newDocs[0] = newDoc;
             return [...newDocs];
         });
-    }, [document, updateAttachedDocById, selectedDocumentId]);
+    }, [
+        document,
+        updateAttachedDocById,
+        selectedDocumentId,
+        isDocumentLoading,
+    ]);
 
     return {
         connectionEdges,
