@@ -29,13 +29,7 @@ const SignOutButton = ({
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger>
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    className="text-muted-foreground hover:text-red-500"
-                >
-                    <LogOut className="h-4 w-4" />
-                </Button>
+                <LogOut className="h-4 w-4" />
             </DialogTrigger>
             <DialogContent>
                 <Flex direction="column" align="center" className="gap-12">
