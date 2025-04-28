@@ -6,17 +6,23 @@ import { ReactFlowProvider } from "@xyflow/react";
 import { useState, useEffect, useRef } from "react";
 import { useProjectContext } from "@/app/viewModels/context/ProjectContext";
 import { useDocumentQuery } from "@/app/viewModels/hooks/useDocumentQuery";
-import { useChatContext } from "@/app/viewModels/context/ChatContext";
+// import { useChatContext } from "@/app/viewModels/context/ChatContext";
 import EditorHeader from "@/app/components/doc/BlockEditor/EditorHeader";
 import BlockEditor from "@/app/components/doc/BlockEditor/BlockEditor";
 import GraphView from "../flow/GraphView";
 import DocMode from "@/app/models/enum/DocMode";
 import z from "zod";
+import { Button, Flex, Text } from "@radix-ui/themes";
 
 const DocView = () => {
     const uuidSchema = z.uuid({ version: "v4" });
     const { mode, setDocMode } = useDocModeViewModel();
-    const { selectedDocumentId } = useProjectContext();
+    const {
+        selectedDocumentId,
+        selectedProjectId,
+        openProjectDialog,
+        openDocumentDialog,
+    } = useProjectContext();
     const { data: document } = useDocumentQuery(
         selectedDocumentId,
         selectedDocumentId !== null &&
@@ -67,32 +73,35 @@ const DocView = () => {
                 editor={editor}
                 editorStatus={currentStatus}
             />
-            <div className="flex flex-row overflow-y-auto h-full relative">
-                <div
-                    className={`overflow-y-auto h-full ${
-                        mode === DocMode.Edit ? "w-full" : ""
-                    } ${mode === DocMode.Graph ? "hidden" : ""}`}
-                    style={{
-                        width:
-                            mode === DocMode.Split ? `${splitWidth}%` : "100%",
-                    }}
-                >
-                    <BlockEditor
-                        editor={editor}
-                        selectedDocumentId={selectedDocumentId}
-                        document={document}
-                    />
-                </div>
-                {mode === DocMode.Split && (
+            {selectedDocumentId ? (
+                <div className="flex flex-row overflow-y-auto h-full relative">
                     <div
-                        className="bg-neutral-200 dark:bg-neutral-800 h-full w-[5px] cursor-ew-resize"
-                        onMouseDown={() => {
-                            isResizing.current = true;
+                        className={`overflow-y-auto h-full ${
+                            mode === DocMode.Edit ? "w-full" : ""
+                        } ${mode === DocMode.Graph ? "hidden" : ""}`}
+                        style={{
+                            width:
+                                mode === DocMode.Split
+                                    ? `${splitWidth}%`
+                                    : "100%",
                         }}
-                    />
-                )}
-                <div
-                    className={`
+                    >
+                        <BlockEditor
+                            editor={editor}
+                            selectedDocumentId={selectedDocumentId}
+                            document={document}
+                        />
+                    </div>
+                    {mode === DocMode.Split && (
+                        <div
+                            className="bg-neutral-200 dark:bg-neutral-800 h-full w-[5px] cursor-ew-resize"
+                            onMouseDown={() => {
+                                isResizing.current = true;
+                            }}
+                        />
+                    )}
+                    <div
+                        className={`
                         ${mode === DocMode.Split ? "h-full" : ""}
                         ${mode === DocMode.Graph ? "w-full h-full" : ""}
                         ${
@@ -101,18 +110,54 @@ const DocView = () => {
                                 : ""
                         }
                     `}
-                    style={{
-                        width:
-                            mode === DocMode.Split
-                                ? `${100 - splitWidth}%`
-                                : "100%",
-                    }}
-                >
-                    <ReactFlowProvider>
-                        <GraphView docMode={mode} />
-                    </ReactFlowProvider>
+                        style={{
+                            width:
+                                mode === DocMode.Split
+                                    ? `${100 - splitWidth}%`
+                                    : "100%",
+                        }}
+                    >
+                        <ReactFlowProvider>
+                            <GraphView docMode={mode} />
+                        </ReactFlowProvider>
+                    </div>
                 </div>
-            </div>
+            ) : (
+                <Flex
+                    direction="column"
+                    justify="center"
+                    align="center"
+                    gapY="4"
+                    className="h-full"
+                >
+                    <Text color="gray" size="6" weight="bold">
+                        No {selectedProjectId ? "Document" : "Project"} Selected
+                    </Text>
+                    <Text color="gray" size="3">
+                        Please create a{" "}
+                        {selectedProjectId ? "document" : "project"} to start
+                        editing.
+                    </Text>
+                    <Button
+                        radius="medium"
+                        size="2"
+                        color="blue"
+                        className="cursor-pointer"
+                        onClick={() => {
+                            if (!selectedProjectId) {
+                                openProjectDialog();
+                            } else {
+                                openDocumentDialog(selectedProjectId);
+                            }
+                        }}
+                    >
+                        <Text weight="medium">
+                            Create New{" "}
+                            {selectedProjectId ? "Document" : "Project"}
+                        </Text>
+                    </Button>
+                </Flex>
+            )}
         </div>
     );
 };
