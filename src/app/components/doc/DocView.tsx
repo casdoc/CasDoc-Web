@@ -1,7 +1,7 @@
 "use client";
 
 import { useDocModeViewModel } from "@/app/viewModels/DocModeViewModel";
-import { useBlockEditor } from "@/app/viewModels/useBlockEditor";
+// import { useBlockEditor } from "@/app/viewModels/useBlockEditor";
 import { ReactFlowProvider } from "@xyflow/react";
 import { useState, useEffect, useRef } from "react";
 import { useProjectContext } from "@/app/viewModels/context/ProjectContext";
@@ -13,6 +13,7 @@ import { Button, Flex, Text } from "@radix-ui/themes";
 import DocMode from "@/app/models/enum/DocMode";
 import z from "zod";
 import { useEditorContext } from "@/app/viewModels/context/EditorContext";
+import { useProjectsQuery } from "@/app/viewModels/hooks/useProjectsQuery";
 
 const DocView = () => {
     const uuidSchema = z.uuid({ version: "v4" });
@@ -23,6 +24,7 @@ const DocView = () => {
         openProjectDialog,
         openDocumentDialog,
     } = useProjectContext();
+    const { data: prjects } = useProjectsQuery();
     const { data: document } = useDocumentQuery(
         selectedDocumentId,
         selectedDocumentId !== null &&
@@ -72,6 +74,10 @@ const DocView = () => {
                 setDocMode={setDocMode}
                 editor={editor}
                 editorStatus={currentStatus}
+                projectName={
+                    prjects?.find((p) => p.id === selectedProjectId)?.name || ""
+                }
+                documentName={document?.title || ""}
             />
             {selectedDocumentId ? (
                 <Flex className="overflow-y-auto h-full relative">

@@ -29,6 +29,8 @@ interface EditorHeaderProps {
     setDocMode: (newMode: DocMode) => void;
     editor: Editor;
     editorStatus: () => SaveStatus;
+    projectName: string;
+    documentName: string;
 }
 
 const EditorHeader = ({
@@ -36,6 +38,8 @@ const EditorHeader = ({
     setDocMode,
     editor,
     editorStatus,
+    projectName,
+    documentName,
 }: EditorHeaderProps) => {
     const handleChangeView = useCallback(
         (newMode: DocMode) => {
@@ -126,6 +130,11 @@ const EditorHeader = ({
                         editorStatus={editorStatus} // Pass the function to get status
                     />
                 </div>
+            </div>
+
+            {/* Center with document path */}
+            <div>
+                {documentName?.trim() ? `${projectName}/${documentName}` : ""}
             </div>
 
             {/* Right side with import button and guide button */}
