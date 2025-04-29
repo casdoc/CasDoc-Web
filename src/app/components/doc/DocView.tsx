@@ -75,7 +75,7 @@ const DocView = () => {
                 editor={editor}
                 editorStatus={currentStatus}
                 projectName={
-                    prjects?.find((p) => p.id === selectedProjectId)?.name || ""
+                    prjects?.find((p) => p.id === document?.projectId)?.name || ""
                 }
                 documentName={document?.title || ""}
             />
