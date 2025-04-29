@@ -3,11 +3,13 @@ import { Editor } from "@tiptap/react";
 import SaveStatus from "@/app/models/enum/SaveStatus";
 import { useBlockEditor } from "../useBlockEditor";
 import { Node as ProsemirrorNode } from "prosemirror-model";
+import { useProjectContext } from "./ProjectContext";
 
 // Define the shape of the context
 interface EditorViewModel {
     docContent:
         | {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               allContent: Record<string, any>[];
               documentId: string;
           }
@@ -20,19 +22,12 @@ interface EditorViewModel {
 // Create the context with default values
 const EditorContext = createContext<EditorViewModel | undefined>(undefined);
 
-export const EditorProvider = ({
-    children,
-    documentId,
-}: {
-    children: ReactNode;
-    documentId: string;
-}) => {
+export const EditorProvider = ({ children }: { children: ReactNode }) => {
+    const { selectedDocumentId: documentId } = useProjectContext();
     // Use the block editor hook to get editor instance and status
     const blockEditorViewModel = useBlockEditor({
-        documentId,
+        documentId: documentId || "",
     });
-    // console.debug("editor context", editor?.state.doc.toJSON());
-    // Create the value object to be provided to consumers
 
     return (
         <EditorContext.Provider value={blockEditorViewModel}>

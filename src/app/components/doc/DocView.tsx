@@ -28,14 +28,9 @@ const DocView = () => {
         selectedDocumentId !== null &&
             !uuidSchema.safeParse(selectedDocumentId).success
     );
-    // Initialize editor only when document is available
-    // const { editor, currentStatus } = useEditorContext(
-    //     documentId
-    // );
 
-    const { editor, currentStatus } = useBlockEditor({
-        documentId: selectedDocumentId || "",
-    });
+    const { editor, currentStatus } = useEditorContext();
+
     const [splitWidth, setSplitWidth] = useState(50);
     const isResizing = useRef(false);
 

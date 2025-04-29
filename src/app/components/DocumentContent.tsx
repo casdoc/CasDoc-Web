@@ -11,12 +11,10 @@ import { ChatProvider } from "@/app/viewModels/context/ChatContext";
 import ChatView from "./chat/ChatView";
 import { useChatContext } from "@/app/viewModels/context/ChatContext";
 import { EditorProvider } from "@/app/viewModels/context/EditorContext";
-import { useProjectViewModel } from "../viewModels/ProjectViewModel";
 
 export default function DocumentContent() {
-    const { selectedDocumentId } = useProjectViewModel();
     return (
-        <EditorProvider documentId={selectedDocumentId || ""}>
+        <EditorProvider>
             <GraphProvider>
                 <NodeSelectionProvider>
                     <SidebarProvider defaultOpen={false}>
