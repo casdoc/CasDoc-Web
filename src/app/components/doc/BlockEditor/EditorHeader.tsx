@@ -134,7 +134,11 @@ const EditorHeader = ({
 
             {/* Center with document path */}
             <div>
-                {documentName?.trim() ? `${projectName}/${documentName}` : ""}
+                <p>
+                    {documentName?.trim()
+                        ? `${projectName}/${documentName}`
+                        : ""}
+                </p>
             </div>
 
             {/* Right side with import button and guide button */}
