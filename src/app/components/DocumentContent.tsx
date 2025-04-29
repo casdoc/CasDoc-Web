@@ -10,29 +10,34 @@ import { Flex } from "@radix-ui/themes";
 import { ChatProvider } from "@/app/viewModels/context/ChatContext";
 import ChatView from "./chat/ChatView";
 import { useChatContext } from "@/app/viewModels/context/ChatContext";
+import { EditorProvider } from "@/app/viewModels/context/EditorContext";
+import { useProjectViewModel } from "../viewModels/ProjectViewModel";
 
 export default function DocumentContent() {
+    const { selectedDocumentId } = useProjectViewModel();
     return (
-        <GraphProvider>
-            <NodeSelectionProvider>
-                <SidebarProvider defaultOpen={false}>
-                    <ChatProvider>
-                        <AppSidebar />
-                        <Flex
-                            direction="column"
-                            align="center"
-                            className="h-dvh w-dvw bg-gray-100 text-black relative"
-                        >
-                            <DocView />
-                            <EditPanel />
+        <EditorProvider documentId={selectedDocumentId || ""}>
+            <GraphProvider>
+                <NodeSelectionProvider>
+                    <SidebarProvider defaultOpen={false}>
+                        <ChatProvider>
+                            <AppSidebar />
+                            <Flex
+                                direction="column"
+                                align="center"
+                                className="h-dvh w-dvw bg-gray-100 text-black relative"
+                            >
+                                <DocView />
+                                <EditPanel />
 
-                            {/* Chat panel overlay with slide transition */}
-                            <ChatOverlay />
-                        </Flex>
-                    </ChatProvider>
-                </SidebarProvider>
-            </NodeSelectionProvider>
-        </GraphProvider>
+                                {/* Chat panel overlay with slide transition */}
+                                <ChatOverlay />
+                            </Flex>
+                        </ChatProvider>
+                    </SidebarProvider>
+                </NodeSelectionProvider>
+            </GraphProvider>
+        </EditorProvider>
     );
 }
 

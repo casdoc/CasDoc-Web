@@ -548,8 +548,10 @@ export const useBlockEditor = ({
             window.removeEventListener("copy", handleCopy);
         };
     }, [editor]);
-
+    // console.debug("editor:", editor?.state.doc);
     return {
+        docContent: docContent,
+        editorDoc: editor?.state.doc,
         editor,
         currentStatus,
     };

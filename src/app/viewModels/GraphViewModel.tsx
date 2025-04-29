@@ -5,6 +5,7 @@ import { useProjectContext } from "./context/ProjectContext";
 // import defaultContent from "../models/default-value/defaultContent";
 import { useDocumentQuery } from "./hooks/useDocumentQuery";
 import z from "zod";
+import { useEditorContext } from "./context/EditorContext";
 
 export interface GraphViewModel {
     connectionEdges: ConnectionEdge[];
@@ -69,6 +70,15 @@ export function useGraphViewModel(): GraphViewModel {
         selectedDocumentId !== null &&
             !uuidSchema.safeParse(selectedDocumentId).success
     );
+    const { editor, docContent, editorDoc } = useEditorContext();
+    console.log("editor state", editor?.state);
+
+    useEffect(() => {
+        console.log("selected document id:", selectedDocumentId);
+        console.log("doc content from content query hook:", editorDoc);
+        console.log("doc content from editor context:", docContent);
+        console.log("editor ", editor?.state.toJSON());
+    }, [docContent, editorDoc, selectedDocumentId, editor]); // Add editorVersion to dependencies
 
     useEffect(() => {
         if (!selectedDocumentId || isDocumentLoading) return;

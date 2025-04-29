@@ -12,6 +12,7 @@ import GraphView from "../flow/GraphView";
 import { Button, Flex, Text } from "@radix-ui/themes";
 import DocMode from "@/app/models/enum/DocMode";
 import z from "zod";
+import { useEditorContext } from "@/app/viewModels/context/EditorContext";
 
 const DocView = () => {
     const uuidSchema = z.uuid({ version: "v4" });
@@ -28,6 +29,10 @@ const DocView = () => {
             !uuidSchema.safeParse(selectedDocumentId).success
     );
     // Initialize editor only when document is available
+    // const { editor, currentStatus } = useEditorContext(
+    //     documentId
+    // );
+
     const { editor, currentStatus } = useBlockEditor({
         documentId: selectedDocumentId || "",
     });
