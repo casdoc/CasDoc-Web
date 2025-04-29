@@ -53,6 +53,7 @@ const SaveStatusBadge = ({ editorStatus }: SaveStatusBadgeProps) => {
 
     return (
         <Badge
+            variant={null}
             className={cn(
                 "flex items-center text-xs px-2 py-0.5",
                 content.className
