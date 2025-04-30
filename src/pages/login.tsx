@@ -1,7 +1,7 @@
 "use client";
 
 import LoginButton from "@/app/components/home/LoginButton";
-// import TryLocalButton from "@/app/components/home/TryLocalButton";
+import TryLocalButton from "@/app/components/home/TryLocalButton";
 import { Flex } from "@radix-ui/themes";
 import { useRouter } from "next/router";
 import { useState } from "react";
@@ -10,18 +10,18 @@ import { PiTestTube } from "react-icons/pi";
 const Login = () => {
     const router = useRouter();
     const [loginLoading, setLoginLoading] = useState(false);
-    // const [localLoading, setLocalLoading] = useState(false);
-    // const [buttonDisabled, setButtonDisabled] = useState(false);
+    const [localLoading, setLocalLoading] = useState(false);
+    const [buttonDisabled, setButtonDisabled] = useState(false);
 
     const handleLoginClick = () => {
-        // setButtonDisabled(true);
+        setButtonDisabled(true);
         setLoginLoading(true);
     };
 
-    // const handleLocalClick = () => {
-    //     setButtonDisabled(true);
-    //     setLocalLoading(true);
-    // };
+    const handleLocalClick = () => {
+        // setButtonDisabled(true);
+        setLocalLoading(true);
+    };
 
     const goToHome = () => {
         router.push("/");
@@ -54,16 +54,16 @@ const Login = () => {
                         loading={loginLoading}
                         disabled={false}
                     />
-                    {/* <Flex direction="column" align="center">
+                    <Flex direction="column" align="center">
                         <TryLocalButton
                             handleClick={handleLocalClick}
                             loading={localLoading}
-                            disabled={true}
+                            disabled={buttonDisabled}
                         />
                         <span className="text-xs text-gray-500 mt-1">
                             {"Your data won't be saved."}
                         </span>
-                    </Flex> */}
+                    </Flex>
                 </Flex>
                 <Flex
                     gapX="7"
