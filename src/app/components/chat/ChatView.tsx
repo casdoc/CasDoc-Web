@@ -4,22 +4,23 @@ import { Textarea } from "@/components/ui/textarea";
 import { useCallback, useState, useRef, useEffect } from "react";
 import { SendHorizontal, X } from "lucide-react";
 import AgentRelationAdviceDialog from "../doc/Dialog/AgentRelationAdviceDialog";
-
-interface ChatMessage {
-    role: string;
-    content: React.ReactNode;
-}
+import {
+    AgentMessage,
+    MessageComponent,
+    renderMarkdown,
+} from "./handleMessageByType";
+import { AgentService } from "@/app/models/services/AgentService";
+import { useToast } from "@/hooks/use-toast";
+import { useProjectContext } from "@/app/viewModels/context/ProjectContext";
 
 const ChatView = () => {
-    const [inputValue, setInputValue] = useState("");
-    const [messages, setMessages] = useState<ChatMessage[]>([]);
+    const [inputValue, setInputValue] = useState(
+        "幫我寫出user的 data shcema 和 一些基本登入登出的api interrface"
+    );
+    const [messages, setMessages] = useState<AgentMessage[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
     const [adviceDialogOpen, setAdviceDialogOpen] = useState(false);
-    const {
-        componentAddAI,
-        addToAgentNodeIds,
-        removeNodeFromAgent,
-        setIsOpen,
-    } = useChatContext();
+
     const handleOnChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setInputValue(e.target.value);
     };
@@ -30,50 +31,124 @@ const ChatView = () => {
         },
         [setAdviceDialogOpen]
     );
+    const { toast } = useToast();
+    const messagesEndRef = useRef<HTMLDivElement>(null);
+    const { selectedProjectId } = useProjectContext();
+    const { addToAgentNodeIds, removeNodeFromAgent, setIsOpen } =
+        useChatContext();
 
     const handleCloseChat = () => {
         setIsOpen(false);
     };
 
-    const handleOnClick = () => {
-        if (inputValue.length === 0) return;
-        const userMsg: ChatMessage = {
-            role: "user",
-            content: inputValue,
-        };
-
-        const newMessages = [...messages, userMsg];
-        setMessages(newMessages);
-        setInputValue("");
-
-        setTimeout(() => {
-            const spinnerMsg: ChatMessage = {
-                role: "spinner",
-                content: "",
-            };
-            setMessages((prev) => [...prev, spinnerMsg]);
-        }, 200);
-        setTimeout(() => {
-            setMessages((prev) => {
-                const updated = [...prev];
-                updated.pop();
-                return updated;
-            });
-
-            let response: React.ReactNode = "Hello! This is a demo message.";
-
-            typedChatReply(response);
-        }, 2500);
+    const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     };
 
-    // typedChatReply function for typed effect
-    function typedChatReply(fullContent: React.ReactNode) {
-        const chatMsg: ChatMessage = {
-            role: "chat",
-            content: fullContent,
+    useEffect(() => {
+        scrollToBottom();
+    }, [messages]);
+
+    const handleOnClick = async () => {
+        if (inputValue.length === 0 || isLoading) return;
+
+        // Add user message
+        const userMsg: AgentMessage = {
+            type: "user_prompt",
+            content: { text: inputValue.replace(/\s*$/, "") },
         };
-        setMessages((prev) => [...prev, chatMsg]);
-    }
+
+        setMessages((prev) => [...prev, userMsg]);
+        setInputValue("");
+        setIsLoading(true);
+
+        // Add thinking indicator
+        setMessages((prev) => [
+            ...prev,
+            { type: "thinking", content: { text: "Thinking..." } },
+        ]);
+
+        try {
+            // const nodeIds = addToAgentNodeIds.map((node) => node.id);
+
+            await AgentService.streamChatResponse(
+                userMsg.content.text || "",
+                selectedProjectId || "",
+                // nodeIds.length > 0 ? nodeIds : undefined,
+                (data) => {
+                    // Skip if this is a duplicate user message
+                    if (data.type === "user_prompt") {
+                        return;
+                    }
+
+                    // Remove thinking indicator when we get first real response
+                    if (data.type !== "thinking") {
+                        setMessages((prev) =>
+                            prev.filter((msg) => msg.type !== "thinking")
+                        );
+                    }
+
+                    setMessages((prev) => {
+                        // For text_delta, replace the previous text_delta with the updated one
+                        if (data.type === "text_delta") {
+                            const newMessages = [...prev];
+                            const existingTextDeltaIndex =
+                                newMessages.findIndex(
+                                    (msg) => msg.type === "text_delta"
+                                );
+
+                            if (existingTextDeltaIndex >= 0) {
+                                newMessages[existingTextDeltaIndex] = data;
+                                return newMessages;
+                            } else {
+                                // If no existing text_delta, add this as a new message
+                                return [...prev, data];
+                            }
+                        }
+
+                        // For final_answer, replace any existing text_delta
+                        if (data.type === "final_answer") {
+                            return prev
+                                .filter((msg) => msg.type !== "text_delta")
+                                .concat(data);
+                        }
+
+                        // For other message types, just add them
+                        return [...prev, data];
+                    });
+                },
+                (error) => {
+                    setMessages((prev) => [
+                        ...prev.filter((msg) => msg.type !== "thinking"),
+                        {
+                            type: "error",
+                            content: {
+                                message: error.message || "An error occurred",
+                            },
+                        },
+                    ]);
+
+                    toast({
+                        title: "Error",
+                        description: "Failed to get a response from the agent.",
+                        variant: "destructive",
+                    });
+                },
+                () => {
+                    setIsLoading(false);
+                }
+            );
+        } catch (error) {
+            setIsLoading(false);
+            console.error("Error sending message:", error);
+
+            toast({
+                title: "Error",
+                description: "Failed to connect to the agent service.",
+                variant: "destructive",
+            });
+        }
+    };
 
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -94,11 +169,11 @@ const ChatView = () => {
     useEffect(() => {
         autoResizeTextarea();
     }, [inputValue]);
-
+    if (!selectedProjectId) {
+        return null;
+    }
     return (
-        // Main container - remove specific background/blur, ensure it fills the parent
         <div className="flex flex-col justify-between w-full h-full gap-3 relative overflow-hidden">
-            {/* Header with title and close button - adjust background for better contrast */}
             <div className="flex-shrink-0 flex justify-between items-center px-4 py-2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-b border-gray-200/50 dark:border-gray-700/50 z-10">
                 <h3 className="font-medium text-gray-800 dark:text-gray-200">
                     CasDoc Agent
@@ -113,49 +188,18 @@ const ChatView = () => {
                 </Button>
             </div>
 
-            {/* Messages container - adjust padding, remove specific background */}
             <div className="flex-grow w-auto mx-4 p-4 overflow-auto rounded-md bg-transparent">
-                {messages.map((msg, index) => {
-                    if (msg.role === "spinner") {
-                        return (
-                            <div
-                                key={index}
-                                className="flex justify-start my-2"
-                            >
-                                <div className="text-black dark:text-white max-w-xs px-3 py-2 rounded-xl flex items-center">
-                                    <div className="w-5 h-5 border-2 border-blue-400 dark:border-blue-500 border-t-transparent border-b-transparent rounded-full animate-spin mr-2"></div>
-                                    <span className="text-sm">Thinking...</span>
-                                </div>
-                            </div>
-                        );
-                    }
-
-                    const isUser = msg.role === "user";
-                    const containerClasses = isUser
-                        ? "flex justify-end my-2"
-                        : "flex justify-start my-2";
-                    // Use slightly more opaque backgrounds for bubbles if needed
-                    const bubbleClasses = isUser
-                        ? "bg-blue-500 text-white"
-                        : "bg-gray-100 dark:bg-gray-700 text-black dark:text-white";
-
-                    return (
-                        <div key={index} className={containerClasses}>
-                            <div
-                                className={`${bubbleClasses} ${
-                                    msg.role === "user" && `max-w-xs`
-                                } px-4 py-2.5 rounded-xl shadow-sm`}
-                            >
-                                {msg.content}
-                            </div>
-                        </div>
-                    );
-                })}
+                {messages.map((msg, index) => (
+                    <MessageComponent
+                        key={index}
+                        message={msg}
+                        isUser={msg.type === "user_prompt"}
+                    />
+                ))}
+                <div ref={messagesEndRef} />
             </div>
 
-            {/* Input area - adjust background/padding */}
             <div className="flex-shrink-0 flex rounded-lg flex-col p-3 m-1 bg-neutral-100 dark:bg-gray-800/80 backdrop-blur-sm border-t border-gray-200/50 dark:border-gray-700/50">
-                {/* Node selection pills - moved here to be above input */}
                 {addToAgentNodeIds.length > 0 && (
                     <div className="flex flex-wrap gap-2 mb-2">
                         {addToAgentNodeIds.map((node) => (
@@ -175,33 +219,28 @@ const ChatView = () => {
                     </div>
                 )}
 
-                {/* Input with internal send button */}
                 <div className="relative">
                     <Textarea
                         ref={textareaRef}
-                        placeholder="Type your message..."
+                        placeholder="Ask Casdoc Agent"
                         value={inputValue}
                         className="w-full min-h-[80px] max-h-[150px] pr-12 bg-white/70 dark:bg-gray-700/50 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-1 focus:ring-blue-300 dark:focus:ring-blue-600 resize-none"
-                        onChange={(e) => {
-                            handleOnChange(e);
-                        }}
+                        onChange={handleOnChange}
                         onKeyDown={(e) => {
                             if (e.key === "Enter" && !e.shiftKey) {
                                 e.preventDefault();
                                 handleOnClick();
                             }
                         }}
-                        onPaste={(e) => {
-                            e.persist();
-                        }}
-                        rows={1} // Start with 1 row and let auto-resize handle it
+                        disabled={isLoading}
+                        rows={1}
                     />
 
-                    {/* Send button inside the textarea */}
                     <Button
                         onClick={handleOnClick}
                         variant="ghost"
-                        className="absolute bottom-1 right-3 p-1 h-8 w-8 rounded-md  hover:bg-neutral-200 dark:bg-blue-600 dark:hover:bg-blue-700 text-zinc-600 flex items-center justify-center"
+                        disabled={isLoading || inputValue.length === 0}
+                        className="absolute bottom-1 right-3 p-1 h-8 w-8 rounded-md hover:bg-neutral-200 dark:bg-blue-600 dark:hover:bg-blue-700 text-zinc-600 flex items-center justify-center"
                     >
                         <SendHorizontal size={16} />
                     </Button>
