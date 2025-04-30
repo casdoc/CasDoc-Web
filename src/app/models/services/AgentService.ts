@@ -46,7 +46,7 @@ export class AgentService {
         projectData?: ProjectData
     ): Promise<ReadableStream<Uint8Array> | null> {
         try {
-            const token = await this.getAuthToken();
+            // const token = await this.getAuthToken();
 
             // Properly serialize the projectData for the backend
             const serializedProjectData = projectData
@@ -126,15 +126,49 @@ export class AgentService {
                 const chunk = decoder.decode(value, { stream: true });
                 buffer += chunk;
 
-                // Process complete SSE messages from buffer
-                const messages = buffer.split(/\n\n/);
-                // Keep the last part which might be incomplete
-                buffer = messages.pop() || "";
+                // Process any complete events immediately
+                // Look for data: lines in the buffer
+                const lines = buffer.split("\n");
+                let newBuffer = "";
+                let currentEvent = "";
 
-                // Process each complete message
-                for (const message of messages) {
-                    this.processSSEChunk(message, onMessage);
+                for (let i = 0; i < lines.length; i++) {
+                    const line = lines[i];
+
+                    // If this is a data line, add it to the current event
+                    if (line.startsWith("data:")) {
+                        currentEvent += line + "\n";
+
+                        // If the next line is empty or the last line, this event is complete
+                        if (
+                            i + 1 >= lines.length ||
+                            lines[i + 1].trim() === ""
+                        ) {
+                            // Process this complete event immediately
+                            this.processSSEChunk(currentEvent, onMessage);
+                            currentEvent = "";
+                            i++; // Skip the empty line
+                        }
+                    } else if (currentEvent) {
+                        // If we have a current event but this isn't a data line
+                        // and it's not an empty line, something is wrong with the format
+                        if (line.trim() !== "") {
+                            // Add to current event and continue
+                            currentEvent += line + "\n";
+                        } else {
+                            // Empty line means end of event
+                            this.processSSEChunk(currentEvent, onMessage);
+                            currentEvent = "";
+                        }
+                    } else if (line.trim() !== "") {
+                        // If no current event and not an empty line,
+                        // save to buffer for next iteration
+                        newBuffer += line + "\n";
+                    }
                 }
+
+                // Save any unprocessed lines and current partial event for next iteration
+                buffer = newBuffer + currentEvent;
             }
         } catch (error) {
             console.error("Error in streamChatResponse:", error);
@@ -150,12 +184,11 @@ export class AgentService {
     ): void {
         // Process SSE data format: "data: {...}"
         const dataLines = chunk.split(/data:\s*/g).filter((f) => f.trim());
-        // console.debug("SSE data lines:", dataLines);
 
         for (const line of dataLines) {
             try {
-                // console.debug("SSE JSON string:", line);
                 const raw = line.trim();
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 let data: any;
                 try {
                     data = JSON.parse(raw);
@@ -169,11 +202,10 @@ export class AgentService {
 
                 // Validate with schema
                 const result = AgentMessageSchema.safeParse(data);
-                // console.debug("Parsed message:", result);
                 if (result.success) {
-                    // Ensure immediate UI update for each chunk
+                    // Immediately dispatch to UI
                     if (onMessage) {
-                        setTimeout(() => onMessage(result.data), 0);
+                        onMessage(result.data); // Remove setTimeout for immediate update
                     }
                 } else {
                     console.warn("Invalid message format:", result.error, data);
