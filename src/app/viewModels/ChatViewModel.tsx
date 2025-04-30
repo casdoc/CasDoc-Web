@@ -1,8 +1,26 @@
 import { useState } from "react";
+import { ProjectService } from "@/app/models/services/ProjectService";
 
 interface AgentNode {
     id: string;
     title: string;
+}
+
+// Document data interface for agent communication
+export interface DocumentData {
+    id: string;
+    title: string;
+    description?: string;
+    type: "SRD" | "SDD" | "STD" | "OTHER";
+    content?: string;
+}
+
+// Project data interface for agent communication
+export interface ProjectData {
+    id: string;
+    project_name?: string;
+    project_description?: string;
+    documents?: DocumentData[];
 }
 
 export interface ChatViewModel {
@@ -15,6 +33,7 @@ export interface ChatViewModel {
     addToAgentNodeIds: AgentNode[];
     addNodeToAgent: (nodeId: string, title: string) => void;
     removeNodeFromAgent: (nodeId: string) => void;
+    getProjectAllDataById: (projectId: string) => ProjectData | null;
 }
 
 export const useChatViewModel = (): ChatViewModel => {
@@ -56,6 +75,36 @@ export const useChatViewModel = (): ChatViewModel => {
         );
     };
 
+    const getProjectAllDataById = (projectId: string): ProjectData | null => {
+        try {
+            const project = ProjectService.getProjectById(projectId);
+            if (!project) return null;
+
+            const documents = ProjectService.getDocumentsByProjectId(projectId);
+
+            const documentDataList = documents.map((doc) => ({
+                id: doc.id,
+                title: doc.title,
+                description: doc.description,
+                type: doc.type as "SRD" | "SDD" | "STD" | "OTHER",
+                content: doc.content ? JSON.stringify(doc.content) : undefined,
+            }));
+
+            const projectData: ProjectData = {
+                id: project.id,
+                project_name: project.name,
+                project_description: project.description,
+                documents: documentDataList,
+            };
+
+            console.log("Project data:", projectData);
+            return projectData;
+        } catch (error) {
+            console.error("Error retrieving project data:", error);
+            return null;
+        }
+    };
+
     return {
         isOpen,
         setIsOpen,
@@ -64,5 +113,6 @@ export const useChatViewModel = (): ChatViewModel => {
         addToAgentNodeIds,
         addNodeToAgent,
         removeNodeFromAgent,
+        getProjectAllDataById,
     };
 };

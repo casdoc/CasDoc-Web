@@ -147,22 +147,22 @@ export const useProjectViewModel = (): ProjectViewModel => {
         setSelectedProjectId(projectId);
     }, []);
 
-    const getProjectByDocumentId = (
-        documentId: string
-    ): Project | undefined => {
-        for (const project of projects) {
-            const documents = getDocumentsByProjectId(project.id);
-            const doc = documents.find((d) => d.id === documentId);
-            if (doc) return project;
-        }
-    };
-
     // Document Actions
     const getDocumentsByProjectId = useCallback(
         (projectId: string): Document[] => {
             return ProjectService.getDocumentsByProjectId(projectId);
         },
         []
+    );
+    const getProjectByDocumentId = useCallback(
+        (documentId: string): Project | undefined => {
+            for (const project of projects) {
+                const documents = getDocumentsByProjectId(project.id);
+                const doc = documents.find((d) => d.id === documentId);
+                if (doc) return project;
+            }
+        },
+        [getDocumentsByProjectId, projects]
     );
 
     useEffect(() => {
@@ -172,12 +172,18 @@ export const useProjectViewModel = (): ProjectViewModel => {
                 const docs = getDocumentsByProjectId(projects[0].id);
                 if (docs[0]) {
                     setSelectedDocumentId(docs[0].id);
+                    setSelectedProjectId(
+                        getProjectByDocumentId(docs[0].id)?.id || ""
+                    );
                     return;
                 }
             }
         }
+        setSelectedProjectId(
+            getProjectByDocumentId(localSelectedDoc)?.id || ""
+        );
         setSelectedDocumentId(localSelectedDoc);
-    }, [projects, getDocumentsByProjectId]);
+    }, [projects, getDocumentsByProjectId, getProjectByDocumentId]);
 
     const createDocument = useCallback((input: DocumentInput): string => {
         const document = DocumentService.createDocument(input);
