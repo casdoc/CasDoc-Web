@@ -12,10 +12,12 @@ import {
 import { AgentService } from "@/app/models/services/AgentService";
 import { useToast } from "@/hooks/use-toast";
 import { useProjectContext } from "@/app/viewModels/context/ProjectContext";
+import { ProjectData } from "@/app/viewModels/ChatViewModel";
 
 const ChatView = () => {
     const [inputValue, setInputValue] = useState(
-        "幫我寫出user的 data shcema 和 一些基本登入登出的api interrface"
+        // "幫我寫出user的 data shcema 和 一些基本登入登出的api interrface"
+        "總結目前文件的內容"
     );
     const [messages, setMessages] = useState<AgentMessage[]>([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -34,9 +36,16 @@ const ChatView = () => {
     const { toast } = useToast();
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const { selectedProjectId } = useProjectContext();
-    const { addToAgentNodeIds, removeNodeFromAgent, setIsOpen } =
-        useChatContext();
-
+    const {
+        addToAgentNodeIds,
+        removeNodeFromAgent,
+        setIsOpen,
+        getProjectAllDataById,
+    } = useChatContext();
+    const projectData: ProjectData | null = getProjectAllDataById(
+        selectedProjectId || ""
+    );
+    console.debug("projectData", projectData);
     const handleCloseChat = () => {
         setIsOpen(false);
     };
@@ -73,7 +82,7 @@ const ChatView = () => {
 
             await AgentService.streamChatResponse(
                 userMsg.content.text || "",
-                selectedProjectId || "",
+                projectData,
                 // nodeIds.length > 0 ? nodeIds : undefined,
                 (data) => {
                     // Skip if this is a duplicate user message
@@ -169,9 +178,11 @@ const ChatView = () => {
     useEffect(() => {
         autoResizeTextarea();
     }, [inputValue]);
+
     if (!selectedProjectId) {
         return null;
     }
+
     return (
         <div className="flex flex-col justify-between w-full h-full gap-3 relative overflow-hidden">
             <div className="flex-shrink-0 flex justify-between items-center px-4 py-2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-b border-gray-200/50 dark:border-gray-700/50 z-10">

@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import { any, z } from "zod";
+import { ProjectData } from "@/app/viewModels/ChatViewModel";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
@@ -42,19 +43,24 @@ export class AgentService {
 
     static async sendMessage(
         prompt: string,
-        projectId: string
-        // nodeIds?: string[]
+        projectData?: ProjectData
     ): Promise<ReadableStream<Uint8Array> | null> {
         try {
             const token = await this.getAuthToken();
+
+            // Properly serialize the projectData for the backend
+            const serializedProjectData = projectData
+                ? JSON.stringify(projectData)
+                : null;
+
             console.debug(
                 "payload:",
                 JSON.stringify({
                     prompt,
-                    projectId,
-                    // nodeIds,
+                    project_data: serializedProjectData,
                 })
             );
+
             const response = await fetch(
                 `${baseUrl}/api/v1/public/agent/chat`,
                 {
@@ -65,8 +71,7 @@ export class AgentService {
                     },
                     body: JSON.stringify({
                         prompt,
-                        projectId,
-                        // nodeIds,
+                        project_data: serializedProjectData,
                     }),
                 }
             );
@@ -87,14 +92,15 @@ export class AgentService {
 
     static async streamChatResponse(
         prompt: string,
-        projectId: string,
+        projectData?: ProjectData | null,
         // nodeIds?: string[],
         onMessage?: (data: AgentMessage) => void,
         onError?: (error: Error) => void,
         onComplete?: () => void
     ): Promise<void> {
+        if (!projectData) return;
         try {
-            const stream = await this.sendMessage(prompt, projectId);
+            const stream = await this.sendMessage(prompt, projectData);
 
             if (!stream) {
                 throw new Error("No stream returned from server");
