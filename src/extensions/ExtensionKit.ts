@@ -86,7 +86,7 @@ export const ExtensionKit = () => [
     TestCaseExtension,
     WhiteBoardExtension,
     UniqueID.configure({
-        types: ["heading", "paragraph"],
+        types: ["heading", "paragraph", "codeBlock"],
     }),
 ];
 
