@@ -45,7 +45,7 @@ const ChatView = () => {
     const projectData: ProjectData | null = getProjectAllDataById(
         selectedProjectId || ""
     );
-    console.debug("projectData", projectData);
+
     const handleCloseChat = () => {
         setIsOpen(false);
     };

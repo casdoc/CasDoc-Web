@@ -64,27 +64,19 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
 
 export const renderMarkdown = (text: string): string => {
     if (!text) return "";
-
+    //remove last \n if exists
+    if (text.endsWith("\n")) {
+        text = text.slice(0, -1);
+    }
     // Configure marked
     marked.setOptions({
         breaks: true,
         gfm: true,
         async: false, // Ensure synchronous operation
-        // headerIds: false,
     });
 
     // Render markdown (now guaranteed to be synchronous)
     const rendered = marked.parse(text) as string;
-
-    // Apply syntax highlighting if highlight.js is loaded
-    setTimeout(() => {
-        if (typeof window !== "undefined" && window.hljs) {
-            document.querySelectorAll("pre code").forEach((block) => {
-                window.hljs?.highlightElement(block);
-            });
-        }
-    }, 0);
-
     return rendered;
 };
 
@@ -97,9 +89,10 @@ export const MessageComponent: React.FC<{
     switch (type) {
         case "user_prompt":
             return (
-                <div className="flex justify-end my-2">
-                    <div className="bg-blue-500 text-white max-w-xs px-4 py-2.5 rounded-xl shadow-sm whitespace-pre-wrap">
-                        <div
+                <div className="flex justify-end">
+                    <div className="bg-neutral-700 text-white max-w-xs py-2 px-4 rounded-xl shadow-sm whitespace-pre-wrap ">
+                        <span
+                            className="flex"
                             dangerouslySetInnerHTML={{
                                 __html: renderMarkdown(content.text || ""),
                             }}
