@@ -6,6 +6,14 @@ interface AgentNode {
     title: string;
 }
 
+// Connection data interface for agent communication
+export interface ConnectionData {
+    source: string;
+    target: string;
+    label?: string;
+    data: { bidirectional: boolean; offset: number };
+}
+
 // Document data interface for agent communication
 export interface DocumentData {
     id: string;
@@ -21,6 +29,7 @@ export interface ProjectData {
     project_name?: string;
     project_description?: string;
     documents?: DocumentData[];
+    connections?: ConnectionData[];
 }
 
 export interface ChatViewModel {
