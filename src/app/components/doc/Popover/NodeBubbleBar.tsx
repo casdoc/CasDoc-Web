@@ -1,10 +1,25 @@
-import React, { useRef, useReducer, useCallback, memo, useEffect } from "react";
+import React, {
+    useRef,
+    useReducer,
+    useCallback,
+    memo,
+    useEffect,
+    useState,
+} from "react";
 import {
     Popover,
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
-import { Copy, Trash2, Pencil } from "lucide-react";
+import {
+    Copy,
+    Trash2,
+    Pencil,
+    ChevronDown,
+    Bot,
+    CirclePlus,
+    BotMessageSquare,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
     Tooltip,
@@ -14,13 +29,14 @@ import {
 } from "@/components/ui/tooltip";
 import useCustomNodeActions from "@/extensions/hooks/useCustomNodeActions";
 import { Editor } from "@tiptap/core";
-// import AgentRelationAdviceDialog from "../Dialog/AgentRelationAdviceDialog";
-// import {
-//     DropdownMenu,
-//     DropdownMenuContent,
-//     DropdownMenuItem,
-//     DropdownMenuTrigger,
-// } from "@/components/ui/dropdown-menu";
+import AgentRelationAdviceDialog from "../Dialog/AgentRelationAdviceDialog";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useChatContext } from "@/app/viewModels/context/ChatContext";
 
 // Define reducer action types
 type BubbleAction =
@@ -66,7 +82,8 @@ const NodeBubbleBar: React.FC<NodeBubbleBarProps> = ({
     initialOpen = false,
 }) => {
     const contentRef = useRef<HTMLDivElement>(null);
-    // const [adviceDialogOpen, setAdviceDialogOpen] = useState(false);
+    const [adviceDialogOpen, setAdviceDialogOpen] = useState(false);
+    const { addNodeToAgent } = useChatContext();
 
     const [state, dispatch] = useReducer(bubbleReducer, {
         isOpen: initialOpen,
@@ -79,6 +96,38 @@ const NodeBubbleBar: React.FC<NodeBubbleBarProps> = ({
             getPos,
             editor,
         });
+
+    const getNodeTitle = useCallback(() => {
+        if (!getPos || !editor) return "Component";
+
+        try {
+            const pos = getPos();
+            const node = editor.state.doc.nodeAt(pos);
+
+            // Try to get title from different possible locations in the node
+            if (node) {
+                // Check common places where title might be stored
+                if (node.attrs.title) return node.attrs.title;
+                if (node.attrs.config?.info?.name)
+                    return node.attrs.config.info.name;
+                if (node.attrs.name) return node.attrs.name;
+                if (node.attrs.label) return node.attrs.label;
+
+                // If we have text content, use first few words
+                if (node.textContent) {
+                    const text = node.textContent.trim();
+                    return text.length > 20
+                        ? text.substring(0, 20) + "..."
+                        : text;
+                }
+            }
+
+            // Fallback
+            return `Node ${id.substring(0, 6)}`;
+        } catch {
+            return `Node ${id.substring(0, 6)}`;
+        }
+    }, [id, getPos, editor]);
 
     // Open the bubble bar when the node is selected
     useEffect(() => {
@@ -122,14 +171,24 @@ const NodeBubbleBar: React.FC<NodeBubbleBarProps> = ({
         [handleDelete]
     );
 
-    // const onAdviceClick = useCallback(
-    //     (e: React.MouseEvent) => {
-    //         e.stopPropagation();
-    //         setAdviceDialogOpen(true);
-    //         handleOpenChange(false);
-    //     },
-    //     [setAdviceDialogOpen, handleOpenChange]
-    // );
+    const onAdviceClick = useCallback(
+        (e: React.MouseEvent) => {
+            e.stopPropagation();
+            setAdviceDialogOpen(true);
+            handleOpenChange(false);
+        },
+        [setAdviceDialogOpen, handleOpenChange]
+    );
+
+    const onAddToAgentClick = useCallback(
+        (e: React.MouseEvent) => {
+            e.stopPropagation();
+            const title = getNodeTitle();
+            addNodeToAgent(id, title);
+            handleOpenChange(false);
+        },
+        [handleOpenChange, id, addNodeToAgent, getNodeTitle]
+    );
 
     // Only render when selected
     if (!selected && !state.isOpen) {
@@ -202,7 +261,7 @@ const NodeBubbleBar: React.FC<NodeBubbleBarProps> = ({
                                 <p>Delete</p>
                             </TooltipContent>
                         </Tooltip>
-                        {/* 
+
                         <DropdownMenu>
                             <DropdownMenuTrigger>
                                 <div className="flex items-center gap-1 px-2">
@@ -216,22 +275,30 @@ const NodeBubbleBar: React.FC<NodeBubbleBarProps> = ({
                             <DropdownMenuContent alignOffset={2}>
                                 <DropdownMenuItem
                                     onClick={onAdviceClick}
-                                    className="text-sm"
+                                    className="text-sm font-semibold text-gray-600"
                                 >
+                                    <CirclePlus className="h-5 w-5 text-gray-500" />
                                     Auto Connect
                                 </DropdownMenuItem>
+                                <DropdownMenuItem
+                                    onClick={onAddToAgentClick}
+                                    className="text-sm font-semibold text-gray-600"
+                                >
+                                    <BotMessageSquare className="h-5 w-5 text-gray-500" />
+                                    Add to Agent
+                                </DropdownMenuItem>
                             </DropdownMenuContent>
-                        </DropdownMenu> */}
+                        </DropdownMenu>
                     </TooltipProvider>
                 </PopoverContent>
             </Popover>
 
-            {/* <AgentRelationAdviceDialog
+            <AgentRelationAdviceDialog
                 open={adviceDialogOpen}
                 selectedNodeId={id}
                 onOpenChange={setAdviceDialogOpen}
                 title="AI Relationship Advice"
-            /> */}
+            />
         </div>
     );
 };
