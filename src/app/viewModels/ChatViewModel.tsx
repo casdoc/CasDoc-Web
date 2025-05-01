@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { ProjectService } from "@/app/models/services/ProjectService";
+import { GraphService } from "../models/services/GraphService";
 
 interface AgentNode {
     id: string;
@@ -89,6 +90,18 @@ export const useChatViewModel = (): ChatViewModel => {
             const project = ProjectService.getProjectById(projectId);
             if (!project) return null;
 
+            const connections = GraphService.getEdges();
+
+            const connectionDataList = connections.map((edge) => ({
+                source: edge.source,
+                target: edge.target,
+                label: edge.label,
+                data: {
+                    bidirectional: edge.data?.bidirectional || false,
+                    offset: edge.data?.offset || 0,
+                },
+            }));
+
             const documents = ProjectService.getDocumentsByProjectId(projectId);
 
             const documentDataList = documents.map((doc) => ({
@@ -104,6 +117,7 @@ export const useChatViewModel = (): ChatViewModel => {
                 project_name: project.name,
                 project_description: project.description,
                 documents: documentDataList,
+                connections: connectionDataList,
             };
 
             // console.log("Project data:", projectData);
