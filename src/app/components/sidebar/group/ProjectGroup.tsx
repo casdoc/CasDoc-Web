@@ -1,5 +1,4 @@
 import ProjectMenu from "../menu/ProjectMenu";
-import DropDownMenu from "../menu/DropDownMenu";
 import { useState } from "react";
 import { ChevronDown, Plus } from "lucide-react";
 import {
@@ -15,7 +14,7 @@ import {
     CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 
-const dropdownItems = ["Order"];
+// const dropdownItems = ["Order"];
 
 const ProjectGroup = () => {
     const { projects, selectedProjectId, openProjectDialog } =
@@ -41,7 +40,7 @@ const ProjectGroup = () => {
                                 onClick={handleAddProject}
                                 className="hover:bg-neutral-300 rounded-md w-6 h-6 p-1"
                             />
-                            <DropDownMenu dropdownItems={dropdownItems} />
+                            {/* <DropDownMenu dropdownItems={dropdownItems} /> */}
                         </div>
                     </SidebarGroupLabel>
                 </CollapsibleTrigger>
