@@ -11,8 +11,8 @@ interface AgentNode {
 export interface ConnectionData {
     source: string;
     target: string;
-    label?: string;
-    data: { bidirectional: boolean; offset: number };
+    label: string;
+    bidirectional: boolean;
 }
 
 // Document data interface for agent communication
@@ -95,11 +95,8 @@ export const useChatViewModel = (): ChatViewModel => {
             const connectionDataList = connections.map((edge) => ({
                 source: edge.source,
                 target: edge.target,
-                label: edge.label,
-                data: {
-                    bidirectional: edge.data?.bidirectional || false,
-                    offset: edge.data?.offset || 0,
-                },
+                label: edge?.label || "",
+                bidirectional: edge.data?.bidirectional || false,
             }));
 
             const documents = ProjectService.getDocumentsByProjectId(projectId);
