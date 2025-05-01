@@ -38,7 +38,7 @@ const ProjectGroup = () => {
                         <div className="ml-auto flex items-center gap-1 text-black">
                             <Plus
                                 onClick={handleAddProject}
-                                className="hover:bg-neutral-300 rounded-md w-6 h-6 p-1"
+                                className="hover:bg-neutral-300 rounded-md w-6 h-6 p-1 mb-2"
                             />
                             {/* <DropDownMenu dropdownItems={dropdownItems} /> */}
                         </div>

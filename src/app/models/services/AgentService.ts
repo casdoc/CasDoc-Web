@@ -82,7 +82,7 @@ export class AgentService {
                     `HTTP error! status: ${response.status}, message: ${errorText}`
                 );
             }
-            console.debug("Response:", response);
+            // console.debug("Response:", response);
             return response.body;
         } catch (error) {
             console.error("Error in sendMessage:", error);

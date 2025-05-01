@@ -83,7 +83,7 @@ export const renderMarkdown = (text: string): string => {
 export const MessageComponent: React.FC<{
     message: AgentMessage;
     isUser?: boolean;
-}> = ({ message, isUser = false }) => {
+}> = ({ message }) => {
     const { type, content } = message;
 
     switch (type) {
@@ -135,6 +135,7 @@ export const MessageComponent: React.FC<{
                 const argObj = JSON.parse(content.args || "{}");
                 formattedArgs = JSON.stringify(argObj, null, 2);
             } catch (e) {
+                throw e;
                 // Use as is if not valid JSON
             }
 
@@ -160,6 +161,7 @@ export const MessageComponent: React.FC<{
                 const resultObj = JSON.parse(content.result || "{}");
                 formattedResult = JSON.stringify(resultObj, null, 2);
             } catch (e) {
+                throw e;
                 // Use markdown if not valid JSON
             }
 
