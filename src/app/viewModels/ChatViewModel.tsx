@@ -117,7 +117,6 @@ export const useChatViewModel = (): ChatViewModel => {
                 connections: connectionDataList,
             };
 
-            console.log("Project data:", projectData);
             return projectData;
         } catch (error) {
             console.error("Error retrieving project data:", error);
