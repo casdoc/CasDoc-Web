@@ -41,6 +41,7 @@ export class AgentService {
         return session.access_token;
     }
 
+    // /api/v1/public/agent/chat
     static async sendMessage(
         prompt: string,
         projectData?: ProjectData
@@ -86,6 +87,56 @@ export class AgentService {
             return response.body;
         } catch (error) {
             console.error("Error in sendMessage:", error);
+            throw error;
+        }
+    }
+
+    // /api/v1/public/agent/connect
+    static async connectionAdvice(
+        prompt: string,
+        projectData?: ProjectData,
+        componentId?: string
+    ): Promise<ReadableStream<Uint8Array> | null> {
+        try {
+            const serializedProjectData = projectData
+                ? JSON.stringify(projectData)
+                : null;
+
+            console.debug(
+                "payload:",
+                JSON.stringify({
+                    prompt,
+                    project_data: serializedProjectData,
+                    component_id: componentId,
+                })
+            );
+
+            const response = await fetch(
+                `${baseUrl}/api/v1/public/agent/connect`,
+                {
+                    method: "POST",
+                    headers: {
+                        // Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        prompt,
+                        project_data: serializedProjectData,
+                        component_id: componentId,
+                    }),
+                }
+            );
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(
+                    `HTTP error! status: ${response.status}, message: ${errorText}`
+                );
+            }
+            console.debug("Response:", response);
+            return response.body;
+        } catch (error) {
+            console.error("Error in connectionAdvice:", error);
             throw error;
         }
     }
@@ -215,6 +266,18 @@ export class AgentService {
                 console.warn("Error parsing JSON in SSE chunk:", e, line);
             }
         }
+    }
+
+    private static messageConverter(message: AgentMessage) {
+        const { type, content } = message;
+        const parsedContent = MessageContentSchema.safeParse(content);
+        if (!parsedContent.success) {
+            console.warn("Invalid message content format:", parsedContent.error);
+            return null;
+        }
+
+        const { text, full_text, tool_name, args, result, message: errorMsg } =
+            parsedContent.data;
     }
 }
 
