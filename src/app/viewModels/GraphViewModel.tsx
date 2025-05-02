@@ -6,6 +6,7 @@ import { DocumentService } from "../models/services/DocumentService";
 import { Document } from "../models/entity/Document";
 import { DocumentType } from "../models/enum/DocumentType";
 import defaultContent from "../models/default-value/defaultContent";
+import defaultEdges  from "../models/default-value/defaultEdges";
 
 export interface GraphViewModel {
     connectionEdges: ConnectionEdge[];
@@ -37,6 +38,8 @@ export interface GraphViewModel {
     // Document actions
     document: Document | undefined;
     updateDocument: (document: Document) => void;
+
+    createDefaultEdges: () => void;
 }
 
 interface AttachedDoc {
@@ -431,6 +434,12 @@ export function useGraphViewModel(): GraphViewModel {
         });
     }, [document, updateAttachedDocById]);
 
+    const createDefaultEdges = useCallback(() => {
+        defaultEdges.forEach((edge: ConnectionEdge) => {
+            updConnectionEdges(edge);
+        });
+    }, []);
+
     return {
         connectionEdges,
         affectedIds,
@@ -461,5 +470,7 @@ export function useGraphViewModel(): GraphViewModel {
         // Document actions
         document,
         updateDocument,
+
+        createDefaultEdges
     };
 }

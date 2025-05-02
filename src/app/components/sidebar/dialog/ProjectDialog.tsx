@@ -5,6 +5,7 @@ import { useState } from "react";
 import { DraftProjectWithAIForm } from "./DraftProjectWithAIForm";
 import { CreateBlankProjectForm } from "./CreateBlankProjectForm";
 import { SelectCreateMethodDialog } from "./SelectCreateMethodDialog";
+import { useGraphContext } from "@/app/viewModels/context/GraphContext";
 
 const ProjectDialog = () => {
     const [mode, setMode] = useState<"blank" | "draft" | null>(null);
@@ -17,8 +18,9 @@ const ProjectDialog = () => {
         createProject,
         editProject,
         closeProjectDialog,
-        createProjectWithAI
+        createProjectWithAI,
     } = useProjectContext();
+    const { createDefaultEdges } = useGraphContext();
     const handleSaveProject = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
@@ -59,6 +61,7 @@ const ProjectDialog = () => {
 
     const handleApplyDraft = () => {
         createProjectWithAI();
+        createDefaultEdges();
         closeProjectDialog();
         setMode(null);
         setIsDraftReady(false);
