@@ -9,6 +9,9 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@codemirror/commands": "^6.8.1",
+    "@codemirror/language": "^6.11.0",
+    "@codemirror/view": "^6.36.6",
     "@dagrejs/dagre": "^1.1.4",
     "@floating-ui/react": "^0.27.5",
     "@radix-ui/react-avatar": "^1.1.7",
@@ -61,6 +64,7 @@
     "gray-matter": "^4.0.3",
     "lodash": "^4.17.21",
     "lucide-react": "^0.477.0",
+    "marked": "^15.0.11",
     "mermaid": "^11.6.0",
     "next": "^15.2.4",
     "nextjs-toploader": "^3.7.15",
@@ -75,7 +79,9 @@
     "tailwindcss-animate": "^1.0.7",
     "tailwindcss-animated": "^2.0.0",
     "tailwindcss-radix": "^4.0.2",
-    "uuid": "^11.1.0"
+    "tippy.js": "^6.3.7",
+    "uuid": "^11.1.0",
+    "zod": "4.0.0-beta.20250430T185432"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

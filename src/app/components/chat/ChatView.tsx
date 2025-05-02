@@ -4,11 +4,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useCallback, useState, useRef, useEffect } from "react";
 import { SendHorizontal, X } from "lucide-react";
 import AgentRelationAdviceDialog from "../doc/Dialog/AgentRelationAdviceDialog";
-import {
-    AgentMessage,
-    MessageComponent,
-    renderMarkdown,
-} from "./handleMessageByType";
+import { AgentMessage, MessageComponent } from "./handleMessageByType";
 import { AgentService } from "@/app/models/services/AgentService";
 import { useToast } from "@/hooks/use-toast";
 import { useProjectContext } from "@/app/viewModels/context/ProjectContext";
@@ -16,8 +12,8 @@ import { ProjectData } from "@/app/viewModels/ChatViewModel";
 
 const ChatView = () => {
     const [inputValue, setInputValue] = useState(
-        // "幫我寫出user的 data shcema 和 一些基本登入登出的api interrface"
-        "總結目前文件的內容"
+        "幫我寫出user的 data shcema 和 一些基本登入登出的api interrface"
+        // "總結目前文件的內容"
     );
     const [messages, setMessages] = useState<AgentMessage[]>([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -26,13 +22,13 @@ const ChatView = () => {
     const handleOnChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setInputValue(e.target.value);
     };
-    const onAdviceClick = useCallback(
-        (e: React.MouseEvent) => {
-            e.stopPropagation();
-            setAdviceDialogOpen(true);
-        },
-        [setAdviceDialogOpen]
-    );
+    // const onAdviceClick = useCallback(
+    //     (e: React.MouseEvent) => {
+    //         e.stopPropagation();
+    //         setAdviceDialogOpen(true);
+    //     },
+    //     [setAdviceDialogOpen]
+    // );
     const { toast } = useToast();
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const { selectedProjectId } = useProjectContext();
@@ -184,7 +180,7 @@ const ChatView = () => {
     }
 
     return (
-        <div className="flex flex-col justify-between w-full h-full gap-3 relative overflow-hidden">
+        <div className="flex flex-col justify-between w-full h-full relative overflow-hidden">
             <div className="flex-shrink-0 flex justify-between items-center px-4 py-2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-b border-gray-200/50 dark:border-gray-700/50 z-10">
                 <h3 className="font-medium text-gray-800 dark:text-gray-200">
                     CasDoc Agent
@@ -199,7 +195,7 @@ const ChatView = () => {
                 </Button>
             </div>
 
-            <div className="flex-grow w-auto mx-4 p-4 overflow-auto rounded-md bg-transparent">
+            <div className="flex-grow w-auto  p-4 overflow-auto rounded-md bg-transparent">
                 {messages.map((msg, index) => (
                     <MessageComponent
                         key={index}

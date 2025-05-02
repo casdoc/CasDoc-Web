@@ -106,7 +106,7 @@ export const useChatViewModel = (): ChatViewModel => {
                 documents: documentDataList,
             };
 
-            console.log("Project data:", projectData);
+            // console.log("Project data:", projectData);
             return projectData;
         } catch (error) {
             console.error("Error retrieving project data:", error);
