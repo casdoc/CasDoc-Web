@@ -8,6 +8,9 @@ import defaultContent from "../models/default-value/defaultContent";
 import { ProjectInput } from "../models/types/ProjectInput";
 import { DocumentInput } from "../models/types/DocumentInput";
 import { DocSelectedService } from "../models/services/DocSelectedService";
+import { defaultSRD } from "../models/default-value/defaultSRD";
+import { defaultSDD } from "../models/default-value/defaultSDD";
+import { defaultSTD } from "../models/default-value/defaultSTD";
 
 export interface ProjectViewModel {
     projects: Project[];
@@ -293,7 +296,7 @@ export const useProjectViewModel = (): ProjectViewModel => {
         const project = {
             name: "New Project",
             description: "Generated from AI Prompt",
-        }
+        };
         const projectId = createProject(project as ProjectInput);
 
         const SRD = {
@@ -301,21 +304,21 @@ export const useProjectViewModel = (): ProjectViewModel => {
             projectId: projectId,
             title: "Requirements Document",
             description: "No description",
-            content: defaultContent,
+            content: defaultSRD,
         };
         const SDD = {
             type: DocumentType.SDD,
             projectId: projectId,
             title: "Design Document",
             description: "No description",
-            content: defaultContent,
+            content: defaultSDD,
         };
         const STD = {
             type: DocumentType.STD,
             projectId: projectId,
             title: "Test Document",
             description: "No description",
-            content: defaultContent,
+            content: defaultSTD,
         };
         createDocument(SRD as DocumentInput);
         createDocument(SDD as DocumentInput);
@@ -346,6 +349,6 @@ export const useProjectViewModel = (): ProjectViewModel => {
         openDocumentDialog,
         closeProjectDialog,
         closeDocumentDialog,
-        createProjectWithAI
+        createProjectWithAI,
     };
 };
