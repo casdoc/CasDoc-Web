@@ -113,11 +113,23 @@ export const DraftProjectWithAIForm = ({
                         />
                         <DocumentBlock
                             name="Design Document"
-                            status={isDraftReady ? "completed" : "waiting"}
+                            status={
+                                isDraftReady
+                                    ? "completed"
+                                    : isGenerating
+                                    ? "generating"
+                                    : "waiting"
+                            }
                         />
                         <DocumentBlock
                             name="Test Document"
-                            status={isDraftReady ? "completed" : "waiting"}
+                            status={
+                                isDraftReady
+                                    ? "completed"
+                                    : isGenerating
+                                    ? "generating"
+                                    : "waiting"
+                            }
                         />
                     </Flex>
                     <Flex justify="end">
