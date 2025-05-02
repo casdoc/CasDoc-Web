@@ -11,7 +11,6 @@ import { IdeaDocumentResponse } from "../agent-response/IdeaDocumentResponse";
 import { PromptGenerationResponse } from "../agent-response/PromptGenerationResponse";
 import { SummaryResponse } from "../agent-response/SummaryResponse";
 import { UpdateComponentResponse } from "../agent-response/UpdateComponentResponse";
-import { Agent } from "http";
 import { JsonObject } from "../types/JsonObject";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
@@ -161,6 +160,152 @@ export class AgentService {
             return response.body;
         } catch (error) {
             console.error("Error in connectionAdvice:", error);
+            throw error;
+        }
+    }
+
+    // /api/v1/public/agent/edit/component
+    static async editComponent(
+        prompt: string,
+        projectData?: ProjectData,
+        componentId?: string
+    ): Promise<ReadableStream<Uint8Array> | null> {
+        try {
+            const serializedProjectData = projectData
+                ? JSON.stringify(projectData)
+                : null;
+
+            console.debug(
+                "payload:",
+                JSON.stringify({
+                    prompt,
+                    project_data: serializedProjectData,
+                    component_id: componentId,
+                })
+            );
+
+            const response = await fetch(
+                `${baseUrl}/api/v1/public/agent/edit/component`,
+                {
+                    method: "POST",
+                    headers: {
+                        // Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        prompt,
+                        project_data: serializedProjectData,
+                        component_id: componentId,
+                    }),
+                }
+            );
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(
+                    `HTTP error! status: ${response.status}, message: ${errorText}`
+                );
+            }
+            console.debug("Response:", response);
+            return response.body;
+        } catch (error) {
+            console.error("Error in editComponent:", error);
+            throw error;
+        }
+    }
+
+    // /api/v1/public/agent/new/project
+    static async createProject(
+        prompt: string
+    ): Promise<ReadableStream<Uint8Array> | null> {
+        try {
+            console.debug(
+                "payload:",
+                JSON.stringify({
+                    prompt,
+                })
+            );
+
+            const response = await fetch(
+                `${baseUrl}/api/v1/public/agent/new/project`,
+                {
+                    method: "POST",
+                    headers: {
+                        // Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        prompt,
+                    }),
+                }
+            );
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(
+                    `HTTP error! status: ${response.status}, message: ${errorText}`
+                );
+            }
+            console.debug("Response:", response);
+            return response.body;
+        } catch (error) {
+            console.error("Error in newProject:", error);
+            throw error;
+        }
+    }
+
+    // /api/v1/public/agent/diff/advice
+    static async diffAdvice(
+        prompt: string,
+        projectData: ProjectData,
+        componentId: string,
+        sourceId: string,
+        sourceNewContent: string
+    ): Promise<ReadableStream<Uint8Array> | null> {
+        try {
+            const serializedProjectData = projectData
+                ? JSON.stringify(projectData)
+                : null;
+
+            console.debug(
+                "payload:",
+                JSON.stringify({
+                    prompt,
+                    project_data: serializedProjectData,
+                    component_id: componentId,
+                    source_id: sourceId,
+                    source_new_content: sourceNewContent,
+                })
+            );
+
+            const response = await fetch(
+                `${baseUrl}/api/v1/public/agent/diff/advice`,
+                {
+                    method: "POST",
+                    headers: {
+                        // Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        prompt,
+                        project_data: serializedProjectData,
+                        component_id: componentId,
+                        source_id: sourceId,
+                        source_new_content: sourceNewContent,
+                    }),
+                }
+            );
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(
+                    `HTTP error! status: ${response.status}, message: ${errorText}`
+                );
+            }
+            console.debug("Response:", response);
+            return response.body;
+        } catch (error) {
+            console.error("Error in diffAdvice:", error);
             throw error;
         }
     }
