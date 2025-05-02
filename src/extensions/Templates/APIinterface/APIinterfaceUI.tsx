@@ -14,27 +14,38 @@ interface APIinterfaceUIProps {
         endPoint?: string;
     };
     fields: APIinterfaceParameter[];
-    getMethodColor: (method?: string) => string;
 }
-
-const APIinterfaceUI: React.FC<APIinterfaceUIProps> = ({
-    info,
-    fields,
-    getMethodColor,
-}) => {
+const getMethodColor = (method?: string): string => {
+    switch (method?.trim().toUpperCase()) {
+        case "GET":
+            return "bg-green-500";
+        case "POST":
+            return "bg-blue-500";
+        case "PUT":
+            return "bg-yellow-500";
+        case "DELETE":
+            return "bg-red-500";
+        case "PATCH":
+            return "bg-purple-500";
+        default:
+            return "bg-gray-400";
+    }
+};
+const APIinterfaceUI: React.FC<APIinterfaceUIProps> = ({ info, fields }) => {
+    console.log("APIinterfaceUI", info, fields);
     return (
         <>
             <div className="w-full h-full pt-2 pl-4 border-b rounded-sm group/chevron">
                 <div className="flex items-center pb-2 gap-1">
                     <span
                         className={`px-2 py-1 text-xs rounded-md text-white font-bold mr-2 ${getMethodColor(
-                            info.method
+                            info?.method
                         )}`}
                     >
-                        {info.method?.toUpperCase() || "METHOD"}
+                        {info?.method?.toUpperCase() || "METHOD"}
                     </span>
                     <span className="text-xl font-bold text-black group-hover:cursor-text">
-                        {info.name || "API name"}
+                        {info?.name || "API name"}
                     </span>
                     <CollapsibleTrigger
                         className="w-6 h-6 bg-transparent group/chevron "
@@ -45,22 +56,22 @@ const APIinterfaceUI: React.FC<APIinterfaceUIProps> = ({
                 </div>
                 <div>
                     <p className="m-0 text-sm text-gray-600 group-hover:cursor-text">
-                        {info.description}
+                        {info?.description}
                     </p>
                     <p className="m-0 py-2 text-sm text-black font-semibold group-hover:cursor-text w-fit">
-                        End Point : {info.endPoint}
+                        End Point : {info?.endPoint}
                     </p>
                 </div>
             </div>
             <CollapsibleContent className="ml-8 overflow-hidden">
                 {fields && fields.length > 0 ? (
                     <div className="divide-y divide-gray-100">
-                        {fields.map(
+                        {fields?.map(
                             (field: APIinterfaceParameter, index: number) => {
                                 if (
-                                    field.name.trim() === "" &&
-                                    field.type.trim() === "" &&
-                                    field.description.trim() === ""
+                                    field?.name.trim() === "" &&
+                                    field?.type.trim() === "" &&
+                                    field?.description.trim() === ""
                                 ) {
                                     return null;
                                 }
@@ -69,9 +80,9 @@ const APIinterfaceUI: React.FC<APIinterfaceUIProps> = ({
                                         <div className="flex justify-between items-center m-0 p-0">
                                             <div className="flex items-center">
                                                 <span className="font-medium text-gray-800 group-hover:cursor-text">
-                                                    {field.name}
+                                                    {field?.name}
                                                 </span>
-                                                {field.required && (
+                                                {field?.required && (
                                                     <span className="text-2xl text-red-500 rounded">
                                                         *
                                                     </span>
@@ -80,13 +91,13 @@ const APIinterfaceUI: React.FC<APIinterfaceUIProps> = ({
 
                                             {field.type && (
                                                 <span className="text-xs bg-gray-100 px-1 py-1 rounded text-gray-600 mr-2 group-hover:cursor-text">
-                                                    {field.type}
+                                                    {field?.type}
                                                 </span>
                                             )}
                                         </div>
-                                        {field.description && (
+                                        {field?.description && (
                                             <p className="m-0 p-0 text-sm text-gray-500 group-hover:cursor-text w-fit">
-                                                {field.description}
+                                                {field?.description}
                                             </p>
                                         )}
                                     </div>

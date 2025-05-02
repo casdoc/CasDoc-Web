@@ -50,22 +50,6 @@ const APIinterfaceComponent = ({
         setShowBubbleBar(!showBubbleBar);
         // Prevent event from propagating to parent elements
     };
-    const getMethodColor = (method?: string): string => {
-        switch (method?.trim().toUpperCase()) {
-            case "GET":
-                return "bg-green-500";
-            case "POST":
-                return "bg-blue-500";
-            case "PUT":
-                return "bg-yellow-500";
-            case "DELETE":
-                return "bg-red-500";
-            case "PATCH":
-                return "bg-purple-500";
-            default:
-                return "bg-gray-400";
-        }
-    };
 
     return (
         <NodeViewWrapper
@@ -86,11 +70,7 @@ const APIinterfaceComponent = ({
                     getPos={getPos}
                     editor={editor}
                 />
-                <APIinterfaceUI
-                    info={info}
-                    fields={fields}
-                    getMethodColor={getMethodColor}
-                />
+                <APIinterfaceUI info={info} fields={fields} />
             </Collapsible>
         </NodeViewWrapper>
     );

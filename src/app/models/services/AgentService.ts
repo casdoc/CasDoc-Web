@@ -179,5 +179,3 @@ export class AgentService {
         }
     }
 }
-
-export const agentService = new AgentService();
