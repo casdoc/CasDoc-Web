@@ -39,6 +39,7 @@ export interface ProjectViewModel {
     openDocumentDialog: (projectId: string, documentId?: string) => void;
     closeProjectDialog: () => void;
     closeDocumentDialog: () => void;
+    createProjectWithAI: () => void;
 }
 
 export const useProjectViewModel = (): ProjectViewModel => {
@@ -288,6 +289,39 @@ export const useProjectViewModel = (): ProjectViewModel => {
         return undefined;
     };
 
+    const createProjectWithAI = useCallback(() => {
+        const project = {
+            name: "New Project",
+            description: "Generated from AI Prompt",
+        }
+        const projectId = createProject(project as ProjectInput);
+
+        const SRD = {
+            type: DocumentType.SRD,
+            projectId: projectId,
+            title: "Requirements Document",
+            description: "No description",
+            content: defaultContent,
+        };
+        const SDD = {
+            type: DocumentType.SDD,
+            projectId: projectId,
+            title: "Design Document",
+            description: "No description",
+            content: defaultContent,
+        };
+        const STD = {
+            type: DocumentType.STD,
+            projectId: projectId,
+            title: "Test Document",
+            description: "No description",
+            content: defaultContent,
+        };
+        createDocument(SRD as DocumentInput);
+        createDocument(SDD as DocumentInput);
+        createDocument(STD as DocumentInput);
+    }, []);
+
     return {
         projects,
         documentsMap,
@@ -312,5 +346,6 @@ export const useProjectViewModel = (): ProjectViewModel => {
         openDocumentDialog,
         closeProjectDialog,
         closeDocumentDialog,
+        createProjectWithAI
     };
 };

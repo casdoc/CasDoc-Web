@@ -17,6 +17,7 @@ const ProjectDialog = () => {
         createProject,
         editProject,
         closeProjectDialog,
+        createProjectWithAI
     } = useProjectContext();
     const handleSaveProject = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -57,11 +58,7 @@ const ProjectDialog = () => {
     };
 
     const handleApplyDraft = () => {
-        const input = {
-            name: prompt ? `Draft: ${prompt.slice(0, 20)}` : "Draft Project",
-            description: "Generated from AI Prompt",
-        };
-        createProject(input);
+        createProjectWithAI();
         closeProjectDialog();
         setMode(null);
         setIsDraftReady(false);
