@@ -1,5 +1,16 @@
 import { createClient } from "@supabase/supabase-js";
 import { any, z } from "zod";
+import { AdviceComponentResponse } from "../agent-response/AdviceComponentResponse";
+import { AgentEditComponentResponse } from "../agent-response/AgentEditComponentResponse";
+import { ConnectComponentResponse } from "../agent-response/ConnectComponentResponse";
+import { CreateComponentResponse } from "../agent-response/CreateComponentResponse";
+import { DeleteComponentResponse } from "../agent-response/DeleteComponentResponse";
+import { FindComponentResponse } from "../agent-response/FindComponentResponse";
+import { IdeaDocumentResponse } from "../agent-response/IdeaDocumentResponse";
+import { PromptGenerationResponse } from "../agent-response/PromptGenerationResponse";
+import { SummaryResponse } from "../agent-response/SummaryResponse";
+import { UpdateComponentResponse } from "../agent-response/UpdateComponentResponse";
+import { JsonObject } from "../types/JsonObject";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
@@ -26,6 +37,18 @@ export const AgentMessageSchema = z.object({
 
 export type AgentMessage = z.infer<typeof AgentMessageSchema>;
 
+export type AgentResponse =
+    | AdviceComponentResponse
+    | AgentEditComponentResponse
+    | ConnectComponentResponse
+    | CreateComponentResponse
+    | DeleteComponentResponse
+    | FindComponentResponse
+    | IdeaDocumentResponse
+    | PromptGenerationResponse
+    | SummaryResponse
+    | UpdateComponentResponse;
+
 export class AgentService {
     private static async getAuthToken(): Promise<string> {
         const {
@@ -40,6 +63,7 @@ export class AgentService {
         return session.access_token;
     }
 
+    // /api/v1/public/agent/chat
     static async sendMessage(
         prompt: string,
         projectId: string
@@ -93,6 +117,7 @@ export class AgentService {
         onError?: (error: Error) => void,
         onComplete?: () => void
     ): Promise<void> {
+
         try {
             const stream = await this.sendMessage(prompt, projectId);
 
@@ -144,12 +169,11 @@ export class AgentService {
     ): void {
         // Process SSE data format: "data: {...}"
         const dataLines = chunk.split(/data:\s*/g).filter((f) => f.trim());
-        // console.debug("SSE data lines:", dataLines);
 
         for (const line of dataLines) {
             try {
-                // console.debug("SSE JSON string:", line);
                 const raw = line.trim();
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 let data: any;
                 try {
                     data = JSON.parse(raw);
@@ -163,9 +187,8 @@ export class AgentService {
 
                 // Validate with schema
                 const result = AgentMessageSchema.safeParse(data);
-                // console.debug("Parsed message:", result);
                 if (result.success) {
-                    // Ensure immediate UI update for each chunk
+                    // Immediately dispatch to UI
                     if (onMessage) {
                         setTimeout(() => onMessage(result.data), 0);
                     }
@@ -176,6 +199,45 @@ export class AgentService {
                 console.debug("Error parsing JSON:", e, line);
                 console.warn("Error parsing JSON in SSE chunk:", e, line);
             }
+        }
+    }
+
+    private static messageConverter(
+        message: AgentMessage
+    ): AgentResponse | JsonObject | string | null {
+        const { type, content } = message;
+        const parsedContent = MessageContentSchema.safeParse(content);
+        if (!parsedContent.success) {
+            console.warn(
+                "Invalid message content format:",
+                parsedContent.error
+            );
+            return null;
+        }
+
+        if (type === "tool_result") {
+            const { tool_name, result } = content;
+            if (tool_name === "generate_components") {
+                return CreateComponentResponse.parse(result);
+            } else if (tool_name === "update_components") {
+                return UpdateComponentResponse.parse(result);
+            } else if (tool_name === "delete_components") {
+                return DeleteComponentResponse.parse(result);
+            } else if (tool_name === "connect_components") {
+                return ConnectComponentResponse.parse(result);
+            } else if (tool_name === "find_components") {
+                return FindComponentResponse.parse(result);
+            } else if (tool_name === "summarize_components") {
+                return SummaryResponse.parse(result);
+            } else if (tool_name === "generate_prompt") {
+                return PromptGenerationResponse.parse(result);
+            } else {
+                return null;
+            }
+        } else if (type === "tool_call") {
+            return content.args;
+        } else {
+            return content.text;
         }
     }
 }
