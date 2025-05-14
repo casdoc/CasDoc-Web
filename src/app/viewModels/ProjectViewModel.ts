@@ -30,7 +30,11 @@ export interface ProjectViewModel {
 
 export const useProjectViewModel = (): ProjectViewModel => {
     const uuidSchema = z.uuid({ version: "v4" });
-    const { data: projects, isSuccess: isProjectsSuccess } = useProjectsQuery();
+    const {
+        data: projects,
+        isSuccess: isProjectsSuccess,
+        isLoading: isProjectLoading,
+    } = useProjectsQuery();
     const [selectedProjectId, setSelectedProjectId] = useState<string | null>(
         null
     );
@@ -52,29 +56,31 @@ export const useProjectViewModel = (): ProjectViewModel => {
     // console.debug("projects", projects);
     // console.debug("selectedProjectId", selectedProjectId);
     useEffect(() => {
-        const localSelectedDoc = DocSelectedService.getSelectedDoc();
-        if (localSelectedDoc === "") {
-            // console.debug("localSelectedDoc is empty");
-            if (projects && projects.length > 0 && projects[0].id) {
-                // console.debug("projects is not empty");
-                // console.debug("selectProjectId", projects[0].id);
-                setSelectedProjectId(projects[0].id);
-                // Use the first project to get documents
-                // setSelectedProjectId(projects[0].id);
-
-                // console.debug("selectedProjectId", selectedProjectId);
-                if (documents && documents.length > 0) {
-                    setSelectedDocumentId(documents[0]?.id || null);
-                    setEditingDocument(documents[0] || null);
-                    // console.debug("selectDocument", selectedDocumentId);
-                }
-            }
-        } else if (selectedDocumentId !== localSelectedDoc) {
-            // console.debug("loclalSelectedDoc is not empty");
+        if (!isProjectsSuccess || isProjectLoading || projects?.length === 0)
+            return;
+        // const localSelectedDoc = DocSelectedService.getSelectedDoc();
+        // if (localSelectedDoc === "") {
+        // console.debug("localSelectedDoc is empty");
+        if (projects && projects.length > 0 && projects[0].id) {
+            console.debug("projects is not empty");
+            // console.debug("selectProjectId", projects[0].id);
+            setSelectedProjectId(projects[0].id);
+            // Use the first project to get documents
             // setSelectedProjectId(projects[0].id);
-            setSelectedDocumentId(localSelectedDoc);
+
+            // console.debug("selectedProjectId", selectedProjectId);
+            if (documents && documents.length > 0) {
+                setSelectedDocumentId(documents[0]?.id || null);
+                setEditingDocument(documents[0] || null);
+                // console.debug("selectDocument", selectedDocumentId);
+            }
         }
-    }, [projects, documents, selectedDocumentId, selectedProjectId]);
+        // } else if (selectedDocumentId !== localSelectedDoc) {
+        //     console.debug("loclalSelectedDoc is not empty");
+        //     // setSelectedProjectId(projects?.[0]?.id || null);
+        //     setSelectedDocumentId(localSelectedDoc);
+        // }
+    }, [documents, isProjectLoading, isProjectsSuccess, projects]);
 
     const selectProject = useCallback((projectId: string) => {
         setSelectedProjectId(projectId);
