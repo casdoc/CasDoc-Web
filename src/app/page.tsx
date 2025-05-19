@@ -1,13 +1,10 @@
-"use server";
-
-import "@/app/globals.css";
 import LogoButton from "@/app/components/home/LogoButton";
 import Footer from "@/app/components/home/Footer";
 import GetStartedButton from "@/app/components/home/GetStartedButton";
 import { Flex } from "@radix-ui/themes";
 import WikiButton from "@/app/components/home/WikiButton";
 
-const Home = () => {
+export default function Home() {
     return (
         <Flex direction="column" className="h-dvh bg-gray-100 font-sans">
             <Flex
@@ -41,6 +38,4 @@ const Home = () => {
             <Footer />
         </Flex>
     );
-};
-
-export default Home;
+}

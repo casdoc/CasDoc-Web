@@ -1,15 +1,17 @@
 "use client";
 
+import { useProjectContext } from "@/app/viewModels/context/ProjectContext";
 import dynamic from "next/dynamic";
 import "@/app/globals.css";
-import { ProjectProvider } from "@/app/viewModels/context/ProjectContext";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-// import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { EditorProvider } from "@/app/viewModels/context/EditorContext";
 import { Progress } from "@/components/ui/progress";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 
-// Enhanced Loading UI component with Progress
+interface PageProps {
+    params: {
+        documentId: string;
+    };
+}
+
 const LoadingMask = () => {
     const [progress, setProgress] = useState(0);
 
@@ -52,16 +54,19 @@ const DocumentContent = dynamic(
     }
 );
 
-const queryClient = new QueryClient();
-export default function Doc() {
-    return (
-        <QueryClientProvider client={queryClient}>
-            <ProjectProvider>
-                <EditorProvider>
-                    <DocumentContent />
-                    {/* <ReactQueryDevtools initialIsOpen={false} /> */}
-                </EditorProvider>
-            </ProjectProvider>
-        </QueryClientProvider>
+export default function DocumentPage({ params }: PageProps) {
+    const unwrappedParams = use(
+        params as unknown as Promise<PageProps["params"]>
     );
+    const { documentId } = unwrappedParams;
+
+    const { selectDocument } = useProjectContext();
+
+    useEffect(() => {
+        if (documentId) {
+            selectDocument(documentId);
+        }
+    }, [documentId, selectDocument]);
+
+    return <DocumentContent />;
 }

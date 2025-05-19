@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback } from "react";
+import { ReactNode, useCallback } from "react";
 import DocMode from "@/app/models/enum/DocMode";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
@@ -28,14 +28,18 @@ interface EditorHeaderProps {
     mode: DocMode;
     setDocMode: (newMode: DocMode) => void;
     editor: Editor;
-    editorStatus: () => SaveStatus;
+    // editorStatus: () => SaveStatus;
+    isCollaborating?: boolean;
+    children?: ReactNode;
 }
 
 const EditorHeader = ({
     mode,
     setDocMode,
     editor,
-    editorStatus,
+    // editorStatus,
+    isCollaborating,
+    children,
 }: EditorHeaderProps) => {
     const handleChangeView = useCallback(
         (newMode: DocMode) => {
@@ -119,13 +123,12 @@ const EditorHeader = ({
                     </Tooltip>
                 </TooltipProvider>
                 {/* Render the SaveStatusBadge without passing status */}
-                <div className="ml-2">
-                    {" "}
-                    {/* Add some margin */}
+                {/* <div className="ml-2">
+
                     <SaveStatusBadge
                         editorStatus={editorStatus} // Pass the function to get status
                     />
-                </div>
+                </div> */}
             </div>
 
             {/* Right side with import button and guide button */}
@@ -164,6 +167,29 @@ const EditorHeader = ({
                         </TooltipContent>
                     </Tooltip>
                 </TooltipProvider>
+            </div>
+
+            {/* Add status indicators and collaboration UI */}
+            <div className="flex items-center gap-2">
+                {/* Show sync status */}
+                {/* <span
+                    className={`inline-block w-2 h-2 rounded-full ${
+                        editorStatus() === SaveStatus.Saved
+                            ? "bg-green-500"
+                            : editorStatus() === SaveStatus.Saving
+                            ? "bg-yellow-500"
+                            : editorStatus() === SaveStatus.Error
+                            ? "bg-red-500"
+                            : "bg-gray-500"
+                    }`}
+                ></span>
+
+                <span className="text-sm text-gray-500">
+                    {isCollaborating ? "Collaborative" : "Solo"} Mode
+                </span> */}
+
+                {/* Render collaboration indicators */}
+                {children}
             </div>
         </div>
     );

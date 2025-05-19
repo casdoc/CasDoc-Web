@@ -1,7 +1,6 @@
 "use client";
 
 import { useDocModeViewModel } from "@/app/viewModels/DocModeViewModel";
-import { useBlockEditor } from "@/app/viewModels/useBlockEditor";
 import { ReactFlowProvider } from "@xyflow/react";
 import { useState, useEffect, useRef } from "react";
 import { useProjectContext } from "@/app/viewModels/context/ProjectContext";
@@ -13,6 +12,8 @@ import { Button, Flex, Text } from "@radix-ui/themes";
 import DocMode from "@/app/models/enum/DocMode";
 import z from "zod";
 import { useEditorContext } from "@/app/viewModels/context/EditorContext";
+import { useParams, useRouter } from "next/navigation";
+import CollaborationIndicator from "../CollaborationIndicator";
 
 const DocView = () => {
     const uuidSchema = z.uuid({ version: "v4" });
@@ -22,14 +23,28 @@ const DocView = () => {
         selectedProjectId,
         openProjectDialog,
         openDocumentDialog,
+        setSelectedDocumentId,
     } = useProjectContext();
+
+    // Get documentId from URL params
+    const params = useParams();
+    const documentParam = params?.document as string | undefined;
+
+    // If URL has document ID, update the selected document in context
+    useEffect(() => {
+        if (documentParam && documentParam !== selectedDocumentId) {
+            setSelectedDocumentId(documentParam);
+        }
+    }, [documentParam, selectedDocumentId, setSelectedDocumentId]);
+
+    // Get document data
     const { data: document } = useDocumentQuery(
-        selectedDocumentId,
-        selectedDocumentId !== null &&
-            !uuidSchema.safeParse(selectedDocumentId).success
+        documentParam || selectedDocumentId || "",
+        !!(documentParam || selectedDocumentId) &&
+            !uuidSchema.safeParse(documentParam || selectedDocumentId).success
     );
 
-    const { editor, currentStatus } = useEditorContext();
+    const { editor, isCollaborating } = useEditorContext();
 
     const [splitWidth, setSplitWidth] = useState(50);
     const isResizing = useRef(false);
@@ -71,9 +86,14 @@ const DocView = () => {
                 mode={mode as DocMode}
                 setDocMode={setDocMode}
                 editor={editor}
-                editorStatus={currentStatus}
-            />
-            {selectedDocumentId ? (
+                // editorStatus={currentStatus}
+                isCollaborating={isCollaborating}
+            >
+                {/* {isCollaborating && (
+                    <CollaborationIndicator onlineUsers={onlineUsers} />
+                )} */}
+            </EditorHeader>
+            {documentParam || selectedDocumentId ? (
                 <Flex className="overflow-y-auto h-full relative">
                     <div
                         className={`overflow-y-auto h-full ${
@@ -88,7 +108,9 @@ const DocView = () => {
                     >
                         <BlockEditor
                             editor={editor}
-                            selectedDocumentId={selectedDocumentId}
+                            selectedDocumentId={
+                                documentParam || selectedDocumentId
+                            }
                             document={document}
                         />
                     </div>

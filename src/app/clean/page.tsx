@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import {
     Dialog,
@@ -7,7 +9,7 @@ import {
     DialogDescription,
 } from "@/components/ui/dialog";
 import { Flex } from "@radix-ui/themes";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 export default function Clean() {
     const router = useRouter();
@@ -18,7 +20,7 @@ export default function Clean() {
     };
 
     return (
-        <Dialog open={true}>
+        <Dialog open={true} onOpenChange={() => router.push("/")}>
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>

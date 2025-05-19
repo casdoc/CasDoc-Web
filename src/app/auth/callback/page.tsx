@@ -2,8 +2,10 @@
 
 import { useEffect, useState } from "react";
 import supabase from "@/lib/supabase";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
+
 const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
 export default function CallbackPage() {
     const [user, setUser] = useState<string | null>(null);
     const router = useRouter();
@@ -41,7 +43,7 @@ export default function CallbackPage() {
 
     useEffect(() => {
         if (user) {
-            router.push("/doc");
+            router.push("/document");
         }
     }, [user, router]);
 
@@ -83,7 +85,7 @@ export default function CallbackPage() {
                             無法驗證您的身份，請重新登入
                         </p>
                         <button
-                            onClick={() => router.push("/auth/login")}
+                            onClick={() => router.push("/login")}
                             className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                         >
                             返回登入頁面

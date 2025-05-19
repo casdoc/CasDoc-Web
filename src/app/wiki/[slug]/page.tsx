@@ -1,21 +1,44 @@
 import fs from "fs";
 import path from "path";
-import { GetStaticPaths, GetStaticProps } from "next";
+import { Metadata } from "next";
 import { getDocBySlug } from "@/lib/markdown";
 import { Flex } from "@radix-ui/themes";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/router";
 
 interface WikiPageProps {
-    title: string;
-    contentHtml: string;
-    slugs: string[];
+    params: {
+        slug: string;
+    };
 }
 
-export default function WikiPage({ title, contentHtml, slugs }: WikiPageProps) {
-    const router = useRouter();
-    const currentSlug = router.query.slug;
+export const generateMetadata = ({ params }: WikiPageProps): Metadata => {
+    return {
+        title: `${params.slug.replace(/-/g, " ")} - CasDoc Wiki`,
+    };
+};
+
+export async function generateStaticParams() {
+    const docsDirectory = path.join(process.cwd(), "public", "wiki");
+    const filenames = fs.readdirSync(docsDirectory);
+
+    return filenames
+        .filter((name) => name.endsWith(".md"))
+        .map((name) => ({
+            slug: name.replace(/\.md$/, ""),
+        }));
+}
+
+export default async function WikiPage({ params }: WikiPageProps) {
+    const { slug } = params;
+    const { frontMatter, contentHtml } = await getDocBySlug(slug);
+
+    // Get all slugs for the sidebar
+    const docsDirectory = path.join(process.cwd(), "public", "wiki");
+    const filenames = fs.readdirSync(docsDirectory);
+    const slugs = filenames
+        .filter((name) => name.endsWith(".md"))
+        .map((name) => name.replace(/\.md$/, ""));
 
     return (
         <>
@@ -50,23 +73,25 @@ export default function WikiPage({ title, contentHtml, slugs }: WikiPageProps) {
             <Flex>
                 <aside className="w-64 border-r h-screen p-6 sticky top-16">
                     <nav className="flex flex-col space-y-2">
-                        {slugs.map((slug) => (
+                        {slugs.map((s) => (
                             <Link
-                                key={slug}
-                                href={`/wiki/${slug}`}
+                                key={s}
+                                href={`/wiki/${s}`}
                                 className={`text-base text-gray-700 font-medium pl-2 py-1.5 rounded-md ${
-                                    currentSlug === slug
+                                    slug === s
                                         ? "bg-gray-200 font-bold"
                                         : "hover:bg-gray-100"
                                 } capitalize`}
                             >
-                                {slug.replace(/-/g, " ")}
+                                {s.replace(/-/g, " ")}
                             </Link>
                         ))}
                     </nav>
                 </aside>
                 <main className="flex-1 max-w-3xl mx-auto px-6 py-12">
-                    <h1 className="text-3xl font-bold mb-8">{title}</h1>
+                    <h1 className="text-3xl font-bold mb-8">
+                        {frontMatter.title || slug}
+                    </h1>
                     <div
                         className="prose prose-base"
                         dangerouslySetInnerHTML={{ __html: contentHtml }}
@@ -76,38 +101,3 @@ export default function WikiPage({ title, contentHtml, slugs }: WikiPageProps) {
         </>
     );
 }
-
-export const getStaticPaths: GetStaticPaths = async () => {
-    const docsDirectory = path.join(process.cwd(), "public", "wiki");
-    const filenames = fs.readdirSync(docsDirectory);
-
-    const slugs = filenames
-        .filter((name) => name.endsWith(".md"))
-        .map((name) => name.replace(/\.md$/, ""));
-
-    return {
-        paths: slugs.map((slug) => ({
-            params: { slug },
-        })),
-        fallback: false,
-    };
-};
-
-export const getStaticProps: GetStaticProps = async ({ params }) => {
-    const slug = params?.slug as string;
-    const { frontMatter, contentHtml } = await getDocBySlug(slug);
-
-    const docsDirectory = path.join(process.cwd(), "public", "wiki");
-    const filenames = fs.readdirSync(docsDirectory);
-    const slugs = filenames
-        .filter((name) => name.endsWith(".md"))
-        .map((name) => name.replace(/\.md$/, ""));
-
-    return {
-        props: {
-            title: frontMatter.title || slug,
-            contentHtml,
-            slugs,
-        },
-    };
-};
