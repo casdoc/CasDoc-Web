@@ -9,8 +9,8 @@ import React, {
 import { useBlockEditor } from "@/app/viewModels/useBlockEditor";
 import { useProjectContext } from "./ProjectContext";
 import { useParams, useRouter } from "next/navigation";
-import { SocketContext } from "./SocketContext";
 import { HocuspocusProvider } from "@hocuspocus/provider";
+import { randomColor } from "@/lib/utils";
 
 // Define the shape of the context
 interface EditorViewModel {
@@ -38,7 +38,6 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
     // >([]);
     const [hocuspocusProvider, setHocuspocusProvider] =
         useState<HocuspocusProvider>();
-    const socket = useContext(SocketContext);
     const { selectedDocumentId, selectedProjectId } = useProjectContext();
     const router = useRouter();
     const params = useParams();
@@ -49,15 +48,16 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
     const documentId = documentParam || selectedDocumentId || "";
 
     // Initialize color for user cursor
-    // const [userColor] = useState(() => randomColor());
-    // const username = "Anonymous User";
+    const [userColor] = useState(() => randomColor());
+    const username = "Anonymous User";
 
     useEffect(() => {
-        if (!socket || !documentId) return;
+        if (!documentId) return;
 
         const provider = new HocuspocusProvider({
-            websocketProvider: socket,
+            url: "ws://localhost:1234",
             name: documentId, //temp
+            onConnect: () => console.log("onConnect!"),
             onOpen: (data) => console.log("onOpen!", data),
             onClose: (data) => console.log("onClose!", data),
             onAuthenticated: (data) => console.log("onAuthenticated!", data),
@@ -67,20 +67,15 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
         });
 
         setHocuspocusProvider(provider);
+        provider.attach();
+
         const yDoc = provider.document.getArray;
-        // if (yDoc) {
-        //     // Make sure there's a default "default" XML Fragment
-        //     if (!yDoc.getXmlFragment("default")) {
-        //         // Create the default fragment
-        //         const xmlFragment = new Y.XmlFragment();
-        //         yDoc.getMap("documents").set("default", xmlFragment);
-        //     }
-        // }
         console.log("Provider initialized with document :", yDoc);
+
         return () => {
             provider.destroy();
         };
-    }, [socket, documentId]);
+    }, [documentId]);
 
     useEffect(() => {
         if (selectedDocumentId && !documentParam && selectedProjectId) {
@@ -91,11 +86,14 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
     const { editor } = useBlockEditor({
         documentId: hocuspocusProvider ? undefined : documentId, // Only use regular sync if no provider
         collaborationProvider: hocuspocusProvider,
+        collaborationOptions: {
+            user: {
+                name: username,
+                color: userColor,
+            },
+        },
     });
-    if (hocuspocusProvider) {
-        console.debug("No Hocuspocus provider available");
-        hocuspocusProvider.attach();
-    }
+    console.log("User: ", username, userColor);
 
     // Get current status based on provider state
     // const collaborationStatus = useMemo(() => {
