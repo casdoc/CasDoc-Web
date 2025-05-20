@@ -22,23 +22,11 @@ interface BlockEditorProps {
         };
     };
 }
-const initialContent = [
-    1, 3, 223, 175, 255, 141, 2, 0, 7, 1, 7, 100, 101, 102, 97, 117, 108, 116,
-    3, 9, 112, 97, 114, 97, 103, 114, 97, 112, 104, 7, 0, 223, 175, 255, 141, 2,
-    0, 6, 4, 0, 223, 175, 255, 141, 2, 1, 17, 72, 101, 108, 108, 111, 32, 87,
-    111, 114, 108, 100, 33, 32, 240, 159, 140, 142, 0,
-];
 
 export const useBlockEditor = ({
     collaborationProvider,
     ...editorOptions
 }: BlockEditorProps) => {
-    if (collaborationProvider) {
-        Y.applyUpdate(
-            collaborationProvider.document,
-            Uint8Array.from(initialContent)
-        );
-    }
     const extensions = useMemo(() => {
         const base = [...ExtensionKit()];
         if (collaborationProvider) {
