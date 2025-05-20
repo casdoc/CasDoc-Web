@@ -93,7 +93,6 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
             },
         },
     });
-    console.log("User: ", username, userColor);
 
     // Get current status based on provider state
     // const collaborationStatus = useMemo(() => {
