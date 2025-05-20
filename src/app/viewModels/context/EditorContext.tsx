@@ -1,21 +1,17 @@
 import { Editor } from "@tiptap/react";
-import { Node as ProsemirrorNode } from "prosemirror-model";
 import React, {
     createContext,
     useContext,
     useState,
-    useMemo,
     useEffect,
     ReactNode,
 } from "react";
 import { useBlockEditor } from "@/app/viewModels/useBlockEditor";
-import SaveStatus from "@/app/models/enum/SaveStatus";
 import { useProjectContext } from "./ProjectContext";
 import { useParams, useRouter } from "next/navigation";
-import { randomColor } from "@/lib/utils";
 import { SocketContext } from "./SocketContext";
 import { HocuspocusProvider } from "@hocuspocus/provider";
-import * as Y from "yjs";
+
 // Define the shape of the context
 interface EditorViewModel {
     editor: Editor | null;
@@ -96,7 +92,6 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
         documentId: hocuspocusProvider ? undefined : documentId, // Only use regular sync if no provider
         collaborationProvider: hocuspocusProvider,
     });
-
     if (hocuspocusProvider) {
         console.debug("No Hocuspocus provider available");
         hocuspocusProvider.attach();

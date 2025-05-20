@@ -1,13 +1,11 @@
 import ExtensionKit from "@/extensions/ExtensionKit";
-import { Editor, useEditor } from "@tiptap/react";
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useEditor } from "@tiptap/react";
+import { useEffect, useMemo } from "react";
 import { NodeSelection } from "@tiptap/pm/state";
 import {
     // setupAIEventHandlers,
     cleanupAIEventHandlers,
 } from "@/extensions/ExtensionUtils";
-import { useDocumentContentQueries } from "./hooks/useDocumentContentQueries";
-import { Node as ProsemirrorNode } from "prosemirror-model";
 import { Collaboration } from "@tiptap/extension-collaboration";
 import { CollaborationCursor } from "@tiptap/extension-collaboration-cursor";
 import { HocuspocusProvider } from "@hocuspocus/provider";
@@ -32,7 +30,6 @@ const initialContent = [
 ];
 
 export const useBlockEditor = ({
-    documentId,
     collaborationProvider,
     ...editorOptions
 }: BlockEditorProps) => {

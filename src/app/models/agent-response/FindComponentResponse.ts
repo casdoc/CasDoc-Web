@@ -2,11 +2,13 @@ import { BaseResponse } from "./BaseResponse";
 
 export class FindComponentResponse extends BaseResponse {
     componentIds: Array<string>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     details?: { [key: string]: any };
 
     constructor(data: {
         message: string;
         componentIds: Array<string>;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         details?: { [key: string]: any };
     }) {
         super(data.message);
@@ -14,6 +16,7 @@ export class FindComponentResponse extends BaseResponse {
         this.details = data.details;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     static parse(result: any): FindComponentResponse {
         if (
             typeof result !== "object" ||

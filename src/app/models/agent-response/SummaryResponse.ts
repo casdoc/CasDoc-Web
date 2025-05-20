@@ -3,12 +3,14 @@ import { BaseResponse } from "./BaseResponse";
 export class SummaryResponse extends BaseResponse {
     component_ids: string[];
     summary: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     details?: { [key: string]: any };
 
     constructor(data: {
         message: string;
         component_ids: string[];
         summary: string;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         details?: { [key: string]: any };
     }) {
         super(data.message);
@@ -17,6 +19,7 @@ export class SummaryResponse extends BaseResponse {
         this.details = data.details;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     static parse(result: any): SummaryResponse {
         if (
             typeof result !== "object" ||

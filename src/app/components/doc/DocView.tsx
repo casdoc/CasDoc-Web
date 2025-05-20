@@ -12,8 +12,7 @@ import { Button, Flex, Text } from "@radix-ui/themes";
 import DocMode from "@/app/models/enum/DocMode";
 import z from "zod";
 import { useEditorContext } from "@/app/viewModels/context/EditorContext";
-import { useParams, useRouter } from "next/navigation";
-import CollaborationIndicator from "../CollaborationIndicator";
+import { useParams } from "next/navigation";
 
 const DocView = () => {
     const uuidSchema = z.uuid({ version: "v4" });
@@ -23,9 +22,8 @@ const DocView = () => {
         selectedProjectId,
         openProjectDialog,
         openDocumentDialog,
-        setSelectedDocumentId,
+        selectDocument,
     } = useProjectContext();
-
     // Get documentId from URL params
     const params = useParams();
     const documentParam = params?.document as string | undefined;
@@ -33,9 +31,9 @@ const DocView = () => {
     // If URL has document ID, update the selected document in context
     useEffect(() => {
         if (documentParam && documentParam !== selectedDocumentId) {
-            setSelectedDocumentId(documentParam);
+            selectDocument(documentParam);
         }
-    }, [documentParam, selectedDocumentId, setSelectedDocumentId]);
+    }, [documentParam, selectedDocumentId, selectDocument]);
 
     // Get document data
     const { data: document } = useDocumentQuery(
@@ -93,7 +91,7 @@ const DocView = () => {
                     <CollaborationIndicator onlineUsers={onlineUsers} />
                 )} */}
             </EditorHeader>
-            {documentParam && selectedDocumentId ? (
+            {documentParam || selectedDocumentId ? (
                 <Flex className="overflow-y-auto h-full relative">
                     <div
                         className={`overflow-y-auto h-full ${

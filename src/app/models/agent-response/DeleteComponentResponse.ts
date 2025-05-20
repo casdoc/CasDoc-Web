@@ -14,6 +14,7 @@ export class DeleteComponentResponse extends BaseResponse {
         this.reason = data.reason;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     static parse(result: any): DeleteComponentResponse {
         if (
             typeof result !== "object" ||

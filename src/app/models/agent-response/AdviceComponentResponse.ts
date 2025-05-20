@@ -18,6 +18,7 @@ export class AdviceComponentResponse extends BaseResponse {
         this.suggestion = data.suggestion;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     static parse(result: any): AdviceComponentResponse {
         if (
             typeof result !== "object" ||

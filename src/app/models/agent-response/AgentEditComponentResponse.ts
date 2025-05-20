@@ -15,6 +15,7 @@ export class AgentEditComponentResponse extends BaseResponse {
         this.reason = data.reason;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     static parse(result: any): AgentEditComponentResponse {
         if (
             typeof result !== "object" ||

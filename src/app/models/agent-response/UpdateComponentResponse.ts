@@ -15,6 +15,7 @@ export class UpdateComponentResponse extends BaseResponse {
         this.reason = data.reason;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     static parse(result: any): UpdateComponentResponse {
         if (
             typeof result !== "object" ||

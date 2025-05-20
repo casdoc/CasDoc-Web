@@ -14,14 +14,12 @@ export interface ComponentConnection {
 export class ConnectComponentResponse extends BaseResponse {
     connections: ComponentConnection[];
 
-    constructor(data: {
-        message: string;
-        connections: ComponentConnection[];
-    }) {
+    constructor(data: { message: string; connections: ComponentConnection[] }) {
         super(data.message);
         this.connections = data.connections;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     static parse(result: any): ConnectComponentResponse {
         if (
             typeof result !== "object" ||
@@ -41,7 +39,9 @@ export class ConnectComponentResponse extends BaseResponse {
                 typeof conn.data.bidirectional !== "boolean" ||
                 typeof conn.data.reason !== "string"
             ) {
-                throw new Error("Invalid connection item in ConnectComponentResponse");
+                throw new Error(
+                    "Invalid connection item in ConnectComponentResponse"
+                );
             }
         }
 

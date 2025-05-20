@@ -35,8 +35,6 @@ const EditorHeader = ({
     mode,
     setDocMode,
     editor,
-    // editorStatus,
-    isCollaborating,
     children,
 }: EditorHeaderProps) => {
     const handleChangeView = useCallback(

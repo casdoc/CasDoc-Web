@@ -15,6 +15,7 @@ export class CreateComponentResponse extends BaseResponse {
         this.reason = data.reason;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     static parse(result: any): CreateComponentResponse {
         if (
             typeof result !== "object" ||

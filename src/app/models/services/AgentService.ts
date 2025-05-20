@@ -70,7 +70,7 @@ export class AgentService {
         // nodeIds?: string[]
     ): Promise<ReadableStream<Uint8Array> | null> {
         try {
-            const token = await this.getAuthToken();
+            // const token = await this.getAuthToken();
             console.debug(
                 "payload:",
                 JSON.stringify({
@@ -117,7 +117,6 @@ export class AgentService {
         onError?: (error: Error) => void,
         onComplete?: () => void
     ): Promise<void> {
-
         try {
             const stream = await this.sendMessage(prompt, projectId);
 
