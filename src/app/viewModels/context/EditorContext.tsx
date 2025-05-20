@@ -97,11 +97,11 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
         collaborationProvider: hocuspocusProvider,
     });
 
-    if (!hocuspocusProvider) {
-        return <></>;
+    if (hocuspocusProvider) {
+        console.debug("No Hocuspocus provider available");
+        hocuspocusProvider.attach();
     }
 
-    hocuspocusProvider.attach();
     // Get current status based on provider state
     // const collaborationStatus = useMemo(() => {
     //     if (!isConnected) return SaveStatus.Connecting;

@@ -93,7 +93,7 @@ const DocView = () => {
                     <CollaborationIndicator onlineUsers={onlineUsers} />
                 )} */}
             </EditorHeader>
-            {documentParam || selectedDocumentId ? (
+            {documentParam && selectedDocumentId ? (
                 <Flex className="overflow-y-auto h-full relative">
                     <div
                         className={`overflow-y-auto h-full ${
