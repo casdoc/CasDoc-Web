@@ -1,5 +1,3 @@
-"use client";
-
 import DocView from "@/app/components/doc/DocView";
 import EditPanel from "@/app/components/editPanel/EditPanelView";
 import { NodeSelectionProvider } from "@/app/viewModels/context/NodeSelectionContext";

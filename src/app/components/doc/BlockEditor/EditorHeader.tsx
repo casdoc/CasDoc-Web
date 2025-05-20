@@ -21,8 +21,6 @@ import {
     SquareSplitHorizontal,
 } from "lucide-react";
 import { useChatContext } from "@/app/viewModels/context/ChatContext";
-import SaveStatusBadge from "./SaveStatusBadge";
-import SaveStatus from "@/app/models/enum/SaveStatus";
 
 interface EditorHeaderProps {
     mode: DocMode;
@@ -170,9 +168,9 @@ const EditorHeader = ({
             </div>
 
             {/* Add status indicators and collaboration UI */}
-            <div className="flex items-center gap-2">
-                {/* Show sync status */}
-                {/* <span
+            {/* <div className="flex items-center gap-2"> */}
+            {/* Show sync status */}
+            {/* <span
                     className={`inline-block w-2 h-2 rounded-full ${
                         editorStatus() === SaveStatus.Saved
                             ? "bg-green-500"
@@ -188,9 +186,9 @@ const EditorHeader = ({
                     {isCollaborating ? "Collaborative" : "Solo"} Mode
                 </span> */}
 
-                {/* Render collaboration indicators */}
-                {children}
-            </div>
+            {/* Render collaboration indicators */}
+            {children}
+            {/* </div> */}
         </div>
     );
 };

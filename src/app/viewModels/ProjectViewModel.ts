@@ -53,11 +53,11 @@ export const useProjectViewModel = (): ProjectViewModel => {
     );
 
     // console.debug("documents", documents);
-    // console.debug("projects", projects);
     // console.debug("selectedProjectId", selectedProjectId);
     useEffect(() => {
         if (!isProjectsSuccess || isProjectLoading || projects?.length === 0)
             return;
+        console.debug("projects", projects);
         // const localSelectedDoc = DocSelectedService.getSelectedDoc();
         // if (localSelectedDoc === "") {
         // console.debug("localSelectedDoc is empty");

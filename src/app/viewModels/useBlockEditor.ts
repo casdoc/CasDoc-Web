@@ -42,22 +42,27 @@ export const useBlockEditor = ({
             Uint8Array.from(initialContent)
         );
     }
+    const extensions = useMemo(() => {
+        const base = [...ExtensionKit()];
+        if (collaborationProvider) {
+            base.push(
+                Collaboration.configure({
+                    document: collaborationProvider.document,
+                }),
+                CollaborationCursor.configure({
+                    provider: collaborationProvider,
+                })
+            );
+        }
+        return base;
+    }, [collaborationProvider]);
     // if (!collaborationProvider?.document) return;
     const editor = useEditor(
         {
             ...editorOptions,
             autofocus: true,
             immediatelyRender: false,
-            extensions: [
-                ...ExtensionKit(),
-                // Add collaboration extensions if provider is available
-                Collaboration.configure({
-                    document: collaborationProvider?.document,
-                }),
-                CollaborationCursor.configure({
-                    provider: collaborationProvider,
-                }),
-            ],
+            extensions: extensions,
             editorProps: {
                 attributes: {
                     autocomplete: "off",
