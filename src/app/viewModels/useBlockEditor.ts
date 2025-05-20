@@ -9,7 +9,6 @@ import {
 import { Collaboration } from "@tiptap/extension-collaboration";
 import { CollaborationCursor } from "@tiptap/extension-collaboration-cursor";
 import { HocuspocusProvider } from "@hocuspocus/provider";
-import * as Y from "yjs";
 
 interface BlockEditorProps {
     documentId?: string;

@@ -67,10 +67,6 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
         });
 
         setHocuspocusProvider(provider);
-        provider.attach();
-
-        const yDoc = provider.document.getArray;
-        console.log("Provider initialized with document :", yDoc);
 
         return () => {
             provider.destroy();
@@ -93,6 +89,11 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
             },
         },
     });
+
+    if (!hocuspocusProvider) {
+        return <></>;
+    }
+    hocuspocusProvider.attach();
 
     // Get current status based on provider state
     // const collaborationStatus = useMemo(() => {
