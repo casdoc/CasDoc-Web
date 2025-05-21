@@ -66,6 +66,7 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
             onUnsyncedChanges: (data) => console.log("onUnsyncedChanges", data),
         });
 
+        provider.attach();
         setHocuspocusProvider(provider);
 
         return () => {
@@ -80,7 +81,7 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
     }, [selectedDocumentId, documentParam, router, selectedProjectId]);
 
     const { editor } = useBlockEditor({
-        documentId: hocuspocusProvider ? undefined : documentId, // Only use regular sync if no provider
+        documentId: documentId, // Only use regular sync if no provider
         collaborationProvider: hocuspocusProvider,
         collaborationOptions: {
             user: {
@@ -89,12 +90,6 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
             },
         },
     });
-
-    useEffect(() => {
-        if (hocuspocusProvider) {
-            hocuspocusProvider.attach();
-        }
-    }, [hocuspocusProvider]);
 
     // Get current status based on provider state
     // const collaborationStatus = useMemo(() => {
@@ -129,7 +124,7 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 
     return (
         <EditorContext.Provider value={value}>
-            {children}
+            {hocuspocusProvider ? children : <div>Connecting to editor...</div>}
         </EditorContext.Provider>
     );
 };
