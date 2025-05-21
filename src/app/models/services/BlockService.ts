@@ -1,13 +1,10 @@
-import { createClient } from "@supabase/supabase-js";
+import supabase from "@/lib/supabase";
 import {
     BlockResponse,
     DocumentBlockContent,
     UpdateBlockPositionsResponse, // Import the new response type
 } from "../dto/DocumentApiResponse";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
 const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export class BlockService {

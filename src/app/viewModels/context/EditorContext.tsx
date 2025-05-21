@@ -90,10 +90,11 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
         },
     });
 
-    if (!hocuspocusProvider) {
-        return <></>;
-    }
-    hocuspocusProvider.attach();
+    useEffect(() => {
+        if (hocuspocusProvider) {
+            hocuspocusProvider.attach();
+        }
+    }, [hocuspocusProvider]);
 
     // Get current status based on provider state
     // const collaborationStatus = useMemo(() => {

@@ -1,5 +1,5 @@
 import { Document } from "@/app/models/entity/Document";
-import { createClient } from "@supabase/supabase-js";
+import supabase from "@/lib/supabase";
 import {
     DocumentResponse,
     DocumentResponseSchema,
@@ -8,9 +8,6 @@ import {
 } from "@/app/models/dto/DocumentApiResponse";
 import { DocumentApiRequest } from "../dto/DocumentApiRequest";
 const STORAGE_KEY = "DOCUMENTS";
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
 const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export class DocumentService {

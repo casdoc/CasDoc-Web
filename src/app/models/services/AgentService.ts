@@ -1,4 +1,4 @@
-import { createClient } from "@supabase/supabase-js";
+import supabase from "@/lib/supabase";
 import { any, z } from "zod";
 import { AdviceComponentResponse } from "../agent-response/AdviceComponentResponse";
 import { AgentEditComponentResponse } from "../agent-response/AgentEditComponentResponse";
@@ -12,9 +12,6 @@ import { SummaryResponse } from "../agent-response/SummaryResponse";
 import { UpdateComponentResponse } from "../agent-response/UpdateComponentResponse";
 import { JsonObject } from "../types/JsonObject";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
 const baseUrl = process.env.NEXT_PUBLIC_AGENT_URL;
 
 // Define message content schema

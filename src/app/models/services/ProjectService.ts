@@ -1,6 +1,6 @@
 import { Project } from "@/app/models/entity/Project";
 import { Document } from "@/app/models/entity/Document";
-import { createClient } from "@supabase/supabase-js";
+import supabase from "@/lib/supabase";
 import {
     ProjectListResponse,
     ProjectListResponseSchema,
@@ -10,9 +10,6 @@ import {
 import { ProjectApiRequest } from "../dto/ProjectApiRequest";
 import { DocumentListResponse } from "../dto/DocumentApiResponse";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
 const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export class ProjectService {
