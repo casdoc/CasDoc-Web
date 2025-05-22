@@ -167,7 +167,7 @@ const ChatView = () => {
 
     return (
         <div className="flex flex-col justify-between w-full h-full gap-3 relative overflow-hidden">
-            <div className="flex-shrink-0 flex justify-between items-center px-4 py-2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-b border-gray-200/50 dark:border-gray-700/50 z-10">
+            <div className="flex-shrink-0 flex justify-between items-center px-4 py-2 bg-white/60 dark:bg-gray-800/60 backdrop-blur-md border-b border-gray-200/50 dark:border-gray-700/50 z-20 sticky top-0 shadow-sm">
                 <h3 className="font-medium text-gray-800 dark:text-gray-200">
                     CasDoc Agent
                 </h3>
@@ -181,7 +181,7 @@ const ChatView = () => {
                 </Button>
             </div>
 
-            <div className="flex-grow w-auto mx-1 p-2 overflow-auto rounded-md bg-transparent">
+            <div className="flex-grow w-auto mx-1 p-2 overflow-auto rounded-md bg-transparent -mt-3 pt-5 relative z-10">
                 {messages.map((msg, index) => (
                     <MessageComponent
                         key={index}
@@ -225,7 +225,6 @@ const ChatView = () => {
                                 handleOnClick();
                             }
                         }}
-                        disabled={isLoading}
                         rows={1}
                     />
 

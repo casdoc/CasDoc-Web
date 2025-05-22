@@ -78,7 +78,7 @@ export const MessageComponent: React.FC<{
         case "text_delta":
             return (
                 <div className="flex justify-start my-2">
-                    <div className="bg-transparent dark:bg-gray-700 text-black dark:text-white px-4 py-2.5 whitespace-pre-wrap">
+                    <div className="bg-transparent dark:bg-gray-700 text-black dark:text-white py-2.5 whitespace-pre-wrap">
                         <span
                             className="flex flex-col"
                             dangerouslySetInnerHTML={{
