@@ -9,7 +9,6 @@ import { IdeaDocumentResponse } from "../agent-response/IdeaDocumentResponse";
 import { PromptGenerationResponse } from "../agent-response/PromptGenerationResponse";
 import { SummaryResponse } from "../agent-response/SummaryResponse";
 import { UpdateComponentResponse } from "../agent-response/UpdateComponentResponse";
-import { JsonObject } from "../types/JsonObject";
 
 const baseUrl = process.env.NEXT_PUBLIC_AGENT_URL;
 
@@ -48,7 +47,8 @@ export type AgentResponse =
 export class AgentService {
     static async chat(
         prompt: string,
-        projectId: string
+        projectId: string,
+        signal?: AbortSignal
     ): Promise<ReadableStream<Uint8Array> | null> {
         try {
             // const token = await this.getAuthToken();
@@ -71,6 +71,7 @@ export class AgentService {
                         prompt,
                         projectId,
                     }),
+                    signal: signal, // Pass the AbortSignal to fetch
                 }
             );
 
@@ -80,7 +81,6 @@ export class AgentService {
                     `HTTP error! status: ${response.status}, message: ${errorText}`
                 );
             }
-            console.debug("Response:", response);
             return response.body;
         } catch (error) {
             console.error("Error in sendMessage:", error);
@@ -91,44 +91,89 @@ export class AgentService {
     static async streamChat(
         prompt: string,
         projectId: string,
+        signal?: AbortSignal,
         onMessage?: (data: AgentMessage) => void,
         onError?: (error: Error) => void,
         onComplete?: () => void
     ): Promise<void> {
+        let reader: ReadableStreamDefaultReader<Uint8Array> | undefined;
+
         try {
-            const stream = await this.chat(prompt, projectId);
+            const stream = await this.chat(prompt, projectId, signal);
 
             if (!stream) {
                 throw new Error("No stream returned from server");
             }
 
-            const reader = stream.getReader();
+            reader = stream.getReader();
             const decoder = new TextDecoder("utf-8");
 
             while (true) {
-                const { done, value } = await reader.read();
-
-                if (done) {
-                    onComplete?.();
-                    break;
+                // Check if abort was requested before each read operation
+                if (signal?.aborted) {
+                    throw new DOMException("Aborted", "AbortError");
                 }
 
-                // Decode the chunk
-                const rawChunk = decoder.decode(value, { stream: true });
+                try {
+                    const { done, value } = await reader.read();
 
-                // Split rawChunk by SSE 'data:' delimiter to get JSON fragments
-                const fragments = rawChunk
-                    .split(/data:\s*/g)
-                    .filter((f) => f.trim());
-                for (const fragment of fragments) {
-                    this.processSSEFragment(fragment, onMessage);
+                    if (done) {
+                        onComplete?.();
+                        break;
+                    }
+
+                    // Decode the chunk
+                    const rawChunk = decoder.decode(value, { stream: true });
+
+                    // Split rawChunk by SSE 'data:' delimiter to get JSON fragments
+                    const fragments = rawChunk
+                        .split(/data:\s*/g)
+                        .filter((f) => f.trim());
+
+                    for (const fragment of fragments) {
+                        this.processSSEFragment(fragment, onMessage);
+                    }
+                } catch (readError) {
+                    // Check if this is an abort error
+                    if (signal?.aborted || readError === "AbortError") {
+                        throw new DOMException("Aborted", "AbortError");
+                    }
+                    throw readError;
                 }
             }
         } catch (error) {
-            console.error("Error in streamChatResponse:", error);
-            onError?.(
-                error instanceof Error ? error : new Error(String(error))
-            );
+            // Close reader if we have it and an error occurred
+            if (reader) {
+                try {
+                    await reader.cancel("Stream processing terminated");
+                } catch (cancelError) {
+                    console.warn(
+                        "Error cancelling stream reader:",
+                        cancelError
+                    );
+                }
+            }
+
+            // Only call onError for non-abort errors
+            if (error !== "AbortError" && onError) {
+                onError(
+                    error instanceof Error ? error : new Error(String(error))
+                );
+            }
+
+            // Only rethrow non-abort errors
+            if (error !== "AbortError") {
+                throw error;
+            }
+        } finally {
+            // Ensure resources are cleaned up
+            if (reader && signal?.aborted) {
+                try {
+                    await reader.cancel("Aborted by user");
+                } catch (finalError) {
+                    console.warn("Error in final cleanup:", finalError);
+                }
+            }
         }
     }
 
@@ -138,14 +183,11 @@ export class AgentService {
     ): void {
         try {
             const trimmedFragment = fragment.trim();
-
             // Handle ping messages
             if (trimmedFragment.includes("ping")) {
                 console.log("Received ping from server");
                 return;
             }
-
-            // Parse the JSON data
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             let data: any;
             try {
@@ -158,58 +200,12 @@ export class AgentService {
                 data = JSON.parse(trimmedFragment.replace(/'/g, '"'));
             }
 
-            // Validate with schema
-            // const result = AgentMessageSchema.safeParse(data);
-            // if (result.success) {
-            // Immediately dispatch to UI
             if (onMessage) {
                 setTimeout(() => onMessage(data), 0);
             }
-            // } else {
-            //     console.warn("Invalid message format:", result.error, data);
-            // }
         } catch (e) {
             console.debug("Error processing SSE fragment:", e, fragment);
             console.warn("Error processing SSE fragment:", e);
-        }
-    }
-
-    private static messageConverter(
-        message: AgentMessage
-    ): AgentResponse | JsonObject | string | null {
-        const { type, content } = message;
-        const parsedContent = MessageContentSchema.safeParse(content);
-        if (!parsedContent.success) {
-            console.warn(
-                "Invalid message content format:",
-                parsedContent.error
-            );
-            return null;
-        }
-
-        if (type === "tool_result") {
-            const { tool_name, result } = content;
-            if (tool_name === "generate_components") {
-                return CreateComponentResponse.parse(result);
-            } else if (tool_name === "update_components") {
-                return UpdateComponentResponse.parse(result);
-            } else if (tool_name === "delete_components") {
-                return DeleteComponentResponse.parse(result);
-            } else if (tool_name === "connect_components") {
-                return ConnectComponentResponse.parse(result);
-            } else if (tool_name === "find_components") {
-                return FindComponentResponse.parse(result);
-            } else if (tool_name === "summarize_components") {
-                return SummaryResponse.parse(result);
-            } else if (tool_name === "generate_prompt") {
-                return PromptGenerationResponse.parse(result);
-            } else {
-                return null;
-            }
-        } else if (type === "tool_call") {
-            return content.args;
-        } else {
-            return content.text;
         }
     }
 }

@@ -2,7 +2,7 @@ import { useChatContext } from "@/app/viewModels/context/ChatContext";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useState, useRef, useEffect } from "react";
-import { SendHorizontal, X } from "lucide-react";
+import { SendHorizontal, X, CircleStop } from "lucide-react";
 import AgentRelationAdviceDialog from "../doc/Dialog/AgentRelationAdviceDialog";
 import { AgentMessage, MessageComponent } from "./handleMessageByType";
 import { AgentService } from "@/app/models/services/AgentService";
@@ -12,7 +12,8 @@ import { handleMessageEvent } from "./handleMessageEvent";
 
 const ChatView = () => {
     const [inputValue, setInputValue] = useState(
-        "幫我寫出一些基本登入登出的api interrface"
+        // "幫我寫出一些基本登入登出的api interrface"
+        "幫我生成一些關於user 的 data schema，包含姓名、年齡、性別、地址等欄位"
         // "總結目前文件的內容"
     );
     const [messages, setMessages] = useState<AgentMessage[]>([]);
@@ -23,6 +24,8 @@ const ChatView = () => {
     const { selectedProjectId } = useProjectContext();
     const { addToAgentNodeIds, removeNodeFromAgent, setIsOpen } =
         useChatContext();
+    const [abortController, setAbortController] =
+        useState<AbortController | null>(null);
 
     const handleOnChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setInputValue(e.target.value);
@@ -40,9 +43,27 @@ const ChatView = () => {
         scrollToBottom();
     }, [messages]);
 
-    const handleOnClick = async () => {
-        if (inputValue.length === 0 || isLoading) return;
+    const handleCancel = () => {
+        if (abortController) {
+            abortController.abort();
+            setAbortController(null);
+            setIsLoading(false);
 
+            // Remove any thinking messages
+            setMessages((prev) =>
+                prev.filter(
+                    (msg) => msg.type !== "thinking" && msg.type !== "tool_call"
+                )
+            );
+        }
+    };
+
+    const handleOnClick = async () => {
+        if (isLoading) {
+            handleCancel();
+            return;
+        }
+        if (inputValue.length === 0) return;
         // Generate a new conversation ID for this turn
         const newConversationId = Date.now().toString();
         // Add user message with conversation ID
@@ -62,38 +83,61 @@ const ChatView = () => {
             content: { text: "Thinking..." },
             conversationId: newConversationId,
         };
+
         setMessages((prev) => [...prev, thinkingMsg]);
 
         try {
+            // Create a new AbortController for this request
+            const controller = new AbortController();
+            setAbortController(controller);
+
             await AgentService.streamChat(
                 userMsg.content.text || "",
                 selectedProjectId || "",
+                controller.signal,
                 (payload) =>
-                    handleMessageEvent(payload, newConversationId, setMessages)
-            );
-            setIsLoading(false);
-        } catch (error) {
-            setIsLoading(false);
-            console.error("Error sending message:", error);
-
-            setMessages((prev) => [
-                ...prev.filter((msg) => msg.type !== "thinking"),
-                {
-                    type: "error",
-                    content: {
-                        message:
-                            error instanceof Error
-                                ? error.message
-                                : "Failed to connect to the agent service",
-                    },
+                    handleMessageEvent(payload, newConversationId, setMessages),
+                (error) => {
+                    // Only log non-abort errors
+                    if (error.name !== "AbortError") {
+                        console.error("Stream error:", error);
+                    }
+                    setIsLoading(false);
                 },
-            ]);
+                () => {
+                    setIsLoading(false);
+                    setAbortController(null);
+                }
+            );
 
-            toast({
-                title: "Error",
-                description: "Failed to connect to the agent service.",
-                variant: "destructive",
-            });
+            setIsLoading(false);
+            setAbortController(null);
+        } catch (error) {
+            if ((error as Error).name !== "AbortError") {
+                console.error("Error sending message:", error);
+
+                setMessages((prev) => [
+                    ...prev.filter((msg) => msg.type !== "thinking"),
+                    {
+                        type: "error",
+                        content: {
+                            message:
+                                error instanceof Error
+                                    ? error.message
+                                    : "Failed to connect to the agent service",
+                        },
+                    },
+                ]);
+
+                toast({
+                    title: "Error",
+                    description: "Failed to connect to the agent service.",
+                    variant: "destructive",
+                });
+            }
+
+            setIsLoading(false);
+            setAbortController(null);
         }
     };
 
@@ -188,10 +232,15 @@ const ChatView = () => {
                     <Button
                         onClick={handleOnClick}
                         variant="ghost"
-                        disabled={isLoading || inputValue.length === 0}
-                        className="absolute bottom-1 right-3 p-1 h-8 w-8 rounded-md hover:bg-neutral-200 dark:bg-blue-600 dark:hover:bg-blue-700 text-zinc-600 flex items-center justify-center"
+                        disabled={!isLoading && inputValue.length === 0}
+                        className={`absolute bottom-1 right-3 p-1 h-8 w-8 rounded-md flex items-center justify-center 
+                                hover:bg-neutral-200 dark:bg-blue-600 dark:hover:bg-blue-700 text-zinc-600`}
                     >
-                        <SendHorizontal size={16} />
+                        {isLoading ? (
+                            <CircleStop size={16} />
+                        ) : (
+                            <SendHorizontal size={16} />
+                        )}
                     </Button>
                 </div>
             </div>

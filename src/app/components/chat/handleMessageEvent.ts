@@ -129,45 +129,6 @@ export const handleMessageEvent = (
                     },
                 ];
 
-            case "tool_call_delta":
-                // Find the last tool_call message from this conversation
-                const lastToolCallIndex = filteredMessages.findIndex(
-                    (msg) =>
-                        msg.type === "tool_call" &&
-                        msg.conversationId === conversationId
-                );
-
-                // If there's a tool_call, update its content
-                if (lastToolCallIndex !== -1) {
-                    return filteredMessages.map((msg, idx) =>
-                        idx === lastToolCallIndex
-                            ? {
-                                  ...msg,
-                                  content: {
-                                      ...msg.content,
-                                      tool_name:
-                                          data.tool_name ||
-                                          msg.content.tool_name,
-                                      args: data.args || msg.content.args,
-                                  },
-                              }
-                            : msg
-                    );
-                }
-
-                // If no existing tool_call, create a new one
-                return [
-                    ...filteredMessages,
-                    {
-                        type: "tool_call",
-                        content: {
-                            tool_name: data.tool_name || "Running Tool",
-                            args: data.args,
-                        },
-                        conversationId,
-                    },
-                ];
-
             case "tool_result":
                 // Remove any tool_call for this conversation when we get the result
                 return [
