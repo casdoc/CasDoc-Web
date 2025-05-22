@@ -93,10 +93,16 @@ const ChatView = () => {
             // Create a new AbortController for this request
             const controller = new AbortController();
             setAbortController(controller);
-
-            await AgentService.streamChat(
+            const response = await AgentService.chat(
                 userMsg.content.text || "",
                 selectedProjectId || "",
+                controller.signal
+            );
+            if (!response) {
+                throw new Error("No response from the agent service");
+            }
+            await AgentService.handleStreamResponse(
+                response,
                 controller.signal,
                 (payload) =>
                     handleMessageEvent(payload, newConversationId, setMessages),

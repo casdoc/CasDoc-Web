@@ -12,7 +12,6 @@ import { UpdateComponentResponse } from "../agent-response/UpdateComponentRespon
 
 const baseUrl = process.env.NEXT_PUBLIC_AGENT_URL;
 
-// Define message content schema
 export const MessageContentSchema = z.object({
     text: z.string().optional(),
     full_text: z.string().optional(),
@@ -24,7 +23,6 @@ export const MessageContentSchema = z.object({
 
 export type MessageContent = z.infer<typeof MessageContentSchema>;
 
-// Define agent message schema
 export const AgentMessageSchema = z.object({
     type: z.string(),
     content: any(),
@@ -51,15 +49,6 @@ export class AgentService {
         signal?: AbortSignal
     ): Promise<ReadableStream<Uint8Array> | null> {
         try {
-            // const token = await this.getAuthToken();
-            console.debug(
-                "payload:",
-                JSON.stringify({
-                    prompt,
-                    projectId,
-                })
-            );
-
             const response = await fetch(
                 `${baseUrl}/api/v1/public/agent/chat`,
                 {
@@ -71,7 +60,7 @@ export class AgentService {
                         prompt,
                         projectId,
                     }),
-                    signal: signal, // Pass the AbortSignal to fetch
+                    signal: signal,
                 }
             );
 
@@ -88,9 +77,40 @@ export class AgentService {
         }
     }
 
-    static async streamChat(
-        prompt: string,
-        projectId: string,
+    static async connect(
+        componentId: string,
+        projectId: string
+    ): Promise<ReadableStream<Uint8Array> | null> {
+        try {
+            const response = await fetch(
+                `${baseUrl}/api/v1/public/agent/connect`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        componentId,
+                        projectId,
+                    }),
+                }
+            );
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(
+                    `HTTP error! status: ${response.status}, message: ${errorText}`
+                );
+            }
+            return response.body;
+        } catch (error) {
+            console.error("Error in sendMessage:", error);
+            throw error;
+        }
+    }
+
+    static async handleStreamResponse(
+        response: ReadableStream<Uint8Array>,
         signal?: AbortSignal,
         onMessage?: (data: AgentMessage) => void,
         onError?: (error: Error) => void,
@@ -99,13 +119,7 @@ export class AgentService {
         let reader: ReadableStreamDefaultReader<Uint8Array> | undefined;
 
         try {
-            const stream = await this.chat(prompt, projectId, signal);
-
-            if (!stream) {
-                throw new Error("No stream returned from server");
-            }
-
-            reader = stream.getReader();
+            reader = response.getReader();
             const decoder = new TextDecoder("utf-8");
 
             while (true) {
@@ -185,7 +199,6 @@ export class AgentService {
             const trimmedFragment = fragment.trim();
             // Handle ping messages
             if (trimmedFragment.includes("ping")) {
-                console.log("Received ping from server");
                 return;
             }
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -204,7 +217,6 @@ export class AgentService {
                 setTimeout(() => onMessage(data), 0);
             }
         } catch (e) {
-            console.debug("Error processing SSE fragment:", e, fragment);
             console.warn("Error processing SSE fragment:", e);
         }
     }

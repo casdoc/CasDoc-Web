@@ -75,13 +75,13 @@ const mockAdvice: Advice[] = [
     },
 ];
 
-const AgentRelationAdviceDialog: React.FC<AgentRelationAdviceDialogProps> = ({
+const AgentRelationAdviceDialog = ({
     open,
     selectedNodeId,
     onOpenChange,
     advice = mockAdvice,
-    title = "AI Advice",
-}) => {
+    title = "Relation Advices",
+}: AgentRelationAdviceDialogProps) => {
     const [loading, setLoading] = useState(true);
     const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
     const {
