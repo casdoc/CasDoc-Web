@@ -1,4 +1,3 @@
-import { createClient } from "@supabase/supabase-js";
 import { any, z } from "zod";
 import { AdviceComponentResponse } from "../agent-response/AdviceComponentResponse";
 import { AgentEditComponentResponse } from "../agent-response/AgentEditComponentResponse";
@@ -12,9 +11,6 @@ import { SummaryResponse } from "../agent-response/SummaryResponse";
 import { UpdateComponentResponse } from "../agent-response/UpdateComponentResponse";
 import { JsonObject } from "../types/JsonObject";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
 const baseUrl = process.env.NEXT_PUBLIC_AGENT_URL;
 
 // Define message content schema
@@ -50,24 +46,9 @@ export type AgentResponse =
     | UpdateComponentResponse;
 
 export class AgentService {
-    private static async getAuthToken(): Promise<string> {
-        const {
-            data: { session },
-            error,
-        } = await supabase.auth.getSession();
-
-        if (error || !session) {
-            throw new Error("No valid session found");
-        }
-
-        return session.access_token;
-    }
-
-    // /api/v1/public/agent/chat
-    static async sendMessage(
+    static async chat(
         prompt: string,
         projectId: string
-        // nodeIds?: string[]
     ): Promise<ReadableStream<Uint8Array> | null> {
         try {
             // const token = await this.getAuthToken();
@@ -76,21 +57,19 @@ export class AgentService {
                 JSON.stringify({
                     prompt,
                     projectId,
-                    // nodeIds,
                 })
             );
+
             const response = await fetch(
                 `${baseUrl}/api/v1/public/agent/chat`,
                 {
                     method: "POST",
                     headers: {
-                        // Authorization: `Bearer ${token}`,
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify({
                         prompt,
                         projectId,
-                        // nodeIds,
                     }),
                 }
             );
@@ -109,16 +88,15 @@ export class AgentService {
         }
     }
 
-    static async streamChatResponse(
+    static async streamChat(
         prompt: string,
         projectId: string,
-        // nodeIds?: string[],
         onMessage?: (data: AgentMessage) => void,
         onError?: (error: Error) => void,
         onComplete?: () => void
     ): Promise<void> {
         try {
-            const stream = await this.sendMessage(prompt, projectId);
+            const stream = await this.chat(prompt, projectId);
 
             if (!stream) {
                 throw new Error("No stream returned from server");
@@ -126,32 +104,24 @@ export class AgentService {
 
             const reader = stream.getReader();
             const decoder = new TextDecoder("utf-8");
-            let buffer = "";
 
             while (true) {
                 const { done, value } = await reader.read();
 
                 if (done) {
-                    // Process any remaining data in buffer
-                    if (buffer.trim()) {
-                        this.processSSEChunk(buffer, onMessage);
-                    }
                     onComplete?.();
                     break;
                 }
 
-                // Decode the chunk and add to buffer
-                const chunk = decoder.decode(value, { stream: true });
-                buffer += chunk;
+                // Decode the chunk
+                const rawChunk = decoder.decode(value, { stream: true });
 
-                // Process complete SSE messages from buffer
-                const messages = buffer.split(/\n\n/);
-                // Keep the last part which might be incomplete
-                buffer = messages.pop() || "";
-
-                // Process each complete message
-                for (const message of messages) {
-                    this.processSSEChunk(message, onMessage);
+                // Split rawChunk by SSE 'data:' delimiter to get JSON fragments
+                const fragments = rawChunk
+                    .split(/data:\s*/g)
+                    .filter((f) => f.trim());
+                for (const fragment of fragments) {
+                    this.processSSEFragment(fragment, onMessage);
                 }
             }
         } catch (error) {
@@ -162,42 +132,45 @@ export class AgentService {
         }
     }
 
-    private static processSSEChunk(
-        chunk: string,
+    private static processSSEFragment(
+        fragment: string,
         onMessage?: (data: AgentMessage) => void
     ): void {
-        // Process SSE data format: "data: {...}"
-        const dataLines = chunk.split(/data:\s*/g).filter((f) => f.trim());
+        try {
+            const trimmedFragment = fragment.trim();
 
-        for (const line of dataLines) {
-            try {
-                const raw = line.trim();
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                let data: any;
-                try {
-                    data = JSON.parse(raw);
-                } catch (e) {
-                    console.warn(
-                        "JSON.parse failed, trying single‑quote fallback:",
-                        e
-                    );
-                    data = JSON.parse(raw.replace(/'/g, '"'));
-                }
-
-                // Validate with schema
-                const result = AgentMessageSchema.safeParse(data);
-                if (result.success) {
-                    // Immediately dispatch to UI
-                    if (onMessage) {
-                        setTimeout(() => onMessage(result.data), 0);
-                    }
-                } else {
-                    console.warn("Invalid message format:", result.error, data);
-                }
-            } catch (e) {
-                console.debug("Error parsing JSON:", e, line);
-                console.warn("Error parsing JSON in SSE chunk:", e, line);
+            // Handle ping messages
+            if (trimmedFragment.includes("ping")) {
+                console.log("Received ping from server");
+                return;
             }
+
+            // Parse the JSON data
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            let data: any;
+            try {
+                data = JSON.parse(trimmedFragment);
+            } catch (e) {
+                console.warn(
+                    "JSON.parse failed, trying single‑quote fallback:",
+                    e
+                );
+                data = JSON.parse(trimmedFragment.replace(/'/g, '"'));
+            }
+
+            // Validate with schema
+            // const result = AgentMessageSchema.safeParse(data);
+            // if (result.success) {
+            // Immediately dispatch to UI
+            if (onMessage) {
+                setTimeout(() => onMessage(data), 0);
+            }
+            // } else {
+            //     console.warn("Invalid message format:", result.error, data);
+            // }
+        } catch (e) {
+            console.debug("Error processing SSE fragment:", e, fragment);
+            console.warn("Error processing SSE fragment:", e);
         }
     }
 

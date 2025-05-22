@@ -93,7 +93,6 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
         collaborationProvider: hocuspocusProvider,
     });
     if (hocuspocusProvider) {
-        console.debug("No Hocuspocus provider available");
         hocuspocusProvider.attach();
     }
 

@@ -11,7 +11,7 @@ import { useProjectContext } from "@/app/viewModels/context/ProjectContext";
 
 const ChatView = () => {
     const [inputValue, setInputValue] = useState(
-        "幫我寫出user的 data shcema 和 一些基本登入登出的api interrface"
+        "幫我寫出一些基本登入登出的api interrface"
         // "總結目前文件的內容"
     );
     const [messages, setMessages] = useState<AgentMessage[]>([]);
@@ -42,95 +42,50 @@ const ChatView = () => {
     const handleOnClick = async () => {
         if (inputValue.length === 0 || isLoading) return;
 
-        // Add user message
+        // Generate a new conversation ID for this turn
+        const newConversationId = Date.now().toString();
+        // Add user message with conversation ID
         const userMsg: AgentMessage = {
             type: "user_prompt",
             content: { text: inputValue.replace(/\s*$/, "") },
+            conversationId: newConversationId,
         };
 
         setMessages((prev) => [...prev, userMsg]);
         setInputValue("");
         setIsLoading(true);
 
-        // Add thinking indicator
-        setMessages((prev) => [
-            ...prev,
-            { type: "thinking", content: { text: "Thinking..." } },
-        ]);
+        // Add thinking indicator with conversation ID
+        const thinkingMsg: AgentMessage = {
+            type: "thinking",
+            content: { text: "Thinking..." },
+            conversationId: newConversationId,
+        };
+        setMessages((prev) => [...prev, thinkingMsg]);
 
         try {
-            // const nodeIds = addToAgentNodeIds.map((node) => node.id);
-
-            await AgentService.streamChatResponse(
+            await AgentService.streamChat(
                 userMsg.content.text || "",
                 selectedProjectId || "",
-                // nodeIds.length > 0 ? nodeIds : undefined,
-                (data) => {
-                    // Skip if this is a duplicate user message
-                    if (data.type === "user_prompt") {
-                        return;
-                    }
-
-                    // Remove thinking indicator when we get first real response
-                    if (data.type !== "thinking") {
-                        setMessages((prev) =>
-                            prev.filter((msg) => msg.type !== "thinking")
-                        );
-                    }
-
-                    setMessages((prev) => {
-                        // For text_delta, replace the previous text_delta with the updated one
-                        if (data.type === "text_delta") {
-                            const newMessages = [...prev];
-                            const existingTextDeltaIndex =
-                                newMessages.findIndex(
-                                    (msg) => msg.type === "text_delta"
-                                );
-
-                            if (existingTextDeltaIndex >= 0) {
-                                newMessages[existingTextDeltaIndex] = data;
-                                return newMessages;
-                            } else {
-                                // If no existing text_delta, add this as a new message
-                                return [...prev, data];
-                            }
-                        }
-
-                        // For final_answer, replace any existing text_delta
-                        if (data.type === "final_answer") {
-                            return prev
-                                .filter((msg) => msg.type !== "text_delta")
-                                .concat(data);
-                        }
-
-                        // For other message types, just add them
-                        return [...prev, data];
-                    });
-                },
-                (error) => {
-                    setMessages((prev) => [
-                        ...prev.filter((msg) => msg.type !== "thinking"),
-                        {
-                            type: "error",
-                            content: {
-                                message: error.message || "An error occurred",
-                            },
-                        },
-                    ]);
-
-                    toast({
-                        title: "Error",
-                        description: "Failed to get a response from the agent.",
-                        variant: "destructive",
-                    });
-                },
-                () => {
-                    setIsLoading(false);
-                }
+                (payload) => handleMessageEvent(payload, newConversationId)
             );
+            setIsLoading(false);
         } catch (error) {
             setIsLoading(false);
             console.error("Error sending message:", error);
+
+            setMessages((prev) => [
+                ...prev.filter((msg) => msg.type !== "thinking"),
+                {
+                    type: "error",
+                    content: {
+                        message:
+                            error instanceof Error
+                                ? error.message
+                                : "Failed to connect to the agent service",
+                    },
+                },
+            ]);
 
             toast({
                 title: "Error",
@@ -138,6 +93,177 @@ const ChatView = () => {
                 variant: "destructive",
             });
         }
+    };
+
+    // Handle different message event types with conversation ID
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const handleMessageEvent = (payload: any, conversationId: string) => {
+        const { event, data } = payload;
+
+        // Update messages based on event type
+        setMessages((prev) => {
+            // Remove thinking indicator if we're getting a real response
+            const filteredMessages = prev.filter((msg) =>
+                event !== "thinking" ? msg.type !== "thinking" : true
+            );
+
+            // Process message by event type
+            switch (event) {
+                case "user_prompt":
+                    // Skip adding user message from server since we already added it in handleOnClick
+                    return filteredMessages;
+
+                case "thinking":
+                    // Update existing thinking message if it exists
+                    const thinkingExists = filteredMessages.some(
+                        (msg) => msg.type === "thinking"
+                    );
+                    if (thinkingExists) {
+                        return filteredMessages.map((msg) =>
+                            msg.type === "thinking"
+                                ? { ...msg, content: { text: data.text } }
+                                : msg
+                        );
+                    } else {
+                        return [
+                            ...filteredMessages,
+                            {
+                                type: "thinking",
+                                content: { text: data.text },
+                                conversationId,
+                            },
+                        ];
+                    }
+
+                case "text_delta":
+                    // Check if this is part of an existing text segment or a new one
+                    // If there's a tool_call or tool_result after the last text_delta, create a new segment
+                    let isNewSegment = true;
+                    let messageSegmentId = Date.now().toString();
+
+                    // Find the last text_delta message for this conversation
+                    const textDeltaMessages = filteredMessages.filter(
+                        (msg) =>
+                            msg.type === "text_delta" &&
+                            msg.conversationId === conversationId
+                    );
+
+                    if (textDeltaMessages.length > 0) {
+                        const lastTextDeltaIndex = filteredMessages.findIndex(
+                            (msg) =>
+                                msg.type === "text_delta" &&
+                                msg.conversationId === conversationId &&
+                                msg.messageSegmentId ===
+                                    textDeltaMessages[
+                                        textDeltaMessages.length - 1
+                                    ].messageSegmentId
+                        );
+
+                        // Check if there's any tool_call or tool_result between the last text_delta and current position
+                        const hasToolBetween =
+                            lastTextDeltaIndex !== -1 &&
+                            filteredMessages
+                                .slice(lastTextDeltaIndex + 1)
+                                .some(
+                                    (msg) =>
+                                        (msg.type === "tool_call" ||
+                                            msg.type === "tool_result") &&
+                                        msg.conversationId === conversationId
+                                );
+
+                        if (!hasToolBetween && textDeltaMessages.length > 0) {
+                            // Use the existing segment ID if no tool messages in between
+                            isNewSegment = false;
+                            messageSegmentId =
+                                textDeltaMessages[textDeltaMessages.length - 1]
+                                    .messageSegmentId || messageSegmentId;
+                        }
+                    }
+
+                    if (isNewSegment) {
+                        // Create a new text_delta message with a new segment ID
+                        return [
+                            ...filteredMessages,
+                            {
+                                type: "text_delta",
+                                content: { full_text: data.full_text },
+                                conversationId,
+                                messageSegmentId,
+                            },
+                        ];
+                    } else {
+                        // Update the existing text_delta message with the same segment ID
+                        return filteredMessages.map((msg) =>
+                            msg.type === "text_delta" &&
+                            msg.conversationId === conversationId &&
+                            msg.messageSegmentId === messageSegmentId
+                                ? {
+                                      type: "text_delta",
+                                      content: { full_text: data.full_text },
+                                      conversationId,
+                                      messageSegmentId,
+                                  }
+                                : msg
+                        );
+                    }
+
+                case "tool_call":
+                    return [
+                        ...filteredMessages,
+                        {
+                            type: "tool_call",
+                            content: {
+                                tool_name: data.tool_name,
+                                args: data.args,
+                            },
+                            conversationId,
+                        },
+                    ];
+
+                case "tool_result":
+                    return [
+                        ...filteredMessages,
+                        {
+                            type: "tool_result",
+                            content: {
+                                tool_name: data.tool_name || "Tool Result",
+                                result: data.result,
+                            },
+                            conversationId,
+                        },
+                    ];
+
+                case "final_answer":
+                    // Replace text_delta messages only from the current conversation
+                    return [
+                        ...filteredMessages.filter(
+                            (msg) =>
+                                !(
+                                    msg.type === "text_delta" &&
+                                    msg.conversationId === conversationId
+                                )
+                        ),
+                        {
+                            type: "final_answer",
+                            content: { text: data.text },
+                            conversationId,
+                        },
+                    ];
+
+                case "error":
+                    return [
+                        ...filteredMessages,
+                        {
+                            type: "error",
+                            content: { message: data.message },
+                            conversationId,
+                        },
+                    ];
+
+                default:
+                    return filteredMessages;
+            }
+        });
     };
 
     const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -159,6 +285,7 @@ const ChatView = () => {
     useEffect(() => {
         autoResizeTextarea();
     }, [inputValue]);
+
     if (!selectedProjectId) {
         return null;
     }
@@ -179,7 +306,7 @@ const ChatView = () => {
                 </Button>
             </div>
 
-            <div className="flex-grow w-auto mx-4 p-4 overflow-auto rounded-md bg-transparent">
+            <div className="flex-grow w-auto mx-1 p-2 overflow-auto rounded-md bg-transparent">
                 {messages.map((msg, index) => (
                     <MessageComponent
                         key={index}
