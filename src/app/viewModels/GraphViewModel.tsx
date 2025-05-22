@@ -6,6 +6,8 @@ import { useProjectContext } from "./context/ProjectContext";
 import { useDocumentQuery } from "./hooks/useDocumentQuery";
 import z from "zod";
 import { useEditorContext } from "./context/EditorContext";
+import { useRouter } from "next/router";
+import { useParams } from "next/navigation";
 
 export interface GraphViewModel {
     connectionEdges: ConnectionEdge[];
@@ -62,9 +64,14 @@ export function useGraphViewModel(): GraphViewModel {
     const [connectionEdges, setConnectionEdges] = useState<ConnectionEdge[]>(
         []
     );
+
+    // const params = useParams();
+    // // Get the document ID from URL params or context
+    // const documentParam = params?.document as string | undefined;
+    const { selectedDocumentId } = useProjectContext();
+    // const documentId = documentParam || selectedDocumentId || "";
     const [affectedIds, setAffectedIds] = useState<string[]>([]);
     const [attachedDocs, setAttachedDocs] = useState<Array<AttachedDoc>>([]);
-    const { selectedDocumentId } = useProjectContext();
     const { data: document, isLoading: isDocumentLoading } = useDocumentQuery(
         selectedDocumentId,
         selectedDocumentId !== null &&
@@ -74,10 +81,10 @@ export function useGraphViewModel(): GraphViewModel {
     // console.log("editor state", editor?.state);
 
     useEffect(() => {
-        // console.log("selected document id:", selectedDocumentId);
-        // console.log("doc content from content query hook:", editorDoc);
-        // console.log("doc content from editor context:", docContent);
-        // console.log("editor ", editor?.state.toJSON());
+        console.log("selected document id:", selectedDocumentId);
+        console.log("doc content from content query hook:", editorDoc);
+        console.log("doc content from editor context:", docContent);
+        console.log("editor ", editor?.state.toJSON());
     }, [docContent, editorDoc, selectedDocumentId, editor]); // Add editorVersion to dependencies
 
     useEffect(() => {
@@ -289,7 +296,9 @@ export function useGraphViewModel(): GraphViewModel {
         (documentId: string): AttachedDoc | undefined => {
             // const doc = getDocumentById(documentId);
             // const doc = null;
-            if (!document || selectedDocumentId) return;
+            console.debug("current document:", document);
+            if (!document || !selectedDocumentId) return;
+            console.debug("Updating attached doc by ID:", documentId);
             const docContents = document.content;
             const newGraphNodes: GraphNode[] = [
                 {

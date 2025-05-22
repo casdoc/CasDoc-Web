@@ -46,8 +46,7 @@ export const useBlockEditor = ({
         {
             ...editorOptions,
             autofocus: true,
-            immediatelyRender: false,
-            shouldRerenderOnTransaction: false,
+            immediatelyRender: true,
             extensions: [
                 ...ExtensionKit(),
                 Collaboration.configure({
@@ -159,7 +158,7 @@ export const useBlockEditor = ({
         };
     }, [editor]);
     // console.debug("editor:", editor?.state.doc);
-    if (!collaborationProvider?.document) return null;
+
     return {
         docContent: editor?.state.toJSON(),
         editorDoc: editor?.state.doc,

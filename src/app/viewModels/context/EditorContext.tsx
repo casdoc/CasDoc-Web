@@ -11,11 +11,15 @@ import { useProjectContext } from "./ProjectContext";
 import { useParams, useRouter } from "next/navigation";
 import { randomColor } from "@/lib/utils";
 import { useCollabProviderContext } from "./CollabProviderContext";
+import { Node } from "@tiptap/pm/model";
 
 // Define the shape of the context
 interface EditorViewModel {
     editor: Editor | null | undefined;
     isCollaborating: boolean;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    docContent: any | null;
+    editorDoc: Node | null;
 }
 
 // Create the context with default values
@@ -27,13 +31,16 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
     // >([]);
     // const [hocuspocusProvider, setHocuspocusProvider] =
     //     useState<HocuspocusProvider>();
-    const { selectedDocumentId, selectedProjectId } = useProjectContext();
+    const { selectedDocumentId, selectedProjectId, selectDocument } =
+        useProjectContext();
     const router = useRouter();
     const params = useParams();
     // Get the document ID from URL params or context
     const documentParam = params?.document as string | undefined;
     const documentId = documentParam || selectedDocumentId || "";
-
+    if (documentId !== selectedDocumentId) {
+        selectDocument(documentId);
+    }
     // Initialize color for user cursor
     const [userColor] = useState(() => randomColor());
     const username = "Anonymous User";
@@ -45,7 +52,7 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
         }
     }, [selectedDocumentId, documentParam, router, selectedProjectId]);
 
-    const res = useBlockEditor({
+    const { editor, editorDoc, docContent } = useBlockEditor({
         documentId: documentId,
         collaborationProvider: collabProvider,
         collaborationOptions: {
@@ -55,7 +62,7 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
             },
         },
     });
-    const editor = res?.editor;
+    // const editor = res?.editor;
 
     // Get current status based on provider state
     // const collaborationStatus = useMemo(() => {
@@ -83,6 +90,8 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
 
     const value = {
         editor,
+        docContent,
+        editorDoc,
         // currentStatus,
         isCollaborating: !!collabProvider,
         // onlineUsers,
