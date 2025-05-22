@@ -108,7 +108,6 @@ export const ToolResultComponent = ({
                     )}
                 </div>
             );
-
         case "generate_prompt":
             return (
                 <PromptBlock
@@ -116,7 +115,67 @@ export const ToolResultComponent = ({
                     prompt={contentResult?.prompt}
                 />
             );
-
+        case "find_components":
+            return (
+                <div>
+                    <div className="mb-2">{contentResult?.message}</div>
+                    <div className="flex justify-start py-1 px-1">
+                        <div className="bg-gray-100 dark:bg-gray-700 text-black dark:text-white rounded-xl shadow-sm whitespace-pre-wrap w-full max-w-md">
+                            <Collapsible
+                                className="w-full space-y-2 my-1"
+                                defaultOpen={true}
+                            >
+                                <div className="flex items-center justify-between space-x-4 px-4">
+                                    <h4 className="text-sm font-semibold">
+                                        {"Found Components"}
+                                    </h4>
+                                    <CollapsibleTrigger asChild>
+                                        <Button variant="ghost" size="sm">
+                                            <ChevronsUpDown className="h-4 w-4" />
+                                        </Button>
+                                    </CollapsibleTrigger>
+                                </div>
+                                <CollapsibleContent className="space-y-2">
+                                    <div className="px-4 pb-3">
+                                        {contentResult?.componentIds &&
+                                        contentResult.componentIds.length >
+                                            0 ? (
+                                            <ul className="divide-y divide-gray-200 dark:divide-gray-600 rounded-md overflow-hidden border border-gray-200 dark:border-gray-600">
+                                                {contentResult.componentIds.map(
+                                                    (
+                                                        id: string,
+                                                        idx: number
+                                                    ) => (
+                                                        <li
+                                                            key={idx}
+                                                            className="group flex items-center p-3 transition-colors duration-150 ease-in-out hover:bg-gray-200/70 dark:hover:bg-gray-600/70"
+                                                        >
+                                                            <div className="h-8 w-8 flex-shrink-0 rounded-full bg-blue-100 dark:bg-blue-900/30 mr-3 flex items-center justify-center">
+                                                                <span className="text-xs font-medium text-blue-700 dark:text-blue-300">
+                                                                    {idx + 1}
+                                                                </span>
+                                                            </div>
+                                                            <div className="flex-1 min-w-0">
+                                                                <p className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate">
+                                                                    {id}
+                                                                </p>
+                                                            </div>
+                                                        </li>
+                                                    )
+                                                )}
+                                            </ul>
+                                        ) : (
+                                            <p className="text-sm text-gray-500 dark:text-gray-400 italic">
+                                                No components found
+                                            </p>
+                                        )}
+                                    </div>
+                                </CollapsibleContent>
+                            </Collapsible>
+                        </div>
+                    </div>
+                </div>
+            );
         default:
             return (
                 <div className="p-4">
