@@ -1,8 +1,6 @@
-import React, { useState } from "react";
 import { marked } from "marked";
-import { ChevronDown } from "lucide-react";
-import { cn } from "@/lib/utils";
 import ToolResultComponent from "./ToolResultComponent";
+import { LoadingToolCallComponent } from "./LoadingToolCallComponent";
 
 export interface MessageContent {
     text?: string;
@@ -19,51 +17,6 @@ export interface AgentMessage {
     conversationId?: string; // to track which conversation a message belongs to
     messageSegmentId?: string; // to track different text segments within a conversation
 }
-
-interface CollapsibleSectionProps {
-    title: string;
-    children: React.ReactNode;
-    defaultOpen?: boolean;
-    className?: string;
-}
-
-export const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
-    title,
-    children,
-    defaultOpen = false,
-    className,
-}) => {
-    const [isOpen, setIsOpen] = useState(defaultOpen);
-
-    return (
-        <div
-            className={cn(
-                "my-2 border border-gray-200 dark:border-gray-700 rounded-md overflow-hidden",
-                className
-            )}
-        >
-            <button
-                className="w-full px-4 py-2 text-left bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 flex justify-between items-center"
-                onClick={() => setIsOpen(!isOpen)}
-            >
-                <span className="font-medium">{title}</span>
-                <ChevronDown
-                    className={cn(
-                        "h-4 w-4 transition-transform",
-                        isOpen ? "transform rotate-180" : ""
-                    )}
-                />
-            </button>
-            {isOpen && (
-                <div className="overflow-x-auto">
-                    <div className="p-4 bg-gray-50 dark:bg-gray-900">
-                        {children}
-                    </div>
-                </div>
-            )}
-        </div>
-    );
-};
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const renderMarkdown = (text: any): string => {
@@ -117,9 +70,7 @@ export const MessageComponent: React.FC<{
                 <div className="flex justify-start my-2">
                     <div className="text-black dark:text-white max-w-xs px-3 py-2 rounded-xl flex items-center">
                         <div className="w-5 h-5 border-2 border-blue-400 dark:border-blue-500 border-t-transparent border-b-transparent rounded-full animate-spin mr-2"></div>
-                        <span className="text-sm">
-                            {content.text || "Thinking..."}
-                        </span>
+                        <span className="text-sm">{"Thinking..."}</span>
                     </div>
                 </div>
             );
@@ -156,22 +107,7 @@ export const MessageComponent: React.FC<{
             );
 
         case "tool_call":
-            const formattedArgs = content.args || "";
-            return (
-                <div className="flex justify-start my-2">
-                    <div className="bg-gray-100 dark:bg-gray-700 text-black dark:text-white px-4 py-2.5 rounded-xl shadow-sm whitespace-pre-wrap w-full max-w-md">
-                        <CollapsibleSection
-                            title={`🔧 Tool: ${content.tool_name}`}
-                            defaultOpen={false}
-                            className="tool-call"
-                        >
-                            <pre className="text-sm overflow-x-auto">
-                                <code>{formattedArgs}</code>
-                            </pre>
-                        </CollapsibleSection>
-                    </div>
-                </div>
-            );
+            return <LoadingToolCallComponent />;
 
         case "tool_result":
             return (

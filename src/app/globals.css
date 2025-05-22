@@ -139,3 +139,17 @@ input[type="range"] {
         @apply dark:bg-neutral-100 dark:active:bg-white;
     }
 }
+
+/* Add this to your existing globals.css */
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+.animate-shimmer {
+    animation: shimmer 2s infinite linear;
+}
