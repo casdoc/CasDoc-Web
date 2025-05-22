@@ -5,7 +5,7 @@ import {
     CollapsibleContent,
     CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { ChevronsUpDown, Copy, Check } from "lucide-react";
+import { ChevronsUpDown, Copy, Check, Trash2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 
@@ -176,6 +176,78 @@ export const ToolResultComponent = ({
                     </div>
                 </div>
             );
+        case "delete_components":
+            return (
+                <div>
+                    <div className="mb-2">{contentResult?.message}</div>
+                    <div className="flex justify-start py-1 px-1">
+                        <div className="bg-gray-100 dark:bg-gray-700 text-black dark:text-white rounded-xl shadow-sm whitespace-pre-wrap w-full max-w-md">
+                            <Collapsible
+                                className="w-full space-y-2 my-1"
+                                defaultOpen={true}
+                            >
+                                <div className="flex items-center justify-between space-x-4 px-4">
+                                    <h4 className="text-sm font-semibold">
+                                        {"Components to Delete"}
+                                    </h4>
+                                    <CollapsibleTrigger asChild>
+                                        <Button variant="ghost" size="sm">
+                                            <ChevronsUpDown className="h-4 w-4" />
+                                        </Button>
+                                    </CollapsibleTrigger>
+                                </div>
+                                <CollapsibleContent className="space-y-2">
+                                    <div className="px-4 pb-3">
+                                        {contentResult?.deletedComponentIds &&
+                                        contentResult.deletedComponentIds
+                                            .length > 0 ? (
+                                            <ul className="divide-y divide-red-100 dark:divide-red-900/30 rounded-md overflow-hidden border border-red-200 dark:border-red-900/30">
+                                                {contentResult.deletedComponentIds.map(
+                                                    (
+                                                        id: string,
+                                                        idx: number
+                                                    ) => (
+                                                        <li
+                                                            key={idx}
+                                                            className="group flex items-center justify-between p-3 transition-colors duration-150 ease-in-out hover:bg-red-100/50 dark:hover:bg-red-900/20"
+                                                        >
+                                                            <div className="flex items-center flex-1">
+                                                                <div className="h-8 w-8 flex-shrink-0 rounded-full bg-red-100 dark:bg-red-900/30 mr-3 flex items-center justify-center">
+                                                                    <span className="text-xs font-medium text-red-700 dark:text-red-300">
+                                                                        {idx +
+                                                                            1}
+                                                                    </span>
+                                                                </div>
+                                                                <div className="flex-1 min-w-0">
+                                                                    <p className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate">
+                                                                        {id}
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="sm"
+                                                                className="h-8 w-8 p-0 text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-200 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-full opacity-70 group-hover:opacity-100"
+                                                            >
+                                                                <Trash2 className="h-4 w-4" />
+                                                            </Button>
+                                                        </li>
+                                                    )
+                                                )}
+                                            </ul>
+                                        ) : (
+                                            <p className="text-sm text-gray-500 dark:text-gray-400 italic">
+                                                No components to delete
+                                            </p>
+                                        )}
+                                    </div>
+                                </CollapsibleContent>
+                            </Collapsible>
+                        </div>
+                    </div>
+                </div>
+            );
+
         default:
             return (
                 <div className="p-4">

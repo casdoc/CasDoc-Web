@@ -14,7 +14,8 @@ const ChatView = () => {
     const [inputValue, setInputValue] = useState(
         // "幫我寫出一些基本登入登出的api interrface"
         // "幫我生成一些關於user 的 data schema，包含姓名、年齡、性別、地址等欄位"
-        "Can you help me add double factor authentication to the login component?"
+        // "Can you help me add double factor authentication to the login component?"
+        "Can you help me delete the related login component?"
         // "Can you help me find components related to user authentication and generate a prompt for vibe coding?"
         // "總結目前文件的內容"
     );
