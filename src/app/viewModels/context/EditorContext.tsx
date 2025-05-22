@@ -63,7 +63,6 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
             onAuthenticated: (data) => console.log("onAuthenticated!", data),
             onAuthenticationFailed: (data) =>
                 console.log("onAuthenticationFailed", data),
-            onUnsyncedChanges: (data) => console.log("onUnsyncedChanges", data),
         });
 
         provider.attach();
