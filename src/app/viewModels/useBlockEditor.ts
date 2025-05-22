@@ -1,6 +1,7 @@
+"use client";
 import ExtensionKit from "@/extensions/ExtensionKit";
 import { useEditor } from "@tiptap/react";
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import { NodeSelection } from "@tiptap/pm/state";
 import {
     // setupAIEventHandlers,
@@ -12,8 +13,7 @@ import { HocuspocusProvider } from "@hocuspocus/provider";
 
 interface BlockEditorProps {
     documentId?: string;
-    collaborationProvider?: HocuspocusProvider; // HocuspocusProvider
-    // collaborationDocument?: Y.Doc | null;
+    collaborationProvider: HocuspocusProvider;
     collaborationOptions?: {
         user: {
             name: string;
@@ -26,27 +26,37 @@ export const useBlockEditor = ({
     collaborationProvider,
     ...editorOptions
 }: BlockEditorProps) => {
-    const extensions = useMemo(() => {
-        const base = [...ExtensionKit()];
-        if (collaborationProvider) {
-            base.push(
-                Collaboration.configure({
-                    document: collaborationProvider.document,
-                }),
-                CollaborationCursor.configure({
-                    provider: collaborationProvider,
-                })
-            );
-        }
-        return base;
-    }, [collaborationProvider]);
-    // if (!collaborationProvider?.document) return;
+    // Create extensions directly without useMemo
+    const baseExtensions = [...ExtensionKit()];
+
+    // Add collaboration extensions conditionally
+    if (collaborationProvider?.document) {
+        baseExtensions.push(
+            Collaboration.configure({
+                document: collaborationProvider.document,
+            }),
+            CollaborationCursor.configure({
+                provider: collaborationProvider,
+            })
+        );
+    }
+
+    // console.debug("collaborationProvider:", collaborationProvider);
     const editor = useEditor(
         {
             ...editorOptions,
             autofocus: true,
             immediatelyRender: false,
-            extensions: extensions,
+            shouldRerenderOnTransaction: false,
+            extensions: [
+                ...ExtensionKit(),
+                Collaboration.configure({
+                    document: collaborationProvider.document,
+                }),
+                CollaborationCursor.configure({
+                    provider: collaborationProvider,
+                }),
+            ],
             editorProps: {
                 attributes: {
                     autocomplete: "off",
@@ -55,29 +65,16 @@ export const useBlockEditor = ({
                     spellcheck: "false",
                 },
             },
+
             onDestroy() {
                 if (editor && editor.storage) {
                     cleanupAIEventHandlers(editor.storage);
                 }
             },
         },
+        // Only watch the collaboration document for changes when it exists
         [collaborationProvider?.document]
     );
-
-    useEffect(() => {
-        if (!collaborationProvider) return;
-        const handlySync = () => {
-            console.log("Document synced with server!");
-
-            const ydoc = collaborationProvider.document;
-            if (ydoc) {
-                const fragment = ydoc.getXmlFragment('default');
-                console.log("Y.js document content:\n", fragment.toString());
-            }
-        };
-
-        handlySync();
-    });
 
     // Clear the lastProcessedDoc when document changes
     // useEffect(() => {
@@ -162,6 +159,7 @@ export const useBlockEditor = ({
         };
     }, [editor]);
     // console.debug("editor:", editor?.state.doc);
+    if (!collaborationProvider?.document) return null;
     return {
         docContent: editor?.state.toJSON(),
         editorDoc: editor?.state.doc,

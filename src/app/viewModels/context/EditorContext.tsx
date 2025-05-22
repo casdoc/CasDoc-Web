@@ -9,24 +9,13 @@ import React, {
 import { useBlockEditor } from "@/app/viewModels/useBlockEditor";
 import { useProjectContext } from "./ProjectContext";
 import { useParams, useRouter } from "next/navigation";
-import { HocuspocusProvider } from "@hocuspocus/provider";
 import { randomColor } from "@/lib/utils";
+import { useCollabProviderContext } from "./CollabProviderContext";
 
 // Define the shape of the context
 interface EditorViewModel {
-    editor: Editor | null;
-    // currentStatus: SaveStatus;
+    editor: Editor | null | undefined;
     isCollaborating: boolean;
-    // onlineUsers: Array<{ clientId: number; user: any }>;
-
-    // docContent:
-    //     | {
-    //           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    //           allContent: Record<string, any>[];
-    //           documentId: string;
-    //       }
-    //     | undefined;
-    // editorDoc: ProsemirrorNode | undefined;
 }
 
 // Create the context with default values
@@ -36,13 +25,11 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
     // const [onlineUsers, setOnlineUsers] = useState<
     //     Array<{ clientId: number; user: any }>
     // >([]);
-    const [hocuspocusProvider, setHocuspocusProvider] =
-        useState<HocuspocusProvider>();
+    // const [hocuspocusProvider, setHocuspocusProvider] =
+    //     useState<HocuspocusProvider>();
     const { selectedDocumentId, selectedProjectId } = useProjectContext();
     const router = useRouter();
     const params = useParams();
-    // const { data: session } = useSession();
-
     // Get the document ID from URL params or context
     const documentParam = params?.document as string | undefined;
     const documentId = documentParam || selectedDocumentId || "";
@@ -51,37 +38,16 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
     const [userColor] = useState(() => randomColor());
     const username = "Anonymous User";
 
-    useEffect(() => {
-        if (!documentId) return;
-
-        const provider = new HocuspocusProvider({
-            url: "ws://localhost:1234",
-            name: documentId, //temp
-            onConnect: () => console.log("onConnect!"),
-            onOpen: (data) => console.log("onOpen!", data),
-            onClose: (data) => console.log("onClose!", data),
-            onAuthenticated: (data) => console.log("onAuthenticated!", data),
-            onAuthenticationFailed: (data) =>
-                console.log("onAuthenticationFailed", data),
-        });
-
-        provider.attach();
-        setHocuspocusProvider(provider);
-
-        return () => {
-            provider.destroy();
-        };
-    }, [documentId]);
-
+    const { collabProvider } = useCollabProviderContext();
     useEffect(() => {
         if (selectedDocumentId && !documentParam && selectedProjectId) {
             router.push(`/document/${selectedDocumentId}`);
         }
     }, [selectedDocumentId, documentParam, router, selectedProjectId]);
 
-    const { editor } = useBlockEditor({
-        documentId: documentId, // Only use regular sync if no provider
-        collaborationProvider: hocuspocusProvider,
+    const res = useBlockEditor({
+        documentId: documentId,
+        collaborationProvider: collabProvider,
         collaborationOptions: {
             user: {
                 name: username,
@@ -89,6 +55,7 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
             },
         },
     });
+    const editor = res?.editor;
 
     // Get current status based on provider state
     // const collaborationStatus = useMemo(() => {
@@ -117,13 +84,13 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
     const value = {
         editor,
         // currentStatus,
-        isCollaborating: !!hocuspocusProvider,
+        isCollaborating: !!collabProvider,
         // onlineUsers,
     };
 
     return (
         <EditorContext.Provider value={value}>
-            {hocuspocusProvider ? children : <div>Connecting to editor...</div>}
+            {editor ? children : <div>Connecting to editor...</div>}
         </EditorContext.Provider>
     );
 };
