@@ -64,6 +64,21 @@ export const useBlockEditor = ({
         [collaborationProvider?.document]
     );
 
+    useEffect(() => {
+        if (!collaborationProvider) return;
+        const handlySync = () => {
+            console.log("Document synced with server!");
+
+            const ydoc = collaborationProvider.document;
+            if (ydoc) {
+                const fragment = ydoc.getXmlFragment('default');
+                console.log("Y.js document content:\n", fragment.toString());
+            }
+        };
+
+        handlySync();
+    });
+
     // Clear the lastProcessedDoc when document changes
     // useEffect(() => {
     //     if (editor && documentId) {
