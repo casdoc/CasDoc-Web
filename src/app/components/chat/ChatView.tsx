@@ -253,12 +253,12 @@ const ChatView = () => {
                 </div>
             </div>
 
-            <AgentRelationAdviceDialog
+            {/* <AgentRelationAdviceDialog
                 open={adviceDialogOpen}
                 selectedNodeId={"407e7cf8-c10d-4654-9ab3-a84459f08823"}
                 onOpenChange={setAdviceDialogOpen}
                 title="AI Relationship Advice"
-            />
+            /> */}
         </div>
     );
 };

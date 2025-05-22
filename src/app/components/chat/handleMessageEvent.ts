@@ -1,10 +1,10 @@
+import { StreamResponse } from "@/app/models/services/AgentService";
 import { AgentMessage } from "./handleMessageByType";
 import { Dispatch, SetStateAction } from "react";
 
 // Handle different message event types with conversation ID
 export const handleMessageEvent = (
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    payload: any,
+    payload: StreamResponse,
     conversationId: string,
     setMessages: Dispatch<SetStateAction<AgentMessage[]>>
 ) => {

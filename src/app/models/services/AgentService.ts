@@ -1,14 +1,4 @@
 import { any, z } from "zod";
-import { AdviceComponentResponse } from "../agent-response/AdviceComponentResponse";
-import { AgentEditComponentResponse } from "../agent-response/AgentEditComponentResponse";
-import { ConnectComponentResponse } from "../agent-response/ConnectComponentResponse";
-import { CreateComponentResponse } from "../agent-response/CreateComponentResponse";
-import { DeleteComponentResponse } from "../agent-response/DeleteComponentResponse";
-import { FindComponentResponse } from "../agent-response/FindComponentResponse";
-import { IdeaDocumentResponse } from "../agent-response/IdeaDocumentResponse";
-import { PromptGenerationResponse } from "../agent-response/PromptGenerationResponse";
-import { SummaryResponse } from "../agent-response/SummaryResponse";
-import { UpdateComponentResponse } from "../agent-response/UpdateComponentResponse";
 
 const baseUrl = process.env.NEXT_PUBLIC_AGENT_URL;
 
@@ -23,24 +13,12 @@ export const MessageContentSchema = z.object({
 
 export type MessageContent = z.infer<typeof MessageContentSchema>;
 
-export const AgentMessageSchema = z.object({
-    type: z.string(),
-    content: any(),
+export const StreamResponseSchema = z.object({
+    event: z.string(),
+    data: any(),
 });
 
-export type AgentMessage = z.infer<typeof AgentMessageSchema>;
-
-export type AgentResponse =
-    | AdviceComponentResponse
-    | AgentEditComponentResponse
-    | ConnectComponentResponse
-    | CreateComponentResponse
-    | DeleteComponentResponse
-    | FindComponentResponse
-    | IdeaDocumentResponse
-    | PromptGenerationResponse
-    | SummaryResponse
-    | UpdateComponentResponse;
+export type StreamResponse = z.infer<typeof StreamResponseSchema>;
 
 export class AgentService {
     static async chat(
@@ -112,7 +90,7 @@ export class AgentService {
     static async handleStreamResponse(
         response: ReadableStream<Uint8Array>,
         signal?: AbortSignal,
-        onMessage?: (data: AgentMessage) => void,
+        onMessage?: (data: StreamResponse) => void,
         onError?: (error: Error) => void,
         onComplete?: () => void
     ): Promise<void> {
@@ -193,7 +171,7 @@ export class AgentService {
 
     private static processSSEFragment(
         fragment: string,
-        onMessage?: (data: AgentMessage) => void
+        onMessage?: (data: StreamResponse) => void
     ): void {
         try {
             const trimmedFragment = fragment.trim();
