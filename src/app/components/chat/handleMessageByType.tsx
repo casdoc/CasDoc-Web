@@ -54,7 +54,7 @@ export const MessageComponent: React.FC<{
         case "user_prompt":
             return (
                 <div className="flex justify-end">
-                    <div className="bg-neutral-700 text-white max-w-xs py-2 px-4 rounded-xl shadow-sm whitespace-pre-wrap ">
+                    <div className="bg-neutral-700 text-white max-w-xl py-2 px-4 rounded-xl shadow-sm whitespace-pre-wrap ">
                         <span
                             className="flex"
                             dangerouslySetInnerHTML={{
@@ -107,6 +107,7 @@ export const MessageComponent: React.FC<{
             );
 
         case "tool_call":
+        case "tool_call_delta":
             return <LoadingToolCallComponent />;
 
         case "tool_result":
