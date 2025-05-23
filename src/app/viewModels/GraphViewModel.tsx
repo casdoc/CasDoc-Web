@@ -81,10 +81,10 @@ export function useGraphViewModel(): GraphViewModel {
     // console.log("editor state", editor?.state);
 
     useEffect(() => {
-        console.log("selected document id:", selectedDocumentId);
-        console.log("doc content from content query hook:", editorDoc);
-        console.log("doc content from editor context:", docContent);
-        console.log("editor ", editor?.state.toJSON());
+        // console.log("selected document id:", selectedDocumentId);
+        // console.log("doc content from content query hook:", editorDoc);
+        // console.log("doc content from editor context:", docContent);
+        // console.log("editor ", editor?.state.toJSON());
     }, [docContent, editorDoc, selectedDocumentId, editor]); // Add editorVersion to dependencies
 
     useEffect(() => {
