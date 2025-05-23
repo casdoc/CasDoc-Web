@@ -8,7 +8,6 @@ import React, {
 import { useProjectContext } from "./ProjectContext";
 import { useParams } from "next/navigation";
 import { HocuspocusProvider } from "@hocuspocus/provider";
-import { set } from "lodash";
 
 // Define the shape of the context
 interface CollabProviderViewModel {
