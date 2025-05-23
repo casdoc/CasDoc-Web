@@ -2,12 +2,10 @@ import { useState, useCallback, useEffect } from "react";
 import { GraphService } from "../models/services/GraphService";
 import { JsonObject } from "../models/types/JsonObject";
 import { useProjectContext } from "./context/ProjectContext";
-// import defaultContent from "../models/default-value/defaultContent";
 import { useDocumentQuery } from "./hooks/useDocumentQuery";
 import z from "zod";
 import { useEditorContext } from "./context/EditorContext";
-import { useRouter } from "next/router";
-import { useParams } from "next/navigation";
+import { Node } from "@tiptap/pm/model";
 
 export interface GraphViewModel {
     connectionEdges: ConnectionEdge[];
@@ -65,11 +63,8 @@ export function useGraphViewModel(): GraphViewModel {
         []
     );
 
-    // const params = useParams();
-    // // Get the document ID from URL params or context
-    // const documentParam = params?.document as string | undefined;
     const { selectedDocumentId } = useProjectContext();
-    // const documentId = documentParam || selectedDocumentId || "";
+
     const [affectedIds, setAffectedIds] = useState<string[]>([]);
     const [attachedDocs, setAttachedDocs] = useState<Array<AttachedDoc>>([]);
     const { data: document, isLoading: isDocumentLoading } = useDocumentQuery(
@@ -77,34 +72,7 @@ export function useGraphViewModel(): GraphViewModel {
         selectedDocumentId !== null &&
             !uuidSchema.safeParse(selectedDocumentId).success
     );
-    const { editor, docContent, editorDoc } = useEditorContext();
-    // console.log("editor state", editor?.state);
-
-    useEffect(() => {
-        // console.log("selected document id:", selectedDocumentId);
-        // console.log("doc content from content query hook:", editorDoc);
-        // console.log("doc content from editor context:", docContent);
-        // console.log("editor ", editor?.state.toJSON());
-    }, [docContent, editorDoc, selectedDocumentId, editor]); // Add editorVersion to dependencies
-
-    useEffect(() => {
-        if (!selectedDocumentId || isDocumentLoading) return;
-        // let doc = DocumentService.getDocumentById(selectedDocumentId || "");
-        // if (!doc) {
-        //     const emptyDoc = new Document(
-        //         "default-document",
-        //         DocumentType.SRD,
-        //         "default-project",
-        //         "Untitled Document",
-        //         "No description",
-        //         defaultContent
-        //     );
-        //     DocumentService.saveDocument(emptyDoc);
-        //     // doc = emptyDoc;
-        // }
-        // setDocument(doc);
-        // console.debug("Selected document ID:", selectedDocumentId);
-    }, [isDocumentLoading, selectedDocumentId]);
+    const { editor, docContent } = useEditorContext();
 
     useEffect(() => {
         const localEdges = GraphService.getEdges();
@@ -294,12 +262,8 @@ export function useGraphViewModel(): GraphViewModel {
 
     const updateAttachedDocById = useCallback(
         (documentId: string): AttachedDoc | undefined => {
-            // const doc = getDocumentById(documentId);
-            // const doc = null;
-            // console.debug("current document:", document);
             if (!document || !selectedDocumentId) return;
-            // console.debug("Updating attached doc by ID:", documentId);
-            const docContents = document.content;
+
             const newGraphNodes: GraphNode[] = [
                 {
                     id: document.id,
@@ -314,10 +278,11 @@ export function useGraphViewModel(): GraphViewModel {
                 document.id,
             ];
             let lastTopicLevel = 0;
+            const content = docContent?.doc?.content || [];
 
-            for (let i = 0; i < docContents.length; i++) {
+            for (let i = 0; i < content.length; i++) {
                 const topicLevel: number =
-                    parseInt(docContents[i].attrs.level) ?? 0;
+                    parseInt(content[i].attrs.level) ?? 0;
                 let parent = lastTopicLevel;
 
                 if (topicLevel === 1) parent = 0;
@@ -325,24 +290,22 @@ export function useGraphViewModel(): GraphViewModel {
                     parent = lastTopicLevel - 1;
                 else if (topicLevel < lastTopicLevel) parent = topicLevel - 1;
 
-                if (docContents[i].type.startsWith("topic")) {
-                    lastTopicId[topicLevel] = docContents[i].attrs.id;
+                if (content[i].type.startsWith("topic")) {
+                    lastTopicId[topicLevel] = content[i].attrs.id;
                     lastTopicLevel = topicLevel;
                 }
 
-                const graphNode = newGraphNode(
-                    docContents[i],
-                    lastTopicId[parent]
-                );
+                const graphNode = newGraphNode(content[i], lastTopicId[parent]);
                 if (graphNode) newGraphNodes.push(graphNode);
             }
+
             const attachedDoc = {
                 id: documentId,
                 nodes: newGraphNodes,
             };
             return attachedDoc;
         },
-        [document, selectedDocumentId]
+        [docContent, document, selectedDocumentId]
     );
 
     const appendAttachedDocsById = useCallback(
@@ -408,8 +371,8 @@ export function useGraphViewModel(): GraphViewModel {
         updatedNode: GraphNode
     ) => {
         if (!document) return;
-        const oldContent = document.content || [];
-        const newContent = oldContent.map((item) => {
+        const oldContent = docContent || [];
+        const newContent = oldContent.map((item: Node) => {
             if (item?.attrs?.id === nodeId) {
                 return {
                     ...item,
@@ -423,8 +386,7 @@ export function useGraphViewModel(): GraphViewModel {
             }
             return item;
         });
-        document.content = newContent;
-        // updateDocument(document);
+        editor?.commands.setContent(newContent);
     };
 
     // update the current document's nodes data when modifying in edit panel

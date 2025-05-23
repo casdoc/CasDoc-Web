@@ -9,12 +9,10 @@ import { useProjectContext } from "./ProjectContext";
 import { HocuspocusProvider } from "@hocuspocus/provider";
 import { LoadingMask } from "@/app/document/components/LoadingMask";
 
-// Define the shape of the context
 interface CollabProviderViewModel {
     collabProvider: HocuspocusProvider;
 }
 
-// Create the context with default values
 const CollabProviderContext = createContext<
     CollabProviderViewModel | undefined
 >(undefined);
@@ -61,7 +59,6 @@ export const CollabProvider = ({ children }: { children: ReactNode }) => {
     );
 };
 
-// Custom hook for consuming the context
 export const useCollabProviderContext = (): CollabProviderViewModel => {
     const context = useContext(CollabProviderContext);
     if (context === undefined) {

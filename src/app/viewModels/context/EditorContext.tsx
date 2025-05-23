@@ -6,7 +6,6 @@ import { randomColor } from "@/lib/utils";
 import { useCollabProviderContext } from "./CollabProviderContext";
 import { Node } from "@tiptap/pm/model";
 
-// Define the shape of the context
 interface EditorViewModel {
     editor: Editor | null | undefined;
     isCollaborating: boolean;
@@ -15,7 +14,6 @@ interface EditorViewModel {
     editorDoc: Node | null;
 }
 
-// Create the context with default values
 const EditorContext = createContext<EditorViewModel | undefined>(undefined);
 
 export const EditorProvider = ({ children }: { children: ReactNode }) => {
@@ -51,7 +49,6 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
     );
 };
 
-// Custom hook for consuming the context
 export const useEditorContext = (): EditorViewModel => {
     const context = useContext(EditorContext);
     if (context === undefined) {

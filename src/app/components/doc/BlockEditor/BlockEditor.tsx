@@ -7,15 +7,10 @@ import LinkMenu from "@/app/components/Menus/LinkMenu";
 import { Document } from "@/app/models/entity/Document";
 interface BlockEditorProps {
     editor: Editor;
-    selectedDocumentId: string | null;
     document: Document | undefined;
 }
 
-const BlockEditor = ({
-    editor,
-    selectedDocumentId,
-    document,
-}: BlockEditorProps) => {
+const BlockEditor = ({ editor, document }: BlockEditorProps) => {
     const menuContainerRef = useRef(null);
     const handleAddDefaultNode = () => {
         if (!editor) return;
@@ -41,11 +36,6 @@ const BlockEditor = ({
                 .run();
         }
     };
-    if (!selectedDocumentId) {
-        console.debug("selectedDocumentId is null");
-        return null;
-    }
-
     return (
         <div className="flex-1 overflow-y-auto" ref={menuContainerRef}>
             <div>

@@ -114,11 +114,7 @@ const DocView = () => {
                                     : "100%",
                         }}
                     >
-                        <BlockEditor
-                            editor={editor}
-                            selectedDocumentId={selectedDocumentId}
-                            document={document}
-                        />
+                        <BlockEditor editor={editor} document={document} />
                     </div>
                     {mode === DocMode.Split && (
                         <div
