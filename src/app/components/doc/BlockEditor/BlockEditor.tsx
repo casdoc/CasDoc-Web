@@ -1,3 +1,4 @@
+"use client";
 import { Editor, EditorContent } from "@tiptap/react";
 import { ContentItemMenu } from "../DragMenu/ContentItemMenu";
 import "@/styles/index.css";
@@ -47,7 +48,9 @@ const BlockEditor = ({
 
     return (
         <div className="flex-1 overflow-y-auto" ref={menuContainerRef}>
-            <EditorContent editor={editor} />
+            <div>
+                <EditorContent editor={editor} />
+            </div>
             <ContentItemMenu editor={editor} />
             <LinkMenu editor={editor} appendTo={menuContainerRef} />
             {/* Transparent clickable area to add default node */}

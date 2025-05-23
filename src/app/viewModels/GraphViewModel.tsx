@@ -103,7 +103,7 @@ export function useGraphViewModel(): GraphViewModel {
         //     // doc = emptyDoc;
         // }
         // setDocument(doc);
-        console.debug("Selected document ID:", selectedDocumentId);
+        // console.debug("Selected document ID:", selectedDocumentId);
     }, [isDocumentLoading, selectedDocumentId]);
 
     useEffect(() => {
@@ -296,9 +296,9 @@ export function useGraphViewModel(): GraphViewModel {
         (documentId: string): AttachedDoc | undefined => {
             // const doc = getDocumentById(documentId);
             // const doc = null;
-            console.debug("current document:", document);
+            // console.debug("current document:", document);
             if (!document || !selectedDocumentId) return;
-            console.debug("Updating attached doc by ID:", documentId);
+            // console.debug("Updating attached doc by ID:", documentId);
             const docContents = document.content;
             const newGraphNodes: GraphNode[] = [
                 {

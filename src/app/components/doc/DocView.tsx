@@ -12,7 +12,6 @@ import { Button, Flex, Text } from "@radix-ui/themes";
 import DocMode from "@/app/models/enum/DocMode";
 import z from "zod";
 import { useEditorContext } from "@/app/viewModels/context/EditorContext";
-import { useParams } from "next/navigation";
 
 const DocView = () => {
     const uuidSchema = z.uuid({ version: "v4" });
@@ -22,24 +21,12 @@ const DocView = () => {
         selectedProjectId,
         openProjectDialog,
         openDocumentDialog,
-        selectDocument,
     } = useProjectContext();
-    // Get documentId from URL params
-    const params = useParams();
-    const documentParam = params?.document as string | undefined;
 
-    // If URL has document ID, update the selected document in context
-    useEffect(() => {
-        if (documentParam && documentParam !== selectedDocumentId) {
-            selectDocument(documentParam);
-        }
-    }, [documentParam, selectedDocumentId, selectDocument]);
-
-    // Get document data
     const { data: document } = useDocumentQuery(
-        documentParam || selectedDocumentId || "",
-        !!(documentParam || selectedDocumentId) &&
-            !uuidSchema.safeParse(documentParam || selectedDocumentId).success
+        selectedDocumentId || "",
+        !!selectedDocumentId &&
+            !uuidSchema.safeParse(selectedDocumentId).success
     );
 
     const { editor, isCollaborating } = useEditorContext();
@@ -70,9 +57,32 @@ const DocView = () => {
         };
     }, []);
 
-    // Return null if editor is not loaded - DocumentContent will handle the loading UI
+    // Return loading state if document is changing
+    if (!selectedDocumentId) {
+        return (
+            <Flex
+                direction="column"
+                justify="center"
+                align="center"
+                className="h-full"
+            >
+                <Text>Loading document...</Text>
+            </Flex>
+        );
+    }
+
+    // Return null if editor is not loaded
     if (!editor) {
-        return null;
+        return (
+            <Flex
+                direction="column"
+                justify="center"
+                align="center"
+                className="h-full"
+            >
+                <Text>Connecting to editor...</Text>
+            </Flex>
+        );
     }
 
     return (
@@ -91,7 +101,7 @@ const DocView = () => {
                     <CollaborationIndicator onlineUsers={onlineUsers} />
                 )} */}
             </EditorHeader>
-            {documentParam || selectedDocumentId ? (
+            {selectedDocumentId ? (
                 <Flex className="overflow-y-auto h-full relative">
                     <div
                         className={`overflow-y-auto h-full ${
@@ -106,9 +116,7 @@ const DocView = () => {
                     >
                         <BlockEditor
                             editor={editor}
-                            selectedDocumentId={
-                                documentParam || selectedDocumentId
-                            }
+                            selectedDocumentId={selectedDocumentId}
                             document={document}
                         />
                     </div>
