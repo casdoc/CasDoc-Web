@@ -357,7 +357,7 @@ export function useGraphViewModel(): GraphViewModel {
                     ...doc.nodes[pos],
                     ...changes,
                 };
-                saveModifiedToDoc(doc.id, nodeId, updatedNodes[pos]);
+                saveModifiedToDoc(nodeId, updatedNodes[pos]);
                 return { ...doc, nodes: updatedNodes };
             }
             return doc;
@@ -365,13 +365,9 @@ export function useGraphViewModel(): GraphViewModel {
         setAttachedDocs(updatedDocs);
     };
 
-    const saveModifiedToDoc = (
-        documentId: string,
-        nodeId: string,
-        updatedNode: GraphNode
-    ) => {
-        if (!document) return;
-        const oldContent = docContent || [];
+    const saveModifiedToDoc = (nodeId: string, updatedNode: GraphNode) => {
+        if (!document || !editor) return;
+        const oldContent = docContent?.doc?.content || [];
         const newContent = oldContent.map((item: Node) => {
             if (item?.attrs?.id === nodeId) {
                 return {
@@ -391,7 +387,8 @@ export function useGraphViewModel(): GraphViewModel {
 
     // update the current document's nodes data when modifying in edit panel
     useEffect(() => {
-        if (!document || isDocumentLoading || !selectedDocumentId) return;
+        if (!document || isDocumentLoading || !selectedDocumentId || !editor)
+            return;
         const newDoc = updateAttachedDocById(selectedDocumentId);
         if (!newDoc) return;
         setAttachedDocs((docs) => {
@@ -400,6 +397,7 @@ export function useGraphViewModel(): GraphViewModel {
             return [...newDocs];
         });
     }, [
+        editor,
         document,
         updateAttachedDocById,
         selectedDocumentId,
