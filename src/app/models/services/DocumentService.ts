@@ -8,7 +8,7 @@ import {
 
 const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
-export const fetchDocumentById = async (
+export const getDocument = async (
     id: string
 ): Promise<Document | undefined> => {
     try {
@@ -94,7 +94,6 @@ export const createDocument = async (
 export const updateDocument = async (
     id: string,
     input: DocumentUpdate,
-    signal?: AbortSignal
 ): Promise<Document | null> => {
     try {
         const {
@@ -116,7 +115,6 @@ export const updateDocument = async (
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify(input),
-                signal,
             }
         );
 
@@ -136,7 +134,6 @@ export const updateDocument = async (
 
 export const deleteDocument = async (
     id: string,
-    signal?: AbortSignal
 ): Promise<void> => {
     try {
         const {
@@ -157,7 +154,6 @@ export const deleteDocument = async (
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json",
                 },
-                signal,
             }
         );
 
