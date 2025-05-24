@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { DocumentService } from "@/app/models/services/DocumentService";
-import { DocumentApiRequest } from "@/app/models/dto/DocumentApiRequest";
+import { updateDocument } from "@/app/models/services/DocumentService";
+import { DocumentUpdate } from "@/app/models/dto/DocumentApiRequest";
 import { Document } from "@/app/models/entity/Document";
 import { useRef } from "react";
 
@@ -14,7 +14,7 @@ export const useUpdateDocumentMutation = () => {
             documentInput,
         }: {
             documentId: string;
-            documentInput: DocumentApiRequest;
+            documentInput: DocumentUpdate;
         }) => {
             // Cancel previous request if exists
             if (abortControllerRef.current) {
@@ -25,11 +25,7 @@ export const useUpdateDocumentMutation = () => {
             abortControllerRef.current = controller;
 
             // Update the document
-            const document = await DocumentService.updateDocument(
-                documentId,
-                documentInput,
-                controller.signal
-            );
+            const document = await updateDocument(documentId, documentInput);
 
             if (abortControllerRef.current === controller) {
                 abortControllerRef.current = null;
@@ -43,7 +39,7 @@ export const useUpdateDocumentMutation = () => {
             documentInput,
         }: {
             documentId: string;
-            documentInput: DocumentApiRequest;
+            documentInput: DocumentUpdate;
         }) => {
             // Cancel any outgoing refetches to avoid overwriting optimistic update
             await queryClient.cancelQueries({ queryKey: ["documents"] });
@@ -61,7 +57,7 @@ export const useUpdateDocumentMutation = () => {
                         document.id === documentId
                             ? new Document(
                                   document.id,
-                                  documentInput.type,
+                                  document.type,
                                   document.projectId,
                                   documentInput.title,
                                   documentInput.description || "",

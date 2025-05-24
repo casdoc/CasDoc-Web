@@ -1,265 +1,190 @@
-import { Project } from "@/app/models/entity/Project";
-import { Document } from "@/app/models/entity/Document";
 import supabase from "@/lib/supabase";
+import { Project } from "@/app/models/entity/Project";
+import { ProjectApiRequest } from "../dto/ProjectApiRequest";
 import {
     ProjectListResponse,
     ProjectListResponseSchema,
     ProjectResponse,
     ProjectResponseSchema,
 } from "@/app/models/dto/ProjectApiResponse";
-import { ProjectApiRequest } from "../dto/ProjectApiRequest";
-import { DocumentListResponse } from "../dto/DocumentApiResponse";
 
 const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
-export class ProjectService {
-    static async fetchAllProjects(): Promise<Project[] | undefined> {
-        try {
-            const {
-                data: { session },
-                error,
-            } = await supabase.auth.getSession();
+export const getAllProjects = async (): Promise<Project[] | undefined> => {
+    try {
+        const {
+            data: { session },
+            error,
+        } = await supabase.auth.getSession();
 
-            if (error || !session) {
-                throw new Error("No valid session found");
-            }
+        if (error || !session) {
+            throw new Error("No valid session found");
+        }
 
-            const token = session.access_token;
-            const response = await fetch(`${baseUrl}/api/v1/public/projects`, {
+        const token = session.access_token;
+        const response = await fetch(`${baseUrl}/api/v1/public/projects`, {
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to fetch projects");
+        }
+
+        const result: ProjectListResponse = await response.json();
+        ProjectListResponseSchema.parse(result); // Use parse directly now
+
+        // Map API response to Project entities
+        return result.data.map(Project.fromObject);
+    } catch (error) {
+        console.error("Error fetching projects from API:", error);
+        // Fallback to localStorage if API fails
+    }
+};
+
+export const getProject = async (id: string): Promise<Project | undefined> => {
+    try {
+        const {
+            data: { session },
+            error,
+        } = await supabase.auth.getSession();
+
+        if (error || !session) {
+            throw new Error("No valid session found");
+        }
+
+        const token = session.access_token;
+        const response = await fetch(
+            `${baseUrl}/api/v1/public/projects/${id}`,
+            {
                 method: "GET",
                 headers: {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json",
                 },
-            });
-
-            if (!response.ok) {
-                throw new Error("Failed to fetch projects");
             }
+        );
 
-            const result: ProjectListResponse = await response.json();
-
-            ProjectListResponseSchema.parse(result); // Use parse directly now
-
-            // Map API response to Project entities
-            return result.data.map(
-                (proj) =>
-                    new Project(
-                        proj.id.toString(),
-                        proj.name,
-                        proj.description ?? "" // Handle nullish description
-                    )
-            );
-        } catch (error) {
-            console.error("Error fetching projects from API:", error);
-            // Fallback to localStorage if API fails
+        if (!response.ok) {
+            throw new Error("Failed to fetch project");
         }
+
+        const result: ProjectResponse = await response.json();
+        ProjectResponseSchema.parse(result); // Validate the response
+
+        return Project.fromObject(result.data);
+    } catch (error) {
+        console.error("Error fetching project from API:", error);
+        // Fallback to localStorage if API fails
     }
+};
 
-    static async fetchProjectById(id: string): Promise<Project | undefined> {
-        try {
-            const {
-                data: { session },
-                error,
-            } = await supabase.auth.getSession();
+export const createProject = async (
+    input: ProjectApiRequest
+): Promise<Project | undefined> => {
+    try {
+        const {
+            data: { session },
+            error,
+        } = await supabase.auth.getSession();
 
-            if (error || !session) {
-                throw new Error("No valid session found");
-            }
-
-            const token = session.access_token;
-            const response = await fetch(
-                `${baseUrl}/api/v1/public/projects/${id}`,
-                {
-                    method: "GET",
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        "Content-Type": "application/json",
-                    },
-                }
-            );
-
-            if (!response.ok) {
-                throw new Error("Failed to fetch project");
-            }
-
-            const result: ProjectResponse = await response.json();
-            ProjectResponseSchema.parse(result); // Validate the response
-
-            return new Project(
-                result.data.id.toString(),
-                result.data.name,
-                result.data.description ?? "" // Handle nullish description
-            );
-        } catch (error) {
-            console.error("Error fetching project from API:", error);
-            // Fallback to localStorage if API fails
+        if (error || !session) {
+            throw new Error("No valid session found");
         }
-    }
 
-    static async fetchDocumentsByProjectId(
-        projectId: string
-    ): Promise<Document[] | undefined> {
-        if (!projectId) return [];
-        try {
-            const {
-                data: { session },
-                error,
-            } = await supabase.auth.getSession();
+        const token = session.access_token;
+        const response = await fetch(`${baseUrl}/api/v1/public/projects`, {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(input),
+        });
 
-            if (error || !session) {
-                throw new Error("No valid session found");
-            }
-
-            const token = session.access_token;
-            const response = await fetch(
-                `${baseUrl}/api/v1/public/projects/${projectId}/documents`,
-                {
-                    method: "GET",
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        "Content-Type": "application/json",
-                    },
-                }
-            );
-
-            if (!response.ok) {
-                throw new Error("Failed to fetch documents");
-            }
-            const result: DocumentListResponse = await response.json();
-            return result.data.map(
-                (doc) =>
-                    new Document(
-                        doc.id.toString(),
-                        doc.type,
-                        projectId,
-                        doc.title,
-                        doc.description ?? "",
-                        []
-                    )
-            );
-        } catch (error) {
-            console.error("Error fetching documents from API:", error);
-            // Fallback to localStorage if API fails
+        if (!response.ok) {
+            throw new Error("Failed to create project");
         }
+
+        const result: ProjectResponse = await response.json();
+        ProjectResponseSchema.parse(result); // Validate the response
+
+        return Project.fromObject(result.data);
+    } catch (error) {
+        console.error("Error creating project:", error);
     }
+};
 
-    static async createProject(
-        input: ProjectApiRequest
-    ): Promise<Project | undefined> {
-        try {
-            const {
-                data: { session },
-                error,
-            } = await supabase.auth.getSession();
+export const updateProject = async (
+    id: string,
+    input: ProjectApiRequest
+): Promise<Project | undefined> => {
+    try {
+        const {
+            data: { session },
+            error,
+        } = await supabase.auth.getSession();
 
-            if (error || !session) {
-                throw new Error("No valid session found");
-            }
+        if (error || !session) {
+            throw new Error("No valid session found");
+        }
 
-            const token = session.access_token;
-            const response = await fetch(`${baseUrl}/api/v1/public/projects`, {
-                method: "POST",
+        const token = session.access_token;
+        const response = await fetch(
+            `${baseUrl}/api/v1/public/projects/${id}`,
+            {
+                method: "PUT",
                 headers: {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify(input),
-            });
-
-            if (!response.ok) {
-                throw new Error("Failed to create project");
             }
+        );
 
-            const result: ProjectResponse = await response.json();
-            ProjectResponseSchema.parse(result); // Validate the response
-
-            return new Project(
-                result.data.id.toString(),
-                result.data.name,
-                result.data.description ?? ""
-            );
-        } catch (error) {
-            console.error("Error creating project:", error);
+        if (!response.ok) {
+            throw new Error("Failed to update project");
         }
+
+        const result: ProjectResponse = await response.json();
+        ProjectResponseSchema.parse(result); // Validate the response
+
+        return Project.fromObject(result.data);
+    } catch (error) {
+        console.error("Error updating project:", error);
     }
+};
 
-    static async updateProject(
-        id: string,
-        input: ProjectApiRequest
-    ): Promise<Project | undefined> {
-        try {
-            const {
-                data: { session },
-                error,
-            } = await supabase.auth.getSession();
+export const deleteProject = async (id: string): Promise<void> => {
+    try {
+        const {
+            data: { session },
+            error,
+        } = await supabase.auth.getSession();
 
-            if (error || !session) {
-                throw new Error("No valid session found");
-            }
-
-            const token = session.access_token;
-            const response = await fetch(
-                `${baseUrl}/api/v1/public/projects/${id}`,
-                {
-                    method: "PUT",
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(input),
-                }
-            );
-
-            if (!response.ok) {
-                throw new Error("Failed to update project");
-            }
-
-            const result: ProjectResponse = await response.json();
-            ProjectResponseSchema.parse(result); // Validate the response
-
-            return new Project(
-                result.data.id.toString(),
-                result.data.name,
-                result.data.description ?? ""
-            );
-        } catch (error) {
-            console.error("Error updating project:", error);
+        if (error || !session) {
+            throw new Error("No valid session found");
         }
-    }
 
-    static async deleteProject(
-        id: string,
-        signal?: AbortSignal
-    ): Promise<void> {
-        try {
-            const {
-                data: { session },
-                error,
-            } = await supabase.auth.getSession();
-
-            if (error || !session) {
-                throw new Error("No valid session found");
+        const token = session.access_token;
+        const response = await fetch(
+            `${baseUrl}/api/v1/public/projects/${id}`,
+            {
+                method: "DELETE",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
             }
+        );
 
-            const token = session.access_token;
-            const response = await fetch(
-                `${baseUrl}/api/v1/public/projects/${id}`,
-                {
-                    method: "DELETE",
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        "Content-Type": "application/json",
-                    },
-                    signal: signal,
-                }
-            );
-
-            if (!response.ok) {
-                throw new Error("Failed to delete project");
-            }
-        } catch (error) {
-            console.error("Error deleting project:", error);
+        if (!response.ok) {
+            throw new Error("Failed to delete project");
         }
+    } catch (error) {
+        console.error("Error deleting project:", error);
     }
-}
+};

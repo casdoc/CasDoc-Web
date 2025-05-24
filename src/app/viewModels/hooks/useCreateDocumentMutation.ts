@@ -1,16 +1,16 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { DocumentService } from "@/app/models/services/DocumentService";
+import { createDocument } from "@/app/models/services/DocumentService";
 import { Document } from "@/app/models/entity/Document";
 import { useRef } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { DocumentApiRequest } from "@/app/models/dto/DocumentApiRequest";
+import { DocumentCreate } from "@/app/models/dto/DocumentApiRequest";
 
 export const useCreateDocumentMutation = () => {
     const queryClient = useQueryClient();
     const abortControllerRef = useRef<AbortController | null>(null);
 
     return useMutation({
-        mutationFn: async (documentInput: DocumentApiRequest) => {
+        mutationFn: async (documentInput: DocumentCreate) => {
             // Cancel previous request if exists
             if (abortControllerRef.current) {
                 abortControllerRef.current.abort();
@@ -20,9 +20,7 @@ export const useCreateDocumentMutation = () => {
             abortControllerRef.current = controller;
 
             // Create the document
-            const document = await DocumentService.createDocument(
-                documentInput
-            );
+            const document = await createDocument(documentInput);
 
             if (abortControllerRef.current === controller) {
                 abortControllerRef.current = null;

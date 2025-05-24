@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { DocumentService } from "@/app/models/services/DocumentService";
+import { getDocument } from "@/app/models/services/DocumentService";
 import { Document } from "@/app/models/entity/Document";
 
 export const useDocumentQuery = (
@@ -10,9 +10,7 @@ export const useDocumentQuery = (
         queryKey: ["document", documentId],
         queryFn: async () => {
             if (!documentId) return undefined;
-            const document = await DocumentService.fetchDocumentById(
-                documentId
-            );
+            const document = await getDocument(documentId);
             return document;
         },
         enabled: !!documentId && enable,

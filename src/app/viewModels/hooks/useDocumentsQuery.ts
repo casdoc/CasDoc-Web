@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { ProjectService } from "@/app/models/services/ProjectService";
+import { getAllDocuments } from "@/app/models/services/DocumentService";
 import { Document } from "@/app/models/entity/Document";
 
 export const useDocumentsQuery = (projectId: string, enable?: boolean) => {
@@ -7,9 +7,7 @@ export const useDocumentsQuery = (projectId: string, enable?: boolean) => {
         queryKey: ["documents", projectId],
         queryFn: async () => {
             if (!projectId) return [];
-            const documents = await ProjectService.fetchDocumentsByProjectId(
-                projectId
-            );
+            const documents = await getAllDocuments(projectId);
 
             return documents ?? [];
         },

@@ -19,7 +19,7 @@ import {
     useStoreApi,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-
+import { ConnectionEdge } from "@/app/models/entity/ConnectionEdge";
 import { ZoomSlider } from "./zoom-slider";
 import { getLayoutedElements } from "./utils/getLayoutedElements";
 import {
@@ -36,6 +36,8 @@ import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext"
 import CustomEdge from "./components/CustomEdge";
 import { useGraphContext } from "@/app/viewModels/context/GraphContext";
 import { GraphAttachButton } from "./graph-attach/GraphAttachButton";
+import { useProjectContext } from "@/app/viewModels/context/ProjectContext";
+import { uuidv4 } from "zod";
 
 const nodeTypes = { custom: CustomNode };
 const edgeTypes = {
@@ -64,7 +66,9 @@ const GraphView = ({ docMode }: GraphViewProps) => {
     const [scrollMode, setScrollMode] = useState<"zoom" | "drag">("drag");
     const nodeWidth = 232;
     const nodeHeight = 36;
-
+    const { selectedProjectId } = useProjectContext();
+    // const { isSuccess: isConnectionsSuccess, isLoading: isConnectionsLoading } =
+    //     useConnectionsQuery(selectedProjectId || "");
     const {
         connectionEdges,
         affectedIds,
@@ -115,15 +119,20 @@ const GraphView = ({ docMode }: GraphViewProps) => {
 
     const onConnect = useCallback(
         (params: Connection) => {
-            const connectionEdge = {
-                source: params.source,
-                target: params.target,
-                data: { bidirectional: false, offset: 50 },
-            };
+            if (!selectedProjectId) return;
+            const connectionEdge = new ConnectionEdge(
+                uuidv4().toString(),
+                selectedProjectId,
+                params.source,
+                params.target,
+                "",
+                50,
+                false
+            );
             updConnectionEdges(connectionEdge);
             setEdges((eds) => addEdge(params, eds));
         },
-        [setEdges, updConnectionEdges]
+        [selectedProjectId, setEdges, updConnectionEdges]
     );
 
     // const onLayout = useCallback(
@@ -136,14 +145,43 @@ const GraphView = ({ docMode }: GraphViewProps) => {
     const onEdgesDelete = useCallback(
         (params: Edge[]) => {
             if (params && params.length > 0) {
-                removeConnectionEdge({
-                    source: params[0].source,
-                    target: params[0].target,
-                    data: { bidirectional: false },
-                });
+                const deletedEdge = params[0];
+
+                // Find the actual ConnectionEdge from connectionEdges array
+                const actualConnectionEdge = connectionEdges.find(
+                    (edge) =>
+                        (edge.source === deletedEdge.source &&
+                            edge.target === deletedEdge.target) ||
+                        (edge.source === deletedEdge.target &&
+                            edge.target === deletedEdge.source &&
+                            edge.bidirectional)
+                );
+
+                if (actualConnectionEdge) {
+                    // If it's a bidirectional edge but we're deleting the reversed direction
+                    if (
+                        actualConnectionEdge.source === deletedEdge.target &&
+                        actualConnectionEdge.target === deletedEdge.source &&
+                        actualConnectionEdge.bidirectional
+                    ) {
+                        // Create a temporary edge object representing the reversed direction
+                        const reversedEdge = new ConnectionEdge(
+                            actualConnectionEdge.id,
+                            actualConnectionEdge.projectId,
+                            deletedEdge.source,
+                            deletedEdge.target,
+                            actualConnectionEdge.label,
+                            actualConnectionEdge.offsetValue,
+                            true
+                        );
+                        removeConnectionEdge(reversedEdge);
+                    } else {
+                        removeConnectionEdge(actualConnectionEdge);
+                    }
+                }
             }
         },
-        [removeConnectionEdge]
+        [connectionEdges, removeConnectionEdge]
     );
 
     const handleToggleScrollMode = () => {
@@ -215,7 +253,7 @@ const GraphView = ({ docMode }: GraphViewProps) => {
                     colorMode={colorMode}
                     setColorMode={setColorMode}
                 /> */}
-                <GraphAttachButton />
+                {/* <GraphAttachButton /> */}
                 <ZoomSlider position="top-left" />
                 {/* <MiniMap /> */}
                 {ToastComponent}
