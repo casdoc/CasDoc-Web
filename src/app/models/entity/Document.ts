@@ -25,6 +25,24 @@ export class Document extends BaseEntity {
         this._content = content;
     }
 
+    static fromObject(obj: {
+        id: number;
+        type: DocumentType;
+        projectId: number;
+        title: string;
+        description: string;
+        content: JsonObject[];
+    }): Document {
+        return new Document(
+            obj.id.toString(),
+            obj.type,
+            obj.projectId.toString(),
+            obj.title,
+            obj.description,
+            obj.content
+        );
+    }
+
     get type(): DocumentType {
         return this._type;
     }
@@ -38,9 +56,6 @@ export class Document extends BaseEntity {
     }
 
     set projectId(value: string) {
-        if (!value.trim()) {
-            throw new Error("Project ID cannot be empty.");
-        }
         this._projectId = value;
     }
 

@@ -3,7 +3,7 @@ import { z } from "zod";
 export const ProjectSchema = z.object({
     id: z.number().int(),
     name: z.string(),
-    description: z.string().nullish(),
+    description: z.string(),
 });
 export type ProjectDTO = z.infer<typeof ProjectSchema>;
 

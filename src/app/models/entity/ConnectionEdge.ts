@@ -26,6 +26,26 @@ export class ConnectionEdge extends BaseEntity {
         this._bidirectional = bidirectional;
     }
 
+    static fromObject(obj: {
+        id: number;
+        projectId: number;
+        sourceId: string;
+        targetId: string;
+        label: string;
+        offsetValue: number;
+        bidirectional: boolean;
+    }): ConnectionEdge {
+        return new ConnectionEdge(
+            obj.id.toString(),
+            obj.projectId.toString(),
+            obj.sourceId,
+            obj.targetId,
+            obj.label,
+            obj.offsetValue,
+            obj.bidirectional
+        );
+    }
+
     get projectId(): string {
         return this._projectId;
     }
