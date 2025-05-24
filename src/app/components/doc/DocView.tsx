@@ -28,8 +28,7 @@ const DocView = () => {
         !!selectedDocumentId &&
             !uuidSchema.safeParse(selectedDocumentId).success
     );
-
-    const { editor, isCollaborating } = useEditorContext();
+    const { editor } = useEditorContext();
 
     const [splitWidth, setSplitWidth] = useState(50);
     const isResizing = useRef(false);
@@ -94,13 +93,7 @@ const DocView = () => {
                 mode={mode as DocMode}
                 setDocMode={setDocMode}
                 editor={editor}
-                // editorStatus={currentStatus}
-                isCollaborating={isCollaborating}
-            >
-                {/* {isCollaborating && (
-                    <CollaborationIndicator onlineUsers={onlineUsers} />
-                )} */}
-            </EditorHeader>
+            />
             {selectedDocumentId ? (
                 <Flex className="overflow-y-auto h-full relative">
                     <div

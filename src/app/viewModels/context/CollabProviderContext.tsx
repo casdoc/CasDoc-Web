@@ -11,33 +11,48 @@ import { LoadingMask } from "@/app/document/components/LoadingMask";
 
 interface CollabProviderViewModel {
     collabProvider: HocuspocusProvider;
+    status: CollaborationStatus;
 }
 
 const CollabProviderContext = createContext<
     CollabProviderViewModel | undefined
 >(undefined);
-
+export enum CollaborationStatus {
+    Connected = "connected",
+    Connecting = "connecting",
+    Disconnected = "disconnected",
+    Synced = "synced",
+    UnsyncedChanges = "unsynced_changes",
+    Error = "error",
+}
 export const CollabProvider = ({ children }: { children: ReactNode }) => {
     const [hocuspocusProvider, setHocuspocusProvider] =
         useState<HocuspocusProvider>();
     const [isSynced, setIsSynced] = useState(false);
     const { selectedDocumentId } = useProjectContext();
+    const [status, setStatus] = useState<CollaborationStatus>(
+        CollaborationStatus.Disconnected
+    );
     useEffect(() => {
         if (!selectedDocumentId) return;
         const provider = new HocuspocusProvider({
             url: "ws://localhost:1234",
             name: selectedDocumentId,
-            onConnect: () => console.log("onConnect!"),
-            onOpen: (data) => console.log("onOpen!", data),
-            onClose: (data) => console.log("onClose!", data),
-            onAuthenticated: (data) => console.log("onAuthenticated!", data),
-            onAuthenticationFailed: (data) =>
-                console.log("onAuthenticationFailed", data),
-            onSynced: () => setIsSynced(true),
+            onConnect: () => {
+                setStatus(CollaborationStatus.Connecting);
+            },
+            onDisconnect: () => {
+                setStatus(CollaborationStatus.Disconnected);
+            },
+            onAuthenticationFailed: () => {
+                setStatus(CollaborationStatus.Error);
+            },
+            onSynced: () => {
+                setIsSynced(true);
+                setStatus(CollaborationStatus.Synced);
+            },
         });
-
         setHocuspocusProvider(provider);
-
         return () => {
             provider.destroy();
         };
@@ -50,6 +65,7 @@ export const CollabProvider = ({ children }: { children: ReactNode }) => {
 
     const value = {
         collabProvider: hocuspocusProvider,
+        status,
     };
 
     return (
