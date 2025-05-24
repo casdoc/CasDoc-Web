@@ -6,59 +6,66 @@ import React, {
     ReactNode,
 } from "react";
 import { useProjectContext } from "./ProjectContext";
-import { useParams } from "next/navigation";
 import { HocuspocusProvider } from "@hocuspocus/provider";
+import { LoadingMask } from "@/app/document/components/LoadingMask";
 
-// Define the shape of the context
 interface CollabProviderViewModel {
     collabProvider: HocuspocusProvider;
+    status: CollaborationStatus;
 }
 
-// Create the context with default values
 const CollabProviderContext = createContext<
     CollabProviderViewModel | undefined
 >(undefined);
-
+export enum CollaborationStatus {
+    Connected = "connected",
+    Connecting = "connecting",
+    Disconnected = "disconnected",
+    Synced = "synced",
+    UnsyncedChanges = "unsynced_changes",
+    Error = "error",
+}
 export const CollabProvider = ({ children }: { children: ReactNode }) => {
     const [hocuspocusProvider, setHocuspocusProvider] =
         useState<HocuspocusProvider>();
     const [isSynced, setIsSynced] = useState(false);
     const { selectedDocumentId } = useProjectContext();
-    const params = useParams();
-    // Get the document ID from URL params or context
-    const documentParam = params?.document as string | undefined;
-    const documentId = documentParam || selectedDocumentId || "";
-
+    const [status, setStatus] = useState<CollaborationStatus>(
+        CollaborationStatus.Disconnected
+    );
     useEffect(() => {
-        if (!documentId) return;
-        console.debug("Document ID:", documentId);
+        if (!selectedDocumentId) return;
         const provider = new HocuspocusProvider({
             url: "ws://localhost:1234",
-            name: documentId, //temp
-            onConnect: () => console.log("onConnect!"),
-            onOpen: (data) => console.log("onOpen!", data),
-            onClose: (data) => console.log("onClose!", data),
-            onAuthenticated: (data) => console.log("onAuthenticated!", data),
-            onAuthenticationFailed: (data) =>
-                console.log("onAuthenticationFailed", data),
-            onSynced: () => setIsSynced(true),
+            name: selectedDocumentId,
+            onConnect: () => {
+                setStatus(CollaborationStatus.Connecting);
+            },
+            onDisconnect: () => {
+                setStatus(CollaborationStatus.Disconnected);
+            },
+            onAuthenticationFailed: () => {
+                setStatus(CollaborationStatus.Error);
+            },
+            onSynced: () => {
+                setIsSynced(true);
+                setStatus(CollaborationStatus.Synced);
+            },
         });
-
         setHocuspocusProvider(provider);
-
         return () => {
-            provider.detach();
+            provider.destroy();
         };
-    }, [documentId]);
-    console.debug("HocuspocusProvider:", hocuspocusProvider);
-    // Only attach the provider if it exists
+    }, [selectedDocumentId]);
 
-    if (!hocuspocusProvider || !isSynced) return <></>;
+    if (!hocuspocusProvider?.isSynced || !isSynced || !selectedDocumentId)
+        return <LoadingMask />;
 
     hocuspocusProvider.attach();
-    console.debug("HocuspocusProvider attached");
+
     const value = {
         collabProvider: hocuspocusProvider,
+        status,
     };
 
     return (
@@ -68,7 +75,6 @@ export const CollabProvider = ({ children }: { children: ReactNode }) => {
     );
 };
 
-// Custom hook for consuming the context
 export const useCollabProviderContext = (): CollabProviderViewModel => {
     const context = useContext(CollabProviderContext);
     if (context === undefined) {

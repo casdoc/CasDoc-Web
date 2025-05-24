@@ -6,6 +6,7 @@ import {
 } from "@/components/ui/sidebar";
 import { useProjectContext } from "@/app/viewModels/context/ProjectContext";
 import { useDeleteDocumentMutation } from "@/app/viewModels/hooks/useDeleteDocumentMutation";
+import { useRouter } from "next/navigation";
 
 const dropdownItems = ["Edit", "Delete"];
 
@@ -17,6 +18,7 @@ interface DocMenuProps {
 
 const DocMenu = ({ projectId, documentId, title }: DocMenuProps) => {
     const { mutateAsync: deleteDocumentMutation } = useDeleteDocumentMutation();
+    const router = useRouter();
     const { selectedDocumentId, selectDocument, openDocumentDialog } =
         useProjectContext();
 
@@ -33,14 +35,20 @@ const DocMenu = ({ projectId, documentId, title }: DocMenuProps) => {
         }
     };
 
+    const handleDocumentSelect = () => {
+        if (isSelected) return;
+        selectDocument(documentId);
+        router.push(`/document/${documentId}`);
+    };
+
     return (
         <SidebarMenuSubItem>
             <SidebarMenuSubButton
                 asChild
                 className={`hover:bg-neutral-200 ${
                     isSelected ? "bg-neutral-200" : ""
-                }`}
-                onClick={() => selectDocument(documentId)}
+                } `}
+                onClick={handleDocumentSelect}
             >
                 <div>
                     <File />
