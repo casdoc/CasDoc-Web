@@ -10,7 +10,7 @@ import {
 
 const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
-export const getDocuments = async (
+export const getAllDocuments = async (
     projectId: string
 ): Promise<Document[] | undefined> => {
     if (!projectId) return [];
