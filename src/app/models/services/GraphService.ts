@@ -14,7 +14,7 @@ import {
 import { ConnectionEdge } from "../entity/ConnectionEdge";
 
 // const LOCAL_STORAGE_KEY = "edges";
-// const AFFECTED_IDS_KEY = "affectedIds";
+const AFFECTED_IDS_KEY = "affectedIds";
 
 const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
@@ -132,9 +132,7 @@ export const updateConnection = async (
     }
 };
 
-export const deleteConnection = async (
-    id: number,
-): Promise<void> => {
+export const deleteConnection = async (id: number): Promise<void> => {
     try {
         const {
             data: { session },
@@ -165,28 +163,15 @@ export const deleteConnection = async (
     }
 };
 
-// export const GraphService = () => {
-//     getEdges(): ConnectionEdge[] {
-//         if (typeof window === "undefined") return [];
-//         const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
-//         if (!stored) {
-//             this.setEdges(defaultEdges);
-//         }
-//         return stored ? JSON.parse(stored) : [];
-//     }
-//     setEdges(edges: ConnectionEdge[]): void {
-//         if (typeof window !== "undefined") {
-//             localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(edges));
-//         }
-//     }
-//     getAffectedIds(): string[] {
-//         if (typeof window === "undefined") return [];
-//         const stored = localStorage.getItem(AFFECTED_IDS_KEY);
-//         return stored ? JSON.parse(stored) : [];
-//     }
-//     setAffectedIds(ids: string[]): void {
-//         if (typeof window !== "undefined") {
-//             localStorage.setItem(AFFECTED_IDS_KEY, JSON.stringify(ids));
-//         }
-//     }
-// };
+export const GraphService = {
+    getAffectedIds(): string[] {
+        if (typeof window === "undefined") return [];
+        const stored = localStorage.getItem(AFFECTED_IDS_KEY);
+        return stored ? JSON.parse(stored) : [];
+    },
+    setAffectedIds(ids: string[]): void {
+        if (typeof window !== "undefined") {
+            localStorage.setItem(AFFECTED_IDS_KEY, JSON.stringify(ids));
+        }
+    },
+};

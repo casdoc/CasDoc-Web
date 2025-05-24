@@ -55,7 +55,7 @@ export const useProjectViewModel = (): ProjectViewModel => {
     );
 
     // console.debug("documents", documents);
-    // console.debug("selectedProjectId", selectedProjectId);
+    console.debug("selectedProjectId", selectedProjectId);
     // console.debug("selectedDocumentId", selectedDocumentId);
 
     // Watch for URL changes to extract documentId from /document/{documentId} pattern

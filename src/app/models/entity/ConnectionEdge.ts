@@ -1,12 +1,14 @@
 import { BaseEntity } from "./BaseEntity";
-
+export interface EdgeData {
+    offsetValue: number;
+    bidirectional: boolean;
+}
 export class ConnectionEdge extends BaseEntity {
     private _projectId: string;
     private _source: string;
     private _target: string;
     private _label: string;
-    private _offsetValue: number;
-    private _bidirectional: boolean;
+    private _data: EdgeData;
 
     constructor(
         id: string,
@@ -22,8 +24,10 @@ export class ConnectionEdge extends BaseEntity {
         this._source = source;
         this._target = target;
         this._label = label;
-        this._offsetValue = offsetValue;
-        this._bidirectional = bidirectional;
+        this._data = {
+            offsetValue: offsetValue,
+            bidirectional: bidirectional,
+        };
     }
 
     static fromObject(obj: {
@@ -63,11 +67,11 @@ export class ConnectionEdge extends BaseEntity {
     }
 
     get offsetValue(): number {
-        return this._offsetValue;
+        return this._data.offsetValue;
     }
 
     get bidirectional(): boolean {
-        return this._bidirectional;
+        return this._data.bidirectional;
     }
 
     set projectId(value: string) {
@@ -87,10 +91,10 @@ export class ConnectionEdge extends BaseEntity {
     }
 
     set offsetValue(value: number) {
-        this._offsetValue = value;
+        this._data.offsetValue = value;
     }
 
     set bidirectional(value: boolean) {
-        this._bidirectional = value;
+        this._data.bidirectional = value;
     }
 }
