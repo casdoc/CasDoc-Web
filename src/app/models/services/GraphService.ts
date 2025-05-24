@@ -50,18 +50,7 @@ export const getAllConnections = async (
         const result: ConnectionListResponse = await response.json();
         ConnectionListResponseSchema.parse(result);
 
-        return result.data.map(
-            (connection) =>
-                new ConnectionEdge(
-                    connection.id.toString(),
-                    connection.projectId.toString(),
-                    connection.sourceId,
-                    connection.targetId,
-                    connection.label,
-                    connection.offsetValue,
-                    connection.bidirectional
-                )
-        );
+        return result.data.map(ConnectionEdge.fromObject);
     } catch (error) {
         console.error("Error fetching connections from API:", error);
     }
@@ -97,15 +86,7 @@ export const createConnection = async (
         const result: ConnectionResponse = await response.json();
         ConnectionResponseSchema.parse(result);
 
-        return new ConnectionEdge(
-            result.data.id.toString(),
-            result.data.projectId.toString(),
-            result.data.sourceId,
-            result.data.targetId,
-            result.data.label,
-            result.data.offsetValue,
-            result.data.bidirectional
-        );
+        return ConnectionEdge.fromObject(result.data);
     } catch (error) {
         console.error("Error creating connection from API:", error);
     }
@@ -145,15 +126,7 @@ export const updateConnection = async (
         const result: ConnectionResponse = await response.json();
         ConnectionResponseSchema.parse(result);
 
-        return new ConnectionEdge(
-            result.data.id.toString(),
-            result.data.projectId.toString(),
-            result.data.sourceId,
-            result.data.targetId,
-            result.data.label,
-            result.data.offsetValue,
-            result.data.bidirectional
-        );
+        return ConnectionEdge.fromObject(result.data);
     } catch (error) {
         console.error("Error updating connection from API:", error);
     }

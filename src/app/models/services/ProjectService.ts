@@ -8,7 +8,7 @@ import {
     ProjectResponseSchema,
 } from "@/app/models/dto/ProjectApiResponse";
 import { ProjectApiRequest } from "../dto/ProjectApiRequest";
-import { DocumentListResponse } from "../dto/DocumentApiResponse";
+import { DocumentListResponse, DocumentListResponseSchema } from "../dto/DocumentApiResponse";
 
 const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
@@ -38,18 +38,10 @@ export class ProjectService {
             }
 
             const result: ProjectListResponse = await response.json();
-
             ProjectListResponseSchema.parse(result); // Use parse directly now
 
             // Map API response to Project entities
-            return result.data.map(
-                (proj) =>
-                    new Project(
-                        proj.id.toString(),
-                        proj.name,
-                        proj.description ?? "" // Handle nullish description
-                    )
-            );
+            return result.data.map(Project.fromObject);
         } catch (error) {
             console.error("Error fetching projects from API:", error);
             // Fallback to localStorage if API fails
@@ -86,11 +78,7 @@ export class ProjectService {
             const result: ProjectResponse = await response.json();
             ProjectResponseSchema.parse(result); // Validate the response
 
-            return new Project(
-                result.data.id.toString(),
-                result.data.name,
-                result.data.description ?? "" // Handle nullish description
-            );
+            return Project.fromObject(result.data);
         } catch (error) {
             console.error("Error fetching project from API:", error);
             // Fallback to localStorage if API fails
@@ -126,18 +114,11 @@ export class ProjectService {
             if (!response.ok) {
                 throw new Error("Failed to fetch documents");
             }
+
             const result: DocumentListResponse = await response.json();
-            return result.data.map(
-                (doc) =>
-                    new Document(
-                        doc.id.toString(),
-                        doc.type,
-                        projectId,
-                        doc.title,
-                        doc.description ?? "",
-                        []
-                    )
-            );
+            DocumentListResponseSchema.parse(result);
+
+            return result.data.map(Document.fromObject);
         } catch (error) {
             console.error("Error fetching documents from API:", error);
             // Fallback to localStorage if API fails
@@ -174,11 +155,7 @@ export class ProjectService {
             const result: ProjectResponse = await response.json();
             ProjectResponseSchema.parse(result); // Validate the response
 
-            return new Project(
-                result.data.id.toString(),
-                result.data.name,
-                result.data.description ?? ""
-            );
+            return Project.fromObject(result.data);
         } catch (error) {
             console.error("Error creating project:", error);
         }
@@ -218,11 +195,7 @@ export class ProjectService {
             const result: ProjectResponse = await response.json();
             ProjectResponseSchema.parse(result); // Validate the response
 
-            return new Project(
-                result.data.id.toString(),
-                result.data.name,
-                result.data.description ?? ""
-            );
+            return Project.fromObject(result.data);
         } catch (error) {
             console.error("Error updating project:", error);
         }

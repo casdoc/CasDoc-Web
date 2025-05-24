@@ -31,7 +31,6 @@ export class Document extends BaseEntity {
         projectId: number;
         title: string;
         description: string;
-        content: JsonObject[];
     }): Document {
         return new Document(
             obj.id.toString(),
@@ -39,7 +38,7 @@ export class Document extends BaseEntity {
             obj.projectId.toString(),
             obj.title,
             obj.description,
-            obj.content
+            []
         );
     }
 

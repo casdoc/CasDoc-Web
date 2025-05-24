@@ -151,16 +151,7 @@ export class DocumentService {
             const result: DocumentResponse = await response.json();
             DocumentResponseSchema.parse(result); // Validate the response
 
-            const newDocument = new Document(
-                result.data.id.toString(),
-                result.data.type,
-                result.data.projectId.toString(),
-                result.data.title,
-                result.data.description ?? "",
-                []
-            );
-
-            return newDocument;
+            return Document.fromObject(result.data);
         } catch (error) {
             console.error("Error creating document via API:", error);
             return null;
@@ -216,14 +207,7 @@ export class DocumentService {
             const result: DocumentResponse = await response.json();
             DocumentResponseSchema.parse(result); // Validate the response
 
-            return new Document(
-                result.data.id.toString(),
-                result.data.type,
-                result.data.projectId.toString(),
-                result.data.title,
-                result.data.description ?? "",
-                [] // content will need to be filled in if your API returns it
-            );
+            return Document.fromObject(result.data);
         } catch (error) {
             console.error("Error updating document via API:", error);
             return null;
