@@ -1,6 +1,7 @@
 import z from "zod";
 
 export const ConnectionCreateSchema = z.object({
+    projectId: z.int(),
     sourceId: z.string(),
     targetId: z.string(),
     label: z.string(),

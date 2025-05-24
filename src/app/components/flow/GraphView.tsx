@@ -253,7 +253,7 @@ const GraphView = ({ docMode }: GraphViewProps) => {
                     colorMode={colorMode}
                     setColorMode={setColorMode}
                 /> */}
-                <GraphAttachButton />
+                {/* <GraphAttachButton /> */}
                 <ZoomSlider position="top-left" />
                 {/* <MiniMap /> */}
                 {ToastComponent}

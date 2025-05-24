@@ -121,6 +121,7 @@ export function useGraphViewModel(): GraphViewModel {
             } else {
                 // Create new connection
                 await createConnection({
+                    projectId: parseInt(selectedProjectId || ""),
                     sourceId: edge.source,
                     targetId: edge.target,
                     label: edge.label || "",
@@ -129,7 +130,7 @@ export function useGraphViewModel(): GraphViewModel {
                 });
             }
         },
-        [connectionEdges, createConnection, updateConnection]
+        [connectionEdges, createConnection, selectedProjectId, updateConnection]
     );
 
     const searchTarget = (id: string): ConnectionEdge[] => {

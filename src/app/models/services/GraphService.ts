@@ -68,7 +68,7 @@ export const createConnection = async (
         if (error || !session) {
             throw new Error("No valid session found");
         }
-
+        console.debug("Creating connection with input:", input);
         const token = session.access_token;
         const response = await fetch(`${baseUrl}/api/v1/public/connections`, {
             method: "POST",
