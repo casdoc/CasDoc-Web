@@ -2,11 +2,15 @@
 // import defaultEdges from "../default-value/defaultEdges";
 import supabase from "@/lib/supabase";
 import {
+    ConnectionCreate,
+    ConnectionUpdate,
+} from "../dto/ConnectionApiRequest";
+import {
     ConnectionResponse,
     ConnectionResponseSchema,
     ConnectionListResponse,
     ConnectionListResponseSchema,
-} from "../dto/ConnectionResponse";
+} from "../dto/ConnectionApiResponse";
 import { ConnectionEdge } from "../entity/ConnectionEdge";
 
 // const LOCAL_STORAGE_KEY = "edges";
@@ -44,10 +48,8 @@ export const getAllConnections = async (
         }
 
         const result: ConnectionListResponse = await response.json();
+        ConnectionListResponseSchema.parse(result);
 
-        ConnectionListResponseSchema.parse(result); // Use parse directly now
-
-        // Map API response to Project entities
         return result.data.map(
             (connection) =>
                 new ConnectionEdge(
@@ -62,7 +64,133 @@ export const getAllConnections = async (
         );
     } catch (error) {
         console.error("Error fetching connections from API:", error);
-        // Fallback to localStorage if API fails
+    }
+};
+
+export const createConnection = async (
+    input: ConnectionCreate
+): Promise<ConnectionEdge | undefined> => {
+    try {
+        const {
+            data: { session },
+            error,
+        } = await supabase.auth.getSession();
+
+        if (error || !session) {
+            throw new Error("No valid session found");
+        }
+
+        const token = session.access_token;
+        const response = await fetch(`${baseUrl}/api/v1/public/connections`, {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(input),
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to create connection");
+        }
+
+        const result: ConnectionResponse = await response.json();
+        ConnectionResponseSchema.parse(result);
+
+        return new ConnectionEdge(
+            result.data.id.toString(),
+            result.data.projectId.toString(),
+            result.data.sourceId,
+            result.data.targetId,
+            result.data.label,
+            result.data.offsetValue,
+            result.data.bidirectional
+        );
+    } catch (error) {
+        console.error("Error creating connection from API:", error);
+    }
+};
+
+export const updateConnection = async (
+    id: number,
+    input: ConnectionUpdate
+): Promise<ConnectionEdge | undefined> => {
+    try {
+        const {
+            data: { session },
+            error,
+        } = await supabase.auth.getSession();
+
+        if (error || !session) {
+            throw new Error("No valid session found");
+        }
+
+        const token = session.access_token;
+        const response = await fetch(
+            `${baseUrl}/api/v1/public/connections/${id}`,
+            {
+                method: "PUT",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(input),
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error("Failed to update connection");
+        }
+
+        const result: ConnectionResponse = await response.json();
+        ConnectionResponseSchema.parse(result);
+
+        return new ConnectionEdge(
+            result.data.id.toString(),
+            result.data.projectId.toString(),
+            result.data.sourceId,
+            result.data.targetId,
+            result.data.label,
+            result.data.offsetValue,
+            result.data.bidirectional
+        );
+    } catch (error) {
+        console.error("Error updating connection from API:", error);
+    }
+};
+
+export const deleteConnection = async (
+    id: number,
+    signal?: AbortSignal
+): Promise<void> => {
+    try {
+        const {
+            data: { session },
+            error,
+        } = await supabase.auth.getSession();
+
+        if (error || !session) {
+            throw new Error("No valid session found");
+        }
+
+        const token = session.access_token;
+        const response = await fetch(
+            `${baseUrl}/api/v1/public/connections/${id}`,
+            {
+                method: "DELETE",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+                signal: signal,
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error("Failed to delete connection");
+        }
+    } catch (error) {
+        console.error("Error deleting connection from API:", error);
     }
 };
 
