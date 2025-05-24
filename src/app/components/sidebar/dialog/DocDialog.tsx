@@ -30,7 +30,7 @@ const DocDialog = () => {
         isDocumentDialogOpen,
         closeDocumentDialog,
     } = useProjectContext();
-    console.debug("editingDocument", doc);
+
     const { mutateAsync: createDocumentMutation } = useCreateDocumentMutation();
     const { mutateAsync: updateDocumentMutation } = useUpdateDocumentMutation();
     const [type, setType] = useState<DocumentType>(

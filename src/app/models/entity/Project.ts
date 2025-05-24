@@ -10,6 +10,10 @@ export class Project extends BaseEntity {
         this._description = description;
     }
 
+    static fromObject(obj: { id: number; name: string; description: string }) {
+        return new Project(obj.id.toString(), obj.name, obj.description);
+    }
+
     get name(): string {
         return this._name;
     }

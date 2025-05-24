@@ -1,34 +1,16 @@
+"use client";
 import { Editor, EditorContent } from "@tiptap/react";
 import { ContentItemMenu } from "../DragMenu/ContentItemMenu";
 import "@/styles/index.css";
 import { memo, useRef } from "react";
 import LinkMenu from "@/app/components/Menus/LinkMenu";
 import { Document } from "@/app/models/entity/Document";
-import { useDocumentContentQueries } from "@/app/viewModels/hooks/useDocumentContentQueries";
-import z from "zod";
-
 interface BlockEditorProps {
     editor: Editor;
-    selectedDocumentId: string | null;
     document: Document | undefined;
 }
 
-const BlockEditor = ({
-    editor,
-    selectedDocumentId,
-    document,
-}: BlockEditorProps) => {
-    const uuidSchema = z.uuid();
-    const {
-        // data: docContent,
-        isLoading: isDocumentLoading,
-        // isError: isDocumentError,
-        isSuccess: isDocumentSuccess,
-    } = useDocumentContentQueries(
-        selectedDocumentId || "",
-        !!selectedDocumentId &&
-            !uuidSchema.safeParse(selectedDocumentId).success
-    );
+const BlockEditor = ({ editor, document }: BlockEditorProps) => {
     const menuContainerRef = useRef(null);
     const handleAddDefaultNode = () => {
         if (!editor) return;
@@ -54,16 +36,11 @@ const BlockEditor = ({
                 .run();
         }
     };
-    if (!selectedDocumentId) {
-        console.debug("selectedDocumentId is null");
-        return null;
-    }
-    if (isDocumentLoading || !isDocumentSuccess) {
-        return null;
-    }
     return (
         <div className="flex-1 overflow-y-auto" ref={menuContainerRef}>
-            <EditorContent editor={editor} />
+            <div>
+                <EditorContent editor={editor} />
+            </div>
             <ContentItemMenu editor={editor} />
             <LinkMenu editor={editor} appendTo={menuContainerRef} />
             {/* Transparent clickable area to add default node */}
