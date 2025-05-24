@@ -1,12 +1,54 @@
-import { Document } from "@/app/models/entity/Document";
 import supabase from "@/lib/supabase";
+import { Document } from "@/app/models/entity/Document";
 import { DocumentCreate, DocumentUpdate } from "../dto/DocumentApiRequest";
 import {
     DocumentResponse,
     DocumentResponseSchema,
+    DocumentListResponse,
+    DocumentListResponseSchema,
 } from "../dto/DocumentApiResponse";
 
 const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
+export const getDocuments = async (
+    projectId: string
+): Promise<Document[] | undefined> => {
+    if (!projectId) return [];
+    try {
+        const {
+            data: { session },
+            error,
+        } = await supabase.auth.getSession();
+
+        if (error || !session) {
+            throw new Error("No valid session found");
+        }
+
+        const token = session.access_token;
+        const response = await fetch(
+            `${baseUrl}/api/v1/public/projects/${projectId}/documents`,
+            {
+                method: "GET",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error("Failed to fetch documents");
+        }
+
+        const result: DocumentListResponse = await response.json();
+        DocumentListResponseSchema.parse(result);
+
+        return result.data.map(Document.fromObject);
+    } catch (error) {
+        console.error("Error fetching documents from API:", error);
+        // Fallback to localStorage if API fails
+    }
+};
 
 export const getDocument = async (
     id: string
@@ -93,7 +135,7 @@ export const createDocument = async (
 
 export const updateDocument = async (
     id: string,
-    input: DocumentUpdate,
+    input: DocumentUpdate
 ): Promise<Document | null> => {
     try {
         const {
@@ -132,9 +174,7 @@ export const updateDocument = async (
     }
 };
 
-export const deleteDocument = async (
-    id: string,
-): Promise<void> => {
+export const deleteDocument = async (id: string): Promise<void> => {
     try {
         const {
             data: { session },

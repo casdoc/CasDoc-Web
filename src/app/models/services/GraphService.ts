@@ -134,7 +134,6 @@ export const updateConnection = async (
 
 export const deleteConnection = async (
     id: number,
-    signal?: AbortSignal
 ): Promise<void> => {
     try {
         const {
@@ -155,7 +154,6 @@ export const deleteConnection = async (
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json",
                 },
-                signal: signal,
             }
         );
 
