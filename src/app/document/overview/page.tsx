@@ -2,32 +2,14 @@
 
 import "@/app/globals.css";
 import { SidebarProvider } from "@/components/ui/sidebar";
-import AppSidebar from "../components/sidebar/AppSidebar";
+import AppSidebar from "../../components/sidebar/AppSidebar";
 import { Button, Flex, Text } from "@radix-ui/themes";
-import OverviewHeader from "./components/OverviewHeader";
+import OverviewHeader from "../components/OverviewHeader";
 import { useProjectContext } from "@/app/viewModels/context/ProjectContext";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 
 export default function DocumentOverviewPage() {
-    const router = useRouter();
-    const {
-        isInitialized,
-        selectedProjectId,
-        selectedDocumentId,
-        openProjectDialog,
-        openDocumentDialog,
-    } = useProjectContext();
-
-    useEffect(() => {
-        if (!isInitialized) return;
-
-        if (selectedDocumentId) {
-            router.replace(`/document/${selectedDocumentId}`);
-        }
-    }, [isInitialized, router, selectedDocumentId]);
-
-    if (!isInitialized || selectedDocumentId) return null;
+    const { selectedProjectId, openProjectDialog, openDocumentDialog } =
+        useProjectContext();
 
     return (
         <SidebarProvider defaultOpen={true}>
@@ -50,13 +32,10 @@ export default function DocumentOverviewPage() {
                         className="h-full"
                     >
                         <Text color="gray" size="6" weight="bold">
-                            No {selectedProjectId ? "Document" : "Project"}{" "}
-                            Selected
+                            No Document Selected
                         </Text>
                         <Text color="gray" size="3">
-                            Please create a{" "}
-                            {selectedProjectId ? "document" : "project"} to
-                            start editing.
+                            Please create or choose a document to start editing.
                         </Text>
                         <Button
                             radius="medium"

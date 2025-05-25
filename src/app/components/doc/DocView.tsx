@@ -12,6 +12,7 @@ import { Button, Flex, Text } from "@radix-ui/themes";
 import DocMode from "@/app/models/enum/DocMode";
 import z from "zod";
 import { useEditorContext } from "@/app/viewModels/context/EditorContext";
+import { useQueryClient } from "@tanstack/react-query";
 
 const DocView = () => {
     const uuidSchema = z.uuid({ version: "v4" });
@@ -22,7 +23,7 @@ const DocView = () => {
         openProjectDialog,
         openDocumentDialog,
     } = useProjectContext();
-
+    const { getQueryData } = useQueryClient();
     const { data: document } = useDocumentQuery(
         selectedDocumentId || "",
         !!selectedDocumentId &&
