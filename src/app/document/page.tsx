@@ -6,10 +6,29 @@ import AppSidebar from "../components/sidebar/AppSidebar";
 import { Button, Flex, Text } from "@radix-ui/themes";
 import OverviewHeader from "./components/OverviewHeader";
 import { useProjectContext } from "@/app/viewModels/context/ProjectContext";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function DocumentOverviewPage() {
-    const { selectedProjectId, openProjectDialog, openDocumentDialog } =
-        useProjectContext();
+    const router = useRouter();
+    const {
+        isInitialized,
+        selectedProjectId,
+        selectedDocumentId,
+        openProjectDialog,
+        openDocumentDialog,
+    } = useProjectContext();
+
+    useEffect(() => {
+        if (!isInitialized) return;
+
+        if (selectedDocumentId) {
+            router.replace(`/document/${selectedDocumentId}`);
+        }
+    }, [isInitialized, router, selectedDocumentId]);
+
+    if (!isInitialized || selectedDocumentId) return null;
+
     return (
         <SidebarProvider defaultOpen={true}>
             <AppSidebar />

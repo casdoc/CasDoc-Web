@@ -6,8 +6,11 @@ import { usePathname } from "next/navigation";
 import { useDocumentsQueriesByProjects } from "./hooks/useDocumentsQueriesByProjects";
 
 export interface ProjectViewModel {
+    isInitialized: boolean;
+
     selectedProjectId: string | null;
     selectedDocumentId: string | null;
+
     isProjectDialogOpen: boolean;
     isDocumentDialogOpen: boolean;
     editingProject: Project | null;
@@ -34,6 +37,7 @@ export const useProjectViewModel = (): ProjectViewModel => {
     const { data: documentsMap, isSuccess: isDocumentsSuccess } =
         useDocumentsQueriesByProjects(projects);
 
+    const [isInitialized, setIsInitialized] = useState(false);
     const [selectedProjectId, setSelectedProjectId] = useState<string | null>(
         null
     );
@@ -72,6 +76,10 @@ export const useProjectViewModel = (): ProjectViewModel => {
 
     // Initial selected project and document
     useEffect(() => {
+        if (isProjectsSuccess && isDocumentsSuccess) {
+            setIsInitialized(true);
+        }
+
         // Select first document and project for default
         if (isDocumentsSuccess && documentsMap) {
             for (const [projId, docs] of Object.entries(documentsMap)) {
@@ -150,6 +158,7 @@ export const useProjectViewModel = (): ProjectViewModel => {
     }, []);
 
     return {
+        isInitialized,
         selectedProjectId,
         selectedDocumentId,
         isProjectDialogOpen,
