@@ -66,9 +66,13 @@ export const useProjectViewModel = (): ProjectViewModel => {
 
     // Watch for URL changes to extract documentId from /documents/{documentId} pattern
     useEffect(() => {
-        const documentMatch = pathname.match(/^\/document\/(\d+)$/);
+        if (!isInitialized) return;
+
+        const documentMatch = pathname.match(/^\/documents\/(\d+)$/);
+        console.debug("document path: ", documentMatch);
         if (documentMatch) {
             const urlDocumentId = documentMatch[1];
+            console.debug(urlDocumentId);
             if (
                 urlDocumentId !== selectedDocumentId &&
                 urlDocumentId in documentIdToProjectIdMap
@@ -77,16 +81,7 @@ export const useProjectViewModel = (): ProjectViewModel => {
                 setSelectedDocumentId(urlDocumentId);
             }
         }
-    }, [pathname, selectedDocumentId, documentIdToProjectIdMap]);
-
-    useEffect(() => {
-        console.debug("select document: ", selectedDocumentId);
-        if (selectedDocumentId === null) {
-            router.push(`/documents/overview`);
-        } else {
-            router.push(`/documents/${selectedDocumentId}`);
-        }
-    }, [selectedDocumentId, router]);
+    }, [pathname, selectedDocumentId, documentIdToProjectIdMap, isInitialized]);
 
     useEffect(() => {
         // Initialize one time
@@ -104,9 +99,10 @@ export const useProjectViewModel = (): ProjectViewModel => {
             setSelectedProjectId(projectId);
             if (projectId === null) {
                 setSelectedDocumentId(null);
+                router.push(`/documents/overview`);
             }
         },
-        [selectedProjectId]
+        [selectedProjectId, router]
     );
 
     const selectDocument = useCallback(
@@ -114,11 +110,15 @@ export const useProjectViewModel = (): ProjectViewModel => {
             console.debug("Select document: ", documentId);
             if (documentId === selectedDocumentId) return;
             setSelectedDocumentId(documentId);
+
             if (documentId != null) {
                 setSelectedProjectId(documentIdToProjectIdMap[documentId]);
+                router.push(`/documents/${documentId}`);
+            } else {
+                router.push(`/documents/overview`);
             }
         },
-        [selectedDocumentId, documentIdToProjectIdMap]
+        [selectedDocumentId, documentIdToProjectIdMap, router]
     );
 
     const openProjectDialog = useCallback(
