@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { Project } from "@/app/models/entity/Project";
 import { Document } from "@/app/models/types/Document";
-import { DocSelectedService } from "../models/services/DocSelectedService";
 import { useProjectsQuery } from "./hooks/useProjectsQuery";
 import { useDocumentsQuery } from "./hooks/useDocumentsQuery";
 import z from "zod";
@@ -54,10 +53,6 @@ export const useProjectViewModel = (): ProjectViewModel => {
         null
     );
 
-    // console.debug("documents", documents);
-    // console.debug("selectedProjectId", selectedProjectId);
-    // console.debug("selectedDocumentId", selectedDocumentId);
-
     // Watch for URL changes to extract documentId from /document/{documentId} pattern
     useEffect(() => {
         const documentMatch = pathname.match(/^\/document\/([^\/]+)$/);
@@ -72,35 +67,26 @@ export const useProjectViewModel = (): ProjectViewModel => {
     useEffect(() => {
         if (!isProjectsSuccess || isProjectLoading || projects?.length === 0)
             return;
-        // const localSelectedDoc = DocSelectedService.getSelectedDoc();
-        // if (localSelectedDoc === "") {
-        // console.debug("localSelectedDoc is empty");
-        if (projects && projects.length > 0 && projects[0].id) {
-            // console.debug("selectProjectId", projects[0].id);
-            setSelectedProjectId(projects[0].id);
-            // Use the first project to get documents
-            // setSelectedProjectId(projects[0].id);
 
-            // console.debug("selectedProjectId", selectedProjectId);
+        if (projects && projects.length > 0 && projects[0].id) {
+            // Use the first project to get documents
+            setSelectedProjectId(projects[0].id);
+
             if (documents && documents.length > 0) {
+                // Select first document in first project
                 setSelectedDocumentId(documents[0]?.id || null);
-                setEditingDocument(documents[0] || null);
-                // console.debug("selectDocument", selectedDocumentId);
             }
         }
-        // } else if (selectedDocumentId !== localSelectedDoc) {
-        //     console.debug("loclalSelectedDoc is not empty");
-        //     // setSelectedProjectId(projects?.[0]?.id || null);
-        //     setSelectedDocumentId(localSelectedDoc);
-        // }
     }, [documents, isProjectLoading, isProjectsSuccess, projects]);
 
     const selectProject = useCallback((projectId: string) => {
+        console.debug("Select project: ", projectId);
         setSelectedProjectId(projectId);
     }, []);
 
     const selectDocument = useCallback(
         (documentId: string) => {
+            console.debug("Select document: ", documentId);
             if (documentId === selectedDocumentId) return;
             setSelectedDocumentId(documentId);
         },

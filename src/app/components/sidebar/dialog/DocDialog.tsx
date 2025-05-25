@@ -59,8 +59,6 @@ const DocDialog = () => {
                 documentInput: {
                     title,
                     description,
-                    type,
-                    projectId: project.id,
                 },
             });
         }
