@@ -1,5 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { DocumentService } from "@/app/models/services/DocumentService";
+import {
+    getDocument,
+    deleteDocument,
+} from "@/app/models/services/DocumentService";
 import { Document } from "@/app/models/entity/Document";
 import { useRef } from "react";
 import { useProjectContext } from "../context/ProjectContext";
@@ -20,13 +23,11 @@ export const useDeleteDocumentMutation = () => {
             abortControllerRef.current = controller;
 
             // Get the project ID before deleting the document
-            const document = await DocumentService.fetchDocumentById(
-                documentId
-            );
+            const document = await getDocument(documentId);
             const projectId = document?.projectId;
 
             // Delete the document
-            await DocumentService.deleteDocument(documentId, controller.signal);
+            await deleteDocument(documentId);
 
             if (abortControllerRef.current === controller) {
                 abortControllerRef.current = null;

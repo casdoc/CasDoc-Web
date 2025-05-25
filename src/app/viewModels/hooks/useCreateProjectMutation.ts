@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { ProjectService } from "@/app/models/services/ProjectService";
+import { createProject } from "@/app/models/services/ProjectService";
 import { ProjectApiRequest } from "@/app/models/dto/ProjectApiRequest";
 import { Project } from "@/app/models/entity/Project";
 import { useRef } from "react";
@@ -20,7 +20,7 @@ export const useCreateProjectMutation = () => {
             abortControllerRef.current = controller;
 
             // Create the project
-            const project = await ProjectService.createProject(projectInput);
+            const project = createProject(projectInput);
 
             if (abortControllerRef.current === controller) {
                 abortControllerRef.current = null;

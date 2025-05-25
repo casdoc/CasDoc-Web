@@ -1,4 +1,4 @@
-import { ConnectionEdge } from "@/app/viewModels/GraphViewModel";
+import { ConnectionEdge } from "@/app/models/entity/ConnectionEdge";
 import { GraphNode } from "@/app/viewModels/GraphViewModel";
 import { Edge, Node, Position } from "@xyflow/react";
 
@@ -52,8 +52,8 @@ export const connectConnectionEdges = (
             type: "custom",
             targetHandle: Position.Right,
             label: e.label,
-            data: { bidirectional: e.data.bidirectional },
-            pathOptions: { offset: e.data.offset ?? 50 },
+            data: { bidirectional: e.bidirectional },
+            pathOptions: { offset: e.offsetValue ?? 50 },
         };
     });
 };

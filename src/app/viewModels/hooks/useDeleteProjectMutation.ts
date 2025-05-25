@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { ProjectService } from "@/app/models/services/ProjectService";
+import { deleteProject } from "@/app/models/services/ProjectService";
 import { Project } from "@/app/models/entity/Project";
 import { useRef } from "react";
 import { useProjectContext } from "../context/ProjectContext";
@@ -20,7 +20,7 @@ export const useDeleteProjectMutation = () => {
             abortControllerRef.current = controller;
 
             // Delete the project
-            await ProjectService.deleteProject(projectId, controller.signal);
+            await deleteProject(projectId);
 
             if (abortControllerRef.current === controller) {
                 abortControllerRef.current = null;
