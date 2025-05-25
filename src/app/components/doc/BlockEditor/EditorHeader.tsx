@@ -38,8 +38,8 @@ const EditorHeader = ({
     mode,
     setDocMode,
     editor,
-    projectName,
-    documentName,
+    // projectName,
+    // documentName,
     children,
 }: EditorHeaderProps) => {
     const handleChangeView = useCallback(
@@ -138,13 +138,13 @@ const EditorHeader = ({
             </div>
 
             {/* Center with document path */}
-            <div>
+            {/* <div>
                 <p>
                     {documentName?.trim()
                         ? `${projectName}/${documentName}`
                         : ""}
                 </p>
-            </div>
+            </div> */}
 
             {/* Right side with import button and guide button */}
             <div className="flex items-center gap-x-5 mr-3">
