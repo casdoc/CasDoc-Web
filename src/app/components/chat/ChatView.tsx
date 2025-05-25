@@ -93,10 +93,16 @@ const ChatView = () => {
             // Create a new AbortController for this request
             const controller = new AbortController();
             setAbortController(controller);
-
-            await AgentService.streamChat(
+            const response = await AgentService.chat(
                 userMsg.content.text || "",
                 selectedProjectId || "",
+                controller.signal
+            );
+            if (!response) {
+                throw new Error("No response from the agent service");
+            }
+            await AgentService.handleStreamResponse(
+                response,
                 controller.signal,
                 (payload) =>
                     handleMessageEvent(payload, newConversationId, setMessages),
@@ -247,12 +253,12 @@ const ChatView = () => {
                 </div>
             </div>
 
-            <AgentRelationAdviceDialog
+            {/* <AgentRelationAdviceDialog
                 open={adviceDialogOpen}
                 selectedNodeId={"407e7cf8-c10d-4654-9ab3-a84459f08823"}
                 onOpenChange={setAdviceDialogOpen}
                 title="AI Relationship Advice"
-            />
+            /> */}
         </div>
     );
 };
