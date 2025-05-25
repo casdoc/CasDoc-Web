@@ -21,13 +21,11 @@ const dropdownItems = ["Edit", "Delete"];
 interface ProjectMenuProps {
     name: string;
     projectId: string;
-    isSelected?: boolean;
 }
 
 const ProjectMenu = ({ name, projectId }: ProjectMenuProps) => {
     const { mutateAsync: deleteProjectMutation } = useDeleteProjectMutation();
-    const { selectProject, openProjectDialog, openDocumentDialog } =
-        useProjectContext();
+    const { openProjectDialog, openDocumentDialog } = useProjectContext();
     const { isSuccess: isProjectsSuccess } = useProjectsQuery();
     const uuidSchema = z.uuid({ version: "v4" });
     const { data: documents } = useDocumentsQuery(
@@ -61,7 +59,6 @@ const ProjectMenu = ({ name, projectId }: ProjectMenuProps) => {
                     <SidebarMenuButton
                         asChild
                         className=" hover:bg-neutral-200 hover:cursor-pointer"
-                        onClick={() => selectProject(projectId)}
                     >
                         <div>
                             <Folder />

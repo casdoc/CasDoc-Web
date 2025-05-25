@@ -38,7 +38,7 @@ const DocMenu = ({ projectId, documentId, title }: DocMenuProps) => {
     const handleDocumentSelect = () => {
         if (isSelected) return;
         selectDocument(documentId);
-        router.push(`/document/${documentId}`);
+        // router.push(`/documents/${documentId}`);
     };
 
     return (

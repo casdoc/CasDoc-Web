@@ -7,7 +7,7 @@ import React, {
 } from "react";
 import { useProjectContext } from "./ProjectContext";
 import { HocuspocusProvider } from "@hocuspocus/provider";
-import { LoadingMask } from "@/app/document/components/LoadingMask";
+import { LoadingMask } from "@/app/documents/components/LoadingMask";
 
 interface CollabProviderViewModel {
     collabProvider: HocuspocusProvider;
