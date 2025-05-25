@@ -10,7 +10,7 @@ import { useProjectContext } from "../context/ProjectContext";
 export const useDeleteDocumentMutation = () => {
     const queryClient = useQueryClient();
     const abortControllerRef = useRef<AbortController | null>(null);
-    const { selectDocument } = useProjectContext();
+    const { selectedDocumentId, selectDocument } = useProjectContext();
 
     return useMutation({
         mutationFn: async (documentId: string) => {
@@ -92,6 +92,14 @@ export const useDeleteDocumentMutation = () => {
             // Return a context object with the snapshotted value
             return { previousDocuments, documentId, projectId };
         },
+
+        // If the selectd document has been deleted, set selectd document to null
+        onSuccess: (_, deleteId) => {
+            if (deleteId === selectedDocumentId) {
+                selectDocument(null);
+            }
+        },
+
         // If the mutation fails, use the context returned from onMutate to roll back
         onError: (err, documentId, context) => {
             if (context?.previousDocuments && context.projectId) {
@@ -100,7 +108,6 @@ export const useDeleteDocumentMutation = () => {
                     context.previousDocuments
                 );
             }
-
             console.error("Delete document error:", err);
         },
         // After success or error, refetch the documents
@@ -110,7 +117,6 @@ export const useDeleteDocumentMutation = () => {
                     queryKey: ["documents", data.projectId],
                 });
             }
-            selectDocument("");
         },
     });
 };

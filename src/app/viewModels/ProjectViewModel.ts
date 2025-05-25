@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import { Project } from "@/app/models/entity/Project";
 import { Document } from "@/app/models/types/Document";
 import { useProjectsQuery } from "./hooks/useProjectsQuery";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useDocumentsQueriesByProjects } from "./hooks/useDocumentsQueriesByProjects";
 
 export interface ProjectViewModel {
@@ -17,10 +17,10 @@ export interface ProjectViewModel {
     editingDocument: Document | null;
 
     // Project actions
-    selectProject: (projectId: string) => void;
+    selectProject: (projectId: string | null) => void;
 
     // Document actions
-    selectDocument: (documentId: string) => void;
+    selectDocument: (documentId: string | null) => void;
 
     // Dialog actions
     openProjectDialog: (projectId?: string) => void;
@@ -31,6 +31,7 @@ export interface ProjectViewModel {
 
 export const useProjectViewModel = (): ProjectViewModel => {
     const pathname = usePathname();
+    const router = useRouter();
 
     const { data: projects, isSuccess: isProjectsSuccess } = useProjectsQuery();
 
@@ -63,19 +64,30 @@ export const useProjectViewModel = (): ProjectViewModel => {
         return map;
     }, [documentsMap]);
 
-    // Watch for URL changes to extract documentId from /document/{documentId} pattern
+    // Watch for URL changes to extract documentId from /documents/{documentId} pattern
     useEffect(() => {
-        const documentMatch = pathname.match(/^\/document\/([^\/]+)$/);
+        const documentMatch = pathname.match(/^\/document\/(\d+)$/);
         if (documentMatch) {
             const urlDocumentId = documentMatch[1];
-            if (urlDocumentId !== selectedDocumentId) {
+            if (
+                urlDocumentId !== selectedDocumentId &&
+                urlDocumentId in documentIdToProjectIdMap
+            ) {
                 setSelectedProjectId(documentIdToProjectIdMap[urlDocumentId]);
                 setSelectedDocumentId(urlDocumentId);
             }
         }
     }, [pathname, selectedDocumentId, documentIdToProjectIdMap]);
 
-    // Initial selected project and document
+    useEffect(() => {
+        console.debug("select document: ", selectedDocumentId);
+        if (selectedDocumentId === null) {
+            router.push(`/documents/overview`);
+        } else {
+            router.push(`/documents/${selectedDocumentId}`);
+        }
+    }, [selectedDocumentId, router]);
+
     useEffect(() => {
         // Initialize one time
         if (isInitialized) return;
@@ -83,46 +95,28 @@ export const useProjectViewModel = (): ProjectViewModel => {
         if (isProjectsSuccess && isDocumentsSuccess) {
             setIsInitialized(true);
         }
-
-        // Select first document and project for default
-        if (isDocumentsSuccess && documentsMap) {
-            for (const [projId, docs] of Object.entries(documentsMap)) {
-                if (docs.length > 0) {
-                    const firstDoc = docs[0];
-                    setSelectedProjectId(projId);
-                    setSelectedDocumentId(firstDoc.id);
-                    return;
-                }
-            }
-        }
-
-        // If don't have document, select first project
-        if (isProjectsSuccess && projects && projects.length > 0) {
-            setSelectedProjectId(projects[0].id);
-        }
-    }, [
-        isInitialized,
-        projects,
-        documentsMap,
-        isProjectsSuccess,
-        isDocumentsSuccess,
-    ]);
+    }, [isInitialized, isProjectsSuccess, isDocumentsSuccess]);
 
     const selectProject = useCallback(
-        (projectId: string) => {
+        (projectId: string | null) => {
             console.debug("Select project: ", projectId);
             if (projectId === selectedProjectId) return;
             setSelectedProjectId(projectId);
+            if (projectId === null) {
+                setSelectedDocumentId(null);
+            }
         },
         [selectedProjectId]
     );
 
     const selectDocument = useCallback(
-        (documentId: string) => {
+        (documentId: string | null) => {
             console.debug("Select document: ", documentId);
             if (documentId === selectedDocumentId) return;
-            setSelectedProjectId(documentIdToProjectIdMap[documentId]);
             setSelectedDocumentId(documentId);
+            if (documentId != null) {
+                setSelectedProjectId(documentIdToProjectIdMap[documentId]);
+            }
         },
         [selectedDocumentId, documentIdToProjectIdMap]
     );

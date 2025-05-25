@@ -20,7 +20,7 @@ const dropdownItems = ["Order"];
 
 const ProjectGroup = () => {
     const { data: projects } = useProjectsQuery();
-    const { selectedProjectId, openProjectDialog } = useProjectContext();
+    const { openProjectDialog } = useProjectContext();
     const [isOpen, setIsOpen] = useState(true);
     const handleAddProject = (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -57,9 +57,6 @@ const ProjectGroup = () => {
                                     key={index}
                                     name={project.name}
                                     projectId={project.id}
-                                    isSelected={
-                                        project.id === selectedProjectId
-                                    }
                                 />
                             ))}
                         </SidebarMenu>
