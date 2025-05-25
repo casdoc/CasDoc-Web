@@ -44,6 +44,7 @@ export const ExtensionKit = () => [
     StarterKit.configure({
         gapcursor: false, //forbid gap cursor appear between custom nodes
         heading: false,
+        history: false,
     }),
 
     TextStyle,
@@ -132,6 +133,7 @@ export const ExtensionKit = () => [
             "textStyle",
             "typography",
             "underline",
+            "codeBlock",
         ],
     }),
 ];

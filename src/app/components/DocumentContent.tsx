@@ -1,5 +1,3 @@
-"use client";
-
 import DocView from "@/app/components/doc/DocView";
 import EditPanel from "@/app/components/editPanel/EditPanelView";
 import { NodeSelectionProvider } from "@/app/viewModels/context/NodeSelectionContext";
@@ -11,31 +9,34 @@ import { ChatProvider } from "@/app/viewModels/context/ChatContext";
 import ChatView from "./chat/ChatView";
 import { useChatContext } from "@/app/viewModels/context/ChatContext";
 import { EditorProvider } from "@/app/viewModels/context/EditorContext";
+import { CollabProvider } from "../viewModels/context/CollabProviderContext";
 
 export default function DocumentContent() {
     return (
-        <EditorProvider>
-            <GraphProvider>
-                <NodeSelectionProvider>
-                    <SidebarProvider defaultOpen={false}>
-                        <ChatProvider>
-                            <AppSidebar />
-                            <Flex
-                                direction="column"
-                                align="center"
-                                className="h-dvh w-dvw bg-gray-100 text-black relative"
-                            >
-                                <DocView />
-                                <EditPanel />
+        <CollabProvider>
+            <EditorProvider>
+                <GraphProvider>
+                    <NodeSelectionProvider>
+                        <SidebarProvider defaultOpen={false}>
+                            <ChatProvider>
+                                <AppSidebar />
+                                <Flex
+                                    direction="column"
+                                    align="center"
+                                    className="h-dvh w-dvw bg-gray-100 text-black relative"
+                                >
+                                    <DocView />
+                                    <EditPanel />
 
-                                {/* Chat panel overlay with slide transition */}
-                                <ChatOverlay />
-                            </Flex>
-                        </ChatProvider>
-                    </SidebarProvider>
-                </NodeSelectionProvider>
-            </GraphProvider>
-        </EditorProvider>
+                                    {/* Chat panel overlay with slide transition */}
+                                    <ChatOverlay />
+                                </Flex>
+                            </ChatProvider>
+                        </SidebarProvider>
+                    </NodeSelectionProvider>
+                </GraphProvider>
+            </EditorProvider>
+        </CollabProvider>
     );
 }
 

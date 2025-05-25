@@ -1,11 +1,16 @@
 import { DocumentType } from "@/app/models/enum/DocumentType";
 import { z } from "zod";
 
-export const DocumentApiRequestSchema = z.object({
+export const DocumentCreateSchema = z.object({
     projectId: z.string(),
     title: z.string(),
     description: z.string(),
     type: z.enum(DocumentType),
 });
+export type DocumentCreate = z.infer<typeof DocumentCreateSchema>;
 
-export type DocumentApiRequest = z.infer<typeof DocumentApiRequestSchema>;
+export const DocumentUpdateSchema = z.object({
+    title: z.string(),
+    description: z.string(),
+});
+export type DocumentUpdate = z.infer<typeof DocumentUpdateSchema>;

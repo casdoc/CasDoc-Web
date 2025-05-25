@@ -2,10 +2,15 @@ import { useState, useCallback, useEffect } from "react";
 import { GraphService } from "../models/services/GraphService";
 import { JsonObject } from "../models/types/JsonObject";
 import { useProjectContext } from "./context/ProjectContext";
-// import defaultContent from "../models/default-value/defaultContent";
 import { useDocumentQuery } from "./hooks/useDocumentQuery";
 import z from "zod";
 import { useEditorContext } from "./context/EditorContext";
+import { Node } from "@tiptap/pm/model";
+import { useConnectionUpdateMutation } from "./hooks/useConnectionUpdateMutation";
+import { useConnectionsQuery } from "./hooks/useConnectionsQuery";
+import { useConnectionCreateMutation } from "./hooks/useConnectionCreateMutation";
+import { useConnectionDeleteMutation } from "./hooks/useConnectionDeleteMutation";
+import { ConnectionEdge } from "@/app/models/entity/ConnectionEdge";
 
 export interface GraphViewModel {
     connectionEdges: ConnectionEdge[];
@@ -50,176 +55,168 @@ export interface GraphNode {
     fields?: JsonObject;
 }
 
-export interface ConnectionEdge {
-    source: string;
-    target: string;
-    label?: string;
-    data: JsonObject;
-}
+// export interface ConnectionEdge {
+//     source: string;
+//     target: string;
+//     label?: string;
+//     data: JsonObject;
+// }
 
 export function useGraphViewModel(): GraphViewModel {
     const uuidSchema = z.uuid({ version: "v4" });
-    const [connectionEdges, setConnectionEdges] = useState<ConnectionEdge[]>(
-        []
-    );
+    // const [connectionEdges, setConnectionEdges] = useState<ConnectionEdge[]>(
+    //     []
+    // );
+    const { selectedDocumentId } = useProjectContext();
+
     const [affectedIds, setAffectedIds] = useState<string[]>([]);
     const [attachedDocs, setAttachedDocs] = useState<Array<AttachedDoc>>([]);
-    const { selectedDocumentId } = useProjectContext();
     const { data: document, isLoading: isDocumentLoading } = useDocumentQuery(
         selectedDocumentId,
         selectedDocumentId !== null &&
             !uuidSchema.safeParse(selectedDocumentId).success
     );
-    const { editor, docContent, editorDoc } = useEditorContext();
-    // console.log("editor state", editor?.state);
 
-    useEffect(() => {
-        // console.log("selected document id:", selectedDocumentId);
-        // console.log("doc content from content query hook:", editorDoc);
-        // console.log("doc content from editor context:", docContent);
-        // console.log("editor ", editor?.state.toJSON());
-    }, [docContent, editorDoc, selectedDocumentId, editor]); // Add editorVersion to dependencies
+    const { editor, docContent } = useEditorContext();
+    const { selectedProjectId } = useProjectContext();
 
-    useEffect(() => {
-        if (!selectedDocumentId || isDocumentLoading) return;
-        // let doc = DocumentService.getDocumentById(selectedDocumentId || "");
-        // if (!doc) {
-        //     const emptyDoc = new Document(
-        //         "default-document",
-        //         DocumentType.SRD,
-        //         "default-project",
-        //         "Untitled Document",
-        //         "No description",
-        //         defaultContent
-        //     );
-        //     DocumentService.saveDocument(emptyDoc);
-        //     // doc = emptyDoc;
-        // }
-        // setDocument(doc);
-        console.debug("Selected document ID:", selectedDocumentId);
-    }, [isDocumentLoading, selectedDocumentId]);
+    const {
+        data: connectionEdges,
+        isSuccess: isConnectionsSuccess,
+        isLoading: isConnectionsLoading,
+    } = useConnectionsQuery(selectedProjectId || "");
+    const { mutateAsync: updateConnection } = useConnectionUpdateMutation(
+        selectedProjectId || ""
+    );
+    const { mutateAsync: createConnection } = useConnectionCreateMutation(
+        selectedProjectId || ""
+    );
+    const { mutateAsync: deleteConnection } = useConnectionDeleteMutation(
+        selectedProjectId || ""
+    );
 
-    useEffect(() => {
-        const localEdges = GraphService.getEdges();
-        setConnectionEdges(localEdges);
+    const updConnectionEdges = useCallback(
+        async (edge: ConnectionEdge) => {
+            if (!connectionEdges) return;
 
-        const localAffectedIds = GraphService.getAffectedIds();
-        setAffectedIds(localAffectedIds);
-    }, []);
-
-    const updConnectionEdges = useCallback((edge: ConnectionEdge) => {
-        setConnectionEdges((prevEdges) => {
-            const exists = prevEdges.some(
+            const exists = connectionEdges.some(
                 (e) => e.source === edge.source && e.target === edge.target
             );
-            const reversedExists = prevEdges.some(
+            const reversedConnection = connectionEdges.find(
                 (e) => e.source === edge.target && e.target === edge.source
             );
 
-            if (exists) return prevEdges;
+            if (exists) return;
 
-            if (reversedExists) {
-                const newEdges = prevEdges.map((e) => {
-                    if (e.source === edge.target && e.target === edge.source) {
-                        return {
-                            ...e,
-                            data: {
-                                ...e.data,
-                                bidirectional: true,
-                                offset: e.data.offset ?? 50,
-                            },
-                        };
-                    }
-                    return e;
+            if (reversedConnection) {
+                // Update existing connection to be bidirectional
+                await updateConnection({
+                    id: parseInt(reversedConnection.id),
+                    input: {
+                        label: reversedConnection.label,
+                        offsetValue: reversedConnection.offsetValue || 50,
+                        bidirectional: true,
+                    },
                 });
-                GraphService.setEdges(newEdges);
-                return newEdges;
+            } else {
+                // Create new connection
+                await createConnection({
+                    projectId: parseInt(selectedProjectId || ""),
+                    sourceId: edge.source,
+                    targetId: edge.target,
+                    label: edge.label || "",
+                    offsetValue: edge.offsetValue || 0,
+                    bidirectional: false,
+                });
             }
-
-            const newEdges = [...prevEdges, edge];
-            GraphService.setEdges(newEdges);
-            return newEdges;
-        });
-    }, []);
+        },
+        [connectionEdges, createConnection, selectedProjectId, updateConnection]
+    );
 
     const searchTarget = (id: string): ConnectionEdge[] => {
+        if (!connectionEdges) return [];
         return connectionEdges
             .filter(
-                (e) =>
-                    e.source === id ||
-                    (e.target === id && e.data?.bidirectional)
+                (e) => e.source === id || (e.target === id && e.bidirectional)
             )
             .map((e) => {
-                if (e.target === id && e.data?.bidirectional) {
-                    return { ...e, source: e.target, target: e.source };
+                if (e.target === id && e.bidirectional) {
+                    return {
+                        ...e,
+                        source: e.target,
+                        target: e.source,
+                    } as ConnectionEdge;
                 }
                 return e;
             });
     };
 
     const searchSource = (id: string): ConnectionEdge[] => {
+        if (!connectionEdges) return [];
         return connectionEdges
             .filter(
-                (e) =>
-                    e.target === id ||
-                    (e.source === id && e.data?.bidirectional)
+                (e) => e.target === id || (e.source === id && e.bidirectional)
             )
             .map((e) => {
-                if (e.source === id && e.data?.bidirectional) {
-                    return { ...e, source: e.target, target: e.source };
-                }
-                return e;
-            });
-    };
-
-    const removeConnectionEdge = (edge: ConnectionEdge) => {
-        setConnectionEdges((prevEdges) => {
-            if (!edge.data?.bidirectional) {
-                const newEdges = prevEdges.filter(
-                    (e) =>
-                        !(e.source === edge.source && e.target === edge.target)
-                );
-                GraphService.setEdges(newEdges);
-                return newEdges;
-            }
-            const newEdges = prevEdges.map((e) => {
-                if (e.target === edge.source && e.source === edge.target) {
-                    return {
-                        ...e,
-                        data: { ...e.data, bidirectional: false },
-                    };
-                }
-                if (e.target === edge.target && e.source === edge.source) {
+                if (e.source === id && e.bidirectional) {
                     return {
                         ...e,
                         source: e.target,
                         target: e.source,
-                        data: { ...e.data, bidirectional: false },
-                    };
+                    } as ConnectionEdge;
                 }
                 return e;
             });
-            GraphService.setEdges(newEdges);
-            return newEdges;
-        });
     };
 
-    const updateLabel = (edge: ConnectionEdge, content: string) => {
-        setConnectionEdges((prevEdges) => {
-            const newEdges = prevEdges.map((e) => {
-                if (
-                    (e.source === edge.source && e.target === edge.target) ||
-                    (e.source == edge.target &&
-                        e.target === edge.source &&
-                        e.data.bidirectional)
-                ) {
-                    return { ...e, label: content };
-                }
-                return e;
+    const removeConnectionEdge = async (edge: ConnectionEdge) => {
+        if (!connectionEdges) return;
+
+        if (!edge.bidirectional) {
+            // Simply delete the connection
+            await deleteConnection(parseInt(edge.id));
+        } else {
+            // Find the actual connection and update it to not be bidirectional
+            const actualConnection = connectionEdges.find(
+                (e) =>
+                    (e.source === edge.target && e.target === edge.source) ||
+                    (e.source === edge.source && e.target === edge.target)
+            );
+
+            if (actualConnection) {
+                await updateConnection({
+                    id: parseInt(actualConnection.id),
+                    input: {
+                        label: actualConnection.label,
+                        offsetValue: actualConnection.offsetValue,
+                        bidirectional: false,
+                    },
+                });
+            }
+        }
+    };
+
+    const updateLabel = async (edge: ConnectionEdge, content: string) => {
+        if (!connectionEdges) return;
+
+        const actualConnection = connectionEdges.find(
+            (e) =>
+                (e.source === edge.source && e.target === edge.target) ||
+                (e.source === edge.target &&
+                    e.target === edge.source &&
+                    e.bidirectional)
+        );
+
+        if (actualConnection) {
+            await updateConnection({
+                id: parseInt(actualConnection.id),
+                input: {
+                    label: content,
+                    offsetValue: actualConnection.offsetValue,
+                    bidirectional: actualConnection.bidirectional,
+                },
             });
-            GraphService.setEdges(newEdges);
-            return newEdges;
-        });
+        }
     };
 
     const updateAffectedIds = useCallback((ids: string[]) => {
@@ -243,22 +240,27 @@ export function useGraphViewModel(): GraphViewModel {
         GraphService.setAffectedIds([]);
     }, []);
 
-    const updateOffset = (edge: ConnectionEdge, offset: number) => {
-        setConnectionEdges((prevEdges) => {
-            const newEdges = prevEdges.map((e) => {
-                if (
-                    (e.source === edge.source && e.target === edge.target) ||
-                    (e.source == edge.target &&
-                        e.target === edge.source &&
-                        e.data.bidirectional)
-                ) {
-                    return { ...e, data: { ...e.data, offset: offset } };
-                }
-                return e;
+    const updateOffset = async (edge: ConnectionEdge, offset: number) => {
+        if (!connectionEdges) return;
+
+        const actualConnection = connectionEdges.find(
+            (e) =>
+                (e.source === edge.source && e.target === edge.target) ||
+                (e.source === edge.target &&
+                    e.target === edge.source &&
+                    e.bidirectional)
+        );
+
+        if (actualConnection) {
+            await updateConnection({
+                id: parseInt(actualConnection.id),
+                input: {
+                    label: actualConnection.label,
+                    offsetValue: offset,
+                    bidirectional: actualConnection.bidirectional,
+                },
             });
-            GraphService.setEdges(newEdges);
-            return newEdges;
-        });
+        }
     };
 
     const removeAttachedDoc = (documentId: string) => {
@@ -287,10 +289,8 @@ export function useGraphViewModel(): GraphViewModel {
 
     const updateAttachedDocById = useCallback(
         (documentId: string): AttachedDoc | undefined => {
-            // const doc = getDocumentById(documentId);
-            // const doc = null;
-            if (!document || selectedDocumentId) return;
-            const docContents = document.content;
+            if (!document || !selectedDocumentId) return;
+
             const newGraphNodes: GraphNode[] = [
                 {
                     id: document.id,
@@ -305,10 +305,11 @@ export function useGraphViewModel(): GraphViewModel {
                 document.id,
             ];
             let lastTopicLevel = 0;
+            const content = docContent?.doc?.content || [];
 
-            for (let i = 0; i < docContents.length; i++) {
+            for (let i = 0; i < content.length; i++) {
                 const topicLevel: number =
-                    parseInt(docContents[i].attrs.level) ?? 0;
+                    parseInt(content[i].attrs.level) ?? 0;
                 let parent = lastTopicLevel;
 
                 if (topicLevel === 1) parent = 0;
@@ -316,24 +317,22 @@ export function useGraphViewModel(): GraphViewModel {
                     parent = lastTopicLevel - 1;
                 else if (topicLevel < lastTopicLevel) parent = topicLevel - 1;
 
-                if (docContents[i].type.startsWith("topic")) {
-                    lastTopicId[topicLevel] = docContents[i].attrs.id;
+                if (content[i].type.startsWith("topic")) {
+                    lastTopicId[topicLevel] = content[i].attrs.id;
                     lastTopicLevel = topicLevel;
                 }
 
-                const graphNode = newGraphNode(
-                    docContents[i],
-                    lastTopicId[parent]
-                );
+                const graphNode = newGraphNode(content[i], lastTopicId[parent]);
                 if (graphNode) newGraphNodes.push(graphNode);
             }
+
             const attachedDoc = {
                 id: documentId,
                 nodes: newGraphNodes,
             };
             return attachedDoc;
         },
-        [document, selectedDocumentId]
+        [docContent, document, selectedDocumentId]
     );
 
     const appendAttachedDocsById = useCallback(
@@ -385,7 +384,7 @@ export function useGraphViewModel(): GraphViewModel {
                     ...doc.nodes[pos],
                     ...changes,
                 };
-                saveModifiedToDoc(doc.id, nodeId, updatedNodes[pos]);
+                saveModifiedToDoc(nodeId, updatedNodes[pos]);
                 return { ...doc, nodes: updatedNodes };
             }
             return doc;
@@ -393,14 +392,10 @@ export function useGraphViewModel(): GraphViewModel {
         setAttachedDocs(updatedDocs);
     };
 
-    const saveModifiedToDoc = (
-        documentId: string,
-        nodeId: string,
-        updatedNode: GraphNode
-    ) => {
-        if (!document) return;
-        const oldContent = document.content || [];
-        const newContent = oldContent.map((item) => {
+    const saveModifiedToDoc = (nodeId: string, updatedNode: GraphNode) => {
+        if (!document || !editor) return;
+        const oldContent = docContent?.doc?.content || [];
+        const newContent = oldContent.map((item: Node) => {
             if (item?.attrs?.id === nodeId) {
                 return {
                     ...item,
@@ -414,13 +409,13 @@ export function useGraphViewModel(): GraphViewModel {
             }
             return item;
         });
-        document.content = newContent;
-        // updateDocument(document);
+        editor?.commands.setContent(newContent);
     };
 
     // update the current document's nodes data when modifying in edit panel
     useEffect(() => {
-        if (!document || isDocumentLoading || !selectedDocumentId) return;
+        if (!document || isDocumentLoading || !selectedDocumentId || !editor)
+            return;
         const newDoc = updateAttachedDocById(selectedDocumentId);
         if (!newDoc) return;
         setAttachedDocs((docs) => {
@@ -429,6 +424,7 @@ export function useGraphViewModel(): GraphViewModel {
             return [...newDocs];
         });
     }, [
+        editor,
         document,
         updateAttachedDocById,
         selectedDocumentId,
@@ -436,7 +432,7 @@ export function useGraphViewModel(): GraphViewModel {
     ]);
 
     return {
-        connectionEdges,
+        connectionEdges: connectionEdges || [],
         affectedIds,
         attachedDocs,
 

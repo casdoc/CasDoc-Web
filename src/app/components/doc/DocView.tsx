@@ -1,7 +1,6 @@
 "use client";
 
 import { useDocModeViewModel } from "@/app/viewModels/DocModeViewModel";
-// import { useBlockEditor } from "@/app/viewModels/useBlockEditor";
 import { ReactFlowProvider } from "@xyflow/react";
 import { useState, useEffect, useRef } from "react";
 import { useProjectContext } from "@/app/viewModels/context/ProjectContext";
@@ -26,12 +25,11 @@ const DocView = () => {
     } = useProjectContext();
     const { data: prjects } = useProjectsQuery();
     const { data: document } = useDocumentQuery(
-        selectedDocumentId,
-        selectedDocumentId !== null &&
+        selectedDocumentId || "",
+        !!selectedDocumentId &&
             !uuidSchema.safeParse(selectedDocumentId).success
     );
-
-    const { editor, currentStatus } = useEditorContext();
+    const { editor } = useEditorContext();
 
     const [splitWidth, setSplitWidth] = useState(50);
     const isResizing = useRef(false);
@@ -59,9 +57,32 @@ const DocView = () => {
         };
     }, []);
 
-    // Return null if editor is not loaded - DocumentContent will handle the loading UI
+    // Return loading state if document is changing
+    if (!selectedDocumentId) {
+        return (
+            <Flex
+                direction="column"
+                justify="center"
+                align="center"
+                className="h-full"
+            >
+                <Text>Loading document...</Text>
+            </Flex>
+        );
+    }
+
+    // Return null if editor is not loaded
     if (!editor) {
-        return null;
+        return (
+            <Flex
+                direction="column"
+                justify="center"
+                align="center"
+                className="h-full"
+            >
+                <Text>Connecting to editor...</Text>
+            </Flex>
+        );
     }
 
     return (
@@ -73,7 +94,6 @@ const DocView = () => {
                 mode={mode as DocMode}
                 setDocMode={setDocMode}
                 editor={editor}
-                editorStatus={currentStatus}
                 projectName={
                     prjects?.find((p) => p.id === document?.projectId)?.name || ""
                 }
@@ -92,11 +112,7 @@ const DocView = () => {
                                     : "100%",
                         }}
                     >
-                        <BlockEditor
-                            editor={editor}
-                            selectedDocumentId={selectedDocumentId}
-                            document={document}
-                        />
+                        <BlockEditor editor={editor} document={document} />
                     </div>
                     {mode === DocMode.Split && (
                         <div

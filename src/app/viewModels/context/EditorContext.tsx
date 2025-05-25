@@ -1,42 +1,38 @@
-import React, { createContext, useContext, ReactNode } from "react";
 import { Editor } from "@tiptap/react";
-import SaveStatus from "@/app/models/enum/SaveStatus";
-import { useBlockEditor } from "../useBlockEditor";
-import { Node as ProsemirrorNode } from "prosemirror-model";
+import React, { createContext, useContext, ReactNode } from "react";
+import { useBlockEditor } from "@/app/viewModels/useBlockEditor";
 import { useProjectContext } from "./ProjectContext";
+import { useCollabProviderContext } from "./CollabProviderContext";
+import { Node } from "@tiptap/pm/model";
 
-// Define the shape of the context
 interface EditorViewModel {
-    docContent:
-        | {
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              allContent: Record<string, any>[];
-              documentId: string;
-          }
-        | undefined;
-    editorDoc: ProsemirrorNode | undefined;
-    editor: Editor | null;
-    currentStatus: () => SaveStatus;
+    editor: Editor | null | undefined;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    docContent: any | null;
+    editorDoc: Node | null;
 }
 
-// Create the context with default values
 const EditorContext = createContext<EditorViewModel | undefined>(undefined);
 
 export const EditorProvider = ({ children }: { children: ReactNode }) => {
-    const { selectedDocumentId: documentId } = useProjectContext();
-    // Use the block editor hook to get editor instance and status
-    const blockEditorViewModel = useBlockEditor({
-        documentId: documentId || "",
+    const { selectedDocumentId } = useProjectContext();
+    const { collabProvider } = useCollabProviderContext();
+    const { editor, editorDoc, docContent } = useBlockEditor({
+        documentId: selectedDocumentId || undefined,
+        collaborationProvider: collabProvider,
     });
-
+    const value = {
+        editor,
+        docContent,
+        editorDoc,
+    };
     return (
-        <EditorContext.Provider value={blockEditorViewModel}>
-            {children}
+        <EditorContext.Provider value={value}>
+            {editor ? children : <div>Connecting to editor...</div>}
         </EditorContext.Provider>
     );
 };
 
-// Custom hook for consuming the context
 export const useEditorContext = (): EditorViewModel => {
     const context = useContext(EditorContext);
     if (context === undefined) {

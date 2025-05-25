@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback } from "react";
+import { ReactNode, useCallback } from "react";
 import DocMode from "@/app/models/enum/DocMode";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
@@ -21,25 +21,26 @@ import {
     SquareSplitHorizontal,
 } from "lucide-react";
 import { useChatContext } from "@/app/viewModels/context/ChatContext";
-import SaveStatusBadge from "./SaveStatusBadge";
-import SaveStatus from "@/app/models/enum/SaveStatus";
+import { CollaborationMenu } from "./CollaborationMenu";
+import { useCollaborationStatus } from "@/app/viewModels/hooks/useCollaborationStatus";
+import { useCollabProviderContext } from "@/app/viewModels/context/CollabProviderContext";
 
 interface EditorHeaderProps {
     mode: DocMode;
     setDocMode: (newMode: DocMode) => void;
     editor: Editor;
-    editorStatus: () => SaveStatus;
     projectName: string;
     documentName: string;
+    children?: ReactNode;
 }
 
 const EditorHeader = ({
     mode,
     setDocMode,
     editor,
-    editorStatus,
     projectName,
     documentName,
+    children,
 }: EditorHeaderProps) => {
     const handleChangeView = useCallback(
         (newMode: DocMode) => {
@@ -49,6 +50,8 @@ const EditorHeader = ({
     );
     const { isOpen, setIsOpen } = useChatContext();
 
+    const { collabProvider, status } = useCollabProviderContext();
+    const { onlineUsers, userCount } = useCollaborationStatus(collabProvider);
     return (
         <div className="flex flex-row items-center justify-between flex-none py-2 px-3 text-black bg-white border-b border-neutral-200 dark:bg-black dark:text-white dark:border-neutral-800 z-50">
             {/* Left side with logo and mode buttons */}
@@ -122,14 +125,16 @@ const EditorHeader = ({
                         </TooltipContent>
                     </Tooltip>
                 </TooltipProvider>
-                {/* Render the SaveStatusBadge without passing status */}
-                <div className="ml-2">
-                    {" "}
-                    {/* Add some margin */}
-                    <SaveStatusBadge
-                        editorStatus={editorStatus} // Pass the function to get status
-                    />
-                </div>
+                {/* Center - Collaboration status */}
+                {collabProvider && (
+                    <div className="flex items-center px-4">
+                        <CollaborationMenu
+                            onlineUsers={onlineUsers}
+                            status={status}
+                            userCount={userCount}
+                        />
+                    </div>
+                )}
             </div>
 
             {/* Center with document path */}
@@ -178,6 +183,8 @@ const EditorHeader = ({
                     </Tooltip>
                 </TooltipProvider>
             </div>
+
+            {children}
         </div>
     );
 };

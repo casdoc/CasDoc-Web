@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { ProjectService } from "@/app/models/services/ProjectService";
+import { updateProject } from "@/app/models/services/ProjectService";
 import { ProjectApiRequest } from "@/app/models/dto/ProjectApiRequest";
 import { Project } from "@/app/models/entity/Project";
 import { useRef } from "react";
@@ -25,7 +25,7 @@ export const useUpdateProjectMutation = () => {
             abortControllerRef.current = controller;
 
             // Update the project
-            const project = await ProjectService.updateProject(
+            const project = await updateProject(
                 projectId,
                 projectInput
             );

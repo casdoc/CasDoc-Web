@@ -1,7 +1,9 @@
+"use client";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useEffect, useState } from "react";
 import supabase from "@/lib/supabase";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation"; // Changed from next/router
 import SignOutButton from "./SignOutButton";
 
 const UserConsole = () => {
@@ -39,9 +41,9 @@ const UserConsole = () => {
     const handleSignOut = async () => {
         if (!isLoggedIn) return;
         const { error } = await supabase.auth.signOut();
-        if (!error) {
+        if (!error && router) {
             router.push("/");
-        } else {
+        } else if (error) {
             console.log("Sign out error: ", error);
         }
     };
