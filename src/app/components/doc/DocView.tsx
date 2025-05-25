@@ -12,6 +12,7 @@ import { Button, Flex, Text } from "@radix-ui/themes";
 import DocMode from "@/app/models/enum/DocMode";
 import z from "zod";
 import { useEditorContext } from "@/app/viewModels/context/EditorContext";
+import { useProjectsQuery } from "@/app/viewModels/hooks/useProjectsQuery";
 
 const DocView = () => {
     const uuidSchema = z.uuid({ version: "v4" });
@@ -22,6 +23,7 @@ const DocView = () => {
         openProjectDialog,
         openDocumentDialog,
     } = useProjectContext();
+    const { data: prjects } = useProjectsQuery();
     const { data: document } = useDocumentQuery(
         selectedDocumentId || "",
         !!selectedDocumentId &&
@@ -92,6 +94,10 @@ const DocView = () => {
                 mode={mode as DocMode}
                 setDocMode={setDocMode}
                 editor={editor}
+                projectName={
+                    prjects?.find((p) => p.id === document?.projectId)?.name || ""
+                }
+                documentName={document?.title || ""}
             />
             {selectedDocumentId ? (
                 <Flex className="overflow-y-auto h-full relative">

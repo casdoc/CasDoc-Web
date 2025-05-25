@@ -25,6 +25,16 @@ export const createMarkdownSerializer = (editor: Editor) => {
         "template-userStory": serializeUserStoryToMarkdown,
     };
 
+    const marks = {
+        ...defaultMarkdownSerializer.marks,
+        bold: defaultMarkdownSerializer.marks.strong,
+        italic: defaultMarkdownSerializer.marks.em,
+        code: defaultMarkdownSerializer.marks.code,
+        link: defaultMarkdownSerializer.marks.link,
+    };
+    console.log(123);
+    console.log(Object.keys(defaultMarkdownSerializer.marks));
+
     // Add fallback serializers for any node types not handled
     Object.keys(editor.schema.nodes).forEach((nodeName) => {
         if (!nodes[nodeName]) {
@@ -38,7 +48,7 @@ export const createMarkdownSerializer = (editor: Editor) => {
     });
 
     // Create serializer with our custom nodes and default marks
-    return new MarkdownSerializer(nodes, defaultMarkdownSerializer.marks);
+    return new MarkdownSerializer(nodes, marks);
 };
 
 // Convert editor content to markdown

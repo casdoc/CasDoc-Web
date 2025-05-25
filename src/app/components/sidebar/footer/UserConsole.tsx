@@ -10,7 +10,7 @@ const UserConsole = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [userName, setUserName] = useState("User");
     const [userEmail, setUserEmail] = useState("user@gmail.com");
-    const [userAvatar, setUserAvatar] = useState("/user-avatar.png");
+    const [userAvatar, setUserAvatar] = useState("");
     const [openSignOut, setOpenSignOut] = useState(false);
     const router = useRouter();
 
@@ -25,9 +25,7 @@ const UserConsole = () => {
                 setIsLoggedIn(true);
                 setUserName(user.user_metadata?.name || "Guest");
                 setUserEmail(user.email || "user@email.com");
-                setUserAvatar(
-                    user.user_metadata?.avatar_url || "/user-avatar.png"
-                );
+                setUserAvatar(user.user_metadata?.avatar_url || "");
             } else {
                 setIsLoggedIn(false);
             }
@@ -54,7 +52,9 @@ const UserConsole = () => {
         <div className="flex items-center justify-between p-3 rounded-lg hover:bg-neutral-200 transition cursor-pointer">
             <div className="flex items-center gap-3">
                 <Avatar className="h-9 w-9">
-                    <AvatarImage src={userAvatar} alt="User" />
+                    {userAvatar?.trim() ? (
+                        <AvatarImage src={userAvatar} alt="User" />
+                    ) : null}
                     <AvatarFallback>
                         {userName?.[0]?.toUpperCase() || "U"}
                     </AvatarFallback>
