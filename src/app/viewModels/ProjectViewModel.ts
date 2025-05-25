@@ -69,13 +69,17 @@ export const useProjectViewModel = (): ProjectViewModel => {
         if (documentMatch) {
             const urlDocumentId = documentMatch[1];
             if (urlDocumentId !== selectedDocumentId) {
+                setSelectedProjectId(documentIdToProjectIdMap[urlDocumentId]);
                 setSelectedDocumentId(urlDocumentId);
             }
         }
-    }, [pathname, selectedDocumentId]);
+    }, [pathname, selectedDocumentId, documentIdToProjectIdMap]);
 
     // Initial selected project and document
     useEffect(() => {
+        // Initialize one time
+        if (isInitialized) return;
+
         if (isProjectsSuccess && isDocumentsSuccess) {
             setIsInitialized(true);
         }
@@ -96,7 +100,13 @@ export const useProjectViewModel = (): ProjectViewModel => {
         if (isProjectsSuccess && projects && projects.length > 0) {
             setSelectedProjectId(projects[0].id);
         }
-    }, [projects, documentsMap, isProjectsSuccess, isDocumentsSuccess]);
+    }, [
+        isInitialized,
+        projects,
+        documentsMap,
+        isProjectsSuccess,
+        isDocumentsSuccess,
+    ]);
 
     const selectProject = useCallback(
         (projectId: string) => {
