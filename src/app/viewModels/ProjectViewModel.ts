@@ -36,7 +36,7 @@ export const useProjectViewModel = (): ProjectViewModel => {
     const { data: projects, isSuccess: isProjectsSuccess } = useProjectsQuery();
 
     const { data: documentsMap, isSuccess: isDocumentsSuccess } =
-        useDocumentsQueriesByProjects(projects);
+        useDocumentsQueriesByProjects(projects, isProjectsSuccess);
 
     const [isInitialized, setIsInitialized] = useState(false);
     const [selectedProjectId, setSelectedProjectId] = useState<string | null>(
