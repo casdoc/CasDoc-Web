@@ -8,6 +8,7 @@ import React, {
 import { useProjectContext } from "./ProjectContext";
 import { HocuspocusProvider } from "@hocuspocus/provider";
 import { LoadingMask } from "@/app/documents/components/LoadingMask";
+import { useParams } from "next/navigation";
 
 interface CollabProviderViewModel {
     collabProvider: HocuspocusProvider;
@@ -29,12 +30,32 @@ export const CollabProvider = ({ children }: { children: ReactNode }) => {
     const [hocuspocusProvider, setHocuspocusProvider] =
         useState<HocuspocusProvider>();
     const [isSynced, setIsSynced] = useState(false);
-    const { selectedDocumentId } = useProjectContext();
+    const { selectedDocumentId, selectDocument } = useProjectContext();
     const [status, setStatus] = useState<CollaborationStatus>(
         CollaborationStatus.Disconnected
     );
+    const { documentId } = useParams();
+
+    // Watch for URL documentId changes and sync with selectedDocumentId
     useEffect(() => {
-        if (!selectedDocumentId) return;
+        if (documentId && documentId !== selectedDocumentId) {
+            selectDocument(documentId as string);
+        }
+    }, [documentId, selectedDocumentId, selectDocument]);
+
+    useEffect(() => {
+        // Prevent provider creation if selectedDocumentId doesn't match URL documentId
+        if (
+            !selectedDocumentId ||
+            !documentId ||
+            selectedDocumentId !== documentId
+        )
+            return;
+
+        console.debug(
+            "Creating HocuspocusProvider for document:",
+            selectedDocumentId
+        );
         const provider = new HocuspocusProvider({
             url: "ws://localhost:1234",
             name: selectedDocumentId,
@@ -56,7 +77,7 @@ export const CollabProvider = ({ children }: { children: ReactNode }) => {
         return () => {
             provider.destroy();
         };
-    }, [selectedDocumentId]);
+    }, [selectedDocumentId, documentId]);
 
     if (!hocuspocusProvider?.isSynced || !isSynced || !selectedDocumentId)
         return <LoadingMask />;

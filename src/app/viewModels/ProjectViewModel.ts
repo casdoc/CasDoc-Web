@@ -64,23 +64,6 @@ export const useProjectViewModel = (): ProjectViewModel => {
         return map;
     }, [documentsMap]);
 
-    // Watch for URL changes to extract documentId from /documents/{documentId} pattern
-    useEffect(() => {
-        if (!isInitialized) return;
-
-        const documentMatch = pathname.match(/^\/documents\/(\d+)$/);
-        if (documentMatch) {
-            const urlDocumentId = documentMatch[1];
-            if (
-                urlDocumentId !== selectedDocumentId &&
-                urlDocumentId in documentIdToProjectIdMap
-            ) {
-                setSelectedProjectId(documentIdToProjectIdMap[urlDocumentId]);
-                setSelectedDocumentId(urlDocumentId);
-            }
-        }
-    }, [pathname, selectedDocumentId, documentIdToProjectIdMap, isInitialized]);
-
     useEffect(() => {
         // Initialize one time
         if (isInitialized) return;

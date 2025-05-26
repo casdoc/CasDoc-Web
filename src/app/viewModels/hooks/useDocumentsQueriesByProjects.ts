@@ -7,7 +7,6 @@ export const useDocumentsQueriesByProjects = (
     projects: Project[] | undefined,
     enabled: boolean = true
 ) => {
-    console.debug(projects);
     const documentQueries = useQueries({
         queries:
             enabled && projects
