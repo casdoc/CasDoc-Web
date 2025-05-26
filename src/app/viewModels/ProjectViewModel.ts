@@ -69,10 +69,8 @@ export const useProjectViewModel = (): ProjectViewModel => {
         if (!isInitialized) return;
 
         const documentMatch = pathname.match(/^\/documents\/(\d+)$/);
-        console.debug("document path: ", documentMatch);
         if (documentMatch) {
             const urlDocumentId = documentMatch[1];
-            console.debug(urlDocumentId);
             if (
                 urlDocumentId !== selectedDocumentId &&
                 urlDocumentId in documentIdToProjectIdMap
