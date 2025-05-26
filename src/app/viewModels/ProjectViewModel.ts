@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import { Project } from "@/app/models/entity/Project";
 import { Document } from "@/app/models/types/Document";
 import { useProjectsQuery } from "./hooks/useProjectsQuery";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useDocumentsQueriesByProjects } from "./hooks/useDocumentsQueriesByProjects";
 
 export interface ProjectViewModel {
@@ -30,7 +30,6 @@ export interface ProjectViewModel {
 }
 
 export const useProjectViewModel = (): ProjectViewModel => {
-    const pathname = usePathname();
     const router = useRouter();
 
     const { data: projects, isSuccess: isProjectsSuccess } = useProjectsQuery();
@@ -94,7 +93,6 @@ export const useProjectViewModel = (): ProjectViewModel => {
 
             if (documentId != null) {
                 setSelectedProjectId(documentIdToProjectIdMap[documentId]);
-                router.push(`/documents/${documentId}`);
             } else {
                 router.push(`/documents/overview`);
             }

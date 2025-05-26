@@ -6,10 +6,19 @@ import AppSidebar from "../../components/sidebar/AppSidebar";
 import { Button, Flex, Text } from "@radix-ui/themes";
 import OverviewHeader from "../components/OverviewHeader";
 import { useProjectContext } from "@/app/viewModels/context/ProjectContext";
+import { useEffect } from "react";
 
 export default function DocumentOverviewPage() {
-    const { selectedProjectId, openProjectDialog, openDocumentDialog } =
-        useProjectContext();
+    const {
+        selectDocument,
+        selectedProjectId,
+        openProjectDialog,
+        openDocumentDialog,
+    } = useProjectContext();
+
+    useEffect(() => {
+        selectDocument(null);
+    }, [selectDocument]);
 
     return (
         <SidebarProvider defaultOpen={true}>

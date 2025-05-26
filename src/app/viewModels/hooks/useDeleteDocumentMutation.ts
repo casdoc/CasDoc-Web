@@ -11,7 +11,7 @@ import { useRouter } from "next/navigation";
 export const useDeleteDocumentMutation = () => {
     const queryClient = useQueryClient();
     const abortControllerRef = useRef<AbortController | null>(null);
-    const { selectedDocumentId, selectDocument } = useProjectContext();
+    const { selectedDocumentId } = useProjectContext();
     const router = useRouter();
 
     return useMutation({
@@ -98,7 +98,7 @@ export const useDeleteDocumentMutation = () => {
         // If the selectd document has been deleted, set selectd document to null
         onSuccess: (_, deleteId) => {
             if (deleteId === selectedDocumentId) {
-                selectDocument(null);
+                router.push("/documents/overview");
             }
         },
 
