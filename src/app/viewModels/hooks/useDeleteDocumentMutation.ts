@@ -6,11 +6,13 @@ import {
 import { Document } from "@/app/models/entity/Document";
 import { useRef } from "react";
 import { useProjectContext } from "../context/ProjectContext";
+import { useRouter } from "next/navigation";
 
 export const useDeleteDocumentMutation = () => {
     const queryClient = useQueryClient();
     const abortControllerRef = useRef<AbortController | null>(null);
     const { selectedDocumentId, selectDocument } = useProjectContext();
+    const router = useRouter();
 
     return useMutation({
         mutationFn: async (documentId: string) => {
@@ -43,7 +45,7 @@ export const useDeleteDocumentMutation = () => {
             });
             let projectId: string | undefined;
             let targetDocuments: Document[] | undefined;
-
+            router.push("/documents/overview");
             // Find the project ID and documents array for this document
             for (const [queryKey, docs] of documents) {
                 if (

@@ -4,13 +4,13 @@ import { createDocument } from "@/app/models/services/DocumentService";
 import { useRef } from "react";
 // import { v4 as uuidv4 } from "uuid";
 import { DocumentCreate } from "@/app/models/dto/DocumentApiRequest";
-import { useProjectContext } from "../context/ProjectContext";
+import { useRouter } from "next/navigation";
 
 export const useCreateDocumentMutation = () => {
     const queryClient = useQueryClient();
     const abortControllerRef = useRef<AbortController | null>(null);
-    const { selectDocument } = useProjectContext();
 
+    const router = useRouter();
     return useMutation({
         mutationFn: async (documentInput: DocumentCreate) => {
             // Cancel previous request if exists
@@ -70,7 +70,7 @@ export const useCreateDocumentMutation = () => {
         // },
         // If the mutation success, select new document
         onSuccess: (document) => {
-            selectDocument(document.id);
+            router.push(`/documents/${document.id}`);
         },
         // If the mutation fails, use the context returned from onMutate to roll back
         // onError: (err, newDocumentInput, context) => {
