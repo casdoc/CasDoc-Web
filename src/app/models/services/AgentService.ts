@@ -87,6 +87,36 @@ export class AgentService {
         }
     }
 
+    static async ideas2docs(
+        prompt: string
+    ): Promise<ReadableStream<Uint8Array> | null> {
+        try {
+            const response = await fetch(
+                `${baseUrl}/api/v1/public/agent/ideas2docs`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        prompt,
+                    }),
+                }
+            );
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(
+                    `HTTP error! status: ${response.status}, message: ${errorText}`
+                );
+            }
+            return response.body;
+        } catch (error) {
+            console.error("Error in sendMessage:", error);
+            throw error;
+        }
+    }
+
     static async handleStreamResponse(
         response: ReadableStream<Uint8Array>,
         signal?: AbortSignal,
