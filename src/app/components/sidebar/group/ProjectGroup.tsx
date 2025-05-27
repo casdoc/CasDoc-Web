@@ -14,12 +14,14 @@ import {
     CollapsibleContent,
     CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { useProjectsQuery } from "@/app/viewModels/hooks/useProjectsQuery";
+import { useQueryClient } from "@tanstack/react-query";
+import { Project } from "@/app/models/entity/Project";
 
 const dropdownItems = ["Order"];
 
 const ProjectGroup = () => {
-    const { data: projects } = useProjectsQuery();
+    const queryClient = useQueryClient();
+    const projects = queryClient.getQueryData<Project[]>(["projects"]);
     const { openProjectDialog } = useProjectContext();
     const [isOpen, setIsOpen] = useState(true);
     const handleAddProject = (e: React.MouseEvent) => {
