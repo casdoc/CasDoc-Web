@@ -3,8 +3,8 @@ import { useProjectContext } from "@/app/viewModels/context/ProjectContext";
 import { useCreateProjectMutation } from "@/app/viewModels/hooks/useCreateProjectMutation";
 import { useUpdateProjectMutation } from "@/app/viewModels/hooks/useUpdateProjectMutation";
 import { useState } from "react";
-import { DraftProjectWithAIForm } from "./DraftProjectWithAIForm";
-import { CreateBlankProjectForm } from "./CreateBlankProjectForm";
+import { ProjectAIForm } from "./ProjectAIForm";
+import { ProjectForm } from "./ProjectForm";
 import { SelectCreateMethodDialog } from "./SelectCreateMethodDialog";
 
 const ProjectDialog = () => {
@@ -87,14 +87,14 @@ const ProjectDialog = () => {
             >
                 {!mode && <SelectCreateMethodDialog onSelect={setMode} />}
                 {mode === "blank" && (
-                    <CreateBlankProjectForm
+                    <ProjectForm
                         project={project}
                         onSubmit={handleSaveProject}
                         onBack={() => setMode(null)}
                     />
                 )}
                 {mode === "draft" && (
-                    <DraftProjectWithAIForm
+                    <ProjectAIForm
                         prompt={prompt}
                         setPrompt={setPrompt}
                         onSubmit={handleDraftWithAI}

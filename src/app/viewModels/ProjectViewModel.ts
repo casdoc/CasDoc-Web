@@ -1,25 +1,26 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { Project } from "@/app/models/entity/Project";
 import { Document } from "@/app/models/types/Document";
-import { DocSelectedService } from "../models/services/DocSelectedService";
 import { useProjectsQuery } from "./hooks/useProjectsQuery";
-import { useDocumentsQuery } from "./hooks/useDocumentsQuery";
-import z from "zod";
-import { usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { useDocumentsQueriesByProjects } from "./hooks/useDocumentsQueriesByProjects";
 
 export interface ProjectViewModel {
+    isInitialized: boolean;
+
     selectedProjectId: string | null;
     selectedDocumentId: string | null;
+
     isProjectDialogOpen: boolean;
     isDocumentDialogOpen: boolean;
     editingProject: Project | null;
     editingDocument: Document | null;
 
     // Project actions
-    selectProject: (projectId: string) => void;
+    selectProject: (projectId: string | null) => void;
 
     // Document actions
-    selectDocument: (documentId: string) => void;
+    selectDocument: (documentId: string | null) => void;
 
     // Dialog actions
     openProjectDialog: (projectId?: string) => void;
@@ -29,13 +30,14 @@ export interface ProjectViewModel {
 }
 
 export const useProjectViewModel = (): ProjectViewModel => {
-    const uuidSchema = z.uuid({ version: "v4" });
-    const pathname = usePathname();
-    const {
-        data: projects,
-        isSuccess: isProjectsSuccess,
-        isLoading: isProjectLoading,
-    } = useProjectsQuery();
+    const router = useRouter();
+
+    const { data: projects, isSuccess: isProjectsSuccess } = useProjectsQuery();
+
+    const { data: documentsMap, isSuccess: isDocumentsSuccess } =
+        useDocumentsQueriesByProjects(projects, isProjectsSuccess);
+
+    const [isInitialized, setIsInitialized] = useState(false);
     const [selectedProjectId, setSelectedProjectId] = useState<string | null>(
         null
     );
@@ -43,10 +45,6 @@ export const useProjectViewModel = (): ProjectViewModel => {
         null
     );
 
-    const { data: documents } = useDocumentsQuery(
-        selectedProjectId || "",
-        isProjectsSuccess && !uuidSchema.safeParse(selectedProjectId).success
-    );
     const [isProjectDialogOpen, setIsProjectDialogOpen] = useState(false);
     const [isDocumentDialogOpen, setIsDocumentDialogOpen] = useState(false);
     const [editingProject, setEditingProject] = useState<Project | null>(null);
@@ -54,57 +52,52 @@ export const useProjectViewModel = (): ProjectViewModel => {
         null
     );
 
-    // console.debug("documents", documents);
-    // console.debug("selectedProjectId", selectedProjectId);
-    // console.debug("selectedDocumentId", selectedDocumentId);
-
-    // Watch for URL changes to extract documentId from /document/{documentId} pattern
-    useEffect(() => {
-        const documentMatch = pathname.match(/^\/document\/([^\/]+)$/);
-        if (documentMatch) {
-            const urlDocumentId = documentMatch[1];
-            if (urlDocumentId !== selectedDocumentId) {
-                setSelectedDocumentId(urlDocumentId);
+    // Mapping documentId to projectId
+    const documentIdToProjectIdMap = useMemo(() => {
+        const map: Record<string, string> = {};
+        for (const documents of Object.values(documentsMap)) {
+            for (const doc of documents) {
+                map[doc.id] = doc.projectId;
             }
         }
-    }, [pathname, selectedDocumentId]);
+        return map;
+    }, [documentsMap]);
 
     useEffect(() => {
-        if (!isProjectsSuccess || isProjectLoading || projects?.length === 0)
-            return;
-        // const localSelectedDoc = DocSelectedService.getSelectedDoc();
-        // if (localSelectedDoc === "") {
-        // console.debug("localSelectedDoc is empty");
-        if (projects && projects.length > 0 && projects[0].id) {
-            // console.debug("selectProjectId", projects[0].id);
-            setSelectedProjectId(projects[0].id);
-            // Use the first project to get documents
-            // setSelectedProjectId(projects[0].id);
+        // Initialize one time
+        if (isInitialized) return;
 
-            // console.debug("selectedProjectId", selectedProjectId);
-            if (documents && documents.length > 0) {
-                setSelectedDocumentId(documents[0]?.id || null);
-                setEditingDocument(documents[0] || null);
-                // console.debug("selectDocument", selectedDocumentId);
-            }
+        if (isProjectsSuccess && isDocumentsSuccess) {
+            setIsInitialized(true);
         }
-        // } else if (selectedDocumentId !== localSelectedDoc) {
-        //     console.debug("loclalSelectedDoc is not empty");
-        //     // setSelectedProjectId(projects?.[0]?.id || null);
-        //     setSelectedDocumentId(localSelectedDoc);
-        // }
-    }, [documents, isProjectLoading, isProjectsSuccess, projects]);
+    }, [isInitialized, isProjectsSuccess, isDocumentsSuccess]);
 
-    const selectProject = useCallback((projectId: string) => {
-        setSelectedProjectId(projectId);
-    }, []);
+    const selectProject = useCallback(
+        (projectId: string | null) => {
+            console.debug("Select project: ", projectId);
+            if (projectId === selectedProjectId) return;
+            setSelectedProjectId(projectId);
+            if (projectId === null) {
+                setSelectedDocumentId(null);
+                router.push(`/documents/overview`);
+            }
+        },
+        [selectedProjectId, router]
+    );
 
     const selectDocument = useCallback(
-        (documentId: string) => {
+        (documentId: string | null) => {
+            console.debug("Select document: ", documentId);
             if (documentId === selectedDocumentId) return;
             setSelectedDocumentId(documentId);
+
+            if (documentId != null) {
+                setSelectedProjectId(documentIdToProjectIdMap[documentId]);
+            } else {
+                router.push(`/documents/overview`);
+            }
         },
-        [selectedDocumentId]
+        [selectedDocumentId, documentIdToProjectIdMap, router]
     );
 
     const openProjectDialog = useCallback(
@@ -124,11 +117,12 @@ export const useProjectViewModel = (): ProjectViewModel => {
                 projects?.find((project) => project.id === projectId) || null
             );
             setEditingDocument(
-                documents?.find((document) => document.id === documentId) ||
-                    null
+                documentsMap[projectId]?.find(
+                    (document) => document.id === documentId
+                ) || null
             );
         },
-        [projects, documents]
+        [projects, documentsMap]
     );
 
     const closeProjectDialog = useCallback(() => {
@@ -147,6 +141,7 @@ export const useProjectViewModel = (): ProjectViewModel => {
     }, []);
 
     return {
+        isInitialized,
         selectedProjectId,
         selectedDocumentId,
         isProjectDialogOpen,

@@ -18,16 +18,13 @@ interface DocMenuProps {
 
 const DocMenu = ({ projectId, documentId, title }: DocMenuProps) => {
     const { mutateAsync: deleteDocumentMutation } = useDeleteDocumentMutation();
+    const { selectedDocumentId, openDocumentDialog } = useProjectContext();
     const router = useRouter();
-    const { selectedDocumentId, selectDocument, openDocumentDialog } =
-        useProjectContext();
-
     const isSelected = selectedDocumentId === documentId;
 
     const handleMenuClick = (action: string, e: React.MouseEvent) => {
         e.stopPropagation();
 
-        console.log(action);
         if (action === "Delete") {
             deleteDocumentMutation(documentId);
         } else if (action === "Edit") {
@@ -37,8 +34,7 @@ const DocMenu = ({ projectId, documentId, title }: DocMenuProps) => {
 
     const handleDocumentSelect = () => {
         if (isSelected) return;
-        selectDocument(documentId);
-        router.push(`/document/${documentId}`);
+        router.push(`/documents/${documentId}`);
     };
 
     return (
