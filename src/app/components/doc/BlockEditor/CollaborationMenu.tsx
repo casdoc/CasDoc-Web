@@ -42,7 +42,6 @@ const getStatusIcon = (status: CollaborationStatus) => {
 };
 
 const getStatusColor = (status: CollaborationStatus) => {
-    // console.debug("getStatusColor called with status:", status);
     switch (status) {
         case CollaborationStatus.Synced:
         case CollaborationStatus.Connected:

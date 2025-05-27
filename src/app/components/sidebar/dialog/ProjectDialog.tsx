@@ -21,7 +21,6 @@ const ProjectDialog = () => {
     const [isGenerating, setIsGenerating] = useState(false);
     const [isDraftReady, setIsDraftReady] = useState(false);
 
-    console.debug("Saving project: ", project);
     const handleSaveProject = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
