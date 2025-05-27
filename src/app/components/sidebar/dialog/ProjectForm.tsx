@@ -6,16 +6,16 @@ import {
     DialogTitle,
     DialogFooter,
 } from "@/components/ui/dialog";
-import { ProjectInput } from "@/app/models/types/ProjectInput";
+import { Project } from "@/app/models/entity/Project";
 import { Flex, Grid } from "@radix-ui/themes";
 import { ArrowLeft } from "lucide-react";
 
-export const CreateBlankProjectForm = ({
+export const ProjectForm = ({
     project,
     onSubmit,
     onBack,
 }: {
-    project: ProjectInput | null;
+    project: Project | null;
     onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
     onBack: () => void;
 }) => (

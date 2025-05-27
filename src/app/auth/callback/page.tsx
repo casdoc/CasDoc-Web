@@ -43,7 +43,7 @@ export default function CallbackPage() {
 
     useEffect(() => {
         if (user) {
-            router.push("/document");
+            router.push("/documents/overview");
         }
     }, [user, router]);
 

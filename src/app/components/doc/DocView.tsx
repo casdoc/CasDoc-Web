@@ -4,18 +4,18 @@ import { useDocModeViewModel } from "@/app/viewModels/DocModeViewModel";
 import { ReactFlowProvider } from "@xyflow/react";
 import { useState, useEffect, useRef } from "react";
 import { useProjectContext } from "@/app/viewModels/context/ProjectContext";
-import { useDocumentQuery } from "@/app/viewModels/hooks/useDocumentQuery";
 import EditorHeader from "@/app/components/doc/BlockEditor/EditorHeader";
 import BlockEditor from "@/app/components/doc/BlockEditor/BlockEditor";
 import GraphView from "../flow/GraphView";
 import { Button, Flex, Text } from "@radix-ui/themes";
 import DocMode from "@/app/models/enum/DocMode";
-import z from "zod";
 import { useEditorContext } from "@/app/viewModels/context/EditorContext";
-import { useProjectsQuery } from "@/app/viewModels/hooks/useProjectsQuery";
+import { useQueryClient } from "@tanstack/react-query";
+import { Project } from "@/app/models/entity/Project";
+import { Document } from "@/app/models/entity/Document";
 
 const DocView = () => {
-    const uuidSchema = z.uuid({ version: "v4" });
+    const queryClient = useQueryClient();
     const { mode, setDocMode } = useDocModeViewModel();
     const {
         selectedDocumentId,
@@ -23,12 +23,14 @@ const DocView = () => {
         openProjectDialog,
         openDocumentDialog,
     } = useProjectContext();
-    const { data: prjects } = useProjectsQuery();
-    const { data: document } = useDocumentQuery(
-        selectedDocumentId || "",
-        !!selectedDocumentId &&
-            !uuidSchema.safeParse(selectedDocumentId).success
-    );
+
+    const projects = queryClient.getQueryData<Project[]>(["projects"]);
+    const documents =
+        queryClient.getQueryData<Document[]>([
+            "documents",
+            selectedProjectId,
+        ]) ?? [];
+    const document = documents.find((doc) => doc.id === selectedDocumentId);
     const { editor } = useEditorContext();
 
     const [splitWidth, setSplitWidth] = useState(50);
@@ -95,7 +97,8 @@ const DocView = () => {
                 setDocMode={setDocMode}
                 editor={editor}
                 projectName={
-                    prjects?.find((p) => p.id === document?.projectId)?.name || ""
+                    projects?.find((p) => p.id === document?.projectId)?.name ||
+                    ""
                 }
                 documentName={document?.title || ""}
             />

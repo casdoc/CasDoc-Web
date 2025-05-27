@@ -7,7 +7,7 @@ import { useProjectContext } from "../context/ProjectContext";
 export const useDeleteProjectMutation = () => {
     const queryClient = useQueryClient();
     const abortControllerRef = useRef<AbortController | null>(null);
-    const { selectProject } = useProjectContext();
+    const { selectedProjectId, selectProject } = useProjectContext();
 
     return useMutation({
         mutationFn: async (projectId: string) => {
@@ -51,6 +51,12 @@ export const useDeleteProjectMutation = () => {
             // Return a context object with the snapshotted value
             return { previousProjects, projectId };
         },
+        // If the selectd project has been deleted, set selectd project to null
+        onSuccess: (_, deleteId) => {
+            if (deleteId === selectedProjectId) {
+                selectProject(null);
+            }
+        },
         // If the mutation fails, use the context returned from onMutate to roll back
         onError: (err, projectId, context) => {
             if (context?.previousProjects) {
@@ -65,8 +71,6 @@ export const useDeleteProjectMutation = () => {
         // After success or error, refetch the projects
         onSettled: () => {
             queryClient.invalidateQueries({ queryKey: ["projects"] });
-
-            selectProject("");
         },
     });
 };

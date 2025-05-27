@@ -2,14 +2,24 @@
 
 import "@/app/globals.css";
 import { SidebarProvider } from "@/components/ui/sidebar";
-import AppSidebar from "../components/sidebar/AppSidebar";
+import AppSidebar from "../../components/sidebar/AppSidebar";
 import { Button, Flex, Text } from "@radix-ui/themes";
-import OverviewHeader from "./components/OverviewHeader";
+import OverviewHeader from "../components/OverviewHeader";
 import { useProjectContext } from "@/app/viewModels/context/ProjectContext";
+import { useEffect } from "react";
 
 export default function DocumentOverviewPage() {
-    const { selectedProjectId, openProjectDialog, openDocumentDialog } =
-        useProjectContext();
+    const {
+        selectDocument,
+        selectedProjectId,
+        openProjectDialog,
+        openDocumentDialog,
+    } = useProjectContext();
+
+    useEffect(() => {
+        selectDocument(null);
+    }, [selectDocument]);
+
     return (
         <SidebarProvider defaultOpen={true}>
             <AppSidebar />
@@ -31,13 +41,10 @@ export default function DocumentOverviewPage() {
                         className="h-full"
                     >
                         <Text color="gray" size="6" weight="bold">
-                            No {selectedProjectId ? "Document" : "Project"}{" "}
-                            Selected
+                            No Document Selected
                         </Text>
                         <Text color="gray" size="3">
-                            Please create a{" "}
-                            {selectedProjectId ? "document" : "project"} to
-                            start editing.
+                            Please create or choose a document to start editing.
                         </Text>
                         <Button
                             radius="medium"

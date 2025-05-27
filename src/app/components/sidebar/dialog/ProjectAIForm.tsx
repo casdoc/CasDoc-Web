@@ -40,7 +40,7 @@ const DocumentBlock = ({
     );
 };
 
-export const DraftProjectWithAIForm = ({
+export const ProjectAIForm = ({
     prompt,
     setPrompt,
     onSubmit,
