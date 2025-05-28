@@ -126,7 +126,7 @@ export function useGraphViewModel(): GraphViewModel {
                     sourceId: edge.source,
                     targetId: edge.target,
                     label: edge.label || "",
-                    offsetValue: edge.offsetValue || 0,
+                    offsetValue: edge.offsetValue || 50,
                     bidirectional: false,
                 });
             }
