@@ -35,7 +35,7 @@ import ToastManager from "@/app/viewModels/ToastManager";
 import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext";
 import CustomEdge from "./components/CustomEdge";
 import { useGraphContext } from "@/app/viewModels/context/GraphContext";
-import { GraphAttachButton } from "./graph-attach/GraphAttachButton";
+// import { GraphAttachButton } from "./graph-attach/GraphAttachButton";
 import { useProjectContext } from "@/app/viewModels/context/ProjectContext";
 import { uuidv4 } from "zod";
 
