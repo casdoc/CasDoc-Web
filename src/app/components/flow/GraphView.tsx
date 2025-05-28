@@ -128,8 +128,8 @@ const GraphView = ({ docMode }: GraphViewProps) => {
                 50,
                 false
             );
-            updConnectionEdges(connectionEdge);
-            setEdges((eds) => addEdge(params, eds));
+            const isAvailable = updConnectionEdges(connectionEdge);
+            if (isAvailable) setEdges((eds) => addEdge(params, eds));
         },
         [selectedProjectId, setEdges, updConnectionEdges]
     );
