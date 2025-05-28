@@ -63,7 +63,16 @@ interface GraphViewProps {
 const GraphView = ({ docMode }: GraphViewProps) => {
     // const [colorMode, setColorMode] = useState<"light" | "dark">("light");
     // const [selectedLayout, setSelectedLayout] = useState("LR");
-    const [scrollMode, setScrollMode] = useState<"zoom" | "drag">("drag");
+    const [scrollMode, setScrollMode] = useState<"zoom" | "drag">(() => {
+        if (typeof window !== "undefined") {
+            return (
+                (localStorage.getItem("CasDoc-scrollMode") as
+                    | "zoom"
+                    | "drag") || "zoom"
+            );
+        }
+        return "zoom";
+    });
     const nodeWidth = 232;
     const nodeHeight = 36;
     const { selectedProjectId } = useProjectContext();
@@ -184,8 +193,12 @@ const GraphView = ({ docMode }: GraphViewProps) => {
     );
 
     const handleToggleScrollMode = () => {
-        setScrollMode((prev) => (prev === "zoom" ? "drag" : "zoom"));
-        showToast(scrollMode === "zoom" ? "Scroll to pan" : "Scroll to zoom");
+        setScrollMode((prev) => {
+            const next = prev === "zoom" ? "drag" : "zoom";
+            localStorage.setItem("CasDoc-scrollMode", next);
+            showToast(next === "zoom" ? "Scroll to zoom" : "Scroll to pan");
+            return next;
+        });
     };
 
     useEffect(() => {
