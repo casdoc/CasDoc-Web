@@ -1,5 +1,5 @@
 import ProjectMenu from "../menu/ProjectMenu";
-import DropDownMenu from "../menu/DropDownMenu";
+// import DropDownMenu from "../menu/DropDownMenu";
 import { useState } from "react";
 import { ChevronDown, Plus } from "lucide-react";
 import {
@@ -17,8 +17,6 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import { Project } from "@/app/models/entity/Project";
 
-const dropdownItems = ["Order"];
-
 const ProjectGroup = () => {
     const queryClient = useQueryClient();
     const projects = queryClient.getQueryData<Project[]>(["projects"]);
@@ -35,24 +33,23 @@ const ProjectGroup = () => {
     return (
         <Collapsible open={isOpen} onOpenChange={setIsOpen}>
             <SidebarGroup>
-                <CollapsibleTrigger className="hover:bg-neutral-200 rounded-md group/chevron">
-                    <SidebarGroupLabel className=" text-gray-400 hover:text-black text-sm border-b border-gray-200 rounded-none py-5 my-1">
-                        <div className="flex items-center gap-1">
+                <CollapsibleTrigger className="group/chevron flex w-full items-center justify-between rounded-md px-2 py-2 text-muted-foreground hover:bg-accent hover:text-accent-foreground transition">
+                    <SidebarGroupLabel className="flex w-full items-center justify-between text-sm font-medium">
+                        <div className="flex items-center gap-2">
                             My Projects
-                            <ChevronDown className="w-4 h-4 opacity-0 group-hover/chevron:opacity-100 transition-all duration-200 group-data-[state=open]/chevron:rotate-180" />
+                            <ChevronDown className="w-4 h-4 transition-transform group-data-[state=open]/chevron:rotate-180" />
                         </div>
-                        <div className="ml-auto flex items-center gap-1 text-black">
+                        <div className="ml-auto flex items-center gap-1">
                             <Plus
                                 onClick={handleAddProject}
-                                className="hover:bg-neutral-300 rounded-md w-6 h-6 p-1"
+                                className="w-6 h-6 p-1 rounded-md hover:bg-muted hover:text-accent-foreground transition"
                             />
-                            <DropDownMenu dropdownItems={dropdownItems} />
                         </div>
                     </SidebarGroupLabel>
                 </CollapsibleTrigger>
 
                 <CollapsibleContent>
-                    <SidebarGroupContent>
+                    <SidebarGroupContent className="pl-2">
                         <SidebarMenu>
                             {projects.filter(Boolean).map((project, index) => (
                                 <ProjectMenu

@@ -7,6 +7,7 @@ import {
 import { useProjectContext } from "@/app/viewModels/context/ProjectContext";
 import { useDeleteDocumentMutation } from "@/app/viewModels/hooks/useDeleteDocumentMutation";
 import { useRouter } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 const dropdownItems = ["Edit", "Delete"];
 
@@ -41,13 +42,14 @@ const DocMenu = ({ projectId, documentId, title }: DocMenuProps) => {
         <SidebarMenuSubItem>
             <SidebarMenuSubButton
                 asChild
-                className={`hover:bg-neutral-200 ${
-                    isSelected ? "bg-neutral-200" : ""
-                } `}
                 onClick={handleDocumentSelect}
+                className={cn(
+                    "flex items-center justify-between gap-2 rounded-md px-2 py-1.5 text-sm text-foreground hover:bg-muted transition",
+                    isSelected && "bg-muted"
+                )}
             >
-                <div>
-                    <File />
+                <div className="flex items-center gap-2 w-full">
+                    <File className="w-4 h-4" />
                     <span className="truncate select-none">{title}</span>
                     <div className="ml-auto flex items-center gap-1">
                         <DropDownMenu
