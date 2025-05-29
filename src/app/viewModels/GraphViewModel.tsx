@@ -26,7 +26,7 @@ export interface GraphViewModel {
     updateAffectedIds: (ids: string[]) => void;
     removeAffectedId: (id: string) => void;
     clearAffectedIds: () => void;
-    updateOffset: (edge: ConnectionEdge, offset: number) => void;
+    updateOffset: (source: string, target: string, offset: number) => void;
 
     // Graph actions
     appendAttachedDocs: (doc: AttachedDoc) => void;
@@ -242,15 +242,17 @@ export function useGraphViewModel(): GraphViewModel {
         GraphService.setAffectedIds([]);
     }, []);
 
-    const updateOffset = async (edge: ConnectionEdge, offset: number) => {
+    const updateOffset = async (
+        source: string,
+        target: string,
+        offset: number
+    ) => {
         if (!connectionEdges) return;
 
         const actualConnection = connectionEdges.find(
             (e) =>
-                (e.source === edge.source && e.target === edge.target) ||
-                (e.source === edge.target &&
-                    e.target === edge.source &&
-                    e.bidirectional)
+                (e.source === source && e.target === target) ||
+                (e.source === target && e.target === source && e.bidirectional)
         );
 
         if (actualConnection) {
