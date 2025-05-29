@@ -15,6 +15,7 @@ interface APIinterfaceUIProps {
     };
     fields: APIinterfaceParameter[];
 }
+
 const getMethodColor = (method?: string): string => {
     switch (method?.trim().toUpperCase()) {
         case "GET":
@@ -31,20 +32,26 @@ const getMethodColor = (method?: string): string => {
             return "bg-gray-400";
     }
 };
+
+const getIfRequired = (required?: string): boolean => {
+    if (!required) return false;
+    if (required === "true" || required === "required") return true;
+    return false;
+};
+
 const APIinterfaceUI: React.FC<APIinterfaceUIProps> = ({ info, fields }) => {
-    console.log("APIinterfaceUI", info, fields);
     return (
         <>
             <div className="w-full h-full pt-2 pl-4 border-b rounded-sm group/chevron">
-                <div className="flex items-center pb-2 gap-1">
+                <div className="flex items-start pb-2 gap-1">
                     <span
-                        className={`px-2 py-1 text-xs rounded-md text-white font-bold mr-2 ${getMethodColor(
+                        className={`px-2 py-1 text-xs rounded-md text-white font-bold mr-2 max-w-24 truncate ${getMethodColor(
                             info?.method
                         )}`}
                     >
                         {info?.method?.toUpperCase() || "METHOD"}
                     </span>
-                    <span className="text-xl font-bold text-black group-hover:cursor-text">
+                    <span className="text-xl font-bold text-black group-hover:cursor-text max-w-md overflow-x-auto">
                         {info?.name || "API name"}
                     </span>
                     <CollapsibleTrigger
@@ -58,7 +65,7 @@ const APIinterfaceUI: React.FC<APIinterfaceUIProps> = ({ info, fields }) => {
                     <p className="m-0 text-sm text-gray-600 group-hover:cursor-text">
                         {info?.description}
                     </p>
-                    <p className="m-0 py-2 text-sm text-black font-semibold group-hover:cursor-text w-fit">
+                    <p className="m-0 py-2 text-sm text-black font-semibold group-hover:cursor-text max-w-md overflow-x-auto">
                         End Point : {info?.endPoint}
                     </p>
                 </div>
@@ -78,25 +85,26 @@ const APIinterfaceUI: React.FC<APIinterfaceUIProps> = ({ info, fields }) => {
                                 return (
                                     <div key={index} className="py-2 px-4">
                                         <div className="flex justify-between items-center m-0 p-0">
-                                            <div className="flex items-center">
-                                                <span className="font-medium text-gray-800 group-hover:cursor-text">
-                                                    {field?.name}
-                                                </span>
-                                                {field?.required && (
+                                            <span className="font-medium text-gray-800 group-hover:cursor-text max-w-sm overflow-x-auto">
+                                                {field?.name}
+                                            </span>
+                                            <div className="max-w-28 truncate">
+                                                {getIfRequired(
+                                                    String(field?.required)
+                                                ) && (
                                                     <span className="text-2xl text-red-500 rounded">
                                                         *
                                                     </span>
                                                 )}
+                                                {field.type && (
+                                                    <span className="text-xs bg-gray-100 px-1 py-1 rounded text-gray-600 mr-2 group-hover:cursor-text">
+                                                        {field?.type}
+                                                    </span>
+                                                )}
                                             </div>
-
-                                            {field.type && (
-                                                <span className="text-xs bg-gray-100 px-1 py-1 rounded text-gray-600 mr-2 group-hover:cursor-text">
-                                                    {field?.type}
-                                                </span>
-                                            )}
                                         </div>
                                         {field?.description && (
-                                            <p className="m-0 p-0 text-sm text-gray-500 group-hover:cursor-text w-fit">
+                                            <p className="m-0 p-0 text-sm text-gray-500 group-hover:cursor-text max-w-md overflow-x-auto">
                                                 {field?.description}
                                             </p>
                                         )}

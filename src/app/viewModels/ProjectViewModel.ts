@@ -66,7 +66,6 @@ export const useProjectViewModel = (): ProjectViewModel => {
     useEffect(() => {
         // Initialize one time
         if (isInitialized) return;
-
         if (isProjectsSuccess && isDocumentsSuccess) {
             setIsInitialized(true);
         }
@@ -74,7 +73,8 @@ export const useProjectViewModel = (): ProjectViewModel => {
 
     const selectProject = useCallback(
         (projectId: string | null) => {
-            console.debug("Select project: ", projectId);
+            if (!isInitialized) return;
+            console.log("Select project: ", projectId);
             if (projectId === selectedProjectId) return;
             setSelectedProjectId(projectId);
             if (projectId === null) {
@@ -82,22 +82,23 @@ export const useProjectViewModel = (): ProjectViewModel => {
                 router.push(`/documents/overview`);
             }
         },
-        [selectedProjectId, router]
+        [selectedProjectId, router, isInitialized]
     );
 
     const selectDocument = useCallback(
         (documentId: string | null) => {
+            if (!isInitialized) return;
             console.debug("Select document: ", documentId);
             if (documentId === selectedDocumentId) return;
             setSelectedDocumentId(documentId);
 
-            if (documentId != null) {
+            if (documentId !== null) {
                 setSelectedProjectId(documentIdToProjectIdMap[documentId]);
             } else {
                 router.push(`/documents/overview`);
             }
         },
-        [selectedDocumentId, documentIdToProjectIdMap, router]
+        [selectedDocumentId, documentIdToProjectIdMap, router, isInitialized]
     );
 
     const openProjectDialog = useCallback(

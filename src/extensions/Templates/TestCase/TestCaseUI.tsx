@@ -33,11 +33,11 @@ const TestCaseUI: React.FC<TestCaseUIProps> = ({
             <div className="w-full h-full pt-3 pb-1 px-3 border-b rounded-sm group/chevron">
                 <div className="flex justify-between items-start">
                     <div>
-                        <p className="text-xs font-medium text-gray-500 mb-1 group-hover:cursor-text w-fit">
+                        <p className="text-xs font-medium text-gray-500 mb-1 group-hover:cursor-text max-w-md truncate">
                             {info.serial}
                         </p>
                         <div className="flex items-center gap-1">
-                            <h2 className="text-xl font-bold text-gray-900 mt-0 group-hover:cursor-text w-fit">
+                            <h2 className="text-xl font-bold text-gray-900 mt-0 group-hover:cursor-text max-w-lg overflow-x-auto">
                                 {info.name || "New Test Case"}
                             </h2>
                             <CollapsibleTrigger
@@ -48,7 +48,7 @@ const TestCaseUI: React.FC<TestCaseUIProps> = ({
                             </CollapsibleTrigger>
                         </div>
                         {info.description && (
-                            <p className="text-sm text-gray-600 mt-1 group-hover:cursor-text">
+                            <p className="text-sm text-gray-600 mt-1 group-hover:cursor-text max-w-lg overflow-x-auto">
                                 {info.description}
                             </p>
                         )}
@@ -83,7 +83,7 @@ const TestCaseUI: React.FC<TestCaseUIProps> = ({
                                         isTaskDone(field.done)
                                             ? "line-through text-gray-400"
                                             : "text-gray-800"
-                                    } group-hover:cursor-text`}
+                                    } group-hover:cursor-text max-w-lg overflow-x-auto`}
                                 >
                                     {index + 1}. {field.step}
                                 </span>

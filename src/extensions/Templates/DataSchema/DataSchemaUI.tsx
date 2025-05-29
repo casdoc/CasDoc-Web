@@ -20,8 +20,8 @@ const DataSchemaUI: React.FC<DataSchemaUIProps> = ({ info, fields }) => {
         <>
             <div className="w-full h-full pt-2 pl-4 border-b rounded-sm group/chevron">
                 <div className="flex justify-between">
-                    <div className="flex items-center gap-1">
-                        <h2 className="text-xl font-bold text-black group-hover:cursor-text">
+                    <div className="flex items-center gap-1 max-w-md">
+                        <h2 className="text-xl font-bold text-black group-hover:cursor-text overflow-x-auto">
                             {info.name || "Schema Name"}
                         </h2>
                         <CollapsibleTrigger
@@ -32,12 +32,12 @@ const DataSchemaUI: React.FC<DataSchemaUIProps> = ({ info, fields }) => {
                         </CollapsibleTrigger>
                     </div>
                     <div className="flex items-center mt-1 mr-3">
-                        <span className="px-2 py-1 text-xs bg-gray-100 rounded-md text-gray-700 group-hover:cursor-text">
+                        <span className="px-2 py-1 text-xs bg-gray-100 rounded-md text-gray-700 group-hover:cursor-text max-w-20 truncate">
                             {info.type || "Schema Type"}
                         </span>
                     </div>
                 </div>
-                <p className="mt-0 text-sm text-gray-600 group-hover:cursor-text w-fit">
+                <p className="mt-0 text-sm text-gray-600 group-hover:cursor-text max-w-md overflow-x-auto">
                     {info.description || "Schema Description"}
                 </p>
             </div>
@@ -55,17 +55,17 @@ const DataSchemaUI: React.FC<DataSchemaUIProps> = ({ info, fields }) => {
                             return (
                                 <div key={index} className="py-2 px-4">
                                     <div className="flex justify-between items-center">
-                                        <span className="font-medium text-gray-800 group-hover:cursor-text">
+                                        <span className="font-medium text-gray-800 group-hover:cursor-text max-w-sm overflow-x-auto">
                                             {field.name}
                                         </span>
                                         {field.type && (
-                                            <span className="text-xs bg-gray-100 px-2 py-1 rounded text-gray-600 group-hover:cursor-text">
+                                            <span className="text-xs bg-gray-100 px-2 py-1 rounded text-gray-600 group-hover:cursor-text max-w-20 truncate">
                                                 {field.type}
                                             </span>
                                         )}
                                     </div>
                                     {field.description && (
-                                        <p className="mt-0 text-sm text-gray-500 group-hover:cursor-text w-fit">
+                                        <p className="mt-0 text-sm text-gray-500 group-hover:cursor-text max-w-sm overflow-x-auto">
                                             {field.description}
                                         </p>
                                     )}

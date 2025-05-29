@@ -67,7 +67,7 @@ const TopicComponent = ({ node, selected, editor, getPos }: NodeViewProps) => {
                 } pl-3`}
             >
                 <h2
-                    className={`font-bold text-black m-0 px-0 pb-1 group-hover:cursor-text w-fit ${
+                    className={`font-bold text-black m-0 px-0 pb-1 group-hover:cursor-text overflow-x-auto ${
                         level == 1
                             ? "text-2xl"
                             : level == 2
@@ -79,7 +79,7 @@ const TopicComponent = ({ node, selected, editor, getPos }: NodeViewProps) => {
                 >
                     {config.info?.name || "Unknown"}
                 </h2>
-                <p className="m-0 p-0 text-sm text-gray-500 font-semibold group-hover:cursor-text w-fit">
+                <p className="m-0 p-0 text-sm text-gray-500 font-semibold group-hover:cursor-text overflow-x-auto">
                     {config.info?.description}
                 </p>
             </div>
