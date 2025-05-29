@@ -32,7 +32,6 @@ const getMethodColor = (method?: string): string => {
     }
 };
 const APIinterfaceUI: React.FC<APIinterfaceUIProps> = ({ info, fields }) => {
-    console.log("APIinterfaceUI", info, fields);
     return (
         <>
             <div className="w-full h-full pt-2 pl-4 border-b rounded-sm group/chevron">

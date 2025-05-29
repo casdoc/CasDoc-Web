@@ -2,16 +2,21 @@ import { useChatContext } from "@/app/viewModels/context/ChatContext";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useState, useRef, useEffect } from "react";
-import { SendHorizontal, X } from "lucide-react";
+import { SendHorizontal, X, CircleStop } from "lucide-react";
 import AgentRelationAdviceDialog from "../doc/Dialog/AgentRelationAdviceDialog";
 import { AgentMessage, MessageComponent } from "./handleMessageByType";
 import { AgentService } from "@/app/models/services/AgentService";
 import { useToast } from "@/hooks/use-toast";
 import { useProjectContext } from "@/app/viewModels/context/ProjectContext";
+import { handleMessageEvent } from "./handleMessageEvent";
 
 const ChatView = () => {
     const [inputValue, setInputValue] = useState(
-        "幫我寫出user的 data shcema 和 一些基本登入登出的api interrface"
+        // "幫我寫出一些基本登入登出的api interrface"
+        // "幫我生成一些關於user 的 data schema，包含姓名、年齡、性別、地址等欄位"
+        // "Can you help me add double factor authentication to the login component?"
+        "Can you help me delete the related login component?"
+        // "Can you help me find components related to user authentication and generate a prompt for vibe coding?"
         // "總結目前文件的內容"
     );
     const [messages, setMessages] = useState<AgentMessage[]>([]);
@@ -22,6 +27,8 @@ const ChatView = () => {
     const { selectedProjectId } = useProjectContext();
     const { addToAgentNodeIds, removeNodeFromAgent, setIsOpen } =
         useChatContext();
+    const [abortController, setAbortController] =
+        useState<AbortController | null>(null);
 
     const handleOnChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setInputValue(e.target.value);
@@ -39,104 +46,107 @@ const ChatView = () => {
         scrollToBottom();
     }, [messages]);
 
-    const handleOnClick = async () => {
-        if (inputValue.length === 0 || isLoading) return;
+    const handleCancel = () => {
+        if (abortController) {
+            abortController.abort();
+            setAbortController(null);
+            setIsLoading(false);
 
-        // Add user message
+            // Remove any thinking messages
+            setMessages((prev) =>
+                prev.filter(
+                    (msg) => msg.type !== "thinking" && msg.type !== "tool_call"
+                )
+            );
+        }
+    };
+
+    const handleOnClick = async () => {
+        if (isLoading) {
+            handleCancel();
+            return;
+        }
+        if (inputValue.length === 0) return;
+        // Generate a new conversation ID for this turn
+        const newConversationId = Date.now().toString();
+        // Add user message with conversation ID
         const userMsg: AgentMessage = {
             type: "user_prompt",
             content: { text: inputValue.replace(/\s*$/, "") },
+            conversationId: newConversationId,
         };
 
         setMessages((prev) => [...prev, userMsg]);
         setInputValue("");
         setIsLoading(true);
 
-        // Add thinking indicator
-        setMessages((prev) => [
-            ...prev,
-            { type: "thinking", content: { text: "Thinking..." } },
-        ]);
+        // Add thinking indicator with conversation ID
+        const thinkingMsg: AgentMessage = {
+            type: "thinking",
+            content: { text: "Thinking..." },
+            conversationId: newConversationId,
+        };
+
+        setMessages((prev) => [...prev, thinkingMsg]);
 
         try {
-            // const nodeIds = addToAgentNodeIds.map((node) => node.id);
-
-            await AgentService.streamChatResponse(
+            // Create a new AbortController for this request
+            const controller = new AbortController();
+            setAbortController(controller);
+            const response = await AgentService.chat(
                 userMsg.content.text || "",
                 selectedProjectId || "",
-                // nodeIds.length > 0 ? nodeIds : undefined,
-                (data) => {
-                    // Skip if this is a duplicate user message
-                    if (data.type === "user_prompt") {
-                        return;
-                    }
-
-                    // Remove thinking indicator when we get first real response
-                    if (data.type !== "thinking") {
-                        setMessages((prev) =>
-                            prev.filter((msg) => msg.type !== "thinking")
-                        );
-                    }
-
-                    setMessages((prev) => {
-                        // For text_delta, replace the previous text_delta with the updated one
-                        if (data.type === "text_delta") {
-                            const newMessages = [...prev];
-                            const existingTextDeltaIndex =
-                                newMessages.findIndex(
-                                    (msg) => msg.type === "text_delta"
-                                );
-
-                            if (existingTextDeltaIndex >= 0) {
-                                newMessages[existingTextDeltaIndex] = data;
-                                return newMessages;
-                            } else {
-                                // If no existing text_delta, add this as a new message
-                                return [...prev, data];
-                            }
-                        }
-
-                        // For final_answer, replace any existing text_delta
-                        if (data.type === "final_answer") {
-                            return prev
-                                .filter((msg) => msg.type !== "text_delta")
-                                .concat(data);
-                        }
-
-                        // For other message types, just add them
-                        return [...prev, data];
-                    });
-                },
+                controller.signal
+            );
+            if (!response) {
+                throw new Error("No response from the agent service");
+            }
+            await AgentService.handleStreamResponse(
+                response,
+                controller.signal,
+                (payload) =>
+                    handleMessageEvent(payload, newConversationId, setMessages),
                 (error) => {
-                    setMessages((prev) => [
-                        ...prev.filter((msg) => msg.type !== "thinking"),
-                        {
-                            type: "error",
-                            content: {
-                                message: error.message || "An error occurred",
-                            },
-                        },
-                    ]);
-
-                    toast({
-                        title: "Error",
-                        description: "Failed to get a response from the agent.",
-                        variant: "destructive",
-                    });
+                    // Only log non-abort errors
+                    if (error.name !== "AbortError") {
+                        console.error("Stream error:", error);
+                    }
+                    setIsLoading(false);
                 },
                 () => {
                     setIsLoading(false);
+                    setAbortController(null);
                 }
             );
-        } catch (error) {
-            setIsLoading(false);
-            console.error("Error sending message:", error);
 
-            toast({
-                title: "Error",
-                description: "Failed to connect to the agent service.",
-                variant: "destructive",
-            });
+            setIsLoading(false);
+            setAbortController(null);
+        } catch (error) {
+            if ((error as Error).name !== "AbortError") {
+                console.error("Error sending message:", error);
+
+                setMessages((prev) => [
+                    ...prev.filter((msg) => msg.type !== "thinking"),
+                    {
+                        type: "error",
+                        content: {
+                            message:
+                                error instanceof Error
+                                    ? error.message
+                                    : "Failed to connect to the agent service",
+                        },
+                    },
+                ]);
+
+                toast({
+                    title: "Error",
+                    description: "Failed to connect to the agent service.",
+                    variant: "destructive",
+                });
+            }
+
+            setIsLoading(false);
+            setAbortController(null);
         }
     };
 
@@ -159,13 +169,14 @@ const ChatView = () => {
     useEffect(() => {
         autoResizeTextarea();
     }, [inputValue]);
+
     if (!selectedProjectId) {
         return null;
     }
 
     return (
         <div className="flex flex-col justify-between w-full h-full gap-3 relative overflow-hidden">
-            <div className="flex-shrink-0 flex justify-between items-center px-4 py-2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-b border-gray-200/50 dark:border-gray-700/50 z-10">
+            <div className="flex-shrink-0 flex justify-between items-center px-4 py-2 bg-white/60 dark:bg-gray-800/60 backdrop-blur-md border-b border-gray-200/50 dark:border-gray-700/50 z-20 sticky top-0 shadow-sm">
                 <h3 className="font-medium text-gray-800 dark:text-gray-200">
                     CasDoc Agent
                 </h3>
@@ -179,7 +190,7 @@ const ChatView = () => {
                 </Button>
             </div>
 
-            <div className="flex-grow w-auto mx-4 p-4 overflow-auto rounded-md bg-transparent">
+            <div className="flex-grow w-auto mx-1 p-2 overflow-auto rounded-md bg-transparent -mt-3 pt-5 relative z-10">
                 {messages.map((msg, index) => (
                     <MessageComponent
                         key={index}
@@ -223,27 +234,31 @@ const ChatView = () => {
                                 handleOnClick();
                             }
                         }}
-                        disabled={isLoading}
                         rows={1}
                     />
 
                     <Button
                         onClick={handleOnClick}
                         variant="ghost"
-                        disabled={isLoading || inputValue.length === 0}
-                        className="absolute bottom-1 right-3 p-1 h-8 w-8 rounded-md hover:bg-neutral-200 dark:bg-blue-600 dark:hover:bg-blue-700 text-zinc-600 flex items-center justify-center"
+                        disabled={!isLoading && inputValue.length === 0}
+                        className={`absolute bottom-1 right-3 p-1 h-8 w-8 rounded-md flex items-center justify-center 
+                                hover:bg-neutral-200 dark:bg-blue-600 dark:hover:bg-blue-700 text-zinc-600`}
                     >
-                        <SendHorizontal size={16} />
+                        {isLoading ? (
+                            <CircleStop size={16} />
+                        ) : (
+                            <SendHorizontal size={16} />
+                        )}
                     </Button>
                 </div>
             </div>
 
-            <AgentRelationAdviceDialog
+            {/* <AgentRelationAdviceDialog
                 open={adviceDialogOpen}
                 selectedNodeId={"407e7cf8-c10d-4654-9ab3-a84459f08823"}
                 onOpenChange={setAdviceDialogOpen}
                 title="AI Relationship Advice"
-            />
+            /> */}
         </div>
     );
 };
