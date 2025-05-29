@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import { Project } from "@/app/models/entity/Project";
 import { Document } from "@/app/models/types/Document";
 import { useProjectsQuery } from "./hooks/useProjectsQuery";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useDocumentsQueriesByProjects } from "./hooks/useDocumentsQueriesByProjects";
 
 export interface ProjectViewModel {
@@ -31,7 +31,6 @@ export interface ProjectViewModel {
 
 export const useProjectViewModel = (): ProjectViewModel => {
     const router = useRouter();
-    const pathname = usePathname();
 
     const { data: projects, isSuccess: isProjectsSuccess } = useProjectsQuery();
 
@@ -69,32 +68,12 @@ export const useProjectViewModel = (): ProjectViewModel => {
         if (isInitialized) return;
         if (isProjectsSuccess && isDocumentsSuccess) {
             setIsInitialized(true);
-            const currentDocId = pathname.split("/").pop() || null;
-
-            let currentProjectId: string | null = null;
-
-            for (const [projectId, docs] of Object.entries(documentsMap)) {
-                if (docs.find((item) => item.id === currentDocId)) {
-                    currentProjectId = projectId;
-                    break;
-                }
-            }
-            console.log(
-                "current project id in project view model:",
-                currentProjectId
-            );
-            setSelectedProjectId(currentProjectId);
         }
-    }, [
-        isInitialized,
-        isProjectsSuccess,
-        isDocumentsSuccess,
-        pathname,
-        documentsMap,
-    ]);
+    }, [isInitialized, isProjectsSuccess, isDocumentsSuccess]);
 
     const selectProject = useCallback(
         (projectId: string | null) => {
+            if (!isInitialized) return;
             console.log("Select project: ", projectId);
             if (projectId === selectedProjectId) return;
             setSelectedProjectId(projectId);
@@ -103,11 +82,12 @@ export const useProjectViewModel = (): ProjectViewModel => {
                 router.push(`/documents/overview`);
             }
         },
-        [selectedProjectId, router]
+        [selectedProjectId, router, isInitialized]
     );
 
     const selectDocument = useCallback(
         (documentId: string | null) => {
+            if (!isInitialized) return;
             console.debug("Select document: ", documentId);
             if (documentId === selectedDocumentId) return;
             setSelectedDocumentId(documentId);
@@ -118,7 +98,7 @@ export const useProjectViewModel = (): ProjectViewModel => {
                 router.push(`/documents/overview`);
             }
         },
-        [selectedDocumentId, documentIdToProjectIdMap, router]
+        [selectedDocumentId, documentIdToProjectIdMap, router, isInitialized]
     );
 
     const openProjectDialog = useCallback(
