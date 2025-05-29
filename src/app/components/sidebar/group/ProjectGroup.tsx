@@ -1,5 +1,4 @@
 import ProjectMenu from "../menu/ProjectMenu";
-// import DropDownMenu from "../menu/DropDownMenu";
 import { useState } from "react";
 import { ChevronDown, ChevronUp, Plus } from "lucide-react";
 import {
@@ -7,6 +6,8 @@ import {
     SidebarGroupContent,
     SidebarGroupLabel,
     SidebarMenu,
+    SidebarMenuItem,
+    SidebarMenuSub,
 } from "@/components/ui/sidebar";
 import { useProjectContext } from "@/app/viewModels/context/ProjectContext";
 import {
@@ -46,11 +47,21 @@ const ProjectGroup = () => {
                     </SidebarGroupLabel>
                 </div>
                 <SidebarGroupContent className="pl-2">
-                    <div className="space-y-1">
-                        {[...Array(4)].map((_, i) => (
-                            <Skeleton key={i} className="h-6 w-full rounded" />
+                    <SidebarMenu className="space-y-1">
+                        {[...Array(3)].map((_, i) => (
+                            <SidebarMenuItem key={i} className="space-y-1">
+                                {/* Project Skeleton */}
+                                <Skeleton className="h-6 w-full rounded bg-muted animate-pulse" />
+
+                                {/* Document Skeleton x 2~3 */}
+                                <SidebarMenuSub className="pl-6 space-y-1">
+                                    <Skeleton className="h-5 w-36 rounded bg-muted/80 animate-pulse" />
+                                    <Skeleton className="h-5 w-28 rounded bg-muted/80 animate-pulse" />
+                                    <Skeleton className="h-5 w-32 rounded bg-muted/80 animate-pulse" />
+                                </SidebarMenuSub>
+                            </SidebarMenuItem>
                         ))}
-                    </div>
+                    </SidebarMenu>
                 </SidebarGroupContent>
             </SidebarGroup>
         );

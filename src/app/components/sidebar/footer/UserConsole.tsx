@@ -55,13 +55,13 @@ const UserConsole = () => {
         return (
             <div className="flex items-center justify-between p-3 rounded-lg">
                 <div className="flex items-center gap-3">
-                    <Skeleton className="h-9 w-9 rounded-full" />
+                    <Skeleton className="h-9 w-9 rounded-full bg-muted animate-pulse" />
                     <div className="space-y-1">
-                        <Skeleton className="h-4 w-24" />
-                        <Skeleton className="h-3 w-32" />
+                        <Skeleton className="h-4 w-24 bg-muted animate-pulse" />
+                        <Skeleton className="h-3 w-32 bg-muted animate-pulse" />
                     </div>
                 </div>
-                <Skeleton className="h-6 w-6 rounded-md" />
+                <Skeleton className="h-6 w-6 rounded-md bg-muted animate-pulse" />
             </div>
         );
     }
