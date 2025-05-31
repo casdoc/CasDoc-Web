@@ -1,6 +1,8 @@
+import { uuidv4 } from "zod";
+
 export interface AcceptanceCriteria {
     acceptance: string;
-    done: string;
+    done?: string;
 }
 
 export interface UserStoryInfo {
@@ -10,6 +12,20 @@ export interface UserStoryInfo {
     priority?: string;
     role?: string;
     feature?: string;
+}
+
+export interface UserStoryAgentResult {
+    id: string;
+    type: string;
+    topicId?: string;
+    name: string;
+    description?: string;
+    feature: string;
+    serial?: string;
+    tag?: string;
+    priority?: number;
+    role?: string;
+    fields: AcceptanceCriteria[];
 }
 
 export class UserStoryEntity {
@@ -113,7 +129,7 @@ export class UserStoryEntity {
         state.write(`---\n\n`);
     };
 
-    isTaskDone(status: string): boolean {
+    isTaskDone(status?: string): boolean {
         if (!status) return false;
         const str = status.trim().toLowerCase();
         return str === "true" || str === "yes" || str === "ok";
@@ -133,5 +149,28 @@ export class UserStoryEntity {
                 return "bg-purple-100 text-purple-800 border-purple-300";
         }
         return "bg-gray-100 text-gray-800 border-gray-300";
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    static convertAgentResultToTiptapNode(result: UserStoryAgentResult): any {
+        return {
+            type: "template-userStory",
+            attrs: {
+                topicId: result.topicId || "root",
+                id: result.id || uuidv4(),
+                config: {
+                    info: {
+                        name: result.name || "User Story",
+                        serial: result.serial || "story-01",
+                        priority: result.priority || "1",
+                        tag: result.tag || "feature",
+                        role: result.role || "As a user",
+                        feature: result.feature || "I want to...",
+                    },
+                    fields: result.fields || [],
+                    fieldKey: "acceptance",
+                },
+            },
+        };
     }
 }

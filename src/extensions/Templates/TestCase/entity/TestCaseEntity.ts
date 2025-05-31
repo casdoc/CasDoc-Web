@@ -1,3 +1,5 @@
+import { uuidv4 } from "zod";
+
 export interface TestCaseStep {
     step: string;
     done: string;
@@ -8,6 +10,17 @@ export interface TestCaseInfo {
     name?: string;
     description?: string;
     expectedResult?: string;
+}
+
+export interface TestCaseAgentResult {
+    id: string;
+    type: string;
+    topicId?: string;
+    name: string;
+    description?: string;
+    serial?: string;
+    expectedResult: string;
+    fields: TestCaseStep[];
 }
 
 export class TestCaseEntity {
@@ -103,6 +116,28 @@ export class TestCaseEntity {
 
         state.write(`---\n\n`);
     };
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    static convertAgentResultToTiptapNode(result: TestCaseAgentResult): any {
+        return {
+            type: "template-testCase",
+            attrs: {
+                topicId: result.topicId || "root",
+                id: result.id || uuidv4(),
+                config: {
+                    info: {
+                        name: result.name || "Test Case",
+                        serial: result.serial || "test-01",
+                        description: result.description || "Test description",
+                        expectedResult:
+                            result.expectedResult || "Expected result",
+                    },
+                    fields: result.fields || [],
+                    fieldKey: "step",
+                },
+            },
+        };
+    }
 
     isTaskDone(status: string): boolean {
         if (!status) return false;

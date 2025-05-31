@@ -47,8 +47,8 @@ const DataSchemaUI: React.FC<DataSchemaUIProps> = ({ entity }) => {
                         {fields.map((field: DataSchemaField, index: number) => {
                             if (
                                 field.name.trim() === "" &&
-                                field.type.trim() === "" &&
-                                field.description.trim() === ""
+                                field.type?.trim() === "" &&
+                                field.description?.trim() === ""
                             ) {
                                 return null;
                             }

@@ -74,9 +74,9 @@ const APIinterfaceUI = ({ entity }: APIinterfaceUIProps) => {
                         {fields?.map(
                             (field: APIinterfaceParameter, index: number) => {
                                 if (
-                                    field?.name.trim() === "" &&
-                                    field?.type.trim() === "" &&
-                                    field?.description?.trim() === ""
+                                    field.name.trim() === "" &&
+                                    field.type?.trim() === "" &&
+                                    field.description?.trim() === ""
                                 ) {
                                     return null;
                                 }

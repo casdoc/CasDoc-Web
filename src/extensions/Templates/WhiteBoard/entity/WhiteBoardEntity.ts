@@ -37,4 +37,21 @@ export class WhiteBoardEntity {
 
         state.write(`---\n\n`);
     };
+
+    // static convertAgentResultToEntity(result: any): any {
+    //     return {
+    //         type: "template-whiteBoard",
+    //         attrs: {
+    //             topicId: result.topicId || "root",
+    //             id: result.id || Date.now().toString(),
+    //             config: {
+    //                 info: {
+    //                     name: result.name || "White Board",
+    //                     description:
+    //                         result.description || "White board description",
+    //                 },
+    //             },
+    //         },
+    //     };
+    // }
 }

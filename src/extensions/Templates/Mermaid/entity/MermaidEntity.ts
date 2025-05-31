@@ -1,5 +1,16 @@
+import { uuidv4 } from "zod";
+
 export interface MermaidInfo {
     name?: string;
+}
+
+export interface MermaidAgentResult {
+    id: string;
+    type: string;
+    topicId?: string;
+    name: string;
+    description?: string;
+    code: string;
 }
 
 const defaultMermaidContent = `%% Mermaid Template - Delete or modify this template to create your own diagram
@@ -105,4 +116,21 @@ export class MermaidEntity {
         // Add a separator
         state.write(`---\n\n`);
     };
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    static convertAgentResultToTiptapNode(result: MermaidAgentResult): any {
+        return {
+            type: "template-mermaid",
+            attrs: {
+                topicId: result.topicId || "root",
+                id: result.id || uuidv4(),
+                config: {
+                    info: {
+                        name: result.name || "Mermaid Diagram",
+                    },
+                    content: result.code || "graph TD\n    A --> B",
+                },
+            },
+        };
+    }
 }

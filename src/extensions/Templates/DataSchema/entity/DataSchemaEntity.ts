@@ -1,13 +1,24 @@
+import { uuidv4 } from "zod";
+
 export interface DataSchemaField {
     name: string;
-    type: string;
-    description: string;
+    type?: string;
+    description?: string;
 }
 
 export interface DataSchemaInfo {
     name?: string;
     type?: string;
     description?: string;
+}
+
+export interface DataSchemaAgentResult {
+    id: string;
+    type: string;
+    topicId?: string;
+    name: string;
+    description?: string;
+    fields?: DataSchemaField[];
 }
 
 export class DataSchemaEntity {
@@ -84,8 +95,8 @@ export class DataSchemaEntity {
             const hasValidFields = fields.some(
                 (field: DataSchemaField) =>
                     field.name.trim() !== "" ||
-                    field.type.trim() !== "" ||
-                    field.description.trim() !== ""
+                    field.type?.trim() !== "" ||
+                    field.description?.trim() !== ""
             );
 
             if (hasValidFields) {
@@ -98,8 +109,8 @@ export class DataSchemaEntity {
                     // Skip completely empty fields
                     if (
                         field.name.trim() === "" &&
-                        field.type.trim() === "" &&
-                        field.description.trim() === ""
+                        field.type?.trim() === "" &&
+                        field.description?.trim() === ""
                     ) {
                         return;
                     }
@@ -120,5 +131,25 @@ export class DataSchemaEntity {
 
         // Add a separator
         state.write(`---\n\n`);
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    static convertAgentResultToTiptapNode(result: DataSchemaAgentResult): any {
+        return {
+            type: "template-dataSchema",
+            attrs: {
+                topicId: result.topicId || "root",
+                id: result.id || uuidv4(),
+                config: {
+                    info: {
+                        name: result.name || "Schema",
+                        type: result.type || "Object",
+                        description: result.description || "Schema description",
+                    },
+                    fields: result.fields || [],
+                    fieldKey: "description",
+                },
+            },
+        };
     }
 }

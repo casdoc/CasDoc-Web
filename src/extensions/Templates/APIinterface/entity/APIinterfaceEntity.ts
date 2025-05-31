@@ -1,6 +1,6 @@
 export interface APIinterfaceParameter {
     name: string;
-    type: string;
+    type?: string;
     required: boolean;
     description?: string;
 }
@@ -10,6 +10,17 @@ export interface APIinterfaceInfo {
     name: string;
     description?: string;
     endPoint?: string;
+}
+
+export interface APIinterfaceAgentResult {
+    id: string;
+    type: string;
+    topicId?: string;
+    name: string;
+    description?: string;
+    method: string;
+    endPoint: string;
+    fields?: APIinterfaceParameter[];
 }
 
 export class APIinterfaceEntity {
@@ -90,7 +101,7 @@ export class APIinterfaceEntity {
             const hasValidFields = fields.some(
                 (field: APIinterfaceParameter) =>
                     field.name.trim() !== "" ||
-                    field.type.trim() !== "" ||
+                    field.type?.trim() !== "" ||
                     field.description?.trim() !== ""
             );
 
@@ -104,7 +115,7 @@ export class APIinterfaceEntity {
                     // Skip completely empty fields
                     if (
                         field.name.trim() === "" &&
-                        field.type.trim() === "" &&
+                        field.type?.trim() === "" &&
                         field.description?.trim() === ""
                     ) {
                         return;
@@ -129,5 +140,29 @@ export class APIinterfaceEntity {
 
         // Add a separator
         state.write(`---\n\n`);
+    }
+
+    static convertAgentResultToTiptapNode(
+        result: APIinterfaceAgentResult
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ): any {
+        return {
+            type: "template-apiinterface",
+            attrs: {
+                topicId: result.topicId || "root",
+                id: result.id || "api-interface-1",
+                config: {
+                    info: {
+                        name: result.name || "API Name",
+                        method: result.method || "UNKOWN",
+                        description: result.description || "",
+                        endPoint: result.endPoint || "",
+                    },
+                    fields:
+                        result.fields || APIinterfaceEntity.getDefaultFields(),
+                    fieldKey: "description",
+                },
+            },
+        };
     }
 }
