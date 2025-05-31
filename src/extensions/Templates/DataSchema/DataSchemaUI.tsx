@@ -4,18 +4,18 @@ import {
     CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { ChevronDown } from "lucide-react";
-import { DataSchemaField } from "./DataSchemaComponent";
+import {
+    DataSchemaEntity,
+    DataSchemaField,
+} from "@/extensions/Templates/DataSchema/entity/DataSchemaEntity";
 
 interface DataSchemaUIProps {
-    info: {
-        name?: string;
-        type?: string;
-        description?: string;
-    };
-    fields: DataSchemaField[];
+    entity: DataSchemaEntity;
 }
 
-const DataSchemaUI: React.FC<DataSchemaUIProps> = ({ info, fields }) => {
+const DataSchemaUI: React.FC<DataSchemaUIProps> = ({ entity }) => {
+    const { info, fields } = entity;
+
     return (
         <>
             <div className="w-full h-full pt-2 pl-4 border-b rounded-sm group/chevron">

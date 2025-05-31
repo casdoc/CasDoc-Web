@@ -9,28 +9,11 @@ import {
     setupNodeEventHandlers,
     cleanupNodeEventHandlers,
 } from "../../ExtensionUtils";
+import { UserStoryEntity } from "./entity/UserStoryEntity";
 
-const topicDefaultConfig = {
-    config: {
-        info: {
-            name: "User Login",
-            serial: "story-01",
-            priority: "2",
-            tag: "login",
-            role: "As a registered user, I would like to log in to the system.",
-            feature:
-                "Log in by entering your username and password to access my personal information and services.",
-        },
-        fields: [
-            {
-                acceptance:
-                    "The user can successfully log in after entering the correct account and password",
-                done: false,
-            },
-        ],
-        fieldKey: "acceptance",
-    },
-};
+const topicDefaultConfig = UserStoryEntity.getDefaultConfig();
+
+export const serializeUserStoryToMarkdown = UserStoryEntity.serializeToMarkdown;
 
 export const UserStoryExtension = Node.create({
     name: "template-userStory",
@@ -95,43 +78,3 @@ export const UserStoryExtension = Node.create({
         ];
     },
 });
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const serializeUserStoryToMarkdown = (state: any, node: any) => {
-    const { config } = node.attrs;
-    const info = config?.info || {};
-    const fields = config?.fields || [];
-
-    state.write(`### ${info.name || "User Story"}\n`);
-
-    if (info.role) {
-        state.write(`- **Role** : ${info.role}\n`);
-    }
-    if (info.feature) {
-        state.write(`- **Feature** : ${info.feature}\n`);
-    }
-    if (info.tag) {
-        state.write(`- **Tag** : ${info.tag}\n`);
-    }
-    if (info.priority) {
-        state.write(`- **Priority** : ${info.priority}\n`);
-    }
-
-    const hasValidAcceptances = fields.some(
-        (field: { acceptance?: string }) =>
-            (field.acceptance || "").trim() !== ""
-    );
-
-    if (hasValidAcceptances) {
-        state.write(`#### Acceptance Criteria\n\n`);
-        fields.forEach((field: { acceptance?: string; done?: boolean }) => {
-            const acceptance = (field.acceptance || "").trim();
-            if (acceptance !== "") {
-                const checked = field.done ? "x" : " ";
-                state.write(`- [${checked}] ${acceptance}\n`);
-            }
-        });
-        state.write(`\n`);
-    }
-    state.write(`---\n\n`);
-};

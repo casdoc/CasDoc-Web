@@ -4,30 +4,16 @@ import {
     CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { ChevronDown } from "lucide-react";
-
-interface Field {
-    step: string;
-    done: string;
-}
+import { TestCaseEntity, TestCaseStep } from "./entity/TestCaseEntity";
 
 interface TestCaseUIProps {
-    info: {
-        serial?: string;
-        name?: string;
-        description?: string;
-        expectedResult?: string;
-    };
-    fields: Field[];
-    isTaskDone: (status: string) => boolean;
+    entity: TestCaseEntity;
     toggleCheckbox: () => void;
 }
 
-const TestCaseUI: React.FC<TestCaseUIProps> = ({
-    info,
-    fields,
-    isTaskDone,
-    toggleCheckbox,
-}) => {
+const TestCaseUI: React.FC<TestCaseUIProps> = ({ entity, toggleCheckbox }) => {
+    const { info, fields } = entity;
+
     return (
         <>
             <div className="w-full h-full pt-3 pb-1 px-3 border-b rounded-sm group/chevron">
@@ -69,18 +55,18 @@ const TestCaseUI: React.FC<TestCaseUIProps> = ({
                         Steps
                     </h3>
                     <ul className="divide-y divide-gray-100 mt-1">
-                        {fields.map((field: Field, index: number) => (
+                        {fields.map((field: TestCaseStep, index: number) => (
                             <li key={index} className="flex items-start py-2">
                                 <input
                                     type="checkbox"
-                                    checked={isTaskDone(field.done)}
+                                    checked={entity.isTaskDone(field.done)}
                                     onClick={(e) => e.stopPropagation()}
                                     onChange={toggleCheckbox}
                                     className="mt-1 mr-2"
                                 />
                                 <span
                                     className={`text-sm ${
-                                        isTaskDone(field.done)
+                                        entity.isTaskDone(field.done)
                                             ? "line-through text-gray-400"
                                             : "text-gray-800"
                                     } group-hover:cursor-text`}

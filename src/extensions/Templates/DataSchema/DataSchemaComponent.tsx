@@ -6,12 +6,7 @@ import NodeBubbleBar from "@/app/components/doc/Popover/NodeBubbleBar";
 import useCustomNodeActions from "../../../extensions/hooks/useCustomNodeActions";
 import { Collapsible } from "@/components/ui/collapsible";
 import DataSchemaUI from "./DataSchemaUI";
-
-export interface DataSchemaField {
-    name: string;
-    type: string;
-    description: string;
-}
+import { DataSchemaEntity } from "@/extensions/Templates/DataSchema/entity/DataSchemaEntity";
 
 const DataSchemaComponent = ({
     node,
@@ -22,8 +17,15 @@ const DataSchemaComponent = ({
     const { id, config } = node.attrs;
     const { selectedNode } = useNodeSelection();
     const isEditing = selectedNode === id;
-    const fields = config?.fields || [];
-    const info = config?.info || {};
+
+    const entity = new DataSchemaEntity(
+        config?.info?.name,
+        config?.info?.type,
+        config?.info?.description,
+        config?.fields,
+        config?.fieldKey
+    );
+
     const { setNodeRef } = useCustomNodeActions({
         id,
         selected,
@@ -70,7 +72,7 @@ const DataSchemaComponent = ({
                     getPos={getPos}
                     editor={editor}
                 />
-                <DataSchemaUI info={info} fields={fields} />
+                <DataSchemaUI entity={entity} />
             </Collapsible>
         </NodeViewWrapper>
     );
