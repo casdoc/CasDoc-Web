@@ -9,7 +9,7 @@ import {
 } from "../dto/DocumentApiResponse";
 
 const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-
+const hocuspocusUrl = process.env.NEXT_PUBLIC_HOCUSPOCUS_URL;
 export const getAllDocuments = async (
     projectId: string
 ): Promise<Document[] | undefined> => {
@@ -202,6 +202,31 @@ export const deleteDocument = async (id: string): Promise<void> => {
         }
     } catch (error) {
         console.error("Error deleting document via API:", error);
+        throw error;
+    }
+};
+
+export const setDocumentContent = async (
+    documentId: string,
+    content: number[]
+): Promise<void> => {
+    try {
+        const response = await fetch(
+            `${hocuspocusUrl}/api/v1/public/yjs-documents/${documentId}`,
+            {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(content),
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error("Failed to set document content");
+        }
+    } catch (error) {
+        console.error("Error setting document content via API:", error);
         throw error;
     }
 };

@@ -92,7 +92,7 @@ export class AgentService {
     ): Promise<ReadableStream<Uint8Array> | null> {
         try {
             const response = await fetch(
-                `${baseUrl}/api/v1/public/agent/ideas2docs`,
+                `${baseUrl}/api/v1/public/agent/idea2docs`,
                 {
                     method: "POST",
                     headers: {
