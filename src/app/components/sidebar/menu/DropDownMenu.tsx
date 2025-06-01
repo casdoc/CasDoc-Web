@@ -19,7 +19,7 @@ const DropDownMenu = ({ dropdownItems, onClick }: DropDownMenuProps) => {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <MoreHorizontal className="hover:bg-neutral-300 rounded-md w-6 h-6 p-1" />
+                <MoreHorizontal className="hover:bg-neutral-200 rounded-md w-6 h-6 p-1" />
             </DropdownMenuTrigger>
             <DropdownMenuContent side="right" align="start">
                 {dropdownItems.map((item) => (
