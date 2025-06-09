@@ -1,12 +1,14 @@
 "use client";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useEffect, useState } from "react";
 import supabase from "@/lib/supabase";
-import { useRouter } from "next/navigation"; // Changed from next/router
+import { useRouter } from "next/navigation";
 import SignOutButton from "./SignOutButton";
 
 const UserConsole = () => {
+    const [isLoading, setIsLoading] = useState(true);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [userName, setUserName] = useState("User");
     const [userEmail, setUserEmail] = useState("user@gmail.com");
@@ -29,6 +31,7 @@ const UserConsole = () => {
             } else {
                 setIsLoggedIn(false);
             }
+            setIsLoading(false);
         };
 
         getUser();
@@ -41,20 +44,35 @@ const UserConsole = () => {
     const handleSignOut = async () => {
         if (!isLoggedIn) return;
         const { error } = await supabase.auth.signOut();
-        if (!error && router) {
+        if (!error) {
             router.push("/");
-        } else if (error) {
+        } else {
             console.log("Sign out error: ", error);
         }
     };
+
+    if (isLoading) {
+        return (
+            <div className="flex items-center justify-between p-3 rounded-lg">
+                <div className="flex items-center gap-3">
+                    <Skeleton className="h-9 w-9 rounded-full bg-muted animate-pulse" />
+                    <div className="space-y-1">
+                        <Skeleton className="h-4 w-24 bg-muted animate-pulse" />
+                        <Skeleton className="h-3 w-32 bg-muted animate-pulse" />
+                    </div>
+                </div>
+                <Skeleton className="h-6 w-6 rounded-md bg-muted animate-pulse" />
+            </div>
+        );
+    }
 
     return (
         <div className="flex items-center justify-between p-3 rounded-lg hover:bg-neutral-200 transition cursor-pointer">
             <div className="flex items-center gap-3">
                 <Avatar className="h-9 w-9">
-                    {userAvatar?.trim() ? (
+                    {userAvatar?.trim() && (
                         <AvatarImage src={userAvatar} alt="User" />
-                    ) : null}
+                    )}
                     <AvatarFallback>
                         {userName?.[0]?.toUpperCase() || "U"}
                     </AvatarFallback>

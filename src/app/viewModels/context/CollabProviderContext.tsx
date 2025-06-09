@@ -9,6 +9,7 @@ import { useProjectContext } from "./ProjectContext";
 import { HocuspocusProvider } from "@hocuspocus/provider";
 import { LoadingMask } from "@/app/documents/components/LoadingMask";
 import { useParams } from "next/navigation";
+import supabase from "@/lib/supabase";
 
 interface CollabProviderViewModel {
     collabProvider: HocuspocusProvider;
@@ -27,6 +28,7 @@ export enum CollaborationStatus {
     Error = "error",
 }
 export const CollabProvider = ({ children }: { children: ReactNode }) => {
+    const [accessToken, setAccessToken] = useState<string | null>(null);
     const [hocuspocusProvider, setHocuspocusProvider] =
         useState<HocuspocusProvider>();
     const [isSynced, setIsSynced] = useState(false);
@@ -35,6 +37,22 @@ export const CollabProvider = ({ children }: { children: ReactNode }) => {
         CollaborationStatus.Disconnected
     );
     const { documentId } = useParams();
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            const {
+                data: { session },
+            } = await supabase.auth.getSession();
+
+            const accessToken = session?.access_token;
+            if (!accessToken) {
+                return;
+            }
+            setAccessToken(accessToken);
+        };
+
+        fetchUser();
+    }, []);
 
     // Watch for URL documentId changes and sync with selectedDocumentId
     useEffect(() => {
@@ -48,7 +66,8 @@ export const CollabProvider = ({ children }: { children: ReactNode }) => {
         if (
             !selectedDocumentId ||
             !documentId ||
-            selectedDocumentId !== documentId
+            selectedDocumentId !== documentId ||
+            !accessToken
         )
             return;
 
@@ -56,9 +75,11 @@ export const CollabProvider = ({ children }: { children: ReactNode }) => {
             "Creating HocuspocusProvider for document:",
             selectedDocumentId
         );
+
         const provider = new HocuspocusProvider({
             url: "ws://localhost:1234",
             name: selectedDocumentId,
+            token: accessToken,
             onConnect: () => {
                 setStatus(CollaborationStatus.Connecting);
             },
@@ -77,7 +98,7 @@ export const CollabProvider = ({ children }: { children: ReactNode }) => {
         return () => {
             provider.destroy();
         };
-    }, [selectedDocumentId, documentId]);
+    }, [selectedDocumentId, documentId, accessToken]);
 
     if (!hocuspocusProvider?.isSynced || !isSynced || !selectedDocumentId)
         return <LoadingMask />;
