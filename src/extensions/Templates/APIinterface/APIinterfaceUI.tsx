@@ -4,7 +4,18 @@ import {
     CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { ChevronDown } from "lucide-react";
-import { APIinterfaceParameter } from "./APIinterfaceComponent";
+
+export interface APIinterfaceParameter {
+    name: string;
+    type: string;
+    required: boolean;
+    description: string;
+}
+
+export interface APIStatusCode {
+    code: number;
+    description: string;
+}
 
 interface APIinterfaceUIProps {
     info: {
@@ -13,7 +24,12 @@ interface APIinterfaceUIProps {
         description?: string;
         endPoint?: string;
     };
-    fields: APIinterfaceParameter[];
+    headers: APIinterfaceParameter[];
+    queryParams: APIinterfaceParameter[];
+    pathParams: APIinterfaceParameter[];
+    requestBody: APIinterfaceParameter[];
+    responseBody: APIinterfaceParameter[];
+    statusCodes: APIStatusCode[];
 }
 
 const getMethodColor = (method?: string): string => {
@@ -33,13 +49,48 @@ const getMethodColor = (method?: string): string => {
     }
 };
 
-const getIfRequired = (required?: string): boolean => {
-    if (!required) return false;
-    if (required === "true" || required === "required") return true;
-    return false;
+const renderSection = (title: string, data: APIinterfaceParameter[]) => {
+    if (!data.length) return null;
+    return (
+        <div className="pt-4">
+            <h3 className="font-bold text-sm text-gray-700">{title}</h3>
+            <div className="divide-y divide-gray-100">
+                {data.map((field, index) => (
+                    <div key={index} className="py-2">
+                        <div className="flex justify-between">
+                            <span className="font-medium text-gray-800">
+                                {field.name}
+                            </span>
+                            <div className="text-right">
+                                {field.required && (
+                                    <span className="text-red-500 mr-2">*</span>
+                                )}
+                                <span className="text-xs bg-gray-200 px-2 py-1 rounded">
+                                    {field.type}
+                                </span>
+                            </div>
+                        </div>
+                        {field.description && (
+                            <p className="text-sm text-gray-500">
+                                {field.description}
+                            </p>
+                        )}
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
 };
 
-const APIinterfaceUI: React.FC<APIinterfaceUIProps> = ({ info, fields }) => {
+const APIinterfaceUI: React.FC<APIinterfaceUIProps> = ({
+    info,
+    headers,
+    queryParams,
+    pathParams,
+    requestBody,
+    responseBody,
+    statusCodes,
+}) => {
     return (
         <>
             <div className="w-full h-full pt-2 pl-4 border-b rounded-sm group/chevron">
@@ -51,71 +102,48 @@ const APIinterfaceUI: React.FC<APIinterfaceUIProps> = ({ info, fields }) => {
                     >
                         {info?.method?.toUpperCase() || "METHOD"}
                     </span>
-                    <span className="text-xl font-bold text-black group-hover:cursor-text max-w-md overflow-x-auto">
+                    <span className="text-xl font-bold text-black max-w-md overflow-x-auto">
                         {info?.name || "API name"}
                     </span>
                     <CollapsibleTrigger
-                        className="w-6 h-6 bg-transparent group/chevron "
+                        className="w-6 h-6 bg-transparent group/chevron"
                         onClick={(e) => e.stopPropagation()}
                     >
                         <ChevronDown className="w-4 h-4 opacity-0 group-hover/chevron:opacity-100 transition-all duration-200 group-data-[state=open]/chevron:rotate-180" />
                     </CollapsibleTrigger>
                 </div>
-                <div>
-                    <p className="m-0 text-sm text-gray-600 group-hover:cursor-text">
-                        {info?.description}
-                    </p>
-                    <p className="m-0 py-2 text-sm text-black font-semibold group-hover:cursor-text max-w-md overflow-x-auto">
-                        End Point : {info?.endPoint}
-                    </p>
-                </div>
+                <p className="text-sm text-gray-600">{info?.description}</p>
+                <p className="text-sm font-semibold text-black py-2">
+                    End Point : {info?.endPoint}
+                </p>
             </div>
-            <CollapsibleContent className="ml-8 overflow-hidden">
-                {fields && fields.length > 0 ? (
-                    <div className="divide-y divide-gray-100">
-                        {fields?.map(
-                            (field: APIinterfaceParameter, index: number) => {
-                                if (
-                                    field?.name.trim() === "" &&
-                                    field?.type.trim() === "" &&
-                                    field?.description.trim() === ""
-                                ) {
-                                    return null;
-                                }
-                                return (
-                                    <div key={index} className="py-2 px-4">
-                                        <div className="flex justify-between items-center m-0 p-0">
-                                            <span className="font-medium text-gray-800 group-hover:cursor-text max-w-sm overflow-x-auto">
-                                                {field?.name}
-                                            </span>
-                                            <div className="max-w-28 truncate">
-                                                {getIfRequired(
-                                                    String(field?.required)
-                                                ) && (
-                                                    <span className="text-2xl text-red-500 rounded">
-                                                        *
-                                                    </span>
-                                                )}
-                                                {field.type && (
-                                                    <span className="text-xs bg-gray-100 px-1 py-1 rounded text-gray-600 mr-2 group-hover:cursor-text">
-                                                        {field?.type}
-                                                    </span>
-                                                )}
-                                            </div>
-                                        </div>
-                                        {field?.description && (
-                                            <p className="m-0 p-0 text-sm text-gray-500 group-hover:cursor-text max-w-md overflow-x-auto">
-                                                {field?.description}
-                                            </p>
-                                        )}
+
+            <CollapsibleContent className="ml-8 overflow-hidden pb-4">
+                {renderSection("Headers", headers)}
+                {renderSection("Query Parameters", queryParams)}
+                {renderSection("Path Parameters", pathParams)}
+                {renderSection("Request Body", requestBody)}
+                {renderSection("Response Body", responseBody)}
+
+                {statusCodes.length > 0 && (
+                    <div className="pt-4">
+                        <h3 className="font-bold text-sm text-gray-700">
+                            Status Codes
+                        </h3>
+                        <div className="divide-y divide-gray-100">
+                            {statusCodes.map((code, index) => (
+                                <div key={index} className="py-2">
+                                    <div className="flex justify-between items-center">
+                                        <span className="font-medium text-gray-800">
+                                            {code.code}
+                                        </span>
                                     </div>
-                                );
-                            }
-                        )}
-                    </div>
-                ) : (
-                    <div className="p-4 text-center text-gray-400">
-                        No fields yet
+                                    <p className="text-sm text-gray-500">
+                                        {code.description}
+                                    </p>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 )}
             </CollapsibleContent>

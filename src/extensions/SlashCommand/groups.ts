@@ -165,7 +165,8 @@ export const GROUPS: Group[] = [
                 label: "API Interface",
                 iconName: "SquareLibrary",
                 aliases: ["apiInterface"],
-                description: "API interface component of templates",
+                description:
+                    "RESTful API interface with headers, body, and response",
                 action: (editor) => {
                     editor
                         .chain()
@@ -177,19 +178,60 @@ export const GROUPS: Group[] = [
                                 id: uuidv4(),
                                 config: {
                                     info: {
-                                        name: "API name",
-                                        method: "GET",
+                                        name: "User Login",
+                                        method: "POST",
                                         description:
-                                            "This is a api interface description",
-                                        endPoint: "/api/v1/demo",
+                                            "Authenticate a user with username and password",
+                                        endPoint: "/api/v1/login",
                                     },
-                                    fields: [
+                                    headers: [
                                         {
-                                            name: "id",
-                                            type: "string",
+                                            name: "Content-Type",
                                             required: true,
+                                            type: "string",
                                             description:
-                                                "Unique identifier for the resource",
+                                                "Set to application/json",
+                                        },
+                                    ],
+                                    queryParams: [],
+                                    pathParams: [],
+                                    requestBody: [
+                                        {
+                                            name: "username",
+                                            required: true,
+                                            type: "string",
+                                            description: "User's account name",
+                                        },
+                                        {
+                                            name: "password",
+                                            required: true,
+                                            type: "string",
+                                            description: "User's password",
+                                        },
+                                    ],
+                                    responseBody: [
+                                        {
+                                            name: "token",
+                                            required: true,
+                                            type: "string",
+                                            description: "JWT access token",
+                                        },
+                                        {
+                                            name: "expiresIn",
+                                            required: true,
+                                            type: "number",
+                                            description:
+                                                "Token expiration time in seconds",
+                                        },
+                                    ],
+                                    statusCodes: [
+                                        {
+                                            code: 200,
+                                            description: "Login successful",
+                                        },
+                                        {
+                                            code: 401,
+                                            description: "Invalid credentials",
                                         },
                                     ],
                                     fieldKey: "description",
