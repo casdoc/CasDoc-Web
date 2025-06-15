@@ -12,7 +12,6 @@ import {
 import {
     APIinterfaceConfig,
     APIinterfaceParameter,
-    APIStatusCode,
 } from "./APIinterfaceComponent";
 
 const apiDefaultConfig: APIinterfaceConfig = {
@@ -23,11 +22,8 @@ const apiDefaultConfig: APIinterfaceConfig = {
         endPoint: "/api/v1/demo",
     },
     headers: [],
-    queryParams: [],
-    pathParams: [],
     requestBody: [],
     responseBody: [],
-    statusCodes: [],
     fieldKey: "description",
 };
 
@@ -62,23 +58,8 @@ export const serializeAPIinterfaceToMarkdown = (
     if (info.description) state.write(`${info.description}\n\n`);
 
     writeSection("Headers", config.headers);
-    writeSection("Path Parameters", config.pathParams);
-    writeSection("Query Parameters", config.queryParams);
     writeSection("Request Body", config.requestBody);
     writeSection("Response Body", config.responseBody);
-
-    if (config.statusCodes.length > 0) {
-        state.write(`#### Status Codes\n\n`);
-        state.write(`| Code | Description |\n`);
-        state.write(`| ---- | ----------- |\n`);
-        config.statusCodes.forEach((status: APIStatusCode) => {
-            const desc = status.description
-                .replace(/\|/g, "\\|")
-                .replace(/\n/g, "<br>");
-            state.write(`| ${status.code} | ${desc} |\n`);
-        });
-        state.write(`\n`);
-    }
 
     state.write("---\n\n");
 };

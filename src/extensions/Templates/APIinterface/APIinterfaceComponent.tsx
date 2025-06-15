@@ -29,11 +29,8 @@ export interface APIStatusCode {
 export interface APIinterfaceConfig {
     info: APIinterfaceInfo;
     headers: APIinterfaceParameter[];
-    queryParams: APIinterfaceParameter[];
-    pathParams: APIinterfaceParameter[];
     requestBody: APIinterfaceParameter[];
     responseBody: APIinterfaceParameter[];
-    statusCodes: APIStatusCode[];
     fieldKey: string;
 }
 
@@ -45,14 +42,7 @@ const APIinterfaceComponent = ({
 }: NodeViewProps) => {
     const { id, config } = node.attrs;
     const info = config?.info || {};
-    const {
-        headers = [],
-        queryParams = [],
-        pathParams = [],
-        requestBody = [],
-        responseBody = [],
-        statusCodes = [],
-    } = config || {};
+    const { headers = [], requestBody = [], responseBody = [] } = config || {};
     const { selectedNode } = useNodeSelection();
     const isEditing = selectedNode === id;
     const [showBubbleBar, setShowBubbleBar] = useState(false);
@@ -97,11 +87,8 @@ const APIinterfaceComponent = ({
                 <APIinterfaceUI
                     info={info}
                     headers={headers}
-                    queryParams={queryParams}
-                    pathParams={pathParams}
                     requestBody={requestBody}
                     responseBody={responseBody}
-                    statusCodes={statusCodes}
                 />
             </Collapsible>
         </NodeViewWrapper>

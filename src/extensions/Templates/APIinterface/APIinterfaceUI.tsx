@@ -12,11 +12,6 @@ export interface APIinterfaceParameter {
     description: string;
 }
 
-export interface APIStatusCode {
-    code: number;
-    description: string;
-}
-
 interface APIinterfaceUIProps {
     info: {
         method?: string;
@@ -25,11 +20,8 @@ interface APIinterfaceUIProps {
         endPoint?: string;
     };
     headers: APIinterfaceParameter[];
-    queryParams: APIinterfaceParameter[];
-    pathParams: APIinterfaceParameter[];
     requestBody: APIinterfaceParameter[];
     responseBody: APIinterfaceParameter[];
-    statusCodes: APIStatusCode[];
 }
 
 const getMethodColor = (method?: string): string => {
@@ -82,15 +74,12 @@ const renderSection = (title: string, data: APIinterfaceParameter[]) => {
     );
 };
 
-const APIinterfaceUI: React.FC<APIinterfaceUIProps> = ({
+const APIinterfaceUI = ({
     info,
     headers,
-    queryParams,
-    pathParams,
     requestBody,
     responseBody,
-    statusCodes,
-}) => {
+}: APIinterfaceUIProps) => {
     return (
         <>
             <div className="w-full h-full pt-2 pl-4 border-b rounded-sm group/chevron">
@@ -120,32 +109,8 @@ const APIinterfaceUI: React.FC<APIinterfaceUIProps> = ({
 
             <CollapsibleContent className="ml-8 overflow-hidden pb-4">
                 {renderSection("Headers", headers)}
-                {renderSection("Query Parameters", queryParams)}
-                {renderSection("Path Parameters", pathParams)}
                 {renderSection("Request Body", requestBody)}
                 {renderSection("Response Body", responseBody)}
-
-                {statusCodes.length > 0 && (
-                    <div className="pt-4">
-                        <h3 className="font-bold text-sm text-gray-700">
-                            Status Codes
-                        </h3>
-                        <div className="divide-y divide-gray-100">
-                            {statusCodes.map((code, index) => (
-                                <div key={index} className="py-2">
-                                    <div className="flex justify-between items-center">
-                                        <span className="font-medium text-gray-800">
-                                            {code.code}
-                                        </span>
-                                    </div>
-                                    <p className="text-sm text-gray-500">
-                                        {code.description}
-                                    </p>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                )}
             </CollapsibleContent>
         </>
     );

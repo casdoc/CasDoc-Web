@@ -193,8 +193,6 @@ export const GROUPS: Group[] = [
                                                 "Set to application/json",
                                         },
                                     ],
-                                    queryParams: [],
-                                    pathParams: [],
                                     requestBody: [
                                         {
                                             name: "username",
@@ -222,16 +220,6 @@ export const GROUPS: Group[] = [
                                             type: "number",
                                             description:
                                                 "Token expiration time in seconds",
-                                        },
-                                    ],
-                                    statusCodes: [
-                                        {
-                                            code: 200,
-                                            description: "Login successful",
-                                        },
-                                        {
-                                            code: 401,
-                                            description: "Invalid credentials",
                                         },
                                     ],
                                     fieldKey: "description",
