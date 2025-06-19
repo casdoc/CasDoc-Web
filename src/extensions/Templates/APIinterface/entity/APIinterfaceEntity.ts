@@ -147,7 +147,7 @@ export class APIinterfaceEntity {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ): any {
         return {
-            type: "template-apiinterface",
+            type: "template-apiInterface",
             attrs: {
                 topicId: result.topicId || "root",
                 id: result.id || "api-interface-1",

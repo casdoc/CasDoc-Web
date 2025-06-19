@@ -44,7 +44,7 @@ const UserStoryUI: React.FC<UserStoryUIProps> = ({
                                     </span>
                                 </div>
                             )}
-                            {info.priority?.trim() !== "" && (
+                            {info.priority && (
                                 <div className="group-hover:cursor-text">
                                     <span
                                         className={`text-xs px-2 py-1 rounded font-medium border ${entity.calculatePriorityStyle(
