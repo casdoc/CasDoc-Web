@@ -46,7 +46,7 @@ const DataSchemaUI: React.FC<DataSchemaUIProps> = ({ entity }) => {
                     <div className="divide-y divide-gray-100">
                         {fields.map((field: DataSchemaField, index: number) => {
                             if (
-                                field.name.trim() === "" &&
+                                field.name?.trim() === "" &&
                                 field.type?.trim() === "" &&
                                 field.description?.trim() === ""
                             ) {

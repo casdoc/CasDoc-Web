@@ -32,12 +32,7 @@ const getMethodColor = (method: string): string => {
 
 const APIinterfaceUI = ({ entity }: APIinterfaceUIProps) => {
     const { info, fields } = entity;
-    console.debug(
-        "APIinterfaceUI rendered with info:",
-        info?.method,
-        "fields:",
-        fields
-    );
+
     return (
         <>
             <div className="w-full h-full pt-2 pl-4 border-b rounded-sm group/chevron">
