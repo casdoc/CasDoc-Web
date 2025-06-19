@@ -17,7 +17,11 @@ const ProjectDialog = () => {
     } = useProjectContext();
 
     const [mode, setMode] = useState<"blank" | "draft" | null>(null);
-    const [prompt, setPrompt] = useState("");
+    const [prompt, setPrompt] =
+        useState(`I want create a system that is menu system, which can be used to manage the menu of a restaurant. 
+        The system should allow users to add, edit, and delete menu items. 
+        It should also allow users to view the menu items in a list format. 
+        And the system has a user management system, which can be used to manage the users of the system;`);
     const [isGenerating, setIsGenerating] = useState(false);
     const [isDraftReady, setIsDraftReady] = useState(false);
 

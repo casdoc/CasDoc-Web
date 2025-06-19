@@ -103,14 +103,9 @@ const CustomEdge = (props: EdgeProps) => {
                                 );
                                 const zoom = 1 / getZoom();
                                 if (pathOptions.offset + deltaX * zoom > 15) {
-                                    updateOffset(
-                                        {
-                                            source: source,
-                                            target: target,
-                                            data: data!,
-                                        },
-                                        pathOptions.offset + deltaX * zoom
-                                    );
+                                    const offset =
+                                        pathOptions.offset + deltaX * zoom;
+                                    updateOffset(source, target, offset);
                                 }
                             };
 
@@ -128,7 +123,7 @@ const CustomEdge = (props: EdgeProps) => {
                     />
                 ) : (
                     <div
-                        className="absolute text-sm font-semibold text-gray-600"
+                        className="absolute text-sm font-semibold text-gray-600 max-w-28 truncate"
                         style={{
                             transform: `translate(-50%, -50%) translate(${
                                 Math.max(sourceX, targetX) + pathOptions?.offset

@@ -18,7 +18,7 @@ export interface GraphViewModel {
     attachedDocs: AttachedDoc[];
 
     // Edge actions
-    updConnectionEdges: (edge: ConnectionEdge) => void;
+    updConnectionEdges: (edge: ConnectionEdge) => boolean;
     searchTarget: (sourceId: string) => ConnectionEdge[];
     searchSource: (sourceId: string) => ConnectionEdge[];
     removeConnectionEdge: (edge: ConnectionEdge) => void;
@@ -26,7 +26,7 @@ export interface GraphViewModel {
     updateAffectedIds: (ids: string[]) => void;
     removeAffectedId: (id: string) => void;
     clearAffectedIds: () => void;
-    updateOffset: (edge: ConnectionEdge, offset: number) => void;
+    updateOffset: (source: string, target: string, offset: number) => void;
 
     // Graph actions
     appendAttachedDocs: (doc: AttachedDoc) => void;
@@ -96,8 +96,9 @@ export function useGraphViewModel(): GraphViewModel {
     );
 
     const updConnectionEdges = useCallback(
-        async (edge: ConnectionEdge) => {
-            if (!connectionEdges) return;
+        (edge: ConnectionEdge) => {
+            // the return value means if the operation is available
+            if (!connectionEdges) return false;
 
             const exists = connectionEdges.some(
                 (e) => e.source === edge.source && e.target === edge.target
@@ -106,11 +107,11 @@ export function useGraphViewModel(): GraphViewModel {
                 (e) => e.source === edge.target && e.target === edge.source
             );
 
-            if (exists) return;
+            if (exists) return false;
 
             if (reversedConnection) {
                 // Update existing connection to be bidirectional
-                await updateConnection({
+                updateConnection({
                     id: parseInt(reversedConnection.id),
                     input: {
                         label: reversedConnection.label,
@@ -120,15 +121,16 @@ export function useGraphViewModel(): GraphViewModel {
                 });
             } else {
                 // Create new connection
-                await createConnection({
+                createConnection({
                     projectId: parseInt(selectedProjectId || ""),
                     sourceId: edge.source,
                     targetId: edge.target,
                     label: edge.label || "",
-                    offsetValue: edge.offsetValue || 0,
+                    offsetValue: edge.offsetValue || 50,
                     bidirectional: false,
                 });
             }
+            return true;
         },
         [connectionEdges, createConnection, selectedProjectId, updateConnection]
     );
@@ -240,15 +242,17 @@ export function useGraphViewModel(): GraphViewModel {
         GraphService.setAffectedIds([]);
     }, []);
 
-    const updateOffset = async (edge: ConnectionEdge, offset: number) => {
+    const updateOffset = async (
+        source: string,
+        target: string,
+        offset: number
+    ) => {
         if (!connectionEdges) return;
 
         const actualConnection = connectionEdges.find(
             (e) =>
-                (e.source === edge.source && e.target === edge.target) ||
-                (e.source === edge.target &&
-                    e.target === edge.source &&
-                    e.bidirectional)
+                (e.source === source && e.target === target) ||
+                (e.source === target && e.target === source && e.bidirectional)
         );
 
         if (actualConnection) {
