@@ -55,19 +55,18 @@ const ProjectMenu = ({ name, projectId }: ProjectMenuProps) => {
                 <CollapsibleTrigger asChild className="w-full group/chevron">
                     <SidebarMenuButton
                         asChild
-                        className=" hover:bg-neutral-200 hover:cursor-pointer"
+                        className="flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-foreground hover:bg-muted data-[state=open]:hover:bg-muted transition"
                     >
-                        <div>
-                            <Folder />
+                        <div className="flex items-center w-full">
+                            <Folder className="w-4 h-4" />
                             <span className="flex items-center gap-1 truncate select-none">
                                 {name}
-                                <ChevronDown className="w-4 h-4 opacity-0 group-hover/chevron:opacity-100 transition-all duration-200 group-data-[state=open]/chevron:rotate-180" />
+                                <ChevronDown className="w-4 h-4 opacity-0 group-hover/chevron:opacity-100 transition-transform duration-200 group-data-[state=open]/chevron:rotate-180" />
                             </span>
-
                             <div className="ml-auto flex items-center gap-1">
                                 <Plus
                                     onClick={handleAddDocument}
-                                    className="hover:bg-neutral-300 rounded-md w-6 h-6 p-1"
+                                    className="hover:bg-neutral-200 rounded-md w-6 h-6 p-1"
                                 />
                                 <DropDownMenu
                                     dropdownItems={dropdownItems}
