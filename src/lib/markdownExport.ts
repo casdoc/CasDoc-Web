@@ -3,7 +3,7 @@ import {
     MarkdownSerializer,
     defaultMarkdownSerializer,
 } from "prosemirror-markdown";
-import { serializeTopicToMarkdown } from "@/extensions/Topics/TopicExtension";
+import { serializeTopicToMarkdown } from "@/extensions/Templates/Topic/TopicExtension";
 import { serializeAPIinterfaceToMarkdown } from "@/extensions/Templates/APIinterface/APIinterfaceExtension";
 import { serializeDataSchemaToMarkdown } from "@/extensions/Templates/DataSchema/DataSchemaExtension";
 import { serializeMermaidToMarkdown } from "@/extensions/Templates/Mermaid/MermaidExtension";
@@ -32,7 +32,7 @@ export const createMarkdownSerializer = (editor: Editor) => {
         code: defaultMarkdownSerializer.marks.code,
         link: defaultMarkdownSerializer.marks.link,
     };
-    console.log(123);
+
     console.log(Object.keys(defaultMarkdownSerializer.marks));
 
     // Add fallback serializers for any node types not handled

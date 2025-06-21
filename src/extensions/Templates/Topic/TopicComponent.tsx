@@ -3,7 +3,7 @@ import { NodeViewWrapper } from "@tiptap/react";
 import { NodeViewProps } from "@tiptap/core";
 import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext";
 import NodeBubbleBar from "@/app/components/doc/Popover/NodeBubbleBar";
-import useCustomNodeActions from "../hooks/useCustomNodeActions";
+import useCustomNodeActions from "../../hooks/useCustomNodeActions";
 
 const TopicComponent = ({ node, selected, editor, getPos }: NodeViewProps) => {
     const { id, config, level } = node.attrs;

@@ -1,4 +1,4 @@
-import React, {
+import {
     createContext,
     useContext,
     useState,
@@ -10,7 +10,6 @@ import { HocuspocusProvider } from "@hocuspocus/provider";
 import { LoadingMask } from "@/app/documents/components/LoadingMask";
 import { useParams } from "next/navigation";
 import supabase from "@/lib/supabase";
-
 interface CollabProviderViewModel {
     collabProvider: HocuspocusProvider;
     status: CollaborationStatus;
@@ -28,7 +27,6 @@ export enum CollaborationStatus {
     Error = "error",
 }
 export const CollabProvider = ({ children }: { children: ReactNode }) => {
-    const [accessToken, setAccessToken] = useState<string | null>(null);
     const [hocuspocusProvider, setHocuspocusProvider] =
         useState<HocuspocusProvider>();
     const [isSynced, setIsSynced] = useState(false);
@@ -37,6 +35,7 @@ export const CollabProvider = ({ children }: { children: ReactNode }) => {
         CollaborationStatus.Disconnected
     );
     const { documentId } = useParams();
+    const [accessToken, setAccessToken] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchUser = async () => {

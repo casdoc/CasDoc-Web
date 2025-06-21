@@ -1,16 +1,12 @@
 import { NodeViewWrapper } from "@tiptap/react";
 import { NodeViewProps } from "@tiptap/core";
 import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext";
-import { useCallback, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import NodeBubbleBar from "@/app/components/doc/Popover/NodeBubbleBar";
 import useCustomNodeActions from "../../../extensions/hooks/useCustomNodeActions";
 import { Collapsible } from "@/components/ui/collapsible";
 import UserStoryUI from "./UserStoryUI";
-
-interface Field {
-    acceptance: string;
-    done: string;
-}
+import { UserStoryEntity, AcceptanceCriteria } from "./entity/UserStoryEntity";
 
 const UserStoryComponent = ({
     node,
@@ -22,8 +18,18 @@ const UserStoryComponent = ({
     const { id, config } = node.attrs;
     const { selectedNode } = useNodeSelection();
     const isEditing = selectedNode === id;
-    const fields = config?.fields || [];
-    const info = config?.info || {};
+
+    const entity = new UserStoryEntity(
+        config?.info?.name,
+        config?.info?.serial,
+        config?.info?.tag,
+        config?.info?.priority,
+        config?.info?.role,
+        config?.info?.feature,
+        config?.fields,
+        config?.fieldKey
+    );
+
     const [showBubbleBar, setShowBubbleBar] = useState(false);
     const { setNodeRef } = useCustomNodeActions({
         id,
@@ -51,10 +57,12 @@ const UserStoryComponent = ({
     };
 
     const toggleCheckbox = () => {
-        const updatedFields = fields.map((field: Field) => ({
-            ...field,
-            done: isTaskDone(field.done) ? "false" : "true",
-        }));
+        const updatedFields = entity.fields.map(
+            (field: AcceptanceCriteria) => ({
+                ...field,
+                done: entity.isTaskDone(field.done) ? "false" : "true",
+            })
+        );
 
         updateAttributes({
             config: {
@@ -63,28 +71,6 @@ const UserStoryComponent = ({
             },
         });
     };
-
-    const calculatePriorityStyle = useCallback((priority: number) => {
-        switch (priority) {
-            case 1:
-                return "bg-green-100 text-green-800 border-green-300";
-            case 2:
-                return "bg-yellow-100 text-yellow-800 border-yellow-300";
-            case 3:
-                return "bg-orange-100 text-orange-800 border-orange-300";
-            case 4:
-                return "bg-red-100 text-red-800 border-red-300";
-            case 5:
-                return "bg-purple-100 text-purple-800 border-purple-300";
-        }
-        return "bg-gray-100 text-gray-800 border-gray-300";
-    }, []);
-
-    const isTaskDone = useCallback((status: string) => {
-        if (!status) return false;
-        const str = status.trim().toLowerCase();
-        return str === "true" || str === "yes" || str === "ok";
-    }, []);
 
     return (
         <NodeViewWrapper
@@ -105,13 +91,7 @@ const UserStoryComponent = ({
                     getPos={getPos}
                     editor={editor}
                 />
-                <UserStoryUI
-                    info={info}
-                    fields={fields}
-                    calculatePriorityStyle={calculatePriorityStyle}
-                    isTaskDone={isTaskDone}
-                    toggleCheckbox={toggleCheckbox}
-                />
+                <UserStoryUI entity={entity} toggleCheckbox={toggleCheckbox} />
             </Collapsible>
         </NodeViewWrapper>
     );

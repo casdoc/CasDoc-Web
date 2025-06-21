@@ -1,6 +1,6 @@
 "use client";
 
-export { TopicExtension } from "./Topics/TopicExtension";
+export { TopicExtension } from "./Templates/Topic/TopicExtension";
 export { DataSchemaExtension } from "./Templates/DataSchema/DataSchemaExtension";
 export { APIinterfaceExtension } from "./Templates/APIinterface/APIinterfaceExtension";
 export { MermaidExtension } from "./Templates/Mermaid/MermaidExtension";

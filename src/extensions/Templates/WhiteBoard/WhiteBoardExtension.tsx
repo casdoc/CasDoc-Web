@@ -9,15 +9,12 @@ import {
     setupNodeEventHandlers,
     cleanupNodeEventHandlers,
 } from "../../ExtensionUtils";
+import { WhiteBoardEntity } from "./entity/WhiteBoardEntity";
 
-const whiteBoardDefaultConfig = {
-    config: {
-        info: {
-            name: "System Overview",
-            description: "A whiteboard for planning and notes.",
-        },
-    },
-};
+const whiteBoardDefaultConfig = WhiteBoardEntity.getDefaultConfig();
+
+export const serializeWhiteBoardToMarkdown =
+    WhiteBoardEntity.serializeToMarkdown;
 
 export const WhiteBoardExtension = Node.create({
     name: "template-whiteBoard",
@@ -65,17 +62,3 @@ export const WhiteBoardExtension = Node.create({
         ];
     },
 });
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const serializeWhiteBoardToMarkdown = (state: any, node: any) => {
-    const { config } = node.attrs;
-    const info = config?.info || {};
-
-    state.write(`### ${info.title || "Whiteboard"}\n`);
-
-    if (info.description) {
-        state.write(`- **Description** : ${info.description}\n`);
-    }
-
-    state.write(`---\n\n`);
-};

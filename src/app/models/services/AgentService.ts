@@ -1,20 +1,7 @@
-import supabase from "@/lib/supabase";
 import { any, z } from "zod";
-import { AdviceComponentResponse } from "../agent-response/AdviceComponentResponse";
-import { AgentEditComponentResponse } from "../agent-response/AgentEditComponentResponse";
-import { ConnectComponentResponse } from "../agent-response/ConnectComponentResponse";
-import { CreateComponentResponse } from "../agent-response/CreateComponentResponse";
-import { DeleteComponentResponse } from "../agent-response/DeleteComponentResponse";
-import { FindComponentResponse } from "../agent-response/FindComponentResponse";
-import { IdeaDocumentResponse } from "../agent-response/IdeaDocumentResponse";
-import { PromptGenerationResponse } from "../agent-response/PromptGenerationResponse";
-import { SummaryResponse } from "../agent-response/SummaryResponse";
-import { UpdateComponentResponse } from "../agent-response/UpdateComponentResponse";
-import { JsonObject } from "../types/JsonObject";
 
 const baseUrl = process.env.NEXT_PUBLIC_AGENT_URL;
 
-// Define message content schema
 export const MessageContentSchema = z.object({
     text: z.string().optional(),
     full_text: z.string().optional(),
@@ -26,68 +13,63 @@ export const MessageContentSchema = z.object({
 
 export type MessageContent = z.infer<typeof MessageContentSchema>;
 
-// Define agent message schema
-export const AgentMessageSchema = z.object({
-    type: z.string(),
-    content: any(),
+export const StreamResponseSchema = z.object({
+    event: z.string(),
+    data: any(),
 });
 
-export type AgentMessage = z.infer<typeof AgentMessageSchema>;
-
-export type AgentResponse =
-    | AdviceComponentResponse
-    | AgentEditComponentResponse
-    | ConnectComponentResponse
-    | CreateComponentResponse
-    | DeleteComponentResponse
-    | FindComponentResponse
-    | IdeaDocumentResponse
-    | PromptGenerationResponse
-    | SummaryResponse
-    | UpdateComponentResponse;
+export type StreamResponse = z.infer<typeof StreamResponseSchema>;
 
 export class AgentService {
-    private static async getAuthToken(): Promise<string> {
-        const {
-            data: { session },
-            error,
-        } = await supabase.auth.getSession();
-
-        if (error || !session) {
-            throw new Error("No valid session found");
-        }
-
-        return session.access_token;
-    }
-
-    // /api/v1/public/agent/chat
-    static async sendMessage(
+    static async chat(
         prompt: string,
-        projectId: string
-        // nodeIds?: string[]
+        projectId: string,
+        signal?: AbortSignal
     ): Promise<ReadableStream<Uint8Array> | null> {
         try {
-            // const token = await this.getAuthToken();
-            console.debug(
-                "payload:",
-                JSON.stringify({
-                    prompt,
-                    projectId,
-                    // nodeIds,
-                })
-            );
             const response = await fetch(
                 `${baseUrl}/api/v1/public/agent/chat`,
                 {
                     method: "POST",
                     headers: {
-                        // Authorization: `Bearer ${token}`,
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify({
                         prompt,
                         projectId,
-                        // nodeIds,
+                    }),
+                    signal: signal,
+                }
+            );
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(
+                    `HTTP error! status: ${response.status}, message: ${errorText}`
+                );
+            }
+            return response.body;
+        } catch (error) {
+            console.error("Error in sendMessage:", error);
+            throw error;
+        }
+    }
+
+    static async connect(
+        componentId: string,
+        projectId: string
+    ): Promise<ReadableStream<Uint8Array> | null> {
+        try {
+            const response = await fetch(
+                `${baseUrl}/api/v1/public/agent/connect`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        componentId,
+                        projectId,
                     }),
                 }
             );
@@ -98,7 +80,6 @@ export class AgentService {
                     `HTTP error! status: ${response.status}, message: ${errorText}`
                 );
             }
-            console.debug("Response:", response);
             return response.body;
         } catch (error) {
             console.error("Error in sendMessage:", error);
@@ -106,134 +87,145 @@ export class AgentService {
         }
     }
 
-    static async streamChatResponse(
-        prompt: string,
-        projectId: string,
-        // nodeIds?: string[],
-        onMessage?: (data: AgentMessage) => void,
+    static async ideas2docs(
+        prompt: string
+    ): Promise<ReadableStream<Uint8Array> | null> {
+        try {
+            const response = await fetch(
+                `${baseUrl}/api/v1/public/agent/idea2docs`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        prompt,
+                    }),
+                }
+            );
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(
+                    `HTTP error! status: ${response.status}, message: ${errorText}`
+                );
+            }
+            return response.body;
+        } catch (error) {
+            console.error("Error in sendMessage:", error);
+            throw error;
+        }
+    }
+
+    static async handleStreamResponse(
+        response: ReadableStream<Uint8Array>,
+        signal?: AbortSignal,
+        onMessage?: (data: StreamResponse) => void,
         onError?: (error: Error) => void,
         onComplete?: () => void
     ): Promise<void> {
+        let reader: ReadableStreamDefaultReader<Uint8Array> | undefined;
+
         try {
-            const stream = await this.sendMessage(prompt, projectId);
-
-            if (!stream) {
-                throw new Error("No stream returned from server");
-            }
-
-            const reader = stream.getReader();
+            reader = response.getReader();
             const decoder = new TextDecoder("utf-8");
-            let buffer = "";
 
             while (true) {
-                const { done, value } = await reader.read();
-
-                if (done) {
-                    // Process any remaining data in buffer
-                    if (buffer.trim()) {
-                        this.processSSEChunk(buffer, onMessage);
-                    }
-                    onComplete?.();
-                    break;
+                // Check if abort was requested before each read operation
+                if (signal?.aborted) {
+                    throw new DOMException("Aborted", "AbortError");
                 }
 
-                // Decode the chunk and add to buffer
-                const chunk = decoder.decode(value, { stream: true });
-                buffer += chunk;
+                try {
+                    const { done, value } = await reader.read();
 
-                // Process complete SSE messages from buffer
-                const messages = buffer.split(/\n\n/);
-                // Keep the last part which might be incomplete
-                buffer = messages.pop() || "";
+                    if (done) {
+                        onComplete?.();
+                        break;
+                    }
 
-                // Process each complete message
-                for (const message of messages) {
-                    this.processSSEChunk(message, onMessage);
+                    // Decode the chunk
+                    const rawChunk = decoder.decode(value, { stream: true });
+
+                    // Split rawChunk by SSE 'data:' delimiter to get JSON fragments
+                    const fragments = rawChunk
+                        .split(/data:\s*/g)
+                        .filter((f) => f.trim());
+
+                    for (const fragment of fragments) {
+                        this.processSSEFragment(fragment, onMessage);
+                    }
+                } catch (readError) {
+                    // Check if this is an abort error
+                    if (signal?.aborted || readError === "AbortError") {
+                        throw new DOMException("Aborted", "AbortError");
+                    }
+                    throw readError;
                 }
             }
         } catch (error) {
-            console.error("Error in streamChatResponse:", error);
-            onError?.(
-                error instanceof Error ? error : new Error(String(error))
-            );
-        }
-    }
-
-    private static processSSEChunk(
-        chunk: string,
-        onMessage?: (data: AgentMessage) => void
-    ): void {
-        // Process SSE data format: "data: {...}"
-        const dataLines = chunk.split(/data:\s*/g).filter((f) => f.trim());
-
-        for (const line of dataLines) {
-            try {
-                const raw = line.trim();
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                let data: any;
+            // Close reader if we have it and an error occurred
+            if (reader) {
                 try {
-                    data = JSON.parse(raw);
-                } catch (e) {
+                    await reader.cancel("Stream processing terminated");
+                } catch (cancelError) {
                     console.warn(
-                        "JSON.parse failed, trying single‑quote fallback:",
-                        e
+                        "Error cancelling stream reader:",
+                        cancelError
                     );
-                    data = JSON.parse(raw.replace(/'/g, '"'));
                 }
+            }
 
-                // Validate with schema
-                const result = AgentMessageSchema.safeParse(data);
-                if (result.success) {
-                    // Immediately dispatch to UI
-                    if (onMessage) {
-                        setTimeout(() => onMessage(result.data), 0);
-                    }
-                } else {
-                    console.warn("Invalid message format:", result.error, data);
+            // Only call onError for non-abort errors
+            if (error !== "AbortError" && onError) {
+                onError(
+                    error instanceof Error ? error : new Error(String(error))
+                );
+            }
+
+            // Only rethrow non-abort errors
+            if (error !== "AbortError") {
+                throw error;
+            }
+        } finally {
+            // Ensure resources are cleaned up
+            if (reader && signal?.aborted) {
+                try {
+                    await reader.cancel("Aborted by user");
+                } catch (finalError) {
+                    console.warn("Error in final cleanup:", finalError);
                 }
-            } catch (e) {
-                console.debug("Error parsing JSON:", e, line);
-                console.warn("Error parsing JSON in SSE chunk:", e, line);
             }
         }
     }
 
-    private static messageConverter(
-        message: AgentMessage
-    ): AgentResponse | JsonObject | string | null {
-        const { type, content } = message;
-        const parsedContent = MessageContentSchema.safeParse(content);
-        if (!parsedContent.success) {
-            console.warn(
-                "Invalid message content format:",
-                parsedContent.error
-            );
-            return null;
-        }
-
-        if (type === "tool_result") {
-            const { tool_name, result } = content;
-            if (tool_name === "generate_components") {
-                return CreateComponentResponse.parse(result);
-            } else if (tool_name === "update_components") {
-                return UpdateComponentResponse.parse(result);
-            } else if (tool_name === "delete_components") {
-                return DeleteComponentResponse.parse(result);
-            } else if (tool_name === "connect_components") {
-                return ConnectComponentResponse.parse(result);
-            } else if (tool_name === "find_components") {
-                return FindComponentResponse.parse(result);
-            } else if (tool_name === "summarize_components") {
-                return SummaryResponse.parse(result);
-            } else if (tool_name === "generate_prompt") {
-                return PromptGenerationResponse.parse(result);
-            } else {
-                return null;
+    private static processSSEFragment(
+        fragment: string,
+        onMessage?: (data: StreamResponse) => void
+    ): void {
+        try {
+            const trimmedFragment = fragment.trim();
+            // Handle ping messages
+            if (trimmedFragment.includes("ping")) {
+                return;
             }
-        } else if (type === "tool_call") {
-            return content.args;
-        } else {
-            return content.text;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            let data: any;
+            try {
+                data = JSON.parse(trimmedFragment);
+            } catch (e) {
+                console.warn(
+                    "JSON.parse failed, trying single‑quote fallback:",
+                    e
+                );
+                data = JSON.parse(trimmedFragment.replace(/'/g, '"'));
+            }
+
+            if (onMessage) {
+                setTimeout(() => onMessage(data), 0);
+            }
+        } catch (e) {
+            console.warn("Error processing SSE fragment:", e);
         }
     }
 }

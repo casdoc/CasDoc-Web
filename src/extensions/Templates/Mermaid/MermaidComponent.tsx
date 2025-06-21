@@ -5,6 +5,7 @@ import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext"
 import { useRef, useState, useEffect } from "react";
 import NodeBubbleBar from "@/app/components/doc/Popover/NodeBubbleBar";
 import useCustomNodeActions from "../../../extensions/hooks/useCustomNodeActions";
+import { MermaidEntity } from "./entity/MermaidEntity";
 
 const MermaidComponent = ({
     node,
@@ -14,8 +15,9 @@ const MermaidComponent = ({
     getPos,
 }: NodeViewProps) => {
     const { id, config } = node.attrs;
-    const mermaidCode = config?.content || "";
-    const name = config?.info?.name || "Mermaid";
+
+    const entity = new MermaidEntity(config?.info?.name, config?.content);
+
     const { selectedNode } = useNodeSelection();
     const isEditing = selectedNode === id;
     const isUpdatingRef = useRef(false);
@@ -86,8 +88,8 @@ const MermaidComponent = ({
             />
             <div className="h-full ">
                 <MermaidEditor
-                    name={name}
-                    initialCode={mermaidCode}
+                    name={entity.info.name}
+                    initialCode={entity.content}
                     onCodeUpdate={handleCodeUpdate}
                 />
             </div>
