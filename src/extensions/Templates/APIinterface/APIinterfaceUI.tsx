@@ -4,19 +4,17 @@ import {
     CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { ChevronDown } from "lucide-react";
-import { APIinterfaceParameter } from "./APIinterfaceComponent";
+import {
+    APIinterfaceEntity,
+    APIinterfaceParameter,
+} from "./entity/APIinterfaceEntity";
 
 interface APIinterfaceUIProps {
-    info: {
-        method?: string;
-        name?: string;
-        description?: string;
-        endPoint?: string;
-    };
-    fields: APIinterfaceParameter[];
+    entity: APIinterfaceEntity;
 }
-const getMethodColor = (method?: string): string => {
-    switch (method?.trim().toUpperCase()) {
+
+const getMethodColor = (method: string): string => {
+    switch (method.trim().toUpperCase()) {
         case "GET":
             return "bg-green-500";
         case "POST":
@@ -31,20 +29,23 @@ const getMethodColor = (method?: string): string => {
             return "bg-gray-400";
     }
 };
-const APIinterfaceUI: React.FC<APIinterfaceUIProps> = ({ info, fields }) => {
+
+const APIinterfaceUI = ({ entity }: APIinterfaceUIProps) => {
+    const { info, fields } = entity;
+
     return (
         <>
             <div className="w-full h-full pt-2 pl-4 border-b rounded-sm group/chevron">
                 <div className="flex items-center pb-2 gap-1">
                     <span
                         className={`px-2 py-1 text-xs rounded-md text-white font-bold mr-2 ${getMethodColor(
-                            info?.method
+                            info.method
                         )}`}
                     >
-                        {info?.method?.toUpperCase() || "METHOD"}
+                        {info?.method.toUpperCase()}
                     </span>
                     <span className="text-xl font-bold text-black group-hover:cursor-text">
-                        {info?.name || "API name"}
+                        {info.name}
                     </span>
                     <CollapsibleTrigger
                         className="w-6 h-6 bg-transparent group/chevron "
@@ -68,9 +69,9 @@ const APIinterfaceUI: React.FC<APIinterfaceUIProps> = ({ info, fields }) => {
                         {fields?.map(
                             (field: APIinterfaceParameter, index: number) => {
                                 if (
-                                    field?.name.trim() === "" &&
-                                    field?.type.trim() === "" &&
-                                    field?.description.trim() === ""
+                                    field.name.trim() === "" &&
+                                    field.type?.trim() === "" &&
+                                    field.description?.trim() === ""
                                 ) {
                                     return null;
                                 }

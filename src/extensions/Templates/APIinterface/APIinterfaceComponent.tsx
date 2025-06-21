@@ -6,13 +6,7 @@ import NodeBubbleBar from "@/app/components/doc/Popover/NodeBubbleBar";
 import useCustomNodeActions from "../../../extensions/hooks/useCustomNodeActions";
 import { Collapsible } from "@/components/ui/collapsible";
 import APIinterfaceUI from "./APIinterfaceUI";
-
-export interface APIinterfaceParameter {
-    name: string;
-    type: string;
-    required: boolean;
-    description: string;
-}
+import { APIinterfaceEntity } from "./entity/APIinterfaceEntity";
 
 const APIinterfaceComponent = ({
     node,
@@ -21,10 +15,18 @@ const APIinterfaceComponent = ({
     getPos,
 }: NodeViewProps) => {
     const { id, config } = node.attrs;
-    const info = config?.info || {};
-    const fields = config?.fields || [];
     const { selectedNode } = useNodeSelection();
     const isEditing = selectedNode === id;
+
+    const entity = new APIinterfaceEntity(
+        config?.info?.method,
+        config?.info?.name,
+        config?.info?.description,
+        config?.info?.endPoint,
+        config?.fields,
+        config?.fieldKey
+    );
+
     const [showBubbleBar, setShowBubbleBar] = useState(false);
     const { setNodeRef } = useCustomNodeActions({
         id,
@@ -70,7 +72,7 @@ const APIinterfaceComponent = ({
                     getPos={getPos}
                     editor={editor}
                 />
-                <APIinterfaceUI info={info} fields={fields} />
+                <APIinterfaceUI entity={entity} />
             </Collapsible>
         </NodeViewWrapper>
     );

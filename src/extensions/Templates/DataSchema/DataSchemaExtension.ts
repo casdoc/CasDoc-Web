@@ -1,6 +1,6 @@
 import { Node, mergeAttributes } from "@tiptap/core";
 import { ReactNodeViewRenderer } from "@tiptap/react";
-import DataSchemaComponent, { DataSchemaField } from "./DataSchemaComponent";
+import DataSchemaComponent from "./DataSchemaComponent";
 import { v4 as uuidv4 } from "uuid";
 import {
     createConfigAttribute,
@@ -9,86 +9,13 @@ import {
     setupNodeEventHandlers,
     cleanupNodeEventHandlers,
 } from "../../ExtensionUtils";
+import { DataSchemaEntity } from "@/extensions/Templates/DataSchema/entity/DataSchemaEntity";
 
-const topicDefaultConfig = {
-    info: {
-        name: "Schema",
-        type: "Object",
-        description: "This is a data schema description",
-    },
-    fields: [
-        {
-            name: "field",
-            type: "default",
-            description: "default field",
-        },
-    ],
-    fieldKey: "description",
-};
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const serializeDataSchemaToMarkdown = (state: any, node: any) => {
-    const { config } = node.attrs;
-    const info = config?.info || {};
-    const fields = config?.fields || [];
+const topicDefaultConfig = DataSchemaEntity.getDefaultConfig();
 
-    // Write schema info header
-    state.write(`### ${info.name || "Data Schema"}`);
+export const serializeDataSchemaToMarkdown =
+    DataSchemaEntity.serializeToMarkdown;
 
-    // Add type as a label if present
-    if (info.type) {
-        state.write(` *${info.type}*`);
-    }
-
-    state.write(`\n\n`);
-
-    // Write description
-    if (info.description) {
-        state.write(`${info.description}\n\n`);
-    }
-
-    // Write fields table
-    if (fields && fields.length > 0) {
-        // Check if there are non-empty fields
-        const hasValidFields = fields.some(
-            (field: DataSchemaField) =>
-                field.name.trim() !== "" ||
-                field.type.trim() !== "" ||
-                field.description.trim() !== ""
-        );
-
-        if (hasValidFields) {
-            state.write(`#### Fields\n\n`);
-            state.write(`| Field | Type | Description |\n`);
-            state.write(`| ----- | ---- | ----------- |\n`);
-
-            // Write each field as a table row
-            fields.forEach((field: DataSchemaField) => {
-                // Skip completely empty fields
-                if (
-                    field.name.trim() === "" &&
-                    field.type.trim() === "" &&
-                    field.description.trim() === ""
-                ) {
-                    return;
-                }
-
-                // Escape pipe characters in markdown tables
-                const name = (field.name || "").replace(/\|/g, "\\|");
-                const type = (field.type || "").replace(/\|/g, "\\|");
-                const description = (field.description || "")
-                    .replace(/\|/g, "\\|")
-                    .replace(/\n/g, "<br>");
-
-                state.write(`| ${name} | ${type} | ${description} |\n`);
-            });
-
-            state.write(`\n`);
-        }
-    }
-
-    // Add a separator
-    state.write(`---\n\n`);
-};
 export const DataSchemaExtension = Node.create({
     name: "template-dataSchema",
 
@@ -106,7 +33,6 @@ export const DataSchemaExtension = Node.create({
             id: {
                 default: uuidv4(),
             },
-
             config: createConfigAttribute(topicDefaultConfig),
         };
     },

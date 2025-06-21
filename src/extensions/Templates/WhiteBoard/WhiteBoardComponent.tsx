@@ -4,6 +4,8 @@ import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext"
 import { useState, useEffect } from "react";
 import NodeBubbleBar from "@/app/components/doc/Popover/NodeBubbleBar";
 import useCustomNodeActions from "../../../extensions/hooks/useCustomNodeActions";
+import { WhiteBoardEntity } from "./entity/WhiteBoardEntity";
+import WhiteBoardUI from "./WhiteBoardUI";
 
 const WhiteBoardComponent = ({
     node,
@@ -14,7 +16,12 @@ const WhiteBoardComponent = ({
     const { id, config } = node.attrs;
     const { selectedNode } = useNodeSelection();
     const isEditing = selectedNode === id;
-    const info = config?.info || {};
+
+    const entity = new WhiteBoardEntity(
+        config?.info?.name,
+        config?.info?.description
+    );
+
     const [showBubbleBar, setShowBubbleBar] = useState(false);
     const { setNodeRef } = useCustomNodeActions({
         id,
@@ -53,12 +60,7 @@ const WhiteBoardComponent = ({
                 getPos={getPos}
                 editor={editor}
             />
-            <div className="px-4 py-6">
-                <h3>{info.name}</h3>
-                <span className="text-sm text-gray-700 mt-1 mb-4 group-hover:cursor-text">
-                    {info.description}
-                </span>
-            </div>
+            <WhiteBoardUI entity={entity} />
         </NodeViewWrapper>
     );
 };

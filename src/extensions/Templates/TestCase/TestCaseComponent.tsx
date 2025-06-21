@@ -1,16 +1,12 @@
 import { NodeViewWrapper } from "@tiptap/react";
 import { NodeViewProps } from "@tiptap/core";
 import { useNodeSelection } from "@/app/viewModels/context/NodeSelectionContext";
-import { useCallback, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import NodeBubbleBar from "@/app/components/doc/Popover/NodeBubbleBar";
 import useCustomNodeActions from "../../../extensions/hooks/useCustomNodeActions";
 import { Collapsible } from "@/components/ui/collapsible";
 import TestCaseUI from "./TestCaseUI";
-
-interface Field {
-    step: string;
-    done: string;
-}
+import { TestCaseEntity, TestCaseStep } from "./entity/TestCaseEntity";
 
 const TestCaseComponent = ({
     node,
@@ -22,8 +18,16 @@ const TestCaseComponent = ({
     const { id, config } = node.attrs;
     const { selectedNode } = useNodeSelection();
     const isEditing = selectedNode === id;
-    const fields = config?.fields || [];
-    const info = config?.info || {};
+
+    const entity = new TestCaseEntity(
+        config?.info?.name,
+        config?.info?.serial,
+        config?.info?.description,
+        config?.info?.expectedResult,
+        config?.fields,
+        config?.fieldKey
+    );
+
     const [showBubbleBar, setShowBubbleBar] = useState(false);
     const { setNodeRef } = useCustomNodeActions({
         id,
@@ -50,16 +54,10 @@ const TestCaseComponent = ({
         e.stopPropagation();
     };
 
-    const isTaskDone = useCallback((status: string) => {
-        if (!status) return false;
-        const str = status.trim().toLowerCase();
-        return str === "true" || str === "yes" || str === "ok";
-    }, []);
-
     const toggleCheckbox = () => {
-        const updatedFields = fields.map((field: Field) => ({
+        const updatedFields = entity.fields.map((field: TestCaseStep) => ({
             ...field,
-            done: isTaskDone(field.done) ? "false" : "true",
+            done: entity.isTaskDone(field.done) ? "false" : "true",
         }));
 
         updateAttributes({
@@ -89,12 +87,7 @@ const TestCaseComponent = ({
                     getPos={getPos}
                     editor={editor}
                 />
-                <TestCaseUI
-                    info={info}
-                    fields={fields}
-                    isTaskDone={isTaskDone}
-                    toggleCheckbox={toggleCheckbox}
-                />
+                <TestCaseUI entity={entity} toggleCheckbox={toggleCheckbox} />
             </Collapsible>
         </NodeViewWrapper>
     );

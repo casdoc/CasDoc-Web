@@ -17,7 +17,7 @@ export default function DocumentContent() {
             <EditorProvider>
                 <GraphProvider>
                     <NodeSelectionProvider>
-                        <SidebarProvider defaultOpen={false}>
+                        <SidebarProvider defaultOpen={true}>
                             <ChatProvider>
                                 <AppSidebar />
                                 <Flex

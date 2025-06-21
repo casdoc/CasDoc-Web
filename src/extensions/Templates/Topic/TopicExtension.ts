@@ -7,22 +7,12 @@ import {
     createNodeTransformer,
     setupNodeEventHandlers,
     cleanupNodeEventHandlers,
-} from "../ExtensionUtils";
+} from "../../ExtensionUtils";
+import { TopicEntity } from "./entity/TopicEntity";
 
-const topicDefaultConfig = {
-    name: "Topic",
-    description: "This is a topic description",
-};
+const topicDefaultConfig = TopicEntity.getDefaultConfig();
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const serializeTopicToMarkdown = (state: any, node: any) => {
-    const { config } = node.attrs;
-    const name = config?.info?.name || "Unknown";
-    const description = config?.info?.description || "";
-
-    state.write(`## ${name}\n`);
-    state.write(`${description}\n`);
-};
+export const serializeTopicToMarkdown = TopicEntity.serializeToMarkdown;
 
 export const TopicExtension = Node.create({
     name: "topic",
@@ -71,10 +61,7 @@ export const TopicExtension = Node.create({
     },
 
     addProseMirrorPlugins() {
-        const pasteDefaultConfig = {
-            name: "Topic",
-            description: "This is a topic description",
-        };
+        const pasteDefaultConfig = topicDefaultConfig;
         // Use the generic node transformer with your specific config
         const topicTransformer = createNodeTransformer(pasteDefaultConfig);
 

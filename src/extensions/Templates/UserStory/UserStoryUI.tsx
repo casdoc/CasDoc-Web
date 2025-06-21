@@ -4,47 +4,19 @@ import {
     CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { ChevronDown } from "lucide-react";
-
-interface Field {
-    acceptance: string;
-    done: string;
-}
+import { UserStoryEntity, AcceptanceCriteria } from "./entity/UserStoryEntity";
 
 interface UserStoryUIProps {
-    info: {
-        serial?: string;
-        name?: string;
-        tag?: string;
-        priority?: string;
-        role?: string;
-        feature?: string;
-    };
-    fields: Field[];
-    isTaskDone: (status: string) => boolean;
+    entity: UserStoryEntity;
     toggleCheckbox: () => void;
 }
-const calculatePriorityStyle = (priority: number) => {
-    switch (priority) {
-        case 1:
-            return "bg-green-100 text-green-800 border-green-300";
-        case 2:
-            return "bg-yellow-100 text-yellow-800 border-yellow-300";
-        case 3:
-            return "bg-orange-100 text-orange-800 border-orange-300";
-        case 4:
-            return "bg-red-100 text-red-800 border-red-300";
-        case 5:
-            return "bg-purple-100 text-purple-800 border-purple-300";
-    }
-    return "bg-gray-100 text-gray-800 border-gray-300";
-};
 
 const UserStoryUI: React.FC<UserStoryUIProps> = ({
-    info,
-    fields,
-    isTaskDone,
+    entity,
     toggleCheckbox,
 }) => {
+    const { info, fields } = entity;
+
     return (
         <>
             <div className="w-full h-full pt-3 pb-1 px-3 border-b rounded-sm group/chevron">
@@ -72,10 +44,10 @@ const UserStoryUI: React.FC<UserStoryUIProps> = ({
                                     </span>
                                 </div>
                             )}
-                            {info.priority?.trim() !== "" && (
+                            {info.priority && (
                                 <div className="group-hover:cursor-text">
                                     <span
-                                        className={`text-xs px-2 py-1 rounded font-medium border ${calculatePriorityStyle(
+                                        className={`text-xs px-2 py-1 rounded font-medium border ${entity.calculatePriorityStyle(
                                             info.priority
                                                 ? parseInt(info.priority)
                                                 : 0
@@ -115,28 +87,33 @@ const UserStoryUI: React.FC<UserStoryUIProps> = ({
                         Acceptance Criteria
                     </h3>
                     <ul className="divide-y divide-gray-100 mt-1">
-                        {fields.map((field: Field, index: number) => (
-                            <li key={index} className="flex items-start py-2">
-                                <input
-                                    type="checkbox"
-                                    checked={isTaskDone(field.done)}
-                                    onClick={(e) => e.stopPropagation()}
-                                    onChange={toggleCheckbox}
-                                    className="mt-1 mr-2"
-                                />
-                                <div className="group-hover:cursor-text">
-                                    <span
-                                        className={`text-sm ${
-                                            isTaskDone(field.done)
-                                                ? "line-through text-gray-400"
-                                                : "text-gray-800"
-                                        }`}
-                                    >
-                                        {field.acceptance}
-                                    </span>
-                                </div>
-                            </li>
-                        ))}
+                        {fields.map(
+                            (field: AcceptanceCriteria, index: number) => (
+                                <li
+                                    key={index}
+                                    className="flex items-start py-2"
+                                >
+                                    <input
+                                        type="checkbox"
+                                        checked={entity.isTaskDone(field.done)}
+                                        onClick={(e) => e.stopPropagation()}
+                                        onChange={toggleCheckbox}
+                                        className="mt-1 mr-2"
+                                    />
+                                    <div className="group-hover:cursor-text">
+                                        <span
+                                            className={`text-sm ${
+                                                entity.isTaskDone(field.done)
+                                                    ? "line-through text-gray-400"
+                                                    : "text-gray-800"
+                                            }`}
+                                        >
+                                            {field.acceptance}
+                                        </span>
+                                    </div>
+                                </li>
+                            )
+                        )}
                     </ul>
                 </div>
             </CollapsibleContent>

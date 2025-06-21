@@ -3,8 +3,10 @@ import { updateDocument } from "@/app/models/services/DocumentService";
 import { DocumentUpdate } from "@/app/models/dto/DocumentApiRequest";
 import { Document } from "@/app/models/entity/Document";
 import { useRef } from "react";
+import { useRouter } from "next/navigation";
 
 export const useUpdateDocumentMutation = () => {
+    const router = useRouter();
     const queryClient = useQueryClient();
     const abortControllerRef = useRef<AbortController | null>(null);
 
@@ -70,6 +72,9 @@ export const useUpdateDocumentMutation = () => {
 
             // Return a context object with the snapshotted value
             return { previousDocuments };
+        },
+        onSuccess: (document) => {
+            router.push(`/documents/${document?.id}`);
         },
         // If the mutation fails, use the context returned from onMutate to roll back
         onError: (err, updatedDocument, context) => {

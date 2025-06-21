@@ -10,31 +10,25 @@ import {
 import { useProjectContext } from "@/app/viewModels/context/ProjectContext";
 import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
 import { CollapsibleTrigger } from "@radix-ui/react-collapsible";
-import { useDocumentsQuery } from "@/app/viewModels/hooks/useDocumentsQuery";
 import { useDeleteProjectMutation } from "@/app/viewModels/hooks/useDeleteProjectMutation";
-import { useProjectsQuery } from "@/app/viewModels/hooks/useProjectsQuery";
-
-import z from "zod";
+import { useQueryClient } from "@tanstack/react-query";
+import { Document } from "@/app/models/entity/Document";
 
 const dropdownItems = ["Edit", "Delete"];
 
 interface ProjectMenuProps {
     name: string;
     projectId: string;
-    isSelected?: boolean;
 }
 
 const ProjectMenu = ({ name, projectId }: ProjectMenuProps) => {
+    const queryClient = useQueryClient();
     const { mutateAsync: deleteProjectMutation } = useDeleteProjectMutation();
-    const { selectProject, openProjectDialog, openDocumentDialog } =
-        useProjectContext();
-    const { isSuccess: isProjectsSuccess } = useProjectsQuery();
-    const uuidSchema = z.uuid({ version: "v4" });
-    const { data: documents } = useDocumentsQuery(
+    const { openProjectDialog, openDocumentDialog } = useProjectContext();
+    const documents = queryClient.getQueryData<Document[]>([
+        "documents",
         projectId,
-        //prevent create project from being called when projectId is not valid
-        isProjectsSuccess && !uuidSchema.safeParse(projectId).success
-    );
+    ]);
 
     const [isOpen, setIsOpen] = useState(true);
 
@@ -47,6 +41,7 @@ const ProjectMenu = ({ name, projectId }: ProjectMenuProps) => {
     const handleMenuClick = (action: string, e: React.MouseEvent) => {
         e.stopPropagation();
 
+        console.debug(action);
         if (action === "Delete") {
             deleteProjectMutation(projectId);
         } else if (action === "Edit") {
@@ -61,7 +56,6 @@ const ProjectMenu = ({ name, projectId }: ProjectMenuProps) => {
                     <SidebarMenuButton
                         asChild
                         className=" hover:bg-neutral-200 hover:cursor-pointer"
-                        onClick={() => selectProject(projectId)}
                     >
                         <div>
                             <Folder />

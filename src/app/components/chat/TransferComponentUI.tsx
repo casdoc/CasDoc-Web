@@ -4,7 +4,10 @@ import TestCaseUI from "@/extensions/Templates/TestCase/TestCaseUI";
 import DataSchemaUI from "@/extensions/Templates/DataSchema/DataSchemaUI";
 import MermaidEditor from "@/app/components/doc/Mermaid/MermaidEditor";
 import APIinterfaceUI from "@/extensions/Templates/APIinterface/APIinterfaceUI";
-
+import { DataSchemaEntity } from "@/extensions/Templates/DataSchema/entity/DataSchemaEntity";
+import { APIinterfaceEntity } from "@/extensions/Templates/APIinterface/entity/APIinterfaceEntity";
+import { UserStoryEntity } from "@/extensions/Templates/UserStory/entity/UserStoryEntity";
+import { TestCaseEntity } from "@/extensions/Templates/TestCase/entity/TestCaseEntity";
 interface TransferComponentUIProps {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     content: any;
@@ -16,52 +19,36 @@ export const TransferComponentUI = ({ content }: TransferComponentUIProps) => {
     }
     switch (content.type) {
         case "userStory":
-            return (
-                <UserStoryUI
-                    info={{
-                        serial: content.serial || "",
-                        name: content.name || "",
-                        tag: content.tag || "",
-                        priority: content.priority || "",
-                        role: content.role || "",
-                        feature: content.feature || "",
-                    }}
-                    fields={content.fields || []}
-                    isTaskDone={(status) =>
-                        status === "true" || status === "true"
-                    }
-                    toggleCheckbox={() => {}}
-                />
+            const userStory = new UserStoryEntity(
+                content.name || "",
+                content.serial || "",
+                content.tag || "",
+                content.priority || "",
+                content.role || "",
+                content.feature || "",
+                content.fields || []
             );
+            return <UserStoryUI entity={userStory} toggleCheckbox={() => {}} />;
 
         case "testCase":
-            return (
-                <TestCaseUI
-                    info={{
-                        serial: content.serial || "",
-                        name: content.name || "",
-                        description: content.description || "",
-                        expectedResult: content.expectedResult || "",
-                    }}
-                    fields={content.fields || []}
-                    isTaskDone={(status = "true") =>
-                        status === "true" || status === "true"
-                    }
-                    toggleCheckbox={() => {}}
-                />
+            const testCase = new TestCaseEntity(
+                content.name || "",
+                content.serial || "",
+                content.tag || "",
+                content.priority || "",
+                content.description || "",
+                content.fields || []
             );
+            return <TestCaseUI entity={testCase} toggleCheckbox={() => {}} />;
 
         case "dataSchema":
-            return (
-                <DataSchemaUI
-                    info={{
-                        name: content.name || "",
-                        type: content.type || "",
-                        description: content.description || "",
-                    }}
-                    fields={content.fields || []}
-                />
+            const dataSchema = new DataSchemaEntity(
+                content.name || "",
+                content.type || "",
+                content.description || "",
+                content.fields || []
             );
+            return <DataSchemaUI entity={dataSchema} />;
 
         case "mermaid":
             return (
@@ -72,17 +59,14 @@ export const TransferComponentUI = ({ content }: TransferComponentUIProps) => {
             );
 
         case "apiInterface":
-            return (
-                <APIinterfaceUI
-                    info={{
-                        method: content?.method || "",
-                        name: content?.name || "",
-                        endPoint: content?.endPoint || "",
-                        description: content?.description || "",
-                    }}
-                    fields={content?.fields || []}
-                />
+            const apiInterface = new APIinterfaceEntity(
+                content.method || "unknown",
+                content.name || "",
+                content.description || "",
+                content.endPoint || "",
+                content.fields || []
             );
+            return <APIinterfaceUI entity={apiInterface} />;
 
         default:
             return (

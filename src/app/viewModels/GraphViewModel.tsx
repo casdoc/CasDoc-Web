@@ -82,8 +82,8 @@ export function useGraphViewModel(): GraphViewModel {
 
     const {
         data: connectionEdges,
-        isSuccess: isConnectionsSuccess,
-        isLoading: isConnectionsLoading,
+        // isSuccess: isConnectionsSuccess,
+        // isLoading: isConnectionsLoading,
     } = useConnectionsQuery(selectedProjectId || "");
     const { mutateAsync: updateConnection } = useConnectionUpdateMutation(
         selectedProjectId || ""
