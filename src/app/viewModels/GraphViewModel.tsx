@@ -4,13 +4,13 @@ import { JsonObject } from "../models/types/JsonObject";
 import { useProjectContext } from "./context/ProjectContext";
 import { useDocumentQuery } from "./hooks/useDocumentQuery";
 import z from "zod";
-import { useEditorContext } from "./context/EditorContext";
 import { Node } from "@tiptap/pm/model";
 import { useConnectionUpdateMutation } from "./hooks/useConnectionUpdateMutation";
 import { useConnectionsQuery } from "./hooks/useConnectionsQuery";
 import { useConnectionCreateMutation } from "./hooks/useConnectionCreateMutation";
 import { useConnectionDeleteMutation } from "./hooks/useConnectionDeleteMutation";
 import { ConnectionEdge } from "@/app/models/entity/ConnectionEdge";
+import { useMultiEditorContext } from "./context/MultiEditorContext";
 
 export interface GraphViewModel {
     connectionEdges: ConnectionEdge[];
@@ -67,7 +67,7 @@ export function useGraphViewModel(): GraphViewModel {
     // const [connectionEdges, setConnectionEdges] = useState<ConnectionEdge[]>(
     //     []
     // );
-    const { selectedDocumentId } = useProjectContext();
+    const { selectedProjectId, selectedDocumentId } = useProjectContext();
 
     const [affectedIds, setAffectedIds] = useState<string[]>([]);
     const [attachedDocs, setAttachedDocs] = useState<Array<AttachedDoc>>([]);
@@ -77,8 +77,8 @@ export function useGraphViewModel(): GraphViewModel {
             !uuidSchema.safeParse(selectedDocumentId).success
     );
 
-    const { editor, docContent } = useEditorContext();
-    const { selectedProjectId } = useProjectContext();
+    const { activeEditor: editor } = useMultiEditorContext();
+    const docContent = editor?.state.toJSON();
 
     const {
         data: connectionEdges,

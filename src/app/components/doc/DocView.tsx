@@ -9,10 +9,10 @@ import BlockEditor from "@/app/components/doc/BlockEditor/BlockEditor";
 import GraphView from "../flow/GraphView";
 import { Button, Flex, Text } from "@radix-ui/themes";
 import DocMode from "@/app/models/enum/DocMode";
-import { useEditorContext } from "@/app/viewModels/context/EditorContext";
 import { useQueryClient } from "@tanstack/react-query";
 import { Project } from "@/app/models/entity/Project";
 import { Document } from "@/app/models/entity/Document";
+import { useMultiEditorContext } from "@/app/viewModels/context/MultiEditorContext";
 
 const DocView = () => {
     const queryClient = useQueryClient();
@@ -31,7 +31,8 @@ const DocView = () => {
             selectedProjectId,
         ]) ?? [];
     const document = documents.find((doc) => doc.id === selectedDocumentId);
-    const { editor } = useEditorContext();
+
+    const { activeEditor: editor, isLoading } = useMultiEditorContext();
 
     const [splitWidth, setSplitWidth] = useState(50);
     const isResizing = useRef(false);
@@ -60,7 +61,7 @@ const DocView = () => {
     }, []);
 
     // Return loading state if document is changing
-    if (!selectedDocumentId) {
+    if (!selectedDocumentId || isLoading) {
         return (
             <Flex
                 direction="column"
@@ -72,7 +73,6 @@ const DocView = () => {
             </Flex>
         );
     }
-
     // Return null if editor is not loaded
     if (!editor) {
         return (
