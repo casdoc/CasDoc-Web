@@ -22,9 +22,11 @@ export const AgentMessageItem = ({ message }: { message: AgentMessage }) => {
     const getText = () => {
         switch (message.type) {
             case "tool_call":
-                return `Calling ${message.toolName || "unknown tool"}...`;
+                return `Calling ${
+                    message.content.tool_name || "unknown tool"
+                }...`;
             case "tool_result":
-                return `Created ${message.toolName || "component"}`;
+                return `Created ${message.content.tool_name || "component"}`;
             case "error":
                 return `Error: ${message.content?.message || "Unknown error"}`;
             default:
