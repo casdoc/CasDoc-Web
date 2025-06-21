@@ -6,11 +6,15 @@ import { useRef } from "react";
 import { DocumentCreate } from "@/app/models/dto/DocumentApiRequest";
 import { useRouter } from "next/navigation";
 
-export const useCreateDocumentMutation = () => {
+export const useCreateDocumentMutation = (options?: {
+    autoNavigate?: boolean;
+}) => {
     const queryClient = useQueryClient();
     const abortControllerRef = useRef<AbortController | null>(null);
 
     const router = useRouter();
+    const shouldAutoNavigate = options?.autoNavigate ?? true;
+
     return useMutation({
         mutationFn: async (documentInput: DocumentCreate) => {
             // Cancel previous request if exists
@@ -68,9 +72,11 @@ export const useCreateDocumentMutation = () => {
         //     // Return a context object with the snapshotted value
         //     return { previousDocuments, optimisticDocument };
         // },
-        // If the mutation success, select new document
+        // If the mutation success, select new document (only if autoNavigate is true)
         onSuccess: (document) => {
-            router.push(`/documents/${document.id}`);
+            if (shouldAutoNavigate) {
+                router.push(`/documents/${document.id}`);
+            }
         },
         // If the mutation fails, use the context returned from onMutate to roll back
         // onError: (err, newDocumentInput, context) => {
