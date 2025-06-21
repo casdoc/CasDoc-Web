@@ -15,7 +15,6 @@ import {
 } from "@/app/models/services/AgentService";
 import { DocumentType } from "@/app/models/enum/DocumentType";
 import { AgentMessageItem } from "./idea2docs/AgentMessageItem";
-// import { DocumentBlock } from "./idea2docs/DocumentBlock";
 import { useCreateProjectMutation } from "@/app/viewModels/hooks/useCreateProjectMutation";
 import { useCreateDocumentMutation } from "@/app/viewModels/hooks/useCreateDocumentMutation";
 import { setDocumentContent } from "@/app/models/services/DocumentService";
@@ -37,11 +36,6 @@ interface AgentMessage {
     content: MessageContent;
     timestamp: number;
 }
-// interface DocumentStatus {
-//     [DocumentType.SRD]: "waiting" | "generating" | "completed";
-//     [DocumentType.SDD]: "waiting" | "generating" | "completed";
-//     [DocumentType.STD]: "waiting" | "generating" | "completed";
-// }
 
 export const ProjectAIForm = ({
     prompt,
@@ -60,11 +54,6 @@ export const ProjectAIForm = ({
         [DocumentType.STD]: { type: "doc", content: [] },
         [DocumentType.OTHER]: { type: "doc", content: [] },
     });
-    // const [documentStatus, setDocumentStatus] = useState<DocumentStatus>({
-    //     [DocumentType.SRD]: "waiting",
-    //     [DocumentType.SDD]: "waiting",
-    //     [DocumentType.STD]: "waiting",
-    // });
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const componentsToTopicMap = useRef<Record<string, any>>({});
@@ -76,16 +65,14 @@ export const ProjectAIForm = ({
     const abortControllerRef = useRef<AbortController | null>(null);
     const [isApplying, setIsApplying] = useState(false);
     const createProjectMutation = useCreateProjectMutation();
-    const createDocumentMutation = useCreateDocumentMutation();
+    const createDocumentMutation = useCreateDocumentMutation({
+        autoNavigate: false,
+    });
 
     // Auto-scroll to bottom when new messages arrive
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [agentMessages]);
-
-    useEffect(() => {
-        console.debug("Document contents updated:", documentContents.current);
-    }, [documentContents]);
 
     // Handle form submission
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -113,8 +100,8 @@ export const ProjectAIForm = ({
                 handleStreamComplete
             );
         } catch (err) {
-            console.error("Error during AI generation:", err);
             if (err instanceof Error && err.name !== "AbortError") {
+                console.error("Error during AI generation:", err);
                 setError(err.message);
                 setCurrentStep("input");
             }
@@ -136,9 +123,6 @@ export const ProjectAIForm = ({
                         timestamp: Date.now(),
                     },
                 ]);
-
-                // Update document status based on tool name
-                // updateDocumentStatusFromTool(data.tool_name, "generating");
                 break;
 
             case "tool_result":
@@ -158,9 +142,7 @@ export const ProjectAIForm = ({
                     },
                 ]);
 
-                // Process the result and update document content
                 processToolResult(data.tool_name, data.result);
-                // updateDocumentStatusFromTool(data.tool_name, "completed");
                 break;
 
             case "error":
@@ -188,30 +170,6 @@ export const ProjectAIForm = ({
         organizeDocumentContent();
         setCurrentStep("review");
     };
-
-    // Update document status based on tool name
-    // const updateDocumentStatusFromTool = (
-    //     toolName: string,
-    //     status: "generating" | "completed"
-    // ) => {
-    //     // Map tool names to document types - this is a simplified mapping
-    //     let docType: DocumentType | null = null;
-
-    //     if (toolName?.includes("srd") || toolName?.includes("requirement")) {
-    //         docType = DocumentType.SRD;
-    //     } else if (toolName?.includes("sdd") || toolName?.includes("design")) {
-    //         docType = DocumentType.SDD;
-    //     } else if (toolName?.includes("std") || toolName?.includes("test")) {
-    //         docType = DocumentType.STD;
-    //     }
-
-    //     if (docType) {
-    //         setDocumentStatus((prev) => ({
-    //             ...prev,
-    //             [docType]: status,
-    //         }));
-    //     }
-    // };
 
     // Process tool results into document content
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -245,10 +203,6 @@ export const ProjectAIForm = ({
                             TiptapNode,
                         ],
                     };
-                    console.debug(
-                        "Added topic to document:",
-                        documentContents.current
-                    );
                 }
             } else {
                 // Handle non-level1-topic components - store by level 1 topicId
@@ -259,10 +213,6 @@ export const ProjectAIForm = ({
                         componentsToTopicMap.current[topicId] = [];
                     }
                     componentsToTopicMap.current[topicId].push(TiptapNode);
-                    console.debug(
-                        "componentsToTopicMap updated:",
-                        componentsToTopicMap.current
-                    );
                 } else {
                     console.warn("Component without topicId:", result);
                 }
@@ -276,15 +226,6 @@ export const ProjectAIForm = ({
     const organizeDocumentContent = useCallback(() => {
         const componentsMap = { ...componentsToTopicMap.current };
         const mapKeys = Object.keys(componentsMap);
-        console.debug(
-            "Organizing document content with components map keys:",
-            mapKeys
-        );
-
-        console.debug(
-            "documentContents before organization:",
-            documentContents.current
-        );
 
         // First round: insert components for topics that already exist in document content
         for (const topicId of mapKeys) {
@@ -296,12 +237,6 @@ export const ProjectAIForm = ({
                 const docContent = documentContents.current[docType];
                 if (!docContent || !docContent.content) continue;
 
-                console.debug(
-                    "docContent for type:",
-                    docType,
-                    documentContents.current[docType]
-                );
-
                 // Find the topic with matching id in the content
                 const topicIndex = documentContents.current[
                     docType
@@ -311,11 +246,7 @@ export const ProjectAIForm = ({
                         node.type === "topic" && node.attrs?.id === topicId
                 );
 
-                console.debug("Searching for topic:", topicId, "in", docType);
-                console.debug("Found topic index:", topicIndex);
-
                 if (topicIndex !== -1) {
-                    console.debug("Inserting components for topic:", topicId);
                     // Insert components after the topic
                     documentContents.current[docType] = {
                         type: "doc",
@@ -357,10 +288,6 @@ export const ProjectAIForm = ({
                 );
 
                 if (topicIndex !== -1) {
-                    console.debug(
-                        "Inserting remaining components for topic:",
-                        topicId
-                    );
                     // Insert components after the topic
                     documentContents.current[docType] = {
                         type: "doc",
@@ -385,12 +312,6 @@ export const ProjectAIForm = ({
 
         // Update the ref to reflect the cleaned map
         componentsToTopicMap.current = componentsMap;
-
-        // Log the final organized content
-        console.debug(
-            "Document contents after organization:",
-            documentContents.current
-        );
     }, []);
 
     // Handle cancel
@@ -403,7 +324,7 @@ export const ProjectAIForm = ({
         setError(null);
     };
 
-    // Handle apply - create project and documents with content
+    // Handle apply - create project and set document content
     const handleApply = useCallback(async () => {
         if (!projectName.trim()) return;
 
@@ -428,7 +349,7 @@ export const ProjectAIForm = ({
                 DocumentType.STD,
             ];
 
-            console.debug("final document contents:", documentContents.current);
+            let firstDocumentId: string | null = null;
 
             for (const docType of documentTypes) {
                 if (documentContents.current[docType]?.content?.length > 0) {
@@ -441,6 +362,11 @@ export const ProjectAIForm = ({
                     });
 
                     if (document) {
+                        // Store the first created document ID for navigation
+                        if (!firstDocumentId) {
+                            firstDocumentId = document.id;
+                        }
+
                         // Transform content to Yjs format
                         const ydoc = TiptapTransformer.toYdoc(
                             documentContents.current[docType],
@@ -460,17 +386,12 @@ export const ProjectAIForm = ({
                 }
             }
 
-            // Success - close dialog and select the first created document
-            const firstDocumentType = documentTypes.find(
-                (type) => documentContents.current[type]?.content?.length > 0
-            );
-
-            if (firstDocumentType) {
-                console.debug("Project creation completed successfully");
+            // Success - navigate to the first created document after a brief delay to avoid scroll issues
+            if (firstDocumentId) {
+                setTimeout(() => {
+                    window.location.href = `/documents/${firstDocumentId}`;
+                }, 100);
             }
-
-            // Reset form and go back
-            // onBack();
         } catch (error) {
             console.error("Error creating project with documents:", error);
             setError(
@@ -560,7 +481,7 @@ export const ProjectAIForm = ({
                         </Flex>
                     </div>
 
-                    <div className="max-h-60 overflow-y-auto">
+                    <div className="max-h-60 overflow-y-auto px-2">
                         {agentMessages.map((message, index) => (
                             <AgentMessageItem key={index} message={message} />
                         ))}
@@ -571,18 +492,6 @@ export const ProjectAIForm = ({
                         <h4 className="text-sm font-medium">
                             Document Generation Progress
                         </h4>
-                        {/* <DocumentBlock
-                            name="Software Requirements Document (SRD)"
-                            status={documentStatus[DocumentType.SRD]}
-                        />
-                        <DocumentBlock
-                            name="Software Design Document (SDD)"
-                            status={documentStatus[DocumentType.SDD]}
-                        />
-                        <DocumentBlock
-                            name="Software Test Document (STD)"
-                            status={documentStatus[DocumentType.STD]}
-                        /> */}
                     </div>
 
                     <DialogFooter>

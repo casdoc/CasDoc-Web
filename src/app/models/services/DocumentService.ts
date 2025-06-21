@@ -9,7 +9,7 @@ import {
 } from "../dto/DocumentApiResponse";
 
 const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-const hocuspocusUrl = process.env.NEXT_PUBLIC_HOCUSPOCUS_URL;
+const hocuspocusUrl = process.env.NEXT_PUBLIC_SET_CONTENT_URL;
 export const getAllDocuments = async (
     projectId: string
 ): Promise<Document[] | undefined> => {
@@ -23,7 +23,7 @@ export const getAllDocuments = async (
         if (error || !session) {
             throw new Error("No valid session found");
         }
-
+        console.debug("projectId", projectId);
         const token = session.access_token;
         const response = await fetch(
             `${baseUrl}/api/v1/public/projects/${projectId}/documents`,
@@ -124,7 +124,7 @@ export const createDocument = async (
         }
 
         const result: DocumentResponse = await response.json();
-        DocumentResponseSchema.parse(result); // Validate the response
+        DocumentResponseSchema.parse(result);
 
         return Document.fromObject(result.data);
     } catch (error) {
@@ -210,12 +210,22 @@ export const setDocumentContent = async (
     documentId: string,
     content: number[]
 ): Promise<void> => {
+    const {
+        data: { session },
+        error,
+    } = await supabase.auth.getSession();
+
+    if (error || !session) {
+        throw new Error("No valid session found");
+    }
+    const token = session.access_token;
     try {
         const response = await fetch(
             `${hocuspocusUrl}/api/v1/public/yjs-documents/${documentId}`,
             {
                 method: "PUT",
                 headers: {
+                    Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify(content),
