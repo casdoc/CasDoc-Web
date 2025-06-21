@@ -1,4 +1,4 @@
-import React, {
+import {
     createContext,
     useContext,
     useState,
@@ -9,7 +9,8 @@ import { useProjectContext } from "./ProjectContext";
 import { HocuspocusProvider } from "@hocuspocus/provider";
 import { LoadingMask } from "@/app/documents/components/LoadingMask";
 import { useParams } from "next/navigation";
-
+import supabase from "@/lib/supabase";
+import { Session, AuthError } from "@supabase/supabase-js";
 interface CollabProviderViewModel {
     collabProvider: HocuspocusProvider;
     status: CollaborationStatus;
@@ -35,6 +36,22 @@ export const CollabProvider = ({ children }: { children: ReactNode }) => {
         CollaborationStatus.Disconnected
     );
     const { documentId } = useParams();
+    const [session, setSession] = useState<Session | null>(null);
+    const [error, setError] = useState<AuthError | null>(null);
+
+    // Fetch authentication session
+    useEffect(() => {
+        const getSession = async () => {
+            const { data, error } = await supabase.auth.getSession();
+            if (error) {
+                setError(error);
+            } else {
+                setSession(data.session);
+            }
+        };
+
+        getSession();
+    }, []);
 
     // Watch for URL documentId changes and sync with selectedDocumentId
     useEffect(() => {
@@ -56,9 +73,11 @@ export const CollabProvider = ({ children }: { children: ReactNode }) => {
             "Creating HocuspocusProvider for document:",
             selectedDocumentId
         );
+        const token = session?.access_token;
         const provider = new HocuspocusProvider({
             url: "ws://localhost:1234",
             name: selectedDocumentId,
+            token: token,
             onConnect: () => {
                 setStatus(CollaborationStatus.Connecting);
             },
@@ -77,7 +96,7 @@ export const CollabProvider = ({ children }: { children: ReactNode }) => {
         return () => {
             provider.destroy();
         };
-    }, [selectedDocumentId, documentId]);
+    }, [selectedDocumentId, documentId, error, session]);
 
     if (!hocuspocusProvider?.isSynced || !isSynced || !selectedDocumentId)
         return <LoadingMask />;
